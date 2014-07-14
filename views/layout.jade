@@ -1,0 +1,11 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/css/style.css')
+        block extra_css
+    body
+        block content
+        script(src='//newcdn.qiniudn.com/jquery-2.1.1.min.js')
+        script(src='/js/script.js', type='text/javascript')
+        block extra_script
