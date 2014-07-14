@@ -1,0 +1,9 @@
+extends layout
+block content
+    div
+        form(action='/admin', method='post')
+            input(type='text', placeholder='User name')
+            input(type='text', placeholder='Email')
+            input(type='password', placeholder='Password')
+            input(type='password', placeholder='Repeat the password')
+            button(type='submit') Submit

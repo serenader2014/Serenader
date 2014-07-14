@@ -1,26 +1,18 @@
 var express = require('express');
+var mongoose = require('mongoose');
+var admin = require('../controller/admin');
+var Setting = require('../proxy').setting;
+var config = require('../config');
 
-var controlPanel = express.Router();
+var adminPath;
 
-controlPanel.get('/',function (req, res, next) {
-    req.session.cookie.maxAge = 1000*60*20;
-    if (req.session.view) {
-        req.session.view++;
-    } else {
-        req.session.view = 1;
-    }
-    console.log(req.session);
-    res.render('admin');
-});
-
+Setting.getSetting(function (err, s) {
+    adminPath = s ? s.admin_path : config.admin_path;
+})
 
 
 function route (app, req, res, next) {
-    app.get('/a', function (req, res) {
-        res.send(200);
-    });
-
-    app.use('/admin', controlPanel);
+    app.use(adminPath, admin);
 }
 
 module.exports = route;
