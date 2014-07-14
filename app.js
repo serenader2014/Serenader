@@ -9,9 +9,11 @@ var express = require('express'),
 
 
 var upload = require('jquery-file-upload-middleware'),
-    config = require('./config'),
+    config = require('./config').config,
     route = require('./routes'),
-    mongooseSession = require('./mongoose_session');
+    mongooseSession = require('./mongoose_session'),
+    Setting = require('./proxy').setting;
+
 
 mongoose.connect(config.db, function (err) {
     if (err) {
@@ -19,7 +21,6 @@ mongoose.connect(config.db, function (err) {
         process.exit(1);
     }
 });
-
 
 var app = express();
 
@@ -45,7 +46,7 @@ app.use(session({
     name: 'blog session',
     secret: config.session_secret,
     store: new MongoStore({
-        db: "db",
+        url: config.db
     }),
     resave: true,
     saveUninitialized: true,
@@ -62,6 +63,15 @@ app.use('/files/', express.static(path.join(__dirname, '/upload')));
 
 
 app.use('/upload', upload.fileHandler());
+
+var adminPath;
+
+Setting.getSetting(function (err, s) {
+    if (err) {
+        cosole.error(err);
+    }
+    module.exports = adminPath = s ? s.admin_path : config.admin_path;
+});
 
 
 route(app);

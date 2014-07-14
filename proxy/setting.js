@@ -30,5 +30,5 @@ module.exports.updateSetting = function (name, desc, logo, favcon, nav, admin_pa
         s.admin_path = admin_path;
         s.allow_sign_up = allow_sign_up;
         s.save(callback);
-    })
-}
+    });
+};

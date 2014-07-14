@@ -1,7 +1,9 @@
 extends layout
 block content
     div
-        form(action='/admin/signin', method='post')
+        form(action='/admin/signup', method='post')
+            input(type='text', placeholder='User name', name='id')
             input(type='text', placeholder='Email', name='email')
             input(type='password', placeholder='Password', name='password')
+            input(type='password', placeholder='Repeat the password')
             button(type='submit') Submit

@@ -1,6 +1,7 @@
 var path = require('path'),
     pkg = require('./package.json');
 
+
 var config = {
     name: 'Serenader',
     description: 'A blog created by serenader, with some interesting features',
@@ -22,4 +23,4 @@ var config = {
     admin_path: '/admin'
 };
 
-module.exports = config;
+module.exports.config = config;
