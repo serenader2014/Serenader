@@ -10,7 +10,6 @@ var express = require('express'),
 
 var upload = require('jquery-file-upload-middleware'),
     config = require('./config').config,
-    route = require('./routes'),
     mongooseSession = require('./mongoose_session'),
     Setting = require('./proxy').setting;
 
@@ -23,6 +22,11 @@ mongoose.connect(config.db, function (err) {
 });
 
 var app = express();
+
+module.exports = app;
+
+var route = require('./routes');
+
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -55,6 +59,7 @@ app.use(session({
 app.use(function (req, res, next) {
     if (req.session.user) {
         res.locals.current_user = req.session.user;
+        req.session.cookie.maxAge = 1000*60*20;
     }
     next();
 });
@@ -62,16 +67,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files/', express.static(path.join(__dirname, '/upload')));
 
 
-app.use('/upload', upload.fileHandler());
-
-var adminPath;
-
-Setting.getSetting(function (err, s) {
-    if (err) {
-        cosole.error(err);
-    }
-    module.exports = adminPath = s ? s.admin_path : config.admin_path;
-});
 
 
 route(app);

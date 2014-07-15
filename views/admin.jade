@@ -1,4 +1,39 @@
 extends layout
 
+block extra_css
+    block admin_css
+
+
 block content
-    div Hello
+    section.db-admin
+        nav.navbar.navbar-inverse.db-navbar.navbar-fixed-top
+            div.container-fluid
+                div.navbar-header
+                    a.navbar-brand.db-brand(href='/') BLOG
+                div.collapse.navbar-collapse
+                    ul.nav.navbar-nav
+                        li: a(href='/') 主页
+                        li: a(href='#{adminPath}/post') 文章
+                        li: a(href='#{adminPath}/images') 图片
+                        li: a(href='#{adminPath}/files') 文件
+                        li: a(href='#{adminPath}/upload') 上传
+                        li: a(href='#{adminPath}/settings') 设置
+                    ul.nav.navbar-nav.navbar-right
+                        li
+                            a(href='/admin/post/new') 
+                                span.glyphicon.glyphicon-plus
+                                | 新文章
+                        li.dropdown
+                            a.dropdown-toggle(data-toggle='dropdown' href='javascript:;') #{locals.current_user.uid}
+                                b.caret
+                            ul.dropdown-menu(role='menu')
+                                li: a(href='/u/#{locals.current_user.uid}') 账户
+                                li: a(href='#{adminPath}/signout') 登出
+        block post_content
+        block new_post
+        block images
+        block files
+        block upload
+        block settings
+block extra_script
+    block admin_script
