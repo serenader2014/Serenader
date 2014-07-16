@@ -37,7 +37,7 @@ block post_content
                         div.panel-heading 
                             span 作者： #{item.author} | 
                             span 分类： #{item.category} | 
-                            span 日期： 
+                            span 日期： #{item.date[1]}
                             span: a.glyphicon.glyphicon-remove.db-delete-post(href='#{adminPath}/post/delete/#{item._id}') 
                         div.panel-body
                             h2: a(href='#{adminPath}/post/edit/#{item._id}') #{item.title}

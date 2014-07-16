@@ -1,7 +1,7 @@
 extends layout
 block content
     div
-        form(action='/admin/signin', method='post')
+        form(action='#{adminPath}/signin', method='post')
             input(type='text', placeholder='Email', name='email')
             input(type='password', placeholder='Password', name='password')
             button(type='submit') Submit

@@ -4,6 +4,7 @@ var upload = require('jquery-file-upload-middleware');
 var User = require('../proxy').user;
 var Post = require('../proxy').post;
 var Category = require('../proxy').category;
+var Setting = require('../proxy').setting;
 
 var config = require('../config').config;
 var app = require('../app');
@@ -19,14 +20,48 @@ function auth_user (req, res, next) {
     }
 }
 
-
 var adminHomePage = express.Router();
+
 adminHomePage.get('/', auth_user, function (req, res, next) {
     res.locals.current_user = req.session.user;
     res.render('admin_index', {adminPath: adminPath, locals: res.locals});
 });
 
-adminHomePage.get('/signin', function (req, res, next) {
+
+adminHomePage.get('/settings', auth_user, function (req, res, next) {
+    res.locals.current_user = req.session.user;
+    res.render('admin_setting', {adminPath: adminPath, locals: res.locals});
+});
+
+adminHomePage.post('/settings', auth_user, function (req, res, next) {
+    var name = req.body.blog_title,
+        desc = req.body.blog_desc,
+        logo = req.body.blog_logo,
+        favicon = req.body.blog_favicon,
+        nav = [req.body.blog_navs],
+        admin_path = req.body.blog_admin_path.substring(0,1) === '/' ? req.body.blog_admin_path : '/'+req.body.blog_admin_path,
+        signup = req.body.blog_signup;
+    Setting.getSetting(function (err, s) {
+        if (err) res.send(err);
+        if (s) {
+            Setting.updateSetting(name, desc, logo, favicon, nav, admin_path, signup,function (err) {
+                if (err) res.send(err);
+                adminPath = admin_path;
+                res.redirect(admin_path);
+                process.exit();
+            }); 
+        } else {
+            Setting.createSetting(name, desc, logo, favicon, nav, admin_path, signup, function (err) {
+                if (err) res.send(err);
+                adminPath = admin_path;
+                res.redirect(admin_path);
+                process.exit();
+            }); 
+        }
+    });
+});
+
+adminHomePage.get('/signin', function (req, res, next) { 
     if (req.session.user) {
         res.redirect(adminPath);
     } else {
@@ -136,7 +171,7 @@ adminHomePage.get('/post/new', auth_user, function (req, res, next) {
 adminHomePage.post('/post/new', auth_user, function (req, res, next) {
     var now = new Date();
     var title = req.body.title;
-    var author = req.session.user.name;
+    var author = req.session.user.uid;
     var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
     var post = req.body.post;
     var tags = req.body.tag;

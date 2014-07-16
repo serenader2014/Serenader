@@ -59,6 +59,7 @@ app.use(session({
 app.use(function (req, res, next) {
     if (req.session.user) {
         res.locals.current_user = req.session.user;
+        req.session.cookie.expires = new Date(Date.now()+1000*60*20);
         req.session.cookie.maxAge = 1000*60*20;
     }
     next();

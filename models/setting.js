@@ -5,7 +5,7 @@ var Setting = new Schema({
     name: { type: String },
     desc: { type: String },
     logo: { type: String },
-    favcon: { type: String },
+    favicon: { type: String },
     nav: { type: Array },
     admin_path: { type: String },
     allow_sign_up: { type: Boolean },
