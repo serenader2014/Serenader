@@ -5,7 +5,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     mongoose = require('mongoose'),
-    MongoStore = require('connect-mongo')(session);
+    MongoStore = require('connect-mongo')(session),
+    serveIndex = require('serve-index');
 
 
 var upload = require('jquery-file-upload-middleware'),
@@ -68,9 +69,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/files/', express.static(path.join(__dirname, '/upload')));
 
 
-
-
+// app.use('/fs/',serveIndex('public', {'icons': true}));
 route(app);
+
 
 app.set('port', config.port);
 
