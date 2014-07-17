@@ -30,7 +30,15 @@ adminHomePage.get('/', auth_user, function (req, res, next) {
 
 adminHomePage.get('/settings', auth_user, function (req, res, next) {
     res.locals.current_user = req.session.user;
-    res.render('admin_setting', {adminPath: adminPath, locals: res.locals});
+    Setting.getSetting(function (err, s) {
+        if (err) console.error(err);
+        if (s) {
+            res.render('admin_setting', {adminPath: adminPath, locals: res.locals, setting: s});
+        } else {
+            var setting = {name:'',desc:'',logo:'',favicon:'',nav:'',admin_path:'/admin',allow_sign_up:false};
+            res.render('admin_setting', {adminPath: adminPath, locals: res.locals, setting: setting});
+        }
+    });
 });
 
 adminHomePage.post('/settings', auth_user, function (req, res, next) {

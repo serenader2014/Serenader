@@ -2,12 +2,13 @@ extends admin
 
 block settings
     form(method='post', action='#{adminPath}/settings')
-        input(type='text', name='blog_title', placeholder='Blog title')
-        input(type='text', name='blog_desc', placeholder='Blog description')
-        input(type='text', name='blog_admin_path', placeholder='Blog admin path')
-        input(type='text', name='blog_logo', placeholder='Blog logo')
-        input(type='text', name='blog_favicon', placeholder='Blog favicon')
-        input(type='text', name='blog_navs', placeholder='Blog nav')
-        input(type='radio', name='blog_signup')
+        input(type='text', name='blog_title', placeholder='Blog title', value='#{setting.name}')
+        input(type='text', name='blog_desc', placeholder='Blog description' value='#{setting.desc}')
+        input(type='text', name='blog_admin_path', placeholder='Blog admin path' value='#{setting.admin_path}')
+        input(type='text', name='blog_logo', placeholder='Blog logo' value='#{setting.logo}')
+        input(type='text', name='blog_favicon', placeholder='Blog favicon' value='#{setting.favicon}')
+        input(type='text', name='blog_navs', placeholder='Blog nav' value='#{setting.nav}')
+        - var singup = setting.allow_sign_up ? 'checked' : '';
+        input(type='checkbox', name='blog_signup' checked= '#{singup}')
         button(type='submit') submit
         
