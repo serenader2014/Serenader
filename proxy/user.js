@@ -21,50 +21,14 @@ module.exports.createNewUser = function (uid, email, pwd, role, callback) {
     user.save(callback);
 };
 
-module.exports.updateUserProfileById = function (uid, email, pwd, website, profile_header, avatar, role, signature, callback) {
-    User.find({uid: uid}, function (err, u) {
-        if (err) {
-            callback(err);
-        } else {
-            u.email = email;
-            u.pwd = pwd;
-            u.website = website;
-            u.profile_header = profile_header;
-            u.avatar = avatar;
-            u.role = role;
-            u.signature = signature;
-            u.save(function (err) {
-                if (err) callback(err);
-            });
-        }
-    });
+module.exports.updateUserProfile = function (uid, email, pwd, website, profile_header, role, signature, callback) {
+    User.update(
+        {uid: uid}, 
+        {uid: uid, email: email, pwd: pwd, website: website, profile_header: profile_header, role: role, signature: signature}, 
+        callback);
 };
 
-module.exports.updateUserProfileByEmail = function (uid, email, pwd, website, profile_header, avatar, role, signature, callback) {
-    User.find({email: email}, function (err, u) {
-        if (err) {
-            callback(err);
-        } else {
-            u.email = email;
-            u.pwd = pwd;
-            u.website = website;
-            u.profile_header = profile_header;
-            u.avatar = avatar;
-            u.role = role;
-            u.signature = signature;
-            u.save(function (err) {
-                if (err) callback(err);
-            });
-        }        
-    });
-};
 
 module.exports.deleteUserById = function (uid, callback) {
-    User.find({uid: uid}, function (err, u) {
-        if (err) {
-            callback(err);
-        } else {
-            // TODO
-        }
-    })
-}
+    User.remove({uid: uid}, callback);
+};

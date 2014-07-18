@@ -1,0 +1,19 @@
+extends admin
+block gallery
+    div
+        ul
+            - albums.forEach(function (item, index) {
+                li
+                    a(href='/gallery/#{item.name}') #{item.name}
+                    span 数量：#{item.amount}
+                    span #{item.desc}
+                    - if (item.private)
+                        span 私密相册
+            - })
+
+    div
+        form(method='post', action='#{adminPath}/gallery/new')
+            input(type='text', name='name', placeholder='album name')
+            input(type='text', name='desc', placeholder='album desc')
+            input(type='checkbox', name='private', checked='checked')
+            button(type='submit') submit

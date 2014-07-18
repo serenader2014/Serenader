@@ -11,11 +11,5 @@ module.exports.getAllCategories = function (callback) {
 };
 
 module.exports.updateCategory = function (id, name, callback) {
-    Category.findById(id, function (err, c) {
-        if (err) callback(err);
-        if (c) {
-            c.name = name;
-            c.save(callback);
-        }
-    });
+    Category.update({_id: id}, {_id: id, name: name}, callback);
 };

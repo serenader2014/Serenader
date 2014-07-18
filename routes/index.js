@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var config = require('../config').config;
 var Setting = require('../proxy').setting;
 var Category = require('../proxy').category;
-
+var User = require('../proxy').user;
 
 
 
@@ -14,7 +14,8 @@ function route (app, req, res, next) {
         app.locals.adminPath = (setting && setting.admin_path) ? setting.admin_path : config.admin_path;
 
 
-        app.use(app.locals.adminPath, require('../controller/admin'));
+        app.use(app.locals.adminPath, require('../controller/admin/index'));
+        app.use('/', require('../controller/index'));
 
         app.use('*', function (req, res, next) {
             // TODO customize 404 not found 

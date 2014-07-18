@@ -1,6 +1,7 @@
 extends layout
 
 block extra_css
+    link(rel='stylesheet', href='/css/jquery.fileupload.css')
     block admin_css
 
 
@@ -14,26 +15,28 @@ block content
                     ul.nav.navbar-nav
                         li: a(href='/') 主页
                         li: a(href='#{adminPath}/post') 文章
-                        li: a(href='#{adminPath}/album') 相册
+                        li: a(href='#{adminPath}/gallery') 相册
                         li: a(href='#{adminPath}/files') 文件
                         li: a(href='#{adminPath}/upload') 上传
                         li: a(href='#{adminPath}/settings') 设置
                     ul.nav.navbar-nav.navbar-right
                         li
                             a(href='#{adminPath}/post/new') 
-                                span.glyphicon.glyphicon-plus
+                                span.glyphicon.glyphicon-plus 
                                 | 新文章
                         li.dropdown
                             a.dropdown-toggle(data-toggle='dropdown' href='javascript:;') #{locals.current_user.uid}
                                 b.caret
                             ul.dropdown-menu(role='menu')
-                                li: a(href='/u/#{locals.current_user.uid}') 账户
+                                li: a(href='#{adminPath}/u/#{locals.current_user.uid}') 账户
                                 li: a(href='#{adminPath}/signout') 登出
         block post_content
         block new_post
-        block images
+        block gallery
         block files
         block upload
         block settings
+        block user
 block extra_script
     block admin_script
+ 

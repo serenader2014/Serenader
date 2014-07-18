@@ -31,4 +31,8 @@ module.exports.updateSetting = function (name, desc, logo, favicon, nav, admin_p
         s.allow_sign_up = allow_sign_up;
         s.save(callback);
     });
+    Setting.update(
+        {id: 'blog'},
+        {id: 'blog', name: name, desc: desc, logo: logo, favicon: favicon, nav: nav, admin_path: admin_path, allow_sign_up: allow_sign_up},
+        callback);
 };

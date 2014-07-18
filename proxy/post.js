@@ -12,20 +12,7 @@ module.exports.createNewPost = function (title, author, date, tags, post, catego
 };
 
 module.exports.updatePost = function (id, title, author, date, tags, post, category, callback) {
-    Post.findById(id, function (err, p) {
-        if (err) callback(err);
-        if (p) {
-            p.title = title;
-            p.author = author;
-            p.date = date;
-            p.tags = tags;
-            p.post = post;
-            p.category = category;
-            p.save(callback);
-        } else {
-            callback();
-        }
-    });
+    Post.update({_id: id}, {_id: id, title: title, author: author, date: date, tags: tags, post: post, category: category}, callback);
 };
 
 module.exports.getOnePostById = function (id, callback) {
@@ -39,4 +26,8 @@ module.exports.getTenPosts = function (callback) {
 
 module.exports.getAllPosts = function (callback) {
     Post.find({}, callback);
+};
+
+module.exports.deletePost = function (id, callback) {
+    Post.findByIdAndRemove(id, callback);
 };
