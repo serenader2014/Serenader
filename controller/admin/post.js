@@ -9,27 +9,48 @@ module.exports = function (router) {
 
     router.get('/post', auth_user, function (req, res, next) {
         Post.getAllPosts(function (err, posts) {
-            if (err) res.send(err);
-            if (posts) {
-
+            if (! err && posts) {
                 Category.getAllCategories(function (err, c) {
-                    if (err) res.send(err);
-                    if (c) {
+                    if (! err && c) {
                         res.render('admin_post_content', {adminPath: adminPath, locals: res.locals, posts: posts, categories: c});
+                    } else {
+                        res.send(err ? err : 'no category was found');
                     }
                 });
 
+            } else {
+                res.send( err ? err : 'no post was found');
             }
         });
     });
 
     router.get('/post/new', auth_user, function (req, res, next) {
         Category.getAllCategories(function (err, c) {
-            if (err) res.send(err);
-            if (c) {
+            if (! err && c) {
                 res.render('admin_new_post', {adminPath: adminPath, locals: res.locals, categories: c});
+            } else {
+                res.send(er ? err : 'no category was found');
             }
         });
+    });
+
+    router.get('/post/edit/:id', auth_user, function (req, res, next) {
+        var id = req.params.id;
+
+        Post.getOnePostById(id, function (err, p) {
+            if (! err && p) {
+                Category.getAllCategories(function (err, c) {
+                    if (! err && c) {
+                        res.render('admin_edit_post', {adminPath: adminPath, locals: res.locals, categories: c, post: p});
+                    } else {
+                        res.send(err ? err : 'no category was found');
+                    }
+                });
+            } else {
+                res.send(err ? err : 'no post was found');
+            }
+        }); 
+        
     });
 
     router.post('/post/new', auth_user, function (req, res, next) {
@@ -57,5 +78,6 @@ module.exports = function (router) {
             if (err) res.send(err);
             res.redirect(adminPath+'/post');
         });
-    });    
+    });
+
 };

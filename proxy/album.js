@@ -20,3 +20,7 @@ module.exports.deleteAlbum = function (id, callback) {
 module.exports.getAllAlbum = function (callback) {
     Album.find({}, callback);
 };
+
+module.exports.getOneAlbum = function (name, callback) {
+    Album.findOne({name: name}, callback);
+};
