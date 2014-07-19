@@ -11,3 +11,5 @@ lib-cov
 node_modules
 
 .sass-cache
+
+upload

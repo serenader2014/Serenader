@@ -1,19 +1,30 @@
 extends admin
 block files
+    nav
+        - var i = '';
+        - baseLink.substring(baseLink.indexOf('/')+1).split('/').forEach(function (item, index) {
+            - i = i + item + '/';
+            li
+                a(href='#{adminPath}/#{i}') #{item}
+        - })
     ul
         - folders.forEach(function (item, index) {
             li
-                a(href='#{adminPath}/files/#{item.name}') #{item.name}
+                a(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
                 span Created in #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()} #{item.createTime.getHours()} : #{item.createTime.getMinutes()} : #{item.createTime.getSeconds()} ,
                 span Last modified in #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()} #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()} : #{item.lastModifiedTime.getSeconds()} ,
-                span: a(href='#{adminPath}/files/delete/#{item.name}') 删除
+                - var p = baseLink.split('/files')[1];
+                span: a(href='#{adminPath}/files/delete#{p}/#{item.name}') 删除
+                span: a(href='#{adminPath}/files/rename#{p}/#{item.name}') 重命名
         - })
         - files.forEach(function (item, index) {
             li
-                a(href='#{adminPath}/files/#{item.name}') #{item.name}
+                a(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
                 span Created in #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()} #{item.createTime.getHours()} : #{item.createTime.getMinutes()} : #{item.createTime.getSeconds()} ,
                 span Last modified in #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()} #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()} : #{item.lastModifiedTime.getSeconds()} ,
                 span File size: #{item.size/1024} kb 
-                span: a(href='#{adminPath}/files/delete/#{item.name}') 删除
+                - var p = baseLink.split('/files')[1];
+                span: a(href='#{adminPath}/files/delete#{p}/#{item.name}') 删除
+                span: a(href='#{adminPath}/files/rename#{p}/#{item.name}') 重命名
                 
         - })

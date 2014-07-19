@@ -1,0 +1,25 @@
+extends admin
+block admin_css
+    link(rel='stylesheet', href='/css/codemirror.css')
+
+block admin_script
+    script(src='/js/codemirror.js')
+    script(type='text/javascript')
+        | (function () {
+        |     var codeMirror = CodeMirror.fromTextArea($("#preview-file")[0], {
+        |         mode: null,    
+        |         indentUnit: 4,
+        |         lineNumbers: true,
+        |         lineWrapping: true,
+        |         readOnly: 'nocursor'
+        |     });
+        | })()
+
+block preview
+    nav
+        - var i = '';
+        - link.substring(link.indexOf('/')+1).split('/').forEach(function (item,index) {
+            - i = i + item + '/';
+            li: a(href='#{adminPath}/#{i}') #{item}
+        -   })
+    textarea#preview-file(name='file') #{file}
