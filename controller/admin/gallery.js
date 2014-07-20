@@ -28,6 +28,7 @@ module.exports = function (router) {
     router.post('/gallery/new', auth_user, function (req, res, next) {
         var name = req.body.name;
         var desc = req.body.desc;
+        var cover = req.body.cover;
         var private = req.body.private ? true : false;
         Album.addAlbum(name, desc, private, function (err) {
             if (err) res.send(err);

@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var Album = new Schema({
     name: { type: String },
     desc: { type: String },
+    cover: { type: String },
     private: { type: Boolean }
 });
 

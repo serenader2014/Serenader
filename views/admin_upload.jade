@@ -106,19 +106,19 @@ block upload
 
 
 block admin_script
-    script(src='/js/vendor/jquery.ui.widget.js')
-    script(src='/js/tmpl.min.js')
-    script(src='/js/load-image.min.js')
-    script(src='/js/canvas-to-blob.min.js')
-    script(src='/js/jquery.blueimp-gallery.min.js')
-    script(src='/js/jquery.iframe-transport.js')
-    script(src='/js/jquery.fileupload.js')
-    script(src='/js/jquery.fileupload-process.js')
-    script(src='/js/jquery.fileupload-image.js')
-    script(src='/js/jquery.fileupload-audio.js')
-    script(src='/js/jquery.fileupload-video.js')
-    script(src='/js/jquery.fileupload-validate.js')
-    script(src='/js/jquery.fileupload-ui.js')
+    script(type='text/javascript', src='/js/vendor/jquery.ui.widget.js')
+    script(type='text/javascript', src='/js/tmpl.min.js')
+    script(type='text/javascript', src='/js/load-image.min.js')
+    script(type='text/javascript', src='/js/canvas-to-blob.min.js')
+    script(type='text/javascript', src='/js/jquery.blueimp-gallery.min.js')
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
+    script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-process.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-image.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-audio.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-video.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-validate.js')
+    script(type='text/javascript', src='/js/jquery.fileupload-ui.js')
     script
         | $("#fileupload").fileupload({
         |     url: "#{adminPath}/upload",

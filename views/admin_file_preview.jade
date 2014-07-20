@@ -1,25 +1,46 @@
 extends admin
 block admin_css
     link(rel='stylesheet', href='/css/codemirror.css')
+    link(rel='stylesheet', href='/theme/ambiance.css')
+
+
 
 block admin_script
-    script(src='/js/codemirror.js')
+    script(type='text/javascript', src='/js/codemirror.js')
+    - mode.dependency.forEach(function (item, index) {
+        script(type='text/javascript', src='/mode/#{item}/#{item}.js')
+    - })
     script(type='text/javascript')
         | (function () {
         |     var codeMirror = CodeMirror.fromTextArea($("#preview-file")[0], {
-        |         mode: null,    
+        |         mode: '#{mode.mode}',    
         |         indentUnit: 4,
         |         lineNumbers: true,
         |         lineWrapping: true,
-        |         readOnly: 'nocursor'
+        |         readOnly: 'nocursor',
+        |         theme: 'ambiance'
         |     });
+        |     $('.db-edit-btn').on('click', function (event) {
+        |         event.preventDefault();
+        |         codeMirror.setOption('readOnly',false);
+        |         codeMirror.focus();
+        |         $(this).after($('<button class="btn btn-default db-edit-submit" type="submit">确定</button>'))
+        |         });
         | })()
 
 block preview
-    nav
-        - var i = '';
-        - link.substring(link.indexOf('/')+1).split('/').forEach(function (item,index) {
-            - i = i + item + '/';
-            li: a(href='#{adminPath}/#{i}') #{item}
-        -   })
-    textarea#preview-file(name='file') #{file}
+    div.col-md-12
+        ol.breadcrumb.breadcrumb-arrow
+            - var i = '';
+            - link.substring(link.indexOf('/')+1).split('/').forEach(function (item,index) {
+                - i = i + item + '/';
+                li: a(href='#{adminPath}/#{i}') #{item}
+            -   })
+    div.col-md-12
+        - var l = link.split('/');
+        - l.shift();
+        - l.shift();
+        - l = l.join('/');
+        form(method='post', action='#{adminPath}/files/edit/#{l}')
+            button.btn.btn-default.db-edit-btn 编辑
+            textarea#preview-file(name='file')=file

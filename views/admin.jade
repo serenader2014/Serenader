@@ -13,19 +13,33 @@ block content
                     a.navbar-brand.db-brand(href='/') BLOG
                 div.collapse.navbar-collapse
                     ul.nav.navbar-nav
-                        li: a(href='/') 主页
-                        li: a(href='#{adminPath}/post') 文章
-                        li: a(href='#{adminPath}/gallery') 相册
-                        li: a(href='#{adminPath}/files') 文件
-                        li: a(href='#{adminPath}/upload') 上传
-                        li: a(href='#{adminPath}/settings') 设置
+                        li: a(href='/') 
+                            i.glyphicon.glyphicon-home
+                            | 主页
+                        li: a(href='#{adminPath}/post') 
+                            i.glyphicon.glyphicon-list-alt
+                            | 文章
+                        li: a(href='#{adminPath}/gallery')
+                            i.glyphicon.glyphicon-picture
+                            | 相册
+                        li: a(href='#{adminPath}/files')
+                            i.glyphicon.glyphicon-file
+                            | 文件
+                        li: a(href='#{adminPath}/upload')
+                            i.glyphicon.glyphicon-cloud-upload
+                            | 上传
+                        li: a(href='#{adminPath}/settings')
+                            i.glyphicon.glyphicon-cog
+                            | 设置
                     ul.nav.navbar-nav.navbar-right
                         li
                             a(href='#{adminPath}/post/new') 
                                 span.glyphicon.glyphicon-plus 
                                 | 新文章
                         li.dropdown
-                            a.dropdown-toggle(data-toggle='dropdown' href='javascript:;') #{locals.current_user.uid}
+                            a.dropdown-toggle(data-toggle='dropdown' href='javascript:;')
+                                i.glyphicon.glyphicon-user
+                                | #{locals.current_user.uid}
                                 b.caret
                             ul.dropdown-menu(role='menu')
                                 li: a(href='#{adminPath}/u/#{locals.current_user.uid}') 账户
@@ -39,5 +53,6 @@ block content
         block user
         block preview
 block extra_script
+    script(type='text/javascript', src='/js/icheck.min.js')
     block admin_script
  

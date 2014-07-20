@@ -13,7 +13,11 @@ block gallery
 
     div
         form(method='post', action='#{adminPath}/gallery/new')
-            input(type='text', name='name', placeholder='album name')
-            input(type='text', name='desc', placeholder='album desc')
-            input(type='checkbox', name='private', checked='checked')
+            input.form-control(type='text', name='name', placeholder='album name')
+            input.form-control(type='text', name='desc', placeholder='album desc')
+            div.checkbox
+                input(type='checkbox', name='private', checked='checked', id='flat-checkbox-1')
+                label(for='flat-checkbox-1')
+                    | 私密相册
+            input(type='text', name='cover', placeholder='album cover')
             button(type='submit') submit
