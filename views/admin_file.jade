@@ -23,7 +23,6 @@ block files
                                 span.sr-only Toggle dropdown
                             ul.dropdown-menu(role='menu')
                                 li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
-                                li: a(href='') 下载
                                 li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除
                     p
                         span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
@@ -41,7 +40,10 @@ block files
                                 span.sr-only Toggle dropdown
                             ul.dropdown-menu(role='menu')
                                 li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
-                                li: a(href='') 下载
+                                - if (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') {
+                                    li: a.db-unzip-btn(href='#{adminPath}/files/unzip#{p}/#{item.name}') 解压
+                                - }
+                                li: a(href='#{adminPath}#{baseLink}/#{item.name}?download=direct') 下载
                                 li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除                        
                     p
                         span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
