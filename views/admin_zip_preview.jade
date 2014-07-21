@@ -1,0 +1,36 @@
+extends admin
+block admin_css
+
+
+
+
+block admin_script
+
+block preview
+    div.col-md-12
+        ol.breadcrumb.breadcrumb-arrow
+            - var i = '';
+            - link.substring(link.indexOf('/')+1).split('/').forEach(function (item,index) {
+                - i = i + item + '/';
+                li: a(href='#{adminPath}/#{i}') #{item}
+            -   })
+    div.col-md-12
+        div.list-group
+            - folders.forEach(function (item, index) {
+                li.list-group-item
+                    p.list-group-item-heading
+                        i.glyphicon.glyphicon-folder-open
+                        span.db-filename #{item.name}
+                    p
+                        span 时间： #{item.time}
+            - })
+            - files.forEach(function (item, index) {
+                li.list-group-item
+                    p.list-group-item-heading
+                        i.glyphicon.glyphicon-file
+                        span.db-filename #{item.name}
+                    p
+                        span 时间： #{item.time}
+                        span 文件大小： #{Math.ceil(item.size/1024)} kb 
+                    
+            - })
