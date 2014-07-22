@@ -4,7 +4,7 @@ block gallery
         ul
             - albums.forEach(function (item, index) {
                 li
-                    a(href='/gallery/#{item.name}') #{item.name}
+                    a(href='#{adminPath}/gallery/#{item.name}') #{item.name}
                     span 数量：#{item.amount}
                     span #{item.desc}
                     - if (item.private)

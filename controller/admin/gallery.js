@@ -3,6 +3,9 @@ var adminPath = require('./index').adminPath;
 var Album = require('../../proxy').album;
 var Image = require('../../proxy').image;
 
+var upload = require('jquery-file-upload-middleware');
+var root = require('../../config').config.root_dir;
+
 module.exports = function (router) {
     router.get('/gallery', auth_user, function (req, res, next) {
         var albums = [];
@@ -34,5 +37,43 @@ module.exports = function (router) {
             if (err) res.send(err);
             res.redirect(adminPath+'/gallery');
         });
+    });
+
+    router.get('/gallery/:album', auth_user, function (req, res, next) {
+        var album = req.params.album;
+        Album.getOneAlbum(album, function (err, a) {
+            if (err) {
+                res.send(err);
+                return false;
+            } 
+            if (a) {
+                Image.findOneAlbumImage(a, function (err, images) {
+                    if (err) {
+                        res.send(err);
+                        return false;
+                    }
+                    if (images) {
+                        res.render('admin_one_album', {
+                            adminPath: adminPath,
+                            locals: res.locals,
+                            images: images,
+                            album: a
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    router.post('/gallery/upload/:album', auth_user, function (req, res, next) {
+        var album = req.params.album;
+
+        upload.fileHandler({
+            uploadDir: function () {
+                return root + '/gallery/' + album;
+            },
+            uploadUrl: req.url
+        })(req, res, next);
+        console.log(req.body);
     });
 };
