@@ -13,7 +13,7 @@ block content
                     a.navbar-brand.db-brand(href='/') BLOG
                 div.collapse.navbar-collapse
                     ul.nav.navbar-nav
-                        li: a(href='/') 
+                        li: a(href='#{adminPath}') 
                             i.glyphicon.glyphicon-home
                             | 主页
                         li: a(href='#{adminPath}/post') 
@@ -28,9 +28,10 @@ block content
                         li: a(href='#{adminPath}/upload')
                             i.glyphicon.glyphicon-cloud-upload
                             | 上传
-                        li: a(href='#{adminPath}/settings')
-                            i.glyphicon.glyphicon-cog
-                            | 设置
+                        - if (locals.current_user.role === 'admin')
+                            li: a(href='#{adminPath}/settings')
+                                i.glyphicon.glyphicon-cog
+                                | 设置
                     ul.nav.navbar-nav.navbar-right
                         li
                             a(href='#{adminPath}/post/new') 

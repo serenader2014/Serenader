@@ -1,25 +1,38 @@
 var Image = require('../models').Image;
+var Album = require('./album');
 
-module.exports.addImage = function (path, desc, album, callback) {
+module.exports.addImage = function (options, callback) {
     var img = new Image();
-    img.path = path;
-    img.desc = desc;
-    img.album = album;
+    img.path = options.path;
+    img.desc = options.desc;
+    img.album = options.album;
+    // Album.increaseCount(options.album);
     img.save(callback);
 };
 
 module.exports.deleteImage = function (id, callback) {
-    Image.findByIdAndRemove(id, callback);
+    Image.findOneById(id, function (err, i) {
+        if (err) {
+            console.error(err);
+        }
+        if (i) {
+            // Album.decreaseCount(a.album);
+            Image.findByIdAndRemove(id, callback);
+        }
+    }); 
 };
 
 module.exports.getAllImages = function (callback) {
     Image.find({}, callback);
 };
 
-module.exports.updateImage = function (id, path, desc, callback) {
+module.exports.updateImage = function (options, callback) {
     Image.update(
         {_id: id}, 
-        {_id: id, path: path, desc: desc},
+        {_id: options.id, 
+            path: options.path, 
+            desc: options.desc
+        },
         callback);
 };
 

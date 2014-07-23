@@ -1,5 +1,7 @@
 var Album = require('../../proxy').album;
 var Image = require('../../proxy').image;
+var express = require('express');
+var root = require('../../config').config.root_dir;
 
 module.exports = function (router) {
     router.get('/gallery', function (req, res, next) {
@@ -38,5 +40,25 @@ module.exports = function (router) {
                 res.send(err ? err : 'no album');
             }
         });
+    });
+
+    router.get('/gallery/:user/:album/:file', function (req, res, next) {
+        var userName = req.params.user;
+        var album = req.params.album;
+        var file = req.params.file;
+        // console.log('get gallery');
+        // Album.getOneAlbum(album, function (err, a) {
+        //     if (err) {
+        //         res.send(err);
+        //         return false;
+        //     }
+        //     if (a) {
+        //         Image.findOneAlbumImage(a.name, function (err, images) {
+
+        //         });
+        //     }
+        // });
+        res.send(root + '/data/' + userName + '/gallery/' + album + '/' + file);
+        express.static(root + '/data/' + userName + '/gallery/' + album)(req, res, next);
     });
 };

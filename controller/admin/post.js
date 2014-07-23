@@ -8,20 +8,38 @@ var Category = require('../../proxy').category;
 module.exports = function (router) {
 
     router.get('/post', auth_user, function (req, res, next) {
-        Post.getAllPosts(function (err, posts) {
-            if (! err && posts) {
-                Category.getAllCategories(function (err, c) {
-                    if (! err && c) {
-                        res.render('admin_post_content', {adminPath: adminPath, locals: res.locals, posts: posts, categories: c});
-                    } else {
-                        res.send(err ? err : 'no category was found');
-                    }
-                });
+        if (req.session.user.role === 'admin') {
+            Post.getTenPosts(function (err, posts) {
+                if (! err && posts) {
+                    Category.getAllCategories(function (err, c) {
+                        if (! err && c) {
+                            res.render('admin_post_content', {adminPath: adminPath, locals: res.locals, posts: posts, categories: c});
+                        } else {
+                            res.send(err ? err : 'no category was found');
+                        }
+                    });
 
-            } else {
-                res.send( err ? err : 'no post was found');
-            }
-        });
+                } else {
+                    res.send( err ? err : 'no post was found');
+                }
+            });
+        } else {
+            Post.getUserTenPosts(req.session.user.uid, function (err, posts) {
+                if (! err && posts) {
+                    Category.getAllCategories(function (err, c) {
+                        if (! err && c) {
+                            res.render('admin_post_content', {adminPath: adminPath, locals: res.locals, posts: posts, categories: c});
+                        } else {
+                            res.send(err ? err : 'no category was found');
+                        }
+                    });
+
+                } else {
+                    res.send( err ? err : 'no post was found');
+                }                
+            });
+        }
+        
     });
 
     router.get('/post/new', auth_user, function (req, res, next) {
@@ -39,6 +57,10 @@ module.exports = function (router) {
 
         Post.getOnePostById(id, function (err, p) {
             if (! err && p) {
+                if (req.session.user.role !== 'admin' && p.author !== req.session.user.uid) {
+                    res.redirect(adminPath+'/post');
+                    return false;
+                }
                 Category.getAllCategories(function (err, c) {
                     if (! err && c) {
                         res.render('admin_edit_post', {adminPath: adminPath, locals: res.locals, categories: c, post: p});

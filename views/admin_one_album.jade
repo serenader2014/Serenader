@@ -4,7 +4,7 @@ block album
     ul
     - if (images) {
         - images.forEach(function (item, index) {
-            li: img(src='#{item}')  
+            li: img(src='#{item.path}')  
         - })
     - }
 

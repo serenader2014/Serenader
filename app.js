@@ -8,7 +8,6 @@ var mongoose = require('mongoose');
 var MongoStore = require('connect-mongo')(session);
 
 
-var upload = require('jquery-file-upload-middleware');
 var config = require('./config').config;
 var Setting = require('./proxy').setting;
 
@@ -21,16 +20,7 @@ mongoose.connect(config.db, function (err) {
         process.exit(1);
     }
 });
-upload.configure({
-    uploadDir: config.upload_dir,
-    uploadUrl: "/files",
-    imageVersions: {
-        thumbnail: {
-            width: 100,
-            height: 100
-        }
-    }
-});
+
 
 var route = require('./routes');
 

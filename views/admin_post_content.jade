@@ -8,21 +8,14 @@ block post_content
                     div.panel-heading 文章分类
                     ul.list-group
                         - if (categories)
-                            - var i,j,k;
-                                - categories.forEach(function (item, index, array) {
-                                -     i=0;
-                                -     posts.forEach(function (itm, idx, arr) {
-                                -         if (itm.category == item.name) {
-                                -             i++;
-                                -             }
-                                -         })
-                                      li.list-group-item.db-cate-list
-                                          a(href='/category?c=#{index}') #{item.name}
-                                          span.badge #{i}
-                                          div.db-cate-ctrl
-                                              a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
-                                              a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
-                                -     })
+                            - categories.forEach(function (item, index, array) {
+                                li.list-group-item.db-cate-list
+                                    a(href='/category?c=#{index}') #{item.name}
+                                    span.badge #{item.count}
+                                    div.db-cate-ctrl
+                                        a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
+                                        a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
+                            -   })
                         - else
                             li.list-group-item 没有分类
                         li.list-group-item
