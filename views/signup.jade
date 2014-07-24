@@ -1,9 +1,22 @@
 extends layout
 block content
-    div
-        form(action='#{adminPath}/signup', method='post')
-            input(type='text', placeholder='User name', name='id')
-            input(type='text', placeholder='Email', name='email')
-            input(type='password', placeholder='Password', name='password')
-            input(type='password', placeholder='Repeat the password')
-            button(type='submit') Submit
+    .db-sign
+        form.db-sign-form(action='#{adminPath}/signup', method='post')
+            .db-outer
+                .db-inner
+                    i.glyphicon.glyphicon-user.db-icon.db-sign-icon
+                    input(type='text', placeholder='User name', name='id')
+            .db-outer
+                .db-inner
+                    i.glyphicon.glyphicon-envelope.db-icon.db-sign-icon
+                    input(type='text', placeholder='Email', name='email')
+            .db-outer
+                .db-inner
+                    i.glyphicon.glyphicon-lock.db-icon.db-sign-icon
+                    input(type='password', placeholder='Password', name='password')
+            .db-outer
+                .db-inner
+                    i.glyphicon.glyphicon-lock.db-icon.db-sign-icon
+                    input(type='password', placeholder='Repeat the password')
+            .db-outer
+                button.db-submit(type='submit') Submit

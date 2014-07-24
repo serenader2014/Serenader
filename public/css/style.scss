@@ -75,6 +75,59 @@ body {
   height: 100%;
 } 
 
+
+.db-sign{
+  display: table;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: #242628;
+}
+
+.db-sign-form {
+  display: table-cell;
+  height: 100%;
+  margin: 0 auto;
+  vertical-align: middle;
+
+  input {
+    width: 22rem;
+    margin: 0 auto;
+    padding: 0.8rem 2rem 0.8rem 3rem;
+    border: 1px solid #AAAAAA;
+    border-radius: 0.2rem;
+    background: #DAE0E3;
+    outline: none;
+  }
+
+  .db-inner {
+    display: inline-block;
+    position: relative;
+  }
+
+  .db-outer {
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+
+  .db-sign-icon {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .db-submit {
+    padding: 0.5rem 2rem;
+    width: 22rem;
+    border: 1px solid #B8D5E3;
+    border-radius: 0.2rem;
+    font-size: 1.8rem;
+    color: #FFFFFF;
+    background: #5DB6E3;
+    outline: none;
+  }
+}
+
 .db-admin {
   padding-top: 70px;
 }
