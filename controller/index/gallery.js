@@ -2,6 +2,7 @@ var Album = require('../../proxy').album;
 var Image = require('../../proxy').image;
 var express = require('express');
 var root = require('../../config').config.root_dir;
+var fs = require('fs');
 
 module.exports = function (router) {
     router.get('/gallery', function (req, res, next) {
@@ -21,11 +22,11 @@ module.exports = function (router) {
 
         Album.getOneAlbum(name, function (err, a) {
             if (! err && a) {
-                if (a.private === true) {
-                    if (req.session.user) {
+                if (a.private) {
+                    if (req.session.user && a.user === req.session.user.uid) {
                         Image.findOneAlbumImage(name, function (err, i) {
                             if (! err && i) {
-                                res.render('gallery', {album: a, images: i});
+                                res.render('album', {album: a, images: i});
                             } else {
                                 res.send(err ? err : 'no image');
                             }
@@ -34,7 +35,11 @@ module.exports = function (router) {
                         next();
                     }
                 } else {
-                    
+                    Image.findOneAlbumImage(name, function (err, i) {
+                        if (! err && i) {
+                            res.render('album', {album: a, images: i});
+                        }
+                    });
                 }
             } else {
                 res.send(err ? err : 'no album');
@@ -46,19 +51,25 @@ module.exports = function (router) {
         var userName = req.params.user;
         var album = req.params.album;
         var file = req.params.file;
-        // console.log('get gallery');
-        // Album.getOneAlbum(album, function (err, a) {
-        //     if (err) {
-        //         res.send(err);
-        //         return false;
-        //     }
-        //     if (a) {
-        //         Image.findOneAlbumImage(a.name, function (err, images) {
-
-        //         });
-        //     }
-        // });
-        res.send(root + '/data/' + userName + '/gallery/' + album + '/' + file);
-        express.static(root + '/data/' + userName + '/gallery/' + album)(req, res, next);
+        var currentUser = req.session.user;
+        Album.getOneAlbum(album, function (err, a) {
+            if (err) {
+                res.send(err);
+                return false;
+            }
+            if (a) {
+                if (a.private) {
+                    if (currentUser && currentUser.uid === a.user) {
+                        res.sendfile(root+'/data/'+userName+'/gallery/'+album+'/'+file);
+                    } else {
+                        next();
+                    }
+                } else {
+                    res.sendfile(root+'/data/'+userName+'/gallery/'+album+'/'+file);
+                }
+                
+            }
+        });
+        
     });
 };
