@@ -81,8 +81,14 @@ body {
     padding: 0.8rem 2rem 0.8rem 3rem;
     border: 1px solid #AAAAAA;
     border-radius: 0.2rem;
-    background: #DAE0E3;
+    background: #dae0e3;
+    transition: background 0.3s;
     outline: none; }
+    .db-sign-form input:hover {
+      background: #f7f8f9; }
+    .db-sign-form input:focus {
+      border-color: #0FC4DB;
+      background: #FFFFFF; }
   .db-sign-form .db-inner {
     display: inline-block;
     position: relative; }
@@ -100,8 +106,17 @@ body {
     border-radius: 0.2rem;
     font-size: 1.8rem;
     color: #FFFFFF;
-    background: #5DB6E3;
+    background: #5db6e3;
+    transition: background 0.3s;
     outline: none; }
+    .db-sign-form .db-submit:hover {
+      background: #88caeb; }
+  .db-sign-form .db-sign-helper {
+    width: 22rem; }
+  .db-sign-form .db-sign-btn {
+    float: left; }
+  .db-sign-form .db-forget-btn {
+    float: right; }
 
 .db-admin {
   padding-top: 70px; }

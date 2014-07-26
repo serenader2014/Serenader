@@ -80,16 +80,17 @@ module.exports = function (router) {
             }
             if (a) {
                 if (a.user === userName) {
+                    var type = a.private ? 'private' : 'public';
                     upload.fileHandler({
                         uploadDir: function () {
-                            return root + userName + '/gallery/' + album;
+                            return root + type + '/' + userName + '/gallery/' + album;
                         },
                         uploadUrl: req.url
                     })(req, res, next);
                     
                     upload.on('end', function (fileInfo) {
                         Image.addImage({
-                            path: '/gallery/'+userName+'/'+ album + '/' + fileInfo.name,
+                            path: '/static/'+userName+'/gallery/'+ album + '/' + fileInfo.name,
                             desc: desc,
                             album: album
                         }, function (err) {

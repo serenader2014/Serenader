@@ -12,10 +12,18 @@ var root = config.root_dir + '/data/';
 
 module.exports = function (router) {
     router.get('/files', auth_user, function (req, res, next) {
+        res.redirect(adminPath + '/files/public');
+    });
+    router.get('/files/:type', auth_user, function (req, res, next) {
         var url = parse(req.url);
         var files = [];
         var folders = [];
         var userName = req.session.user.uid;
+        var type = req.params.type;
+        if (type !== 'public' && type !== 'private') {
+            next();
+            return false;
+        }
         if (url.pathname.substring(url.pathname.length-1) === '/') {
             res.redirect(adminPath+url.pathname.substring(0, url.pathname.length-1));
         }
@@ -23,30 +31,35 @@ module.exports = function (router) {
             if (err && err.code === 'ENOENT') {
                 fs.mkdirSync(root);
             }
-            fs.stat(root + userName , function (err, stats) {
+            fs.stat(root + type + '/', function (err, stats) {
                 if (err && err.code === 'ENOENT') {
-                    fs.mkdirSync(root + userName);
+                    fs.mkdirSync(root + type);
                 }
-                fs.stat(root + userName + '/upload', function (err, stats) {
+                fs.stat(root + type + '/' + userName , function (err, stats) {
                     if (err && err.code === 'ENOENT') {
-                        fs.mkdirSync(root + userName + '/upload');
+                        fs.mkdirSync(root + type + '/' + userName);
                     }
-                    fs.readdir(root + userName + '/upload', function (err, f) {
-                        f.forEach(function (item, index) {
-                            var stat = fs.statSync(root + userName + '/upload/' + item);
+                    fs.stat(root + type + '/' + userName + '/upload', function (err, stats) {
+                        if (err && err.code === 'ENOENT') {
+                            fs.mkdirSync(root + type + '/' + userName + '/upload');
+                        }
+                        fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
+                            f.forEach(function (item, index) {
+                                var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
 
-                            if (stat.isDirectory()) {
-                                folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                            } else {
-                                files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                            }
-                        });
+                                if (stat.isDirectory()) {
+                                    folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
+                                } else {
+                                    files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
+                                }
+                            });
 
-                        res.render('admin_file', {
-                            adminPath: adminPath, 
-                            locals: res.locals, 
-                            files: files, folders: folders, 
-                            baseLink: url.pathname
+                            res.render('admin_file', {
+                                adminPath: adminPath, 
+                                locals: res.locals, 
+                                files: files, folders: folders, 
+                                baseLink: url.pathname
+                            });
                         });
                     });
                 });
@@ -61,22 +74,25 @@ module.exports = function (router) {
         var acturalPath = decodeURIComponent(url.pathname);
         var fileName = decodeURL(acturalPath, 'rename').fileName;
         var filePath = decodeURL(acturalPath, 'rename').filePath;
+        var t = decodeURL(acturalPath, 'rename').type;
         var newName = req.body.name;
+        var oldPath = root + t + '/' + userName + '/upload/' + filePath + fileName;
+        var targetPath = root + t + '/' +userName + '/upload/' + filePath + newName;
         var type;
-        fs.stat(root + userName + '/upload/' + filePath + fileName, function (err, stats) {
+        fs.stat(oldPath, function (err, stats) {
             if (err) {
                 res.send(err);
                 return false;
             } else {
                 type = stats.isDirectory() ? 'directory' : 'file';
             }
-            fs.stat(root + userName + '/upload/' + filePath + newName, function (err, stats) {
+            fs.stat(targetPath, function (err, stats) {
                 if (err && err.code === 'ENOENT') {
-                    fs.rename(root + userName + '/upload/' + filePath + fileName, root + userName + '/upload/' +filePath + newName,function (err) {
+                    fs.rename(oldPath, targetPath,function (err) {
                         if (err) {
                             res.send([err,root]);
                         } else {
-                            res.redirect(adminPath+'/files/'+filePath);
+                            res.redirect(adminPath+'/files/'+t+'/'+filePath);
                         }
                     });
                 } else {
@@ -99,13 +115,14 @@ module.exports = function (router) {
         var newContent = req.body.file;
         var filePath = decodeURL(acturalPath, 'edit').filePath;
         var fileName = decodeURL(acturalPath, 'edit').fileName;
-        var pathname = root + userName + '/upload/' + filePath + fileName;
+        var t = decodeURL(acturalPath, 'edit').type;
+        var pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
         fs.writeFile(pathname, newContent, {encoding: 'utf8'}, function (err) {
             if (err) {
                 res.send(err);
                 return false;
             } else {
-                res.redirect(adminPath+'/files/'+acturalPath.split('/files/edit/')[1]);
+                res.redirect(adminPath+'/files/'+t+'/'+filePath+fileName);
             }
         });
     });
@@ -116,36 +133,44 @@ module.exports = function (router) {
         var acturalPath = decodeURIComponent(url.pathname);
         var fileName = decodeURL(acturalPath,'delete').fileName;
         var filePath = decodeURL(acturalPath, 'delete').filePath;
-        var pathname = root + userName + '/upload/' + filePath + fileName;
-
-        fs.stat(root + userName + '/trash', function (err, stats) {
-            var d = new Date();
-            var time = (d.toDateString()).replace(/ /ig, '-');
+        var t = decodeURL(acturalPath, 'delete').type;
+        var pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
+        var trashPath = root + 'trash/' + userName;
+        fs.stat(root+'trash/', function (err, stats) {
             if (err && err.code === 'ENOENT') {
-                fs.mkdir(root + userName +'/trash', function (err) {
-                    if (err) {
-                        res.send(err);
+                fs.mkdirSync(root+'trash');
+            }
+            fs.stat(trashPath, function (err, stats) {
+                var d = new Date();
+                var time = (d.toDateString()).replace(/ /ig, '-');
+                if (err && err.code === 'ENOENT') {
+                    fs.mkdirSync(trashPath);
+                }
+                var arr = filePath.split('/');
+                var tmp = '';
+                var result = [];
+                arr.forEach(function (item, index) {
+                    if (item !== '') {
+                        tmp = tmp + '/' + item;
+                        result.push(tmp);
                     }
-                    fs.rename(pathname, root + userName + '/trash/' + filePath + time + '-' + fileName, function (err) {
-                        if (err && err.code === 'EPERM') {
-                            res.send(['file/directory exist', err]);
-                            return false;
+                });
+                result.forEach(function (item, index) {
+                    fs.stat(trashPath+item, function (err, stats) {
+                        if (err && err.code === 'ENOENT') {
+                            fs.mkdirSync(trashPath+item);
                         }
-                        res.redirect(adminPath+'/files/'+filePath);
                     });
                 });
-            } else if (stats.isDirectory()) {
-                fs.rename(pathname, root + userName + '/trash/' + filePath + time + '-' + fileName, function (err) {
-                    if (err) {
-                        res.send(err);
+                fs.rename(pathname, trashPath + '/' +filePath + time + '-' +fileName ,function (err) {
+                    if (err && err.code === 'EPERM') {
+                        res.send(['file/directory exist', err]);
                         return false;
                     }
-                    res.redirect(adminPath+'/files/'+filePath);
+                    res.redirect(adminPath + '/files/' + t + '/' + filePath);
                 });
-            } else {
-                res.send('not a folder');
-            }
-        });
+            });
+        });                
     });
 
 
@@ -155,7 +180,8 @@ module.exports = function (router) {
         var acturalPath = decodeURIComponent(url.pathname);
         var fileName = decodeURL(acturalPath,'zip/unzip').fileName;
         var filePath = decodeURL(acturalPath,'zip/unzip').filePath;
-        var pathname = root + userName + '/upload/' + filePath + fileName;
+        var t = decodeURL(acturalPath, 'zip/unzip').type;
+        var pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
         var zip = new AdmZip(pathname);
         var zipEntries = zip.getEntries();
         // TODO handle zip file
@@ -166,61 +192,64 @@ module.exports = function (router) {
             }
             // TODO fix the chinese charator problem
             zip.extractAllTo(pathname.split('.zip')[0],true);
-            res.redirect(adminPath+'/files/'+filePath+fileName.split('.zip')[0]);
+            res.redirect(adminPath+'/files/'+t+'/'+filePath+fileName.split('.zip')[0]);
         });
         // res.send(zipEntries);
     });
 
 
-    router.get('/files/zip/preview/*', auth_user, function (req, res, next) {
-        var url = parse(req.url);
-        var userName = req.session.user.uid;
-        var acturalPath = decodeURIComponent(url.pathname);
-        var fileName = decodeURL(acturalPath,'zip/preview').fileName;
-        var filePath = decodeURL(acturalPath,'zip/preview').filePath;
-        var pathname = root + userName + '/upload/' + filePath + fileName;
-        var zip = new AdmZip(pathname);
-        var zipEntries = zip.getEntries();
-        var files = [];
-        var folders = [];
+    // router.get('/files/zip/preview/*', auth_user, function (req, res, next) {
+    //     var url = parse(req.url);
+    //     var userName = req.session.user.uid;
+    //     var acturalPath = decodeURIComponent(url.pathname);
+    //     var fileName = decodeURL(acturalPath,'zip/preview').fileName;
+    //     var filePath = decodeURL(acturalPath,'zip/preview').filePath;
+    //     var pathname = root + userName + '/upload/' + filePath + fileName;
+    //     var zip = new AdmZip(pathname);
+    //     var zipEntries = zip.getEntries();
+    //     var files = [];
+    //     var folders = [];
 
-        // TODO zip file preview
+    //     TODO zip file preview
 
-        // zipEntries.forEach(function (item, index) {
-        //     if (! item.entryName.split('/')[1]) {
-        //         if (! item.isDirectory) {
-        //             files.push({name:item.entryName.split('/')[item.entryName.split('/').length], time: item.header.time, size: item.header.compressedSize});
-        //         } else {
-        //             folders.push({name:item.entryName.split('/')[item.entryName.split('/').length], time: item.header.time, size: item.header.compressedSize});
-        //         }
-        //     }
-        // });
-        // res.render('admin_zip_preview', {
-        //     adminPath: adminPath, 
-        //     locals: res.locals,
-        //     files: files, 
-        //     folders: folders,
-        //     link: acturalPath
-        // });
+    //     zipEntries.forEach(function (item, index) {
+    //         if (! item.entryName.split('/')[1]) {
+    //             if (! item.isDirectory) {
+    //                 files.push({name:item.entryName.split('/')[item.entryName.split('/').length], time: item.header.time, size: item.header.compressedSize});
+    //             } else {
+    //                 folders.push({name:item.entryName.split('/')[item.entryName.split('/').length], time: item.header.time, size: item.header.compressedSize});
+    //             }
+    //         }
+    //     });
+    //     res.render('admin_zip_preview', {
+    //         adminPath: adminPath, 
+    //         locals: res.locals,
+    //         files: files, 
+    //         folders: folders,
+    //         link: acturalPath
+    //     });
         
-        res.send(zipEntries);
-    });
-    router.get('/files/*', auth_user, function (req, res, next) {
+    //     res.send(zipEntries);
+    // });
+    router.get('/files/:type/*', auth_user, function (req, res, next) {
         var url = parse(req.url);
         var userName  =req.session.user.uid;
         var acturalPath = decodeURIComponent(url.pathname);
         var file_path = decodeURL(acturalPath).filePath;
         var file_name = decodeURL(acturalPath).fileName;
-        var pathname = root + userName + '/upload/' + file_path + file_name,
-            files = [],
-            folders = [];
+        var t = decodeURL(acturalPath).type;
+        var pathname = root + t + '/' + userName + '/upload/' + file_path + file_name;
+        var files = [];
+        var folders = [];
         if (acturalPath.substring(acturalPath.length-1) === '/') {
             res.redirect(adminPath+acturalPath.substring(0, req.url.length-1));
         }
+        if (req.params.type !== 'public' && req.params.type !== 'private') {
+            next();
+        }
         fs.stat(pathname, function (err, stats) {
             if (err || ! stats) {
-                console.error(['read directory/file error',err]);
-                next();
+                console.log(['read directory/file error',err]);
                 return false;
             }
             if (stats.isDirectory()) {
@@ -241,8 +270,8 @@ module.exports = function (router) {
                     res.render('admin_file', {
                         adminPath: adminPath, 
                         locals: res.locals, 
-                        files: files, 
-                        folders: folders, 
+                        files: files,
+                        folders: folders,
                         baseLink: acturalPath
                     });
                 });
@@ -276,6 +305,9 @@ module.exports = function (router) {
     });
 };
 
+
+
+
 function convertFileExtension (fileName) {
     if (/html|xml|htm/i.test(fileName)) {
         return {dependency: ['xml','htmlmixed'], mode: 'htmlmixed'};
@@ -298,12 +330,16 @@ function convertFileExtension (fileName) {
 
 function decodeURL (url, mode) {
     var filePath = mode ? 
-    (url.split('/files/'+mode+'/')[1]).substring(0,url.split('/files/'+mode+'/')[1].lastIndexOf('/')+1) :
-    (url.split('/files/')[1]).substring(0,url.split('/files/')[1].lastIndexOf('/')+1);
+    (url.split('/files/'+mode+'/')[1]).substring(url.split('/files/'+mode+'/')[1].indexOf('/')+1 ,url.split('/files/'+mode+'/')[1].lastIndexOf('/')+1) :
+    (url.split('/files/')[1]).substring(url.split('/files/')[1].indexOf('/')+1 ,url.split('/files/')[1].lastIndexOf('/')+1);
     var fileName = url.substring(url.lastIndexOf('/')+1);
+    var type = mode ?
+    (url.split('/files/'+mode+'/')[1]).substring(0,url.split('/files/'+mode+'/')[1].indexOf('/')) :
+    (url.split('/files/')[1]).substring(0, url.split('/files/')[1].indexOf('/'));
 
     return {
         filePath: filePath,
-        fileName: fileName
+        fileName: fileName,
+        type: type
     };
 }

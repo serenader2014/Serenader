@@ -54,8 +54,18 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/files/', express.static(path.join(__dirname, '/upload')));
-
+app.use('/static', express.static(path.join(__dirname, 'data/public')));
+app.get('/static/*', function (req, res, next) {
+    var url = req.url.split('/static/')[1];
+    var user = url.substring(0, url.indexOf('/'));
+    console.log(user);
+    if (req.session.user && req.session.user.uid === user) {
+        next();
+    } else {
+        res.send(404, 'not found');
+    }
+});
+app.use('/static', express.static(path.join(__dirname, 'data/private')));
 
 route(app);
 

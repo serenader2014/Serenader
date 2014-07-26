@@ -4,7 +4,7 @@ block content
         form.db-sign-form(action='#{adminPath}/signin', method='post')
             .db-outer
                 .db-inner
-                    i.glyphicon.glyphicon-user.db-icon.db-sign-icon
+                    i.glyphicon.glyphicon-envelope.db-icon.db-sign-icon
                     input(type='text', placeholder='Email', name='email')
             .db-outer
                 .db-inner
@@ -12,3 +12,7 @@ block content
                     input(type='password', placeholder='Password', name='password')
             .db-outer
                 button.db-submit(type='submit') Submit
+            .db-outer
+                .db-inner.db-sign-helper
+                    span: a.db-sign-btn(href='#{adminPath}/signup') 注册
+                    span: a.db-forget-btn(href='') 忘记密码？

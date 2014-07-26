@@ -1,3 +1,14 @@
+@mixin buttonWithHover($color, $amount) {
+    background: $color;
+    transition: background 0.3s;
+    &:hover {
+      background: lighten($color, $amount);
+
+    }
+}
+
+
+
 /* iCheck plugin Flat skin, blue
 ----------------------------------- */
 .icheckbox_flat-blue,
@@ -96,8 +107,12 @@ body {
     padding: 0.8rem 2rem 0.8rem 3rem;
     border: 1px solid #AAAAAA;
     border-radius: 0.2rem;
-    background: #DAE0E3;
+    @include buttonWithHover(#DAE0E3, 10%);
     outline: none;
+    &:focus {
+      border-color: #0FC4DB;
+      background: #FFFFFF;
+    }
   }
 
   .db-inner {
@@ -123,8 +138,20 @@ body {
     border-radius: 0.2rem;
     font-size: 1.8rem;
     color: #FFFFFF;
-    background: #5DB6E3;
-    outline: none;
+    @include buttonWithHover(#5DB6E3, 10%);
+    outline: none;      
+  }
+
+  .db-sign-helper {
+    width: 22rem;
+  }
+
+  .db-sign-btn {
+    float: left;
+  }
+
+  .db-forget-btn {
+    float: right;
   }
 }
 

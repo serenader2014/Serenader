@@ -13,7 +13,7 @@ module.exports = function (router) {
     router.post('/upload', function (req, res, next) {
         upload.fileHandler({
             uploadDir: function () {
-                return root + '/data/' + req.session.user.uid + '/upload';
+                return root + '/data/public/' + req.session.user.uid + '/upload';
             },
             uploadUrl: function () {
                 return adminPath + '/upload';

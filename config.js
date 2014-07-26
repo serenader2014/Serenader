@@ -15,7 +15,7 @@ var config = {
         {name: 'about', value: '/about'}
     ],
     upload_dir: path.join(__dirname, 'upload'),
-    db: 'mongodb://127.0.0.1/sernblog',
+    db: 'mongodb://127.0.0.1/serenader',
     session_secret: 'cute cat',
     port: 80,
     allow_sign_up: true,

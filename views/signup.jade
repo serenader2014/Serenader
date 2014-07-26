@@ -20,3 +20,7 @@ block content
                     input(type='password', placeholder='Repeat the password')
             .db-outer
                 button.db-submit(type='submit') Submit
+            .db-outer
+                .db-inner.db-sign-helper
+                    span: a.db-sign-btn(href='#{adminPath}/signin') 登录
+                    span: a.db-forget-btn(href='') 忘记密码？
