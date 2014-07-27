@@ -7,44 +7,41 @@ block extra_css
 
 block content
     section.db-admin
-        nav.navbar.navbar-inverse.db-navbar.navbar-fixed-top
-            div.container-fluid
-                div.navbar-header
-                    a.navbar-brand.db-brand(href='/') BLOG
-                div.collapse.navbar-collapse
-                    ul.nav.navbar-nav
+        nav.db-nav
+            div.db-nav-wrapper
+                div.db-brand-wrapper
+                    a.db-brand(href='/') BLOG
+                div.db-nav-menu
+                    ul.db-menu-wrapper
                         li: a(href='#{adminPath}') 
                             i.glyphicon.glyphicon-home
-                            | 主页
                         li: a(href='#{adminPath}/post') 
                             i.glyphicon.glyphicon-list-alt
-                            | 文章
                         li: a(href='#{adminPath}/gallery')
                             i.glyphicon.glyphicon-picture
-                            | 相册
                         li: a(href='#{adminPath}/files/public')
                             i.glyphicon.glyphicon-file
-                            | 文件
                         li: a(href='#{adminPath}/upload')
                             i.glyphicon.glyphicon-cloud-upload
-                            | 上传
                         - if (locals.current_user.role === 'admin')
-                            li: a(href='#{adminPath}/settings')
+                            li.db-setting-btn: a(href='#{adminPath}/settings')
                                 i.glyphicon.glyphicon-cog
-                                | 设置
-                    ul.nav.navbar-nav.navbar-right
+        .db-header-container
+            nav.db-header-nav
+                .container-fluid
+                    ul.db-nav-left
                         li
                             a(href='#{adminPath}/post/new') 
                                 span.glyphicon.glyphicon-plus 
-                                | 新文章
-                        li.dropdown
-                            a.dropdown-toggle(data-toggle='dropdown' href='javascript:;')
-                                i.glyphicon.glyphicon-user
-                                | #{locals.current_user.uid}
-                                b.caret
-                            ul.dropdown-menu(role='menu')
-                                li: a(href='#{adminPath}/u/#{locals.current_user.uid}') 账户
-                                li: a(href='#{adminPath}/signout') 登出
+                    .db-dashboard-title Dashboard
+                    ul.db-nav-right
+                        li: a.db-user-header(href='#{adminPath}/u/#{locals.current_user.uid}')
+                            i.glyphicon.glyphicon-user
+                        li: a(href='#{adminPath}/signout')
+                            i.glyphicon.glyphicon-log-out
+                            
+
+
         block post_content
         block new_post
         block gallery

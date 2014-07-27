@@ -4,46 +4,106 @@ block admin_css
     link(rel='stylesheet', href='/css/codemirror.css')
 
 block admin_script
-    script(src='/js/codemirror.js')
-    script(src='/js/jquery.fs.selecter.min.js')
-    script(type='text/javascript')
-        | (function () {
-        |     var codeMirror = CodeMirror.fromTextArea($("#new-post-area")[0], {
-        |         mode: null,    
-        |         indentUnit: 4,
-        |         lineNumbers: true,
-        |         lineWrapping: true,
-        |     });
-        |     $(".db-new-title").focus();
-        |     $("select").selecter();
-        | })()
+    script(tpye='text/javascript', src='/js/codemirror.js')
+    script(type='text/javascript', src='/js/marked.js')
+    script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
+    script(type='text/javascript').
+        (function () {
+            var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
+                mode: null,
+                indentUnit: 4,
+                lineWrapping: true
+            });
+            editor.focus();
+            $('select').selecter();
+            $('.db-editor-fs').on('click', function () {
+                $('.db-new-editor').toggleClass('editor-fullscreen');
+            });
+            $('.db-editor-preview').on('click', function () {
+                $('.db-preview-main').html(marked(editor.getValue()));
+                $('.db-preview').fadeIn();
+            });
+            $('.db-preview-close').on('click', function () {
+                $('.db-preview').fadeOut()
+            });
+
+            $('.db-tag').on('keyup', function (event) {
+                    event = event ? event : window.event;
+                    if (event.which === 188){
+                        $(this).val($(this).val().slice(0,$(this).val().length-1));
+                        addTag();
+                        $(this).val("");
+                    }
+            }).on('blur', function (event) {
+                    event = event ? event : window.event;
+                    if ($(this).val() !== "") {
+                        addTag();
+                        $(this).val("");
+                    }
+            }).on('keydown', function (event) {
+                event = event ? event : window.event;
+                if (event.which === 8 ) {
+                    if ($(this).val() === "") {
+                        $(".db-single-tag:last").remove();
+                    }
+                }
+            });
+
+            function addTag () {
+                var tag = $("<a class='db-single-tag' href='javascript:;'></a>");
+                var tagInput = $("<input name='tags' class='db-tag-input' />");
+                tag.html($(".db-tag").val());
+                tagInput.val(tag.text());
+                $(".db-tag").before(tag);
+                tag.append(tagInput);
+                tag.append($("<i class='glyphicon glyphicon-remove'></i>"));
+            }
+
+            $('.db-tags').on('click','.db-single-tag', function () {
+                $(this).remove();
+            }).on('click', function () {
+                $('.db-tag').focus();
+            });
+        })();
 
 block new_post
-    section.db-wrapper
-        div.db-new-main
-            form#new-post(method='post', action='#{adminPath}/post/new')
-                div.db-new-header
-                    div.col-xs-12.col-md-8
+    section.db-editor-wrapper
+        .db-new-main
+            form#new-post(method='post', action='#{adminPath}/post/edit/#{post._id}')
+                .db-new-header
+                    .col-xs-12.col-md-12.db-title-wrapper
                         input.db-new-title.form-control#post-title(type='text', name='title', placeholder='Post Title', value='#{post.title}')
-                    div.col-xs-6.col-md-2
-                        div.db-cate-selecter(tabindex="0")
+                        .db-cate-selecter(tabindex="0")
                             select(name='categories', tabindex='-1')
-                                - if (categories)
-                                    - categories.forEach(function (item, index) {
-                                        - if (item.name === post.category) {
-                                            option(value='#{item.name}' selected) #{item.name}
-                                        -   } else {
-                                            option(value='#{item.name}') #{item.name}
-                                        -   }
-                                    - })
-                    div.col-xs-6.col-md-2
-                        div.input-group
-                            input.form-control(type='text', name='name', placeholder='New Category')
-                            div.input-group-btn
-                                button.btn.btn-default(type='submit', formaction='#{adminPath}/category/new') 创建
-                div.db-new-editor
-                    textarea.new-post-area#new-post-area(name='post', value='#{post.post}') #{post.post}
-                div.db-tags.input-group
-                    input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。' name='tags', value='#{post.tags}')
-                    div.input-group-btn
-                        button.btn.btn-primary.db-publish(form='new-post') 发表
+                                - if (categories) {
+                                    - each val in categories
+                                        - if (val.name === post.category) {
+                                            option(value='#{val.name}', selected) #{val.name}
+                                        - } else {
+                                            option(value='#{val.name}') #{val.name}
+                                        - }
+                                - }
+                .db-new-editor
+                    .db-editor-helper
+                        span Markdown
+                        a.db-editor-fs(href='javascript:;')
+                            i.glyphicon.glyphicon-fullscreen
+                        a.db-editor-preview(href='javascript:;')
+                            i.glyphicon.glyphicon-eye-open
+                        a.db-editor-help(href='javascript:;')
+                            i.glyphicon.glyphicon-question-sign
+                    textarea.new-post-area#new-post-area(name='post') #{post.post}
+                .db-tags
+                    - each val in post.tags
+                        a.db-single-tag(href='javascript:;')
+                            | #{val}
+                            i.glyphicon.glyphicon-remove
+                            input.db-tag-input(name='tags', value='#{val}')
+                    input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
+                    button.btn.btn-primary.db-publish(form='new-post') 发表
+                .db-preview
+                    .db-preview-wrapper
+                        .db-preview-header
+                            a.db-preview-close(href='javascript:;'): i.glyphicon.glyphicon-remove-sign
+                            p Markdown Preview
+                        .db-preview-main

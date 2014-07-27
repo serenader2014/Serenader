@@ -81,7 +81,7 @@ module.exports = function (router) {
         var author = req.session.user.uid;
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = req.body.post;
-        var tags = req.body.tag;
+        var tags = req.body.tags;
         var category = req.body.categories;
 
         Post.createNewPost(title, author, date, tags, post, category, function (err) {
