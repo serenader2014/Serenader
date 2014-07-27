@@ -58,7 +58,6 @@ app.use('/static', express.static(path.join(__dirname, 'data/public')));
 app.get('/static/*', function (req, res, next) {
     var url = req.url.split('/static/')[1];
     var user = url.substring(0, url.indexOf('/'));
-    console.log(user);
     if (req.session.user && req.session.user.uid === user) {
         next();
     } else {

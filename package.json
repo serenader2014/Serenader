@@ -8,8 +8,8 @@
     "dependencies": {
         "express" : "4.2.0",
         "express-session": "1.6.5",
-        "validator": "3.5.1",
-        "xss": "0.1.7",
+        "validator": "3.16.1",
+        "xss": "0.1.10",
         "mongoose": "2.8.3",
         "marked": "0.3.2",
         "static-favicon": "1.0.0",

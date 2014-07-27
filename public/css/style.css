@@ -74,49 +74,75 @@ body {
   display: table-cell;
   height: 100%;
   margin: 0 auto;
-  vertical-align: middle; }
+  vertical-align: middle;
+  background: rgba(0, 0, 0, 0.1); }
   .db-sign-form input {
-    width: 22rem;
+    width: 25rem;
     margin: 0 auto;
-    padding: 0.8rem 2rem 0.8rem 3rem;
-    border: 1px solid #AAAAAA;
-    border-radius: 0.2rem;
-    background: #dae0e3;
+    padding: 1rem 2rem 1rem 3rem;
+    border: 2px solid #FFFFFF;
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0);
     transition: background 0.3s;
+    box-shadow: 0 0 0.7rem rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
     outline: none; }
     .db-sign-form input:hover {
-      background: #f7f8f9; }
+      background: rgba(255, 255, 255, 0); }
     .db-sign-form input:focus {
-      border-color: #0FC4DB;
-      background: #FFFFFF; }
+      background: rgba(255, 255, 255, 0.2); }
   .db-sign-form .db-inner {
     display: inline-block;
     position: relative; }
   .db-sign-form .db-outer {
     text-align: center;
-    margin: 1.5rem 0; }
+    margin: 2rem 0; }
   .db-sign-form .db-sign-icon {
     position: absolute;
-    top: 1rem;
-    left: 1rem; }
+    top: 1.3rem;
+    left: 1rem;
+    color: #FFFFFF;
+    text-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.5); }
   .db-sign-form .db-submit {
-    padding: 0.5rem 2rem;
-    width: 22rem;
-    border: 1px solid #B8D5E3;
-    border-radius: 0.2rem;
+    padding: 0.9rem 2rem;
+    width: 25rem;
+    border: 1px solid rgba(255, 255, 255, 0.8);
     font-size: 1.8rem;
     color: #FFFFFF;
-    background: #5db6e3;
-    transition: background 0.3s;
-    outline: none; }
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
     .db-sign-form .db-submit:hover {
-      background: #88caeb; }
+      background: rgba(230, 230, 230, 0.2); }
   .db-sign-form .db-sign-helper {
-    width: 22rem; }
+    width: 25rem;
+    text-shadow: 0 1px 0 #000000; }
   .db-sign-form .db-sign-btn {
+    color: #FFFFFF;
     float: left; }
   .db-sign-form .db-forget-btn {
+    color: #FFFFFF;
     float: right; }
+
+.db-info {
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5); }
+
+.db-err-msg {
+  display: inline-block;
+  padding: 1rem;
+  width: 25rem;
+  background: #E9573F;
+  box-shadow: 0 0 1.5rem #FC6E51;
+  color: #FFFFFF; }
+
+.db-sign-title {
+  font-size: 4rem;
+  color: #FFFFFF;
+  text-transform: uppercase; }
+
+.heart {
+  color: #DE3E4B; }
 
 .db-admin {
   padding-top: 70px; }

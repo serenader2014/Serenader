@@ -100,18 +100,20 @@ body {
   height: 100%;
   margin: 0 auto;
   vertical-align: middle;
+  background: rgba(0,0,0,0.1);
 
   input {
-    width: 22rem;
+    width: 25rem;
     margin: 0 auto;
-    padding: 0.8rem 2rem 0.8rem 3rem;
-    border: 1px solid #AAAAAA;
-    border-radius: 0.2rem;
-    @include buttonWithHover(#DAE0E3, 10%);
+    padding: 1rem 2rem 1rem 3rem;
+    border: 2px solid #FFFFFF;
+    color: #FFFFFF !important;
+    @include buttonWithHover(rgba(255,255,255,0), 10%);
+    box-shadow: 0 0 0.7rem rgba(255,255,255,0.5);
+    text-shadow: 0 1px 0 rgba(0,0,0, 0.5);
     outline: none;
     &:focus {
-      border-color: #0FC4DB;
-      background: #FFFFFF;
+      background: rgba(255,255,255,0.2);
     }
   }
 
@@ -122,37 +124,69 @@ body {
 
   .db-outer {
     text-align: center;
-    margin: 1.5rem 0;
+    margin: 2rem 0;
   }
 
   .db-sign-icon {
     position: absolute;
-    top: 1rem;
+    top: 1.3rem;
     left: 1rem;
+    color: #FFFFFF;
+    text-shadow: 0 0 0.3rem rgba(0,0,0,0.5);
   }
 
   .db-submit {
-    padding: 0.5rem 2rem;
-    width: 22rem;
-    border: 1px solid #B8D5E3;
-    border-radius: 0.2rem;
+    padding: 0.9rem 2rem;
+    width: 25rem;
+    border: 1px solid rgba(255,255,255,0.8);
     font-size: 1.8rem;
     color: #FFFFFF;
-    @include buttonWithHover(#5DB6E3, 10%);
+    background: rgba(255,255,255,0.2);
     outline: none;      
+    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    &:hover {
+      background: darken(rgba(255,255,255,0.2), 10%);
+    }
   }
 
   .db-sign-helper {
-    width: 22rem;
+    width: 25rem;
+    text-shadow: 0 1px 0 #000000;
   }
 
   .db-sign-btn {
+    color: #FFFFFF;
     float: left;
   }
 
   .db-forget-btn {
+    color: #FFFFFF;
     float: right;
   }
+}
+
+.db-info {
+  color: rgba(255,255,255,0.8);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+}
+
+.db-err-msg {
+  display: inline-block;
+  padding: 1rem;
+  width: 25rem;
+  background: #E9573F;
+  box-shadow: 0 0 1.5rem #FC6E51;
+  color: #FFFFFF;
+}
+
+.db-sign-title {
+  font-size: 4rem;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.heart {
+  color: #DE3E4B;
 }
 
 .db-admin {

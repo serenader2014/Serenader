@@ -1,18 +1,37 @@
 extends layout
+block extra_css
+    style
+        | .db-sign {
+        | background: url(/static/background/#{background});
+        | background-position: center;
+        | background-size: cover;
+        | }
 block content
     .db-sign
         form.db-sign-form(action='#{adminPath}/signin', method='post')
+            - if (error)
+                span.db-err-msg #{error}
+            .db-outer
+                .db-inner
+                    span.db-sign-title Sign in
             .db-outer
                 .db-inner
                     i.glyphicon.glyphicon-envelope.db-icon.db-sign-icon
-                    input(type='text', placeholder='Email', name='email')
+                    input(type='text', name='email')
             .db-outer
                 .db-inner
                     i.glyphicon.glyphicon-lock.db-icon.db-sign-icon
-                    input(type='password', placeholder='Password', name='password')
+                    input(type='password', name='password')
             .db-outer
                 button.db-submit(type='submit') Submit
             .db-outer
                 .db-inner.db-sign-helper
                     span: a.db-sign-btn(href='#{adminPath}/signup') 注册
                     span: a.db-forget-btn(href='') 忘记密码？
+            .db-outer
+                .db-inner
+                    hr
+                    span.db-info
+                        | Created By serenader with 
+                        span.heart ❤
+            
