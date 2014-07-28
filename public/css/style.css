@@ -81,6 +81,36 @@ html {
 body {
   height: 100%; }
 
+.error-container {
+  display: table;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  background: #E4E6E5; }
+
+.error-wrapper {
+  display: table-cell;
+  height: 100%;
+  margin: 0 auto;
+  vertical-align: middle; }
+
+.error-header {
+  font-size: 20rem;
+  line-height: 15rem;
+  text-shadow: 2px 2px 0 #F7FAF9; }
+
+.error-words {
+  margin-top: 1rem;
+  font-size: 1.8rem; }
+
+.error-detail {
+  width: 50rem;
+  margin: 2rem auto;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1) inset;
+  background: #CCCCCC; }
+
 .db-admin {
   padding-left: 7rem;
   width: 100%;

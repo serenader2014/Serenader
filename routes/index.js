@@ -27,15 +27,17 @@ function route (app, req, res, next) {
         app.use('/', require('../controller/index'));
 
         app.use('*', function (req, res, next) {
-            // TODO customize 404 not found 
-            res.send(404,'error 404 not found');
+            errorHandling(res, {
+                error: '你请求的页面不存在。',
+                type: 404
+            });
         });
     });
 
-    Category.getAllCategories(function (err, c) {
+    Category.getAll(function (err, c) {
         if (err) console.error(err);
         if (c.length === 0) {
-            Category.createNewCategory('未分类', function (err) {
+            Category.createNew('未分类', function (err) {
                 if (err) console.error(c);               
             });
         }
@@ -44,3 +46,13 @@ function route (app, req, res, next) {
 
 
 module.exports = route;
+
+
+// global error handling
+var errorHandling = module.exports.error = function (res, options) {
+    options = options ? options : {error: 'Null', type: 500};
+    options.error = options.error ? options.error : 'Null';
+    options.type = options.type ? options.type : 500;
+    res.status(options.type).render('error', {error: options.error, type: options.type});
+    return false;
+};

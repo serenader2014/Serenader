@@ -1,26 +1,34 @@
 var Category = require('../models').Category;
 
-module.exports.createNewCategory = function (name, callback) {
+module.exports.createNew = function (name, callback) {
     var c = new Category();
     c.name = name;
     c.count = 0;
     c.save(callback);
 };
 
-module.exports.getAllCategories = function (callback) {
+module.exports.getAll = function (callback) {
     Category.find({}, callback);
 };
 
-module.exports.updateCategory = function (id, name, callback) {
+module.exports.update = function (id, name, callback) {
     Category.update({_id: id}, {_id: id, name: name}, callback);
 };
 
-module.exports.getOneCategory = function (name, callback) {
+module.exports.getOneByName = function (name, callback) {
     Category.findOne({name: name}, callback);
 };
 
+module.exports.getOneById = function (id, callback) {
+    Category.findById(id, callback);
+};
+
+module.exports.delete = function (id, callback) {
+    Category.findByIdAndRemove(id, callback);
+};
+
 module.exports.decreaseCount = function (name) {
-    Category.find({name:name}, function (err, c) {
+    Category.findOne({name:name}, function (err, c) {
         if (err) {
             console.error(err);
         }
@@ -32,7 +40,7 @@ module.exports.decreaseCount = function (name) {
 };
 
 module.exports.increaseCount = function (name) {
-    Category.find({name:name}, function (err, c) {
+    Category.findOne({name:name}, function (err, c) {
         if (err) {
             console.error(err);
         }

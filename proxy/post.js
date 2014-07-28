@@ -1,20 +1,29 @@
 var Post = require('../models').Post;
 var Category = require('./category');
 
-module.exports.createNewPost = function (title, author, date, tags, post, category, callback) {
+module.exports.createNewPost = function (options, callback) {
     var p = new Post();
-    p.title = title;
-    p.author = author;
-    p.date = date;
-    p.tags = tags;
-    p.post = post;
-    p.category = category;
-    // Category.increaseCount(category);
+    p.title = options.title;
+    p.author = options.author;
+    p.date = options.date;
+    p.tags = options.tags;
+    p.post = options.post;
+    p.category = options.category;
+    Category.increaseCount(options.category);
     p.save(callback);
 };
 
-module.exports.updatePost = function (id, title, author, date, tags, post, category, callback) {
-    Post.update({_id: id}, {_id: id, title: title, author: author, date: date, tags: tags, post: post, category: category}, callback);
+module.exports.updatePost = function (options, callback) {
+    Post.update({_id: options.id}, 
+        {
+            _id: options.id, 
+            title: options.title, 
+            author: options.author, 
+            date: options.date, 
+            tags: options.tags, 
+            post: options.post, 
+            category: options.category
+        }, callback);
 };
 
 module.exports.getOnePostById = function (id, callback) {
@@ -36,7 +45,7 @@ module.exports.deletePost = function (id, callback) {
             callback(err);
         }
         if (p) {
-            // Category.decreaseCount(p.category);
+            Category.decreaseCount(p.category);
             Post.findByIdAndRemove(id, callback);
         }
     });

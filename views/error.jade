@@ -1,3 +1,10 @@
 extends layout
 block content
-    div=error
+    .error-container
+        .error-wrapper
+            .error-header #{type}
+            .error-main
+                .error-words Oops... You broke the page.
+                .error-detail #{error}
+                .error-home 
+                    a(href='/') Return Home
