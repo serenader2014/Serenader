@@ -5,6 +5,7 @@ var xss = require('xss');
 var validator = require('validator');
 var adminPath = require('./index').adminPath;
 var User = require('../../proxy').user;
+var errorHandling = require('../../routes').error;
 
 var root = require('../../config').config.root_dir;
 
@@ -28,17 +29,20 @@ module.exports = function (router) {
 
         User.getOneUserByEmail(email, function(err, u) {
             if (err) {
-                res.status(500).render('error', {error: err});
+                errorHandling(res, { error: err, type: 500});
+                return false;
             }
             if (u) {
                 if (u.pwd === md5(password)) {
                     req.session.user = u;
                     res.redirect(adminPath);
                 } else {
-                    res.status(401).send('incorrect password');
+                    errorHandling(res, { error: 'incorrect password.', type: 403});
+                    return false;
                 }
             } else {
-                res.status(400).send('uesr does not exist');
+                errorHandling(res, { error: 'User does not exist.',  type: 401});
+                return false;
             }
         });
     });
@@ -82,7 +86,7 @@ module.exports = function (router) {
             if (users.length <= 0) {
                 User.createNewUser(uid, email, hashedPwd, 'admin', function (err) {
                     if (err) {
-                        res.status(500).render('error', {error: err});
+                        errorHandling(res, { error: err, type: 500});
                         return false;
                     }
                     res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
@@ -91,19 +95,19 @@ module.exports = function (router) {
             } else {
                 User.getOneUserById(uid, function (err, user) {
                     if (err) { 
-                        res.status(500).render('error', {error: err}); 
+                        errorHandling(res, { error: err, type: 500});
                         return false;
                     }
                     if (! user) {
                         User.getOneUserByEmail(email, function (err, u) {
                             if (err) { 
-                                res.status(500).render('error', {error: err}); 
+                                errorHandling(res, { error: err, type: 500});
                                 return false;
                             }
                             if (! u) {
                                 User.createNewUser(uid, email, hashedPwd, 'user', function (err) {
                                     if (err) {
-                                        res.render('error', {error: err});
+                                        errorHandling(res, { error: err, type: 500});
                                         return false;
                                     }
                                     res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');

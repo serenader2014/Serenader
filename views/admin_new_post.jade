@@ -7,24 +7,30 @@ block admin_script
     script(tpye='text/javascript', src='/js/codemirror.js')
     script(type='text/javascript', src='/js/marked.js')
     script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
+    script(type='text/javascript', src='/js/webuploader.min.js')
     script(type='text/javascript').
         (function () {
             var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
                 mode: null,
                 indentUnit: 4,
-                lineWrapping: true
+                lineWrapping: true,
+                extraKeys: {
+                    'F11': fullScreen,
+                    'Ctrl-P': mdPreview,
+                    'Alt-C': closePreview,
+                    'Ctrl-I': insertImage
+                }
             });
             $('.db-new-title').focus();
             $('select').selecter();
             $('.db-editor-fs').on('click', function () {
-                $('.db-new-editor').toggleClass('editor-fullscreen');
+                fullScreen();
             });
             $('.db-editor-preview').on('click', function () {
-                $('.db-preview-main').html(marked(editor.getValue()));
-                $('.db-preview').fadeIn();
+                mdPreview();
             });
             $('.db-preview-close').on('click', function () {
-                $('.db-preview').fadeOut()
+                closePreview();
             });
 
             $('.db-tag').on('keyup', function (event) {
@@ -49,6 +55,12 @@ block admin_script
                 }
             });
 
+            $('.db-tags').on('click','.db-single-tag', function () {
+                $(this).remove();
+            }).on('click', function () {
+                $('.db-tag').focus();
+            });
+
             function addTag () {
                 var tag = $("<a class='db-single-tag' href='javascript:;'></a>");
                 var tagInput = $("<input name='tags' class='db-tag-input' />");
@@ -59,11 +71,47 @@ block admin_script
                 tag.append($("<i class='glyphicon glyphicon-remove'></i>"));
             }
 
-            $('.db-tags').on('click','.db-single-tag', function () {
-                $(this).remove();
-            }).on('click', function () {
-                $('.db-tag').focus();
-            });
+            function mdPreview () {
+                $('.db-preview-main').html(marked(editor.getValue()));
+                $('.db-preview').fadeIn();
+                editor.focus();
+            }
+
+            function fullScreen () {
+                $('.db-new-editor').toggleClass('editor-fullscreen');
+            }
+
+            function closePreview () {
+                $('.db-preview').fadeOut()
+            }
+
+            function insertImage () {
+
+            }
+            
+            var uploader = new WebUploader.Uploader({
+                dnd: '#dndArea',
+                paste: document.body,
+                pick: {
+                    id: '#filePicker',
+                    innerHTML: '选择图片',
+
+                },
+                accept: {
+                    title: 'Images',
+                    extensions: 'gif,jpg,jpeg,bmp,png',
+                    mimeType: 'image/*'
+                },
+                thumb: {
+                    width: 120,
+                    height: 120,
+                    crop: true,
+                },
+                compress: false,
+                chunked: true,
+                server: '#{adminPath}/post/image',
+            })
+
         })();
 
 block new_post
@@ -86,6 +134,8 @@ block new_post
                             i.glyphicon.glyphicon-fullscreen
                         a.db-editor-preview(href='javascript:;')
                             i.glyphicon.glyphicon-eye-open
+                        a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
+                            i.glyphicon.glyphicon-picture
                         a.db-editor-help(href='javascript:;')
                             i.glyphicon.glyphicon-question-sign
                     textarea.new-post-area#new-post-area(name='post')
@@ -98,3 +148,22 @@ block new_post
                             a.db-preview-close(href='javascript:;'): i.glyphicon.glyphicon-remove-sign
                             p Markdown Preview
                         .db-preview-main
+
+                
+                .modal.fade#insert(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal')
+                                    span(aria-hidden='true') &times;
+                                    span.sr-only Close
+                                h4.modal-title 插入图片
+                            .modal-body
+                                .imgupload#uploader
+                                    .img-picker
+                                        a.picker
+                                            
+
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                button.btn.btn-primary(type='button') Save changes
