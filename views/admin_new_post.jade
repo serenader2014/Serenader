@@ -93,7 +93,7 @@ block admin_script
                 dnd: '#dndArea',
                 paste: document.body,
                 pick: {
-                    id: '#filePicker',
+                    id: '#picker',
                     innerHTML: '选择图片',
 
                 },
@@ -161,7 +161,7 @@ block new_post
                             .modal-body
                                 .imgupload#uploader
                                     .img-picker
-                                        a.picker
+                                        a#picker 选择图片
                                             
 
                             .modal-footer
