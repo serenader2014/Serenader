@@ -1,39 +1,43 @@
 extends admin
 
 block post_content
-    .container-fluid.db-post-content
-        .row
-            .col-sm-3.col-md-2.sidebar
-                .h
-                    文章分类
-                    ul.list-group
-                        - if (categories)
-                            - categories.forEach(function (item, index, array) {
-                                li.list-group-item.db-cate-list
-                                    a(href='/category?c=#{index}') #{item.name}
-                                    span.badge #{item.count}
-                                    .db-cate-ctrl
-                                        a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
-                                        a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
-                            -   })
-                        - else
-                            li.list-group-item 没有分类
-                        li.list-group-item
-                            form.db-add-cate(method='post', action='#{adminPath}/category/new' id='newcate')
-                                .input-group
-                                    input.form-control(type='text', name='name', placeholder='添加一条新的分类')
-                                    .input-group-btn
-                                        button.btn.btn-primary(type='submit', form='newcate') 添加
-            .col-sm-9.col-sm-offset-3.col-md-10.col-md-offset-2.main
+    .db-post-content
+        .db-sidebar
+            .db-sidebar-container
+                h3.db-sidebar-title 文章分类
+                ul
+                    - if (categories)
+                        - categories.forEach(function (item, index, array) {
+                            li.db-cate-list
+                                a(href='/category?c=#{index}') #{item.name} (#{item.count})
+                                //- span.badge #{item.count}
+                                //- .db-cate-ctrl
+                                    a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
+                                    a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
+                        -   })
+                    - else
+                        li 没有分类
+                    li.db-add-cate
+                        form.db-cate-wrapper(method='post', action='#{adminPath}/category/new' id='newcate')
+                            input.form-control.db-cate-input(type='text', name='name', placeholder='添加一条新的分类')
+                            button.btn.btn-primary.db-cate-btn(type='submit', form='newcate') 添加
+        .db-post-main
+            .db-post-wrapper
                 - posts.forEach(function (item, index, array) {
-                    .panel.panel-default
-                        .panel-heading 
-                            span 作者： #{item.author} | 
-                            span 分类： #{item.category} | 
-                            span 日期： #{item.date[1]}
-                            span: a.glyphicon.glyphicon-remove.db-delete-post(href='#{adminPath}/post/delete/#{item._id}') 
-                        .panel-body
+                    .post-single
+                        .post-title
                             h2: a(href='#{adminPath}/post/edit/#{item._id}') #{item.title}
+                        .post-info
+                            span
+                                i.glyphicon.glyphicon-user
+                                | #{item.author}
+                            span 
+                                i.glyphicon.glyphicon-list-alt
+                                | #{item.category}
+                            span 
+                                i.glyphicon.glyphicon-time
+                                | #{item.date[0].year}/#{item.date[0].month}/#{item.date[0].date}
+                            span: a.glyphicon.glyphicon-remove.db-delete-post(href='#{adminPath}/post/delete/#{item._id}') 
                 -   })
         .modal.fade#delete-cate
             .modal-dialog

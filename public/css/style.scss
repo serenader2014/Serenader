@@ -97,7 +97,7 @@
 // Global style
 
 html {
-  font-family: 'Open Sans';
+  font-family: 'Open Sans' 'Microsoft Yahei';
   height: 100%;
 }
 
@@ -211,6 +211,7 @@ body {
     display: inline-block;
     padding: 1.8rem;
     font-size: 1.5rem;
+    line-height: 1.8rem;
   }
 }
 
@@ -236,9 +237,10 @@ body {
     padding-bottom: 1.8rem;
     width: 7rem;
     font-size: 1.5rem;
-    background: #2bbfbd;
     color: #FFFFFF;
     text-align: center;
+    line-height: 1.8rem;
+    background: #2bbfbd;
   }
 }
 
@@ -269,13 +271,18 @@ body {
 }
 
 .db-header-container {
+  position: relative;
 }
 
 .db-header-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
   background: #FFFFFF;
   border: none;
   border-radius: 0;
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  z-index: 99;
 }
 
 .db-header-nav .nav li a {
@@ -290,45 +297,136 @@ body {
 
 // Admin panel post section
 
-.db-delete-post {
-  float: right;
-  color: #C24C4C;
-  font-size: 2rem;
+.db-post-content {
+  height: 100%;
 }
 
-.db-delete-post:hover {
-  color: #C23232;
+.db-post-main {
+  padding: 6.4rem 26rem 0 1rem;
+  height: 100%;
 }
 
-.db-cate-ctrl {
-  display: none;
-
+.db-post-wrapper {
+  height: 100%;
+  background: #FFFFFF;
 }
 
-.db-cate-list {
-  &:hover {
-    .db-cate-ctrl {
-      float: right;
-      display: block;
-    }
+.post-single {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #EEEEEE;
+}
 
-    .badge {
-      display: none;
+.post-title {
+  h2 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 400;
+  }
+
+  a {
+    color: #787878;
+    &:hover {
+      color: #454545;
     }
   }
 }
 
-.db-cate-delete, .db-cate-edit {
-  display: inline-block;
-  padding: 0.1rem 0.3rem;
-  margin-left: 0.3rem;
-  border-radius: 0.3rem;
-  color: #FFFFFF;
-  background: #aab2bd;
+.post-info {
+  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  color: #898989;
+  span {
+    display: inline-block;
+    margin-right: 1rem;
+    width: 10rem;
+  }
+  i {
+    margin-right: 0.75rem;
+  }
+}
 
-  &:hover {
-    background: #3bafda;
-    color: #FFFFFF;
+.db-sidebar {
+  position: absolute;
+  top: 5rem;
+  bottom: 0;
+  right: 0;
+  width: 25rem;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  background: #FFFFFF;
+}
+
+.db-sidebar-title {
+  padding: 1.5rem 4rem;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 2rem;
+  color: #9E9E9E;
+}
+
+.db-sidebar-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 2rem 0;
+  ul {
+    position: absolute;
+    top: 7rem;
+    bottom: 4rem;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.db-cate-list {
+  position: relative;
+  padding: 0 4rem;
+  .badge {
+    position: absolute;
+    right: 0;
+  }
+  a {
+    display: block;
+    color: #9E9E9E;
+    padding: 1rem 0;
+    &:hover {
+      color: #8A8A8A;
+    }
+  }
+}
+
+.db-add-cate {
+  position: fixed;
+  bottom: 0;
+  width: 25rem;
+  right: 0;
+  .db-cate-wrapper {
+    position: relative;
+    box-shadow: 2px -1px 5px rgba(0,0,0,0.1);
+  }
+
+  .db-cate-input {
+    border-radius: 0;
+    height: 4rem;
+    border: none;
+    &:focus {
+      box-shadow: 4px 0 0 #3BAFDA inset;
+    }
+  }
+
+  .db-cate-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    line-height: 1.9rem;
+    margin: 0.5rem 1rem;
   }
 }
 
@@ -428,6 +526,10 @@ body {
     border-color: #ced6dc;
     font-size: 2rem;
     color: #727f8c;
+    &:focus {
+      border-color: #FFFFFF;
+      box-shadow: 4px 0 0 #3BAFDA inset;
+    }
   }
   &:after {
     content: "";
@@ -534,19 +636,6 @@ body {
     line-height: 2.3rem;
   }
 }
-
-.sidebar {
-  position: fixed;
-  top: 51px;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-  display: block;
-  padding: 20px 5px;
-  overflow-x: hidden;
-  overflow-y: auto; 
-}
-
 
 
 

@@ -75,7 +75,7 @@
   font-weight: 400;
   src: local("Open Sans"), local("OpenSans"), url(../fonts/opensans.woff) format("woff"); }
 html {
-  font-family: 'Open Sans';
+  font-family: 'Open Sans' 'Microsoft Yahei';
   height: 100%; }
 
 body {
@@ -165,7 +165,8 @@ body {
   .db-nav-left a, .db-nav-right a {
     display: inline-block;
     padding: 1.8rem;
-    font-size: 1.5rem; }
+    font-size: 1.5rem;
+    line-height: 1.8rem; }
 
 .db-nav {
   position: absolute;
@@ -184,9 +185,10 @@ body {
   padding-bottom: 1.8rem;
   width: 7rem;
   font-size: 1.5rem;
-  background: #2bbfbd;
   color: #FFFFFF;
-  text-align: center; }
+  text-align: center;
+  line-height: 1.8rem;
+  background: #2bbfbd; }
 
 .db-menu-wrapper {
   margin: 0;
@@ -207,11 +209,18 @@ body {
   bottom: 3rem;
   width: 7rem; }
 
+.db-header-container {
+  position: relative; }
+
 .db-header-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
   background: #FFFFFF;
   border: none;
   border-radius: 0;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 99; }
 
 .db-header-nav .nav li a {
   color: #53646d;
@@ -221,33 +230,110 @@ body {
   .db-header-nav .nav li a:hover {
     color: #728A96; }
 
-.db-delete-post {
-  float: right;
-  color: #C24C4C;
-  font-size: 2rem; }
+.db-post-content {
+  height: 100%; }
 
-.db-delete-post:hover {
-  color: #C23232; }
+.db-post-main {
+  padding: 6.4rem 26rem 0 1rem;
+  height: 100%; }
 
-.db-cate-ctrl {
-  display: none; }
+.db-post-wrapper {
+  height: 100%;
+  background: #FFFFFF; }
 
-.db-cate-list:hover .db-cate-ctrl {
-  float: right;
-  display: block; }
-.db-cate-list:hover .badge {
-  display: none; }
+.post-single {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #EEEEEE; }
 
-.db-cate-delete, .db-cate-edit {
-  display: inline-block;
-  padding: 0.1rem 0.3rem;
-  margin-left: 0.3rem;
-  border-radius: 0.3rem;
-  color: #FFFFFF;
-  background: #aab2bd; }
-  .db-cate-delete:hover, .db-cate-edit:hover {
-    background: #3bafda;
-    color: #FFFFFF; }
+.post-title h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 400; }
+.post-title a {
+  color: #787878; }
+  .post-title a:hover {
+    color: #454545; }
+
+.post-info {
+  margin-top: 1.5rem;
+  font-size: 1.3rem;
+  color: #898989; }
+  .post-info span {
+    display: inline-block;
+    margin-right: 1rem;
+    width: 10rem; }
+  .post-info i {
+    margin-right: 0.75rem; }
+
+.db-sidebar {
+  position: absolute;
+  top: 5rem;
+  bottom: 0;
+  right: 0;
+  width: 25rem;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  background: #FFFFFF; }
+
+.db-sidebar-title {
+  padding: 1.5rem 4rem;
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 2rem;
+  color: #9E9E9E; }
+
+.db-sidebar-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 2rem 0; }
+  .db-sidebar-container ul {
+    position: absolute;
+    top: 7rem;
+    bottom: 4rem;
+    left: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    overflow-x: hidden;
+    overflow-y: auto; }
+
+.db-cate-list {
+  position: relative;
+  padding: 0 4rem; }
+  .db-cate-list .badge {
+    position: absolute;
+    right: 0; }
+  .db-cate-list a {
+    display: block;
+    color: #9E9E9E;
+    padding: 1rem 0; }
+    .db-cate-list a:hover {
+      color: #8A8A8A; }
+
+.db-add-cate {
+  position: fixed;
+  bottom: 0;
+  width: 25rem;
+  right: 0; }
+  .db-add-cate .db-cate-wrapper {
+    position: relative;
+    box-shadow: 2px -1px 5px rgba(0, 0, 0, 0.1); }
+  .db-add-cate .db-cate-input {
+    border-radius: 0;
+    height: 4rem;
+    border: none; }
+    .db-add-cate .db-cate-input:focus {
+      box-shadow: 4px 0 0 #3BAFDA inset; }
+  .db-add-cate .db-cate-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    line-height: 1.9rem;
+    margin: 0.5rem 1rem; }
 
 .db-editor-wrapper {
   position: absolute;
@@ -331,6 +417,9 @@ body {
     border-color: #ced6dc;
     font-size: 2rem;
     color: #727f8c; }
+    .db-new-header input:focus {
+      border-color: #FFFFFF;
+      box-shadow: 4px 0 0 #3BAFDA inset; }
   .db-new-header:after {
     content: "";
     display: block;
@@ -419,17 +508,6 @@ body {
     font-weight: 100;
     color: #384E63;
     line-height: 2.3rem; }
-
-.sidebar {
-  position: fixed;
-  top: 51px;
-  bottom: 0;
-  left: 0;
-  z-index: 1000;
-  display: block;
-  padding: 20px 5px;
-  overflow-x: hidden;
-  overflow-y: auto; }
 
 .db-sign {
   display: table;
