@@ -11,52 +11,27 @@ var errorHandling = require('../../routes').error;
 module.exports = function (router) {
 
     router.get('/post', auth_user, function (req, res, next) {
-        if (req.session.user.role === 'admin') {
-            Post.getTenPosts(function (err, posts) {
-                if (! err && posts) {
-                    Category.getAll(function (err, c) {
-                        if (! err && c) {
-                            res.render('admin_post_content', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
-                                posts: posts, 
-                                categories: c
-                            });
-                        } else {
-                            errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
-                            return false;
-                        }
-                    });
+        Post.getUserTenPosts(req.session.user.uid, function (err, posts) {
+            if (! err && posts) {
+                Category.getAll(function (err, c) {
+                    if (! err && c) {
+                        res.render('admin_post_content', {
+                            adminPath: adminPath, 
+                            locals: res.locals, 
+                            posts: posts, 
+                            categories: c
+                        });
+                    } else {
+                        errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
+                        return false;
+                    }
+                });
 
-                } else {
-                    errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
-                    return false;
-                }
-            });
-        } else {
-            Post.getUserTenPosts(req.session.user.uid, function (err, posts) {
-                if (! err && posts) {
-                    Category.getAll(function (err, c) {
-                        if (! err && c) {
-                            res.render('admin_post_content', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
-                                posts: posts, 
-                                categories: c
-                            });
-                        } else {
-                            errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
-                            return false;
-                        }
-                    });
-
-                } else {
-                    errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
-                    return false;
-                }                
-            });
-        }
-        
+            } else {
+                errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
+                return false;
+            }                
+        });        
     });
 
     router.get('/post/new', auth_user, function (req, res, next) {
@@ -139,8 +114,16 @@ module.exports = function (router) {
         var title = validator.trim(xss(req.body.title));
         var author = req.session.user.uid;
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
-        var post = validator.trim(xss(req.body.post));
-        var tags = validator.trim(xss(req.body.tags));
+        var post = req.body.post;
+        var tags;
+        if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
+            tags  =[];
+            req.body.tags.forEach(function (tag) {
+                tags.push(validator.trim(xss(tag)));
+            });
+        } else if (Object.prototype.toString.call(req.body.tags) === '[object String]') {
+            tags = validator.trim(xss(req.body.tags));
+        }
         var category = validator.trim(xss(req.body.categories));
 
         Post.createNewPost({

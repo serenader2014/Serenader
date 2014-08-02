@@ -25,19 +25,15 @@ block post_content
             .db-post-wrapper
                 - posts.forEach(function (item, index, array) {
                     .post-single
-                        .post-title
-                            h2: a(href='#{adminPath}/post/edit/#{item._id}') #{item.title}
-                        .post-info
-                            span
-                                i.glyphicon.glyphicon-user
-                                | #{item.author}
-                            span 
-                                i.glyphicon.glyphicon-list-alt
-                                | #{item.category}
-                            span 
-                                i.glyphicon.glyphicon-time
-                                | #{item.date[0].year}/#{item.date[0].month}/#{item.date[0].date}
-                            span: a.glyphicon.glyphicon-remove.db-delete-post(href='#{adminPath}/post/delete/#{item._id}') 
+                        .post-main
+                            a(href='#{adminPath}/post/edit/#{item._id}') #{item.title}
+                            span.post-info
+                                span
+                                    //- i.glyphicon.glyphicon-list-alt
+                                    | #{item.category}
+                                span 
+                                    //- i.glyphicon.glyphicon-time
+                                    | #{item.date[0].year}/#{item.date[0].month}/#{item.date[0].date}
                 -   })
         .modal.fade#delete-cate
             .modal-dialog

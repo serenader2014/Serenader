@@ -81,10 +81,17 @@ module.exports = function (router) {
         }
 
         var hashedPwd = md5(password);
+        var avatar = 'http://www.gravatar.com/avatar/'+md5(email.toLowerCase());
 
         User.getAllUser(function (err, users) {
             if (users.length <= 0) {
-                User.createNewUser(uid, email, hashedPwd, 'admin', function (err) {
+                User.createNewUser({
+                    uid: uid,
+                    email: email,
+                    pwd: hashedPwd,
+                    avatar: avatar,
+                    role: 'admin'
+                }, function (err) {
                     if (err) {
                         errorHandling(res, { error: err, type: 500});
                         return false;
@@ -105,7 +112,13 @@ module.exports = function (router) {
                                 return false;
                             }
                             if (! u) {
-                                User.createNewUser(uid, email, hashedPwd, 'user', function (err) {
+                                User.createNewUser({
+                                    uid: uid,
+                                    pwd: hashedPwd,
+                                    email: email,
+                                    avatar: avatar,
+                                    role: 'user'
+                                }, function (err) {
                                     if (err) {
                                         errorHandling(res, { error: err, type: 500});
                                         return false;

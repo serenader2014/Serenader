@@ -332,13 +332,11 @@ body {
 }
 
 .post-info {
-  margin-top: 1.5rem;
+  float: right;
   font-size: 1.3rem;
   color: #898989;
   span {
     display: inline-block;
-    margin-right: 1rem;
-    width: 10rem;
   }
   i {
     margin-right: 0.75rem;
@@ -443,7 +441,7 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 2;
+    z-index: 999;
     .CodeMirror {
       background: #FBFCF7;
     }

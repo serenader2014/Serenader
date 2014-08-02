@@ -12,20 +12,28 @@ module.exports.getAllUser = function (callback) {
     User.find({}, callback);
 };
 
-module.exports.createNewUser = function (uid, email, pwd, role, callback) {
+module.exports.createNewUser = function (options, callback) {
     var user = new User();
-    user.uid = uid;
-    user.email = email;
-    user.pwd = pwd;
-    user.role = role;
+    user.uid = options.uid;
+    user.email = options.email;
+    user.pwd = options.pwd;
+    user.role = options.role;
+    user.avatar = options.avatar;
     user.save(callback);
 };
 
-module.exports.updateUserProfile = function (uid, email, pwd, website, profile_header, role, signature, callback) {
+module.exports.updateUserProfile = function (options, callback) {
     User.update(
         {uid: uid}, 
-        {uid: uid, email: email, pwd: pwd, website: website, profile_header: profile_header, role: role, signature: signature}, 
-        callback);
+        {uid: uid, 
+            email: options.email, 
+            pwd: options.pwd, 
+            website: options.website, 
+            profile_header: options.profile_header, 
+            role: options.role, 
+            signature: options.signature,
+            avatar: options.avatar
+        }, callback);
 };
 
 
