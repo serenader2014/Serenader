@@ -14,6 +14,80 @@ block admin_script
                 indentUnit: 4,
                 lineWrapping: true
             });
+            var draftId = '';
+            var previousTitle = '';
+            var previousPost = '';
+            var previousTags = '';
+            var previousCategory = '';
+
+            var updateDraft = function () {
+                var tags = [];
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                $('input[name="tags"]').each(function (index, item) {
+                    tags.push($(item).val()); 
+                });
+                if (previousCategory === category &&
+                    previousTags.toString() === tags.toString() &&
+                    previousPost === post &&
+                    previousTitle === title) {
+                    return ;
+                } else {
+                    previousTitle = title;
+                    previousPost = post;
+                    previousTags = tags;
+                    previousCategory = category;
+                    $.ajax({
+                        url: '#{adminPath}/post/draft/'+draftId,
+                        type: 'POST',
+                        data: {
+                            title: title,
+                            categories: category,
+                            post: post,
+                            tags: tags
+                        },
+                        success: function (data) {
+                            var time = new Date();
+                            $('.db-draft-info').html('Draft saved in'+time.toTimeString());
+                            setTimeout(function () {
+                                $('.db-draft-info').html('');
+                            }, 5000)
+                        }
+                    });        
+                }
+            };
+            var createDraft = function () {
+                var tags = [];
+                $('input[name="tags"]').each(function (index, item) {
+                    tags.push($(item).val()); 
+                });
+                $.ajax({
+                    url: '#{adminPath}/post/draft/new',
+                    type: 'POST',
+                    data: {
+                        title: $('input[name="title"]').val(),
+                        categories: $('option:selected').val(),
+                        post: editor.getValue(),
+                        tags: tags,
+                        originalId: '#{post._id}'
+                    },
+                    success: function (data) {
+                        if (data.code === 1 && data.id) {
+                            draftId = data.id;
+                            $('#new-post').append($('<input type="text" value="'+data.id+'" name="draftid" style="display:none"/>'))
+                            var update = setInterval(updateDraft, 10000);
+                        } else {
+                            console.error('create draft error');
+                        }
+                    }
+                })
+                editor.off('change', createDraft);
+            };
+            editor.on('change', createDraft);
+            $('.db-save-draft').on('click', function () {
+                updateDraft();
+            });
             editor.focus();
             $('select').selecter();
             $('.db-editor-fs').on('click', function () {
@@ -86,12 +160,16 @@ block new_post
                 .db-new-editor
                     .db-editor-helper
                         span Markdown
+                        span.db-draft-info
                         a.db-editor-fs(href='javascript:;')
                             i.glyphicon.glyphicon-fullscreen
                         a.db-editor-preview(href='javascript:;')
                             i.glyphicon.glyphicon-eye-open
+                        a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
+                            i.glyphicon.glyphicon-picture
                         a.db-editor-help(href='javascript:;')
                             i.glyphicon.glyphicon-question-sign
+                        a.db-save-draft(href='javascript:;') Save draft
                     textarea.new-post-area#new-post-area(name='post') #{post.post}
                 .db-tags
                     - each val in post.tags
@@ -100,10 +178,27 @@ block new_post
                             i.glyphicon.glyphicon-remove
                             input.db-tag-input(name='tags', value='#{val}')
                     input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
-                    button.btn.btn-primary.db-publish(form='new-post') 发表
+                    button.btn.btn-primary.db-publish(form='new-post') 更新
                 .db-preview
                     .db-preview-wrapper
                         .db-preview-header
                             a.db-preview-close(href='javascript:;'): i.glyphicon.glyphicon-remove-sign
                             p Markdown Preview
                         .db-preview-main
+                .modal.fade#insert(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal')
+                                    span(aria-hidden='true') &times;
+                                    span.sr-only Close
+                                h4.modal-title 插入图片
+                            .modal-body
+                                .imgupload#uploader
+                                    .img-picker
+                                        a#picker 选择图片
+                                            
+
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') Close
+                                button.btn.btn-primary(type='button') Save changes

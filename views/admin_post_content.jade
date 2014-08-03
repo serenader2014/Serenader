@@ -1,5 +1,13 @@
 extends admin
 
+block admin_script
+    script.
+        $('.delete-post').on('click', function (event) {
+            event.preventDefault();
+            var id = $(this).data('id');
+            $('.delete-post-form').attr('action', '#{adminPath}/post/delete/'+id);
+        })
+
 block post_content
     .db-post-content
         .db-sidebar
@@ -23,18 +31,30 @@ block post_content
                             button.btn.btn-primary.db-cate-btn(type='submit', form='newcate') 添加
         .db-post-main
             .db-post-wrapper
-                - posts.forEach(function (item, index, array) {
-                    .post-single
-                        .post-main
-                            a(href='#{adminPath}/post/edit/#{item._id}') #{item.title}
-                            span.post-info
-                                span
-                                    //- i.glyphicon.glyphicon-list-alt
-                                    | #{item.category}
+                - if (drafts) 
+                    - each draft in drafts
+                        a.post-single.draft(href='#{adminPath}/post/draft/#{draft._id}')
+                            .post-main
+                                h3.post-title #{draft.title}
+                                span.delete-post(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
+                            .post-meta
                                 span 
-                                    //- i.glyphicon.glyphicon-time
-                                    | #{item.date[0].year}/#{item.date[0].month}/#{item.date[0].date}
-                -   })
+                                    | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
+                                span
+                                    | Sorted in #{draft.category}                    
+                - if (posts.length > 0)
+                    - each post,index in posts
+                        a.post-single(href='#{adminPath}/post/edit/#{post._id}')
+                            .post-main
+                                h3.post-title #{post.title}
+                                span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
+                            .post-meta
+                                span 
+                                    | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
+                                span
+                                    | Sorted in #{post.category}
+                - else
+                    .no-post You don't have any post yet.
         .modal.fade#delete-cate
             .modal-dialog
                 .modal-content
@@ -46,5 +66,20 @@ block post_content
                     .modal-body
                         p 该操作将会删除该分类。删除之前请确保分类下面没有文章。若分类下面仍有文章，则无法删除该分类。
                     .modal-footer
-                        button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                        button.btn.btn-primary(type='button') 确定
+                        form.delete-cate-form(action='', method='post')
+                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary(type='submit') 确定
+        .modal.fade#delete-post
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            span(aria-hidden='true') &times;
+                            span.sr-only Close
+                        h4.modal-title 删除文章
+                    .modal-body
+                        p 该操作将会删除该文章。删除前请做好备份。
+                    .modal-footer
+                        form.delete-post-form(action='', method='post')
+                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary(type='submit') 确定

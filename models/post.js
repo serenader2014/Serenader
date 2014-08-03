@@ -7,7 +7,7 @@ var Post = new Schema({
     date: { type: Array },
     tags: { type: Array },
     post: { type: String },
-    category: { type: String }
+    category: { type: String },
 });
 
 mongoose.model('Post', Post);

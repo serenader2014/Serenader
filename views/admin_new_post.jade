@@ -21,6 +21,79 @@ block admin_script
                     'Ctrl-I': insertImage
                 }
             });
+            var draftId = '';
+            var previousTitle = '';
+            var previousPost = '';
+            var previousTags = '';
+            var previousCategory = '';
+
+            var updateDraft = function () {
+                var tags = [];
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                $('input[name="tags"]').each(function (index, item) {
+                    tags.push($(item).val()); 
+                });
+                if (previousCategory === category &&
+                    previousTags.toString() === tags.toString() &&
+                    previousPost === post &&
+                    previousTitle === title) {
+                    return ;
+                } else {
+                    previousTitle = title;
+                    previousPost = post;
+                    previousTags = tags;
+                    previousCategory = category;
+                    $.ajax({
+                        url: '#{adminPath}/post/draft/'+draftId,
+                        type: 'POST',
+                        data: {
+                            title: title,
+                            categories: category,
+                            post: post,
+                            tags: tags
+                        },
+                        success: function (data) {
+                            var time = new Date();
+                            $('.db-draft-info').html('Draft saved in'+time.toTimeString());
+                            setTimeout(function () {
+                                $('.db-draft-info').html('');
+                            }, 5000)
+                        }
+                    });
+                }
+            };
+            var createDraft = function () {
+                var tags = [];
+                $('input[name="tags"]').each(function (index, item) {
+                    tags.push($(item).val()); 
+                });
+                $.ajax({
+                    url: '#{adminPath}/post/draft/new',
+                    type: 'POST',
+                    data: {
+                        title: $('input[name="title"]').val(),
+                        categories: $('option:selected').val(),
+                        post: editor.getValue(),
+                        tags: tags
+                    },
+                    success: function (data) {
+                        if (data.code === 1 && data.id) {
+                            draftId = data.id;
+                            $('#new-post').append($('<input type="text" value="'+data.id+'" name="draftid" style="display:none"/>'))
+                            var update = setInterval(updateDraft, 10000);
+                        } else {
+                            console.error('create draft error');
+                        }
+                    }
+                })
+                editor.off('change', createDraft);
+            };
+            editor.on('change', createDraft)
+            $('.db-save-draft').on('click', function () {
+                updateDraft();
+            });
             $('.db-new-title').focus();
             $('select').selecter();
             $('.db-editor-fs').on('click', function () {
@@ -89,28 +162,28 @@ block admin_script
 
             }
             
-            var uploader = new WebUploader.Uploader({
-                dnd: '#dndArea',
-                paste: document.body,
-                pick: {
-                    id: '#picker',
-                    innerHTML: '选择图片',
+            //- var uploader = new WebUploader.Uploader({
+            //-     dnd: '#dndArea',
+            //-     paste: document.body,
+            //-     pick: {
+            //-         id: '#picker',
+            //-         innerHTML: '选择图片',
 
-                },
-                accept: {
-                    title: 'Images',
-                    extensions: 'gif,jpg,jpeg,bmp,png',
-                    mimeType: 'image/*'
-                },
-                thumb: {
-                    width: 120,
-                    height: 120,
-                    crop: true,
-                },
-                compress: false,
-                chunked: true,
-                server: '#{adminPath}/post/image',
-            })
+            //-     },
+            //-     accept: {
+            //-         title: 'Images',
+            //-         extensions: 'gif,jpg,jpeg,bmp,png',
+            //-         mimeType: 'image/*'
+            //-     },
+            //-     thumb: {
+            //-         width: 120,
+            //-         height: 120,
+            //-         crop: true,
+            //-     },
+            //-     compress: false,
+            //-     chunked: true,
+            //-     server: '#{adminPath}/post/image',
+            //- })
 
         })();
 
@@ -130,6 +203,7 @@ block new_post
                 .db-new-editor
                     .db-editor-helper
                         span Markdown
+                        span.db-draft-info
                         a.db-editor-fs(href='javascript:;')
                             i.glyphicon.glyphicon-fullscreen
                         a.db-editor-preview(href='javascript:;')
@@ -138,6 +212,7 @@ block new_post
                             i.glyphicon.glyphicon-picture
                         a.db-editor-help(href='javascript:;')
                             i.glyphicon.glyphicon-question-sign
+                        a.db-save-draft(href='javascript:;') Save draft
                     textarea.new-post-area#new-post-area(name='post')
                 .db-tags
                     input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')

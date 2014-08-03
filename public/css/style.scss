@@ -308,38 +308,58 @@ body {
 
 .db-post-wrapper {
   height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #FFFFFF;
 }
 
+.no-post {
+  margin-top: 8rem;
+  text-align: center;
+  color: #AAAAAA;
+} 
+
 .post-single {
-  padding: 1rem 2rem;
+  display: block;
+  padding: 2rem 2.5rem;
   border-bottom: 1px solid #EEEEEE;
 }
 
-.post-title {
-  h2 {
-    margin: 0;
-    font-size: 2.5rem;
-    font-weight: 400;
-  }
+.draft {
+  box-shadow: 5px 0 0 #AAAAAA inset;
+  background: #FAFAFA;
+}
 
-  a {
-    color: #787878;
-    &:hover {
-      color: #454545;
-    }
+.post-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: lighter;
+  color: #787878;
+  &:hover {
+    color: #454545;
   }
 }
 
-.post-info {
-  float: right;
-  font-size: 1.3rem;
-  color: #898989;
-  span {
-    display: inline-block;
+.post-main {
+  position: relative;
+}
+
+.delete-post {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #CCCCCC;
+  font-size: 2rem;
+  &:hover {
+    color: #F2716D;
   }
-  i {
-    margin-right: 0.75rem;
+}
+.post-meta {
+  margin-top: 0.5rem;
+  font-size: 1.3rem;
+  color: #BBBBBB;
+  span {
+    margin-right: 0.5rem;
   }
 }
 
@@ -428,6 +448,7 @@ body {
   }
 }
 
+
 .db-editor-wrapper {
   position: absolute;
   top: 5.2rem;
@@ -506,6 +527,10 @@ body {
     margin-left: 1rem;
     color: #6A7585;
   }
+}
+
+.db-draft-info {
+  margin-left: 1rem;
 }
 
 .db-tag-input {

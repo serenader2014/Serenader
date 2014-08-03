@@ -6,7 +6,7 @@ module.exports.addImage = function (options, callback) {
     img.path = options.path;
     img.desc = options.desc;
     img.album = options.album;
-    // Album.increaseCount(options.album);
+    Album.increaseCount(options.album);
     img.save(callback);
 };
 
@@ -16,7 +16,7 @@ module.exports.deleteImage = function (id, callback) {
             console.error(err);
         }
         if (i) {
-            // Album.decreaseCount(a.album);
+            Album.decreaseCount(i.album);
             Image.findByIdAndRemove(id, callback);
         }
     }); 
@@ -27,15 +27,12 @@ module.exports.getAllImages = function (callback) {
 };
 
 module.exports.updateImage = function (options, callback) {
-    Image.update(
-        {_id: id}, 
-        {_id: options.id, 
-            path: options.path, 
-            desc: options.desc
-        },
-        callback);
+    Image.findByIdAndUpdate(id, {
+        path: options.path,
+        desc: options.desc
+    }, callback);
 };
 
 module.exports.findOneAlbumImage = function (name, callback) {
-    Image.find({album: name}, callback);
+    Image.findOne({album: name}, callback);
 };

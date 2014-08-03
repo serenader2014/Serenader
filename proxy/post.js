@@ -14,16 +14,27 @@ module.exports.createNewPost = function (options, callback) {
 };
 
 module.exports.updatePost = function (options, callback) {
-    Post.update({_id: options.id}, 
-        {
-            _id: options.id, 
-            title: options.title, 
-            author: options.author, 
-            date: options.date, 
-            tags: options.tags, 
-            post: options.post, 
-            category: options.category
-        }, callback);
+    Post.findById(options.id, function (err, p) {
+        if (err) {
+            callback(err);
+        }
+        if (p) {
+            var obj = {};
+            if (options.title) { obj.title = options.title; }
+            if (options.author) { obj.author = options.author; }
+            if (options.date) { obj.date = options.date; }
+            if (options.tags) { obj.tags = options.tags; }
+            if (options.post) { obj.post = options.post; }
+            if (options.category) { 
+                if (options.category !== p.category) {
+                    Category.increaseCount(options.category);
+                    Category.decreaseCount(p.category);
+                }
+                obj.category = options.category; 
+            }
+            Post.findByIdAndUpdate(options.id, obj, callback);
+        }
+    });
 };
 
 module.exports.getOnePostById = function (id, callback) {
@@ -40,13 +51,13 @@ module.exports.getAllPosts = function (callback) {
 };
 
 module.exports.deletePost = function (id, callback) {
-    Post.findOneById(id, function (err, p) {
+    Post.findById(id, function (err, p) {
         if (err) {
             callback(err);
         }
         if (p) {
             Category.decreaseCount(p.category);
-            Post.findByIdAndRemove(id, callback);
+            Post.findOneAndRemove({_id: id}, callback);
         }
     });
 };

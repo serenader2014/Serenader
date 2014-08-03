@@ -4,35 +4,28 @@ module.exports.getSetting = function (callback) {
     Setting.findOne({id: 'blog'}, callback);
 };
 
-module.exports.createSetting = function (name, desc, logo, favicon, nav, admin_path, allow_sign_up, callback) {
+module.exports.createSetting = function (options, callback) {
     var setting = new Setting();
     setting.id = 'blog';
-    setting.name = name;
-    setting.desc = desc;
-    setting.logo = logo;
-    setting.favicon = favicon;
-    setting.nav = nav;
-    setting.admin_path = admin_path;
-    setting.allow_sign_up = allow_sign_up;
+    setting.name = options.name;
+    setting.desc = options.desc;
+    setting.logo = options.logo;
+    setting.favicon = options.favicon;
+    setting.nav = options.nav;
+    setting.admin_path = options.admin_path;
+    setting.allow_sign_up = options.allow_sign_up;
     setting.save(callback);
 };
 
-module.exports.updateSetting = function (name, desc, logo, favicon, nav, admin_path, allow_sign_up, callback) {
-    Setting.findOne({id: 'blog'}, function (err, s) {
-        if (err || !s) {
-            return callback(err);
-        }
-        s.name = name;
-        s.desc = desc;
-        s.logo = logo;
-        s.favicon = favicon;
-        s.nav = nav;
-        s.admin_path = admin_path;
-        s.allow_sign_up = allow_sign_up;
-        s.save(callback);
-    });
-    Setting.update(
-        {id: 'blog'},
-        {id: 'blog', name: name, desc: desc, logo: logo, favicon: favicon, nav: nav, admin_path: admin_path, allow_sign_up: allow_sign_up},
-        callback);
+module.exports.updateSetting = function (options, callback) {
+    var obj = {};
+    if (options.name) { obj.name = options.name; }
+    if (options.desc) { obj.desc = options.desc; }
+    if (options.logo) { obj.logo = options.logo; }
+    if (options.favicon) { obj.favicon = options.favicon; }
+    if (options.nav) { obj.nav = options.nav; }
+    if (options.admin_path) { obj.admin_path = options.admin_path; }
+    if (options.allow_sign_up) { obj.allow_sign_up = options.allow_sign_up; }
+
+    Setting.findOneAndUpdate({id: 'blog'}, obj, callback);
 };

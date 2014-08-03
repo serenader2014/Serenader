@@ -12,7 +12,9 @@ module.exports.getAll = function (callback) {
 };
 
 module.exports.update = function (id, name, callback) {
-    Category.update({_id: id}, {_id: id, name: name}, callback);
+    Category.findByIdAndUpdate(id, {
+        name: name
+    }, callback);
 };
 
 module.exports.getOneByName = function (name, callback) {

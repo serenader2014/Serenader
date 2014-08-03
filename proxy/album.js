@@ -13,13 +13,13 @@ module.exports.addAlbum = function (options, callback) {
 };
 
 module.exports.updateAlbum = function (options, callback) {
-    Album.update({_id: id}, {
-        _id: options.id, 
-        name: options.name, 
-        desc: options.desc,
-        user: options.user,
-        private: options.private
-    }, callback);
+    var obj = {};
+    if (options.name) { obj.name = options.name; }
+    if (options.desc) { obj.desc = options.desc; }
+    if (options.user) { obj.user = options.user; }
+    if (options.private) { obj.private = options.private; }
+
+    Album.findByIdAndUpdate(options.id, obj, callback);
 };
 
 module.exports.deleteAlbum = function (id, callback) {

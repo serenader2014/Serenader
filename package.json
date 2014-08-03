@@ -10,7 +10,7 @@
         "express-session": "1.6.5",
         "validator": "3.16.1",
         "xss": "0.1.10",
-        "mongoose": "2.8.3",
+        "mongoose": "3.8.14",
         "marked": "0.3.2",
         "static-favicon": "1.0.0",
         "morgan": "~1.0.0",

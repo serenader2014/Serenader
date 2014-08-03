@@ -239,29 +239,50 @@ body {
 
 .db-post-wrapper {
   height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #FFFFFF; }
 
+.no-post {
+  margin-top: 8rem;
+  text-align: center;
+  color: #AAAAAA; }
+
 .post-single {
-  padding: 1rem 2rem;
+  display: block;
+  padding: 2rem 2.5rem;
   border-bottom: 1px solid #EEEEEE; }
 
-.post-title h2 {
+.draft {
+  box-shadow: 5px 0 0 #AAAAAA inset;
+  background: #FAFAFA; }
+
+.post-title {
   margin: 0;
-  font-size: 2.5rem;
-  font-weight: 400; }
-.post-title a {
+  font-size: 2rem;
+  font-weight: lighter;
   color: #787878; }
-  .post-title a:hover {
+  .post-title:hover {
     color: #454545; }
 
-.post-info {
-  float: right;
+.post-main {
+  position: relative; }
+
+.delete-post {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #CCCCCC;
+  font-size: 2rem; }
+  .delete-post:hover {
+    color: #F2716D; }
+
+.post-meta {
+  margin-top: 0.5rem;
   font-size: 1.3rem;
-  color: #898989; }
-  .post-info span {
-    display: inline-block; }
-  .post-info i {
-    margin-right: 0.75rem; }
+  color: #BBBBBB; }
+  .post-meta span {
+    margin-right: 0.5rem; }
 
 .db-sidebar {
   position: absolute;
@@ -400,6 +421,9 @@ body {
     float: right;
     margin-left: 1rem;
     color: #6A7585; }
+
+.db-draft-info {
+  margin-left: 1rem; }
 
 .db-tag-input {
   display: none; }
