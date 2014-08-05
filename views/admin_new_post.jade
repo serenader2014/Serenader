@@ -7,7 +7,6 @@ block admin_script
     script(tpye='text/javascript', src='/js/codemirror.js')
     script(type='text/javascript', src='/js/marked.js')
     script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
-    script(type='text/javascript', src='/js/webuploader.min.js')
     script(type='text/javascript').
         (function () {
             var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
@@ -56,7 +55,7 @@ block admin_script
                         },
                         success: function (data) {
                             var time = new Date();
-                            $('.db-draft-info').html('Draft saved in'+time.toTimeString());
+                            $('.db-draft-info').html('Draft saved in '+time.toTimeString());
                             setTimeout(function () {
                                 $('.db-draft-info').html('');
                             }, 5000)
@@ -162,29 +161,6 @@ block admin_script
 
             }
             
-            //- var uploader = new WebUploader.Uploader({
-            //-     dnd: '#dndArea',
-            //-     paste: document.body,
-            //-     pick: {
-            //-         id: '#picker',
-            //-         innerHTML: '选择图片',
-
-            //-     },
-            //-     accept: {
-            //-         title: 'Images',
-            //-         extensions: 'gif,jpg,jpeg,bmp,png',
-            //-         mimeType: 'image/*'
-            //-     },
-            //-     thumb: {
-            //-         width: 120,
-            //-         height: 120,
-            //-         crop: true,
-            //-     },
-            //-     compress: false,
-            //-     chunked: true,
-            //-     server: '#{adminPath}/post/image',
-            //- })
-
         })();
 
 block new_post

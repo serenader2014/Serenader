@@ -6,7 +6,12 @@ block admin_script
             event.preventDefault();
             var id = $(this).data('id');
             $('.delete-post-form').attr('action', '#{adminPath}/post/delete/'+id);
-        })
+        });
+        $('.delete-draft').on('click', function (event) {
+            event.preventDefault();
+            var id = $(this).data('id');
+            $('.delete-draft-form').attr('action', '#{adminPath}/post/draft/delete/'+id);
+        });
 
 block post_content
     .db-post-content
@@ -36,7 +41,7 @@ block post_content
                         a.post-single.draft(href='#{adminPath}/post/draft/#{draft._id}')
                             .post-main
                                 h3.post-title #{draft.title}
-                                span.delete-post(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
+                                span.delete-draft(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-draft'): i.glyphicon.glyphicon-trash
                             .post-meta
                                 span 
                                     | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
@@ -81,5 +86,19 @@ block post_content
                         p 该操作将会删除该文章。删除前请做好备份。
                     .modal-footer
                         form.delete-post-form(action='', method='post')
+                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary(type='submit') 确定
+        .modal.fade#delete-draft
+            .modal-dialog
+                .modal-content
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            span(aria-hidden='true') &times;
+                            span.sr-only Close
+                        h4.modal-title 删除草稿
+                    .modal-body
+                        p 请确认是否删除该草稿。
+                    .modal-footer
+                        form.delete-draft-form(action='', method='post')
                             button.btn.btn-default(type='button', data-dismiss='modal') 取消
                             button.btn.btn-primary(type='submit') 确定

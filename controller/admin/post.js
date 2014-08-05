@@ -232,6 +232,17 @@ module.exports = function (router) {
         });
     });
 
+    router.post('/post/draft/delete/:id', auth_user, function (req, res, next) {
+        var id = validator.trim(xss(req.params.id));
+        Draft.deleteDraft(id, function (err) {
+            if (err) {
+                errorHandling(res, { error: err, type: 500});
+                return false;
+            }
+            res.redirect(adminPath+'/post');
+        });
+    });
+
     router.post('/post/new', auth_user, function (req, res, next) {
         if (! req.body.post || ! req.body.title || ! req.body.categories) {
             errorHandling(res, { error: '请完善文章信息。', type: 401});

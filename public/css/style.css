@@ -268,13 +268,13 @@ body {
 .post-main {
   position: relative; }
 
-.delete-post {
+.delete-post, .delete-draft {
   position: absolute;
   top: 0;
   right: 0;
   color: #CCCCCC;
   font-size: 2rem; }
-  .delete-post:hover {
+  .delete-post:hover, .delete-draft:hover {
     color: #F2716D; }
 
 .post-meta {

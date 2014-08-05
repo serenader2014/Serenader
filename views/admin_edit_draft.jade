@@ -7,6 +7,9 @@ block admin_script
     script(tpye='text/javascript', src='/js/codemirror.js')
     script(type='text/javascript', src='/js/marked.js')
     script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
+    script(type='text/javascript', src='/js/jquery.ui.widget.js')
+    script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
     script(type='text/javascript').
         (function () {
             var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
@@ -50,7 +53,7 @@ block admin_script
                         },
                         success: function (data) {
                             var time = new Date();
-                            $('.db-draft-info').html('Draft saved in'+time.toTimeString());
+                            $('.db-draft-info').html('Draft saved in '+time.toTimeString());
                             setTimeout(function () {
                                 $('.db-draft-info').html('');
                             }, 5000)
@@ -62,7 +65,10 @@ block admin_script
                 var update = setInterval(updateDraft, 10000);
                 editor.off('change', createDraft);
             };
-            editor.on('change', createDraft)            
+            editor.on('change', createDraft);
+            $('.db-save-draft').on('click', function () {
+                updateDraft();
+            });
             editor.focus();
             $('select').selecter();
             $('.db-editor-fs').on('click', function () {
@@ -113,6 +119,19 @@ block admin_script
             }).on('click', function () {
                 $('.db-tag').focus();
             });
+
+            $('#uploader').fileupload({
+                dropZone: $('#uploader'),
+                autoUpload: true,
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                previewMaxWidth: 300,
+                previewMaxHeight: 300,
+                url: '#{adminPath}/upload/content',
+
+            }).on('fileuploadadd', function (e, data) {
+                console.log(data);
+            });
+
         })();
 
 block new_post
@@ -145,6 +164,7 @@ block new_post
                             i.glyphicon.glyphicon-picture
                         a.db-editor-help(href='javascript:;')
                             i.glyphicon.glyphicon-question-sign
+                        a.db-save-draft(href='javascript:;') Save draft
                     textarea.new-post-area#new-post-area(name='post') #{post.post}
                 .db-tags
                     - each val in post.tags
@@ -170,11 +190,15 @@ block new_post
                                 h4.modal-title 插入图片
                             .modal-body
                                 .imgupload#uploader
-                                    .img-picker
-                                        a#picker 选择图片
+                                    form(enctype='multipart/form-data')
+                                        .img-picker
+                                            #picker 选择图片
+                                            input(type='file',name='picture')
+                                .imgurl
+                                    input(type='text', placeholder='请输入图片地址。')
                                             
 
                             .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') Close
-                                button.btn.btn-primary(type='button') Save changes
+                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                                button.btn.btn-primary(type='button') 插入
                 input(type='text',value='#{post._id}', name='draftid', style='display:none')
