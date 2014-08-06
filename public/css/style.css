@@ -81,6 +81,10 @@ html {
 body {
   height: 100%; }
 
+input[type='text']:focus {
+  box-shadow: 4px 0 0 #3BAFDA inset;
+  outline: none; }
+
 .error-container {
   display: table;
   height: 100%;
@@ -345,8 +349,6 @@ body {
     border-radius: 0;
     height: 4rem;
     border: none; }
-    .db-add-cate .db-cate-input:focus {
-      box-shadow: 4px 0 0 #3BAFDA inset; }
   .db-add-cate .db-cate-btn {
     position: absolute;
     top: 0;
@@ -424,18 +426,58 @@ body {
 
 .imgupload .fileinput {
   display: none; }
-.imgupload .img-picker {
+.imgupload .upload-picker {
   display: block;
-  text-align: center; }
-  .imgupload .img-picker span {
+  text-align: center;
+  background: #E8E8E8; }
+  .imgupload .upload-picker span {
     position: relative;
     top: -4rem;
     display: block;
     color: #AAAAAA;
     font-size: 2rem; }
-.imgupload .img-preview {
+
+.preview-container {
+  display: none; }
+
+.upload-fail {
+  display: none;
+  padding: 3rem;
+  text-align: center; }
+
+.upload-error-text {
+  font-size: 2rem;
+  color: #E3403D; }
+
+.upload-error-detail {
+  color: #E3403D; }
+
+.img-preview {
   width: 100%;
   height: 100%; }
+
+.imgurl {
+  margin-top: 1rem; }
+  .imgurl input {
+    padding: 1rem 2rem;
+    width: 100%;
+    height: auto;
+    border: 1px solid #CCCCCC;
+    border-radius: 0; }
+
+.upload-progress {
+  display: none;
+  padding: 2rem; }
+  .upload-progress .progress-outer {
+    position: relative;
+    margin: 5rem 0;
+    width: 100%;
+    height: 2rem;
+    background: #DEDEDE; }
+  .upload-progress .progress-inner {
+    position: absolute;
+    height: 100%;
+    background: #349CC2; }
 
 .db-draft-info {
   margin-left: 1rem; }
@@ -454,9 +496,6 @@ body {
     border-color: #ced6dc;
     font-size: 2rem;
     color: #727f8c; }
-    .db-new-header input:focus {
-      border-color: #FFFFFF;
-      box-shadow: 4px 0 0 #3BAFDA inset; }
   .db-new-header:after {
     content: "";
     display: block;

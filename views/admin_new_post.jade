@@ -7,6 +7,9 @@ block admin_script
     script(tpye='text/javascript', src='/js/codemirror.js')
     script(type='text/javascript', src='/js/marked.js')
     script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
+    script(type='text/javascript', src='/js/jquery.ui.widget.js')
+    script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
     script(type='text/javascript').
         (function () {
             var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
@@ -106,20 +109,17 @@ block admin_script
             });
 
             $('.db-tag').on('keyup', function (event) {
-                    event = event ? event : window.event;
                     if (event.which === 188){
                         $(this).val($(this).val().slice(0,$(this).val().length-1));
                         addTag();
                         $(this).val("");
                     }
             }).on('blur', function (event) {
-                    event = event ? event : window.event;
                     if ($(this).val() !== "") {
                         addTag();
                         $(this).val("");
                     }
             }).on('keydown', function (event) {
-                event = event ? event : window.event;
                 if (event.which === 8 ) {
                     if ($(this).val() === "") {
                         $(".db-single-tag:last").remove();
@@ -158,9 +158,83 @@ block admin_script
             }
 
             function insertImage () {
-
+                $('.db-editor-insertimg').trigger('click');
             }
-            
+
+
+            $('.upload-picker').on('click', function (event) {
+                event.preventDefault();
+                $('.fileinput').trigger('click');
+            });
+
+            $('.insert-img').on('click', function (event) {
+                event.preventDefault();
+                var imgUrl = $('.imgurl input').val();
+                editor.replaceSelection('![]('+imgUrl+')');
+                $('#insert .close').trigger('click');
+            });
+
+            $('.imgurl input').on('keydown', function (event) {
+                if (event.which === 13) {
+                    event.preventDefault();
+                    $('.insert-img').trigger('click');
+                }
+            });
+
+            $('.select-another').on('click', function (event) {
+                event.preventDefault();
+                $('.upload-picker').trigger('click');
+            });
+
+            $('.remove-img').on('click', function (event) {
+                event.preventDefault();
+                $('.preview-container').hide();
+                $('.upload-picker').show();
+                $('.imgurl input').val('');
+            });
+
+            $('body').on('click', function () {
+                if (! $('#insert').is(':visible')) {
+                    $('.preview-container').hide();
+                    $('.upload-fail').hide();
+                    $('.upload-picker').show();
+                }
+            });
+
+            $('#uploader').fileupload({
+                dropZone: $('#uploader'),
+                autoUpload: true,
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                previewMaxWidth: 300,
+                previewMaxHeight: 300,
+                url: '#{adminPath}/upload/content',
+
+            }).on('fileuploadadd', function (e, data) {
+                $('.upload-picker').hide();
+
+            }).on('fileuploadstart', function (e, data) {
+                $('.upload-progress').show();
+
+            }).on('fileuploadprogress', function (e, data) {
+                var percentage = parseInt(data.loaded/data.total * 100, 10);
+                $('.progress-inner').animate({
+                    width: percentage + '%'
+                });
+
+            }).on('fileuploaddone', function (e, data) {
+                $('.upload-progress').hide();
+                $('.preview-container').show();
+                var imgUrl = '/static/#{locals.current_user.uid}/content/' + $.parseJSON(data.response().result).files[0].name
+                $('.preview-container img').remove();
+                $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
+                $('.imgurl input').val(imgUrl).focus();
+
+            }).on('fileuploadfail', function (e, data) {
+                $('.upload-progress').hide();
+                $('.upload-fail').show();
+                $('.upload-error-text').html(data.textStatus);
+                $('.upload-error-detail').html(data.errorThrown);
+            });            
         })();
 
 block new_post
@@ -211,10 +285,26 @@ block new_post
                                 h4.modal-title 插入图片
                             .modal-body
                                 .imgupload#uploader
-                                    .img-picker
-                                        a#picker 选择图片
+                                    form(enctype='multipart/form-data')
+                                        a.upload-picker(href='javascript:;')
+                                            img(src='/img/image.png')
+                                            span 选择图片
+
+                                        .upload-progress
+                                            .progress-outer
+                                                .progress-inner
+                                            p 正在上传……
+                                        .preview-container
+                                            button.btn.btn-primary.select-another 重新上传
+                                            button.btn.btn-default.remove-img 移除图片
+                                        .upload-fail
+                                            p.upload-error-text
+                                            p.upload-error-detail
+                                        input.fileinput(type='file',name='picture')
+                                .imgurl
+                                    input.form-control(type='text', placeholder='请输入图片地址。')
                                             
 
                             .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') Close
-                                button.btn.btn-primary(type='button') Save changes
+                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                                button.btn.btn-primary.insert-img(type='button') 插入
