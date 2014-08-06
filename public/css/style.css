@@ -422,6 +422,21 @@ body {
     margin-left: 1rem;
     color: #6A7585; }
 
+.imgupload .fileinput {
+  display: none; }
+.imgupload .img-picker {
+  display: block;
+  text-align: center; }
+  .imgupload .img-picker span {
+    position: relative;
+    top: -4rem;
+    display: block;
+    color: #AAAAAA;
+    font-size: 2rem; }
+.imgupload .img-preview {
+  width: 100%;
+  height: 100%; }
+
 .db-draft-info {
   margin-left: 1rem; }
 

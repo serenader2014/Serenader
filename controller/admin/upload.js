@@ -10,7 +10,7 @@ module.exports = function (router) {
         res.render('admin_upload', {adminPath: adminPath, locals: res.locals});
     });
 
-    router.post('/upload', function (req, res, next) {
+    router.post('/upload', auth_user, function (req, res, next) {
         upload.fileHandler({
             uploadDir: function () {
                 return root + '/data/public/' + req.session.user.uid + '/upload';
@@ -22,6 +22,21 @@ module.exports = function (router) {
 
         upload.on('end', function (fileInfo) {
             console.log(fileInfo);
+        });
+    });
+
+    router.post('/upload/content', auth_user, function (req, res, next) {
+        upload.fileHandler({
+            uploadDir: function () {
+                return root + '/data/public/' + req.session.user.uid + '/content';
+            },
+            uploadUrl: function () {
+                return adminPath + '/upload/content';
+            }
+        })(req, res, next);
+
+        upload.on('end', function (fileInfo) {
+            // res.send(fileInfo);
         });
     });
 

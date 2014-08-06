@@ -120,6 +120,11 @@ block admin_script
                 $('.db-tag').focus();
             });
 
+            $('.img-picker').on('click', function (event) {
+                event.preventDefault();
+                $('.fileinput').trigger('click');
+            });
+
             $('#uploader').fileupload({
                 dropZone: $('#uploader'),
                 autoUpload: true,
@@ -129,7 +134,10 @@ block admin_script
                 url: '#{adminPath}/upload/content',
 
             }).on('fileuploadadd', function (e, data) {
-                console.log(data);
+                $('.img-picker img').remove();
+            }).on('fileuploaddone', function (e, data) {
+                var imgUrl = '/static/#{locals.current_user.uid}/content/' + $.parseJSON(data.response().result).files[0].name
+                $('.img-picker').append($('<img class="img-preview"/>').attr('src', imgUrl));
             });
 
         })();
@@ -191,9 +199,10 @@ block new_post
                             .modal-body
                                 .imgupload#uploader
                                     form(enctype='multipart/form-data')
-                                        .img-picker
-                                            #picker 选择图片
-                                            input(type='file',name='picture')
+                                        a.img-picker(href='javascript:;')
+                                            img(src='/img/image.png')
+                                            span Pick image
+                                        input.fileinput(type='file',name='picture')
                                 .imgurl
                                     input(type='text', placeholder='请输入图片地址。')
                                             
