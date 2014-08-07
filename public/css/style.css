@@ -234,6 +234,92 @@ input[type='text']:focus {
   .db-header-nav .nav li a:hover {
     color: #728A96; }
 
+.db-gallery {
+  padding: 6.4rem 1rem 0 1rem;
+  height: 100%;
+  overflow: auto; }
+  .db-gallery .db-new-gallery {
+    display: inline-block;
+    float: left;
+    width: 22rem;
+    height: 25rem;
+    padding: 1rem;
+    border-radius: 0.3rem;
+    background: #FFFFFF;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+  .db-gallery .album-name {
+    padding: 0.8rem 1.5rem;
+    height: auto;
+    border: 1px solid #E0E0E0;
+    border-radius: 0; }
+  .db-gallery .album-desc {
+    padding: 1rem;
+    margin: 1rem 0;
+    height: 11rem;
+    border-radius: 0;
+    border: 1px solid #E0E0E0; }
+  .db-gallery .album-btn {
+    display: block;
+    padding: 1rem;
+    width: 100%;
+    font-size: 1.5rem;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    outline: none;
+    border: 1px solid #A5CBD9;
+    background: #3BAFDA; }
+  .db-gallery .db-gallery-list {
+    display: inline-block;
+    margin-left: 1.5rem; }
+    .db-gallery .db-gallery-list ul {
+      padding: 0;
+      margin: 0;
+      list-style: none; }
+    .db-gallery .db-gallery-list ul:after {
+      content: '';
+      display: block;
+      clear: both; }
+  .db-gallery .single-album {
+    display: inline-block;
+    float: left;
+    width: 22rem;
+    height: 25rem;
+    padding: 1rem;
+    margin-right: 1.5rem;
+    border-radius: 0.3rem;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    background: #FFFFFF; }
+    .db-gallery .single-album a {
+      display: block; }
+    .db-gallery .single-album i {
+      margin-right: 1rem;
+      font-size: 1.3rem;
+      color: #9C9C9C; }
+    .db-gallery .single-album .db-album-cover {
+      display: block;
+      width: 20rem;
+      height: 15rem;
+      background-color: #EEEEEE; }
+    .db-gallery .single-album .db-album-name {
+      display: block;
+      margin: 0.8rem 0 1rem;
+      color: #555555;
+      font-size: 1.8rem;
+      text-align: center;
+      text-transform: uppercase; }
+    .db-gallery .single-album .db-album-desc {
+      display: block;
+      text-transform: capitalize;
+      max-height: 4rem;
+      overflow: hidden; }
+
+.db-album-detail {
+  padding: 6.4rem 1rem 0 1rem;
+  height: 100%;
+  overflow: auto; }
+  .db-album-detail .db-album-name {
+    margin: 0; }
+
 .db-post-content {
   height: 100%; }
 

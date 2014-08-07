@@ -53,8 +53,9 @@ module.exports.increaseCount = function (name) {
             return false;
         }
         if (a) {
-            a.count = a.count + 1;
-            a.save();
+            Album.findByIdAndUpdate({name: name}, {
+                count: a.count + 1
+            });
         }
     });
 };
@@ -66,8 +67,9 @@ module.exports.decreaseCount = function (name) {
             return false;
         }
         if (a) {
-            a.count = a.count - 1 ;
-            a.save();
+            Album.findByIdAndUpdate({name: name}, {
+                count: a.count - 1
+            });
         }
     });
 };

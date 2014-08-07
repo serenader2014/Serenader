@@ -1,128 +1,23 @@
 extends admin
 block album
-    h2 #{album.name}
-    ul
-    - if (images) {
-        - images.forEach(function (item, index) {
-            li: img(src='#{item.path}')  
-        - })
-    - }
+    .db-album-detail
+        h2.db-album-name #{album.name}
+        ul
+            - if (images && Object.prototype.toString.call(images) === '[object Array]')
+                - each img in images
+                    li: img(src='#{img.path}')
+            - else if (images && typeof images === 'object')
+                li: img(src='#{images.path}')
 
-    form#fileupload(action='#{adminPath}/upload', method='POST', enctype='multipart/form-data')
-        div.row.fileupload-buttonbar
-            div.col-lg-7
-                span.btn.btn-success.fileinput-button
-                    span.glyphicon.glyphicon-plus
-                    span Add files...
-                    input(type='file', name='files[]', multiple)
-                button.btn.btn-primary.start(type='submit')
-                    span.glyphicon.glyphicon-upload
-                    span Start upload
-                button.btn.btn-warning.cancel
-                    span.glyphicon.glyphicon-ban-circle
-                    span Cancel upload
-                button.btn.btn-danger.delete
-                    span.glyphicon.glyphicon-trash
-                    span Delete
-                input.toggle(type='checkbox')
-                span.fileupload-process
-            div.col-lg-5.fileupload-process.fade
-                div.progress.progress-striped.active(role='progressbar',aria-valuemin='0', aria-valuemax='100')
-                    div.progress-bar.progress-bar-success(style='width:0%')
-                div.progress-extended &nbsp;
-        table.table-striped.table(role='presentation')
-            tbody.files
-
-
-    script#template-upload(type='text/x-tmpl')
-        | {% for (var i=0, file; file=o.files[i]; i++) { %}
-        |     <tr class="template-upload fade">
-        |         <td>
-        |             <span class="preview"></span>
-        |         </td>
-        |         <td>
-        |             <p class="name">{%=file.name%}</p>
-        |             <strong class="error text-danger"></strong>
-        |         </td>
-        |         <td>
-        |             <p class="size">Processing...</p>
-        |             <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;"></div></div>
-        |         </td>
-        |         <td>
-        |             {% if (!i && !o.options.autoUpload) { %}
-        |                 <button class="btn btn-primary start" disabled>
-        |                     <i class="glyphicon glyphicon-upload"></i>
-        |                     <span>Start</span>
-        |                 </button>
-        |             {% } %}
-        |             {% if (!i) { %}
-        |                 <button class="btn btn-warning cancel">
-        |                     <i class="glyphicon glyphicon-ban-circle"></i>
-        |                     <span>Cancel</span>
-        |                 </button>
-        |             {% } %}
-        |         </td>
-        |     </tr>
-        | {% } %}
-    script#template-download(type='text/x-tmpl')
-        | {% for (var i=0, file; file=o.files[i]; i++) { %}
-        |     <tr class="template-download fade">
-        |         <td>
-        |             <span class="preview">
-        |                 {% if (file.thumbnailUrl) { %}
-        |                     <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img src="{%=file.thumbnailUrl%}"></a>
-        |                 {% } %}
-        |             </span>
-        |         </td>
-        |         <td>
-        |             <p class="name">
-        |                 {% if (file.url) { %}
-        |                     <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" {%=file.thumbnailUrl?'data-gallery':''%}>{%=file.name%}</a>
-        |                 {% } else { %}
-        |                     <span>{%=file.name%}</span>
-        |                 {% } %}
-        |             </p>
-        |             {% if (file.error) { %}
-        |                 <div><span class="label label-danger">Error</span> {%=file.error%}</div>
-        |             {% } %}
-        |         </td>
-        |         <td>
-        |             <span class="size">{%=o.formatFileSize(file.size)%}</span>
-        |         </td>
-        |         <td>
-        |             {% if (file.deleteUrl) { %}
-        |                 <button class="btn btn-danger delete" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
-        |                     <i class="glyphicon glyphicon-trash"></i>
-        |                     <span>Delete</span>
-        |                 </button>
-        |                 <input type="checkbox" name="delete" value="1" class="toggle">
-        |             {% } else { %}
-        |                 <button class="btn btn-warning cancel">
-        |                     <i class="glyphicon glyphicon-ban-circle"></i>
-        |                     <span>Cancel</span>
-        |                 </button>
-        |             {% } %}
-        |         </td>
-        |     </tr>
-        | {% } %}
-
-
-
+    
 
 block admin_script
-    script(type='text/javascript', src='/js/vendor/jquery.ui.widget.js')
-    script(type='text/javascript', src='/js/tmpl.min.js')
-    script(type='text/javascript', src='/js/load-image.min.js')
-    script(type='text/javascript', src='/js/canvas-to-blob.min.js')
+    script(type='text/javascript', src='/js/jquery.ui.widget.js')
     script(type='text/javascript', src='/js/jquery.blueimp-gallery.min.js')
     script(type='text/javascript', src='/js/jquery.iframe-transport.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
-    script(type='text/javascript', src='/js/jquery.fileupload-process.js')
-    script(type='text/javascript', src='/js/jquery.fileupload-image.js')
-    script(type='text/javascript', src='/js/jquery.fileupload-validate.js')
-    script(type='text/javascript', src='/js/jquery.fileupload-ui.js')
-    script
-        | $("#fileupload").fileupload({
-        |     url: "#{adminPath}/gallery/upload/#{album.name}",
-        |     dataType: "json",
-        | });
+    script.
+        $("#fileupload").fileupload({
+            url: "#{adminPath}/gallery/upload/#{album.name}",
+            dataType: "json",
+        });

@@ -1,65 +1,73 @@
+var upload = require('jquery-file-upload-middleware');
+var validator = require('validator');
+var xss = require('xss');
+
 var auth_user = require('./index').auth_user;
 var adminPath = require('./index').adminPath;
 var Album = require('../../proxy').album;
 var Image = require('../../proxy').image;
 
-var upload = require('jquery-file-upload-middleware');
 var root = require('../../config').config.root_dir + '/data/';
+
+var errorHandling = require('../../routes').error;
 
 module.exports = function (router) {
     router.get('/gallery', auth_user, function (req, res, next) {
         var userName = req.session.user.uid;
         Album.getUserAllAlbum(userName, function (err, a) {
-            if (err) res.send(err);
+            if (err) {
+                errorHandling(res, { error: err, type: 500});
+                return false;
+            }
             if (a) {
                 res.render('admin_gallery', {adminPath: adminPath, locals: res.locals, albums: a});
             } else {
-                res.send('');
+                errorHandling(res, { error: '找不到该相册。', type: 404});
+                return false;
             }
         });
     });
 
     router.post('/gallery/new', auth_user, function (req, res, next) {
-        var name = req.body.name;
-        var desc = req.body.desc;
-        var cover = req.body.cover;
+        var name = validator.trim(xss(req.body.name));
+        var desc = validator.trim(xss(req.body.desc));
         var userName = req.session.user.uid;
         var private = req.body.private ? true : false;
         Album.addAlbum({
             name: name,
             desc: desc,
-            cover: cover,
             user: userName,
             private: private
         }, function (err) {
-            if (err) res.send(err);
+            if (err) {
+                errorHandling(res, { error: err, type: 500});
+                return false;
+            }
             res.redirect(adminPath+'/gallery');
         });
     });
 
     router.get('/gallery/:album', auth_user, function (req, res, next) {
-        var album = req.params.album;
+        var album = validator.trim(xss(decodeURIComponent(req.params.album)));
         var userName = req.session.user.uid;
         Album.getOneAlbum(album, function (err, a) {
             if (err) {
-                res.send(err);
+                errorHandling(res, { error: err, type: 500});
                 return false;
             } 
             if (a) {
                 if (a.user === userName || userName === 'admin') {
                     Image.findOneAlbumImage(a.name, function (err, images) {
                         if (err) {
-                            res.send(err);
+                            errorHandling(res, { error: err, type: 500});
                             return false;
                         }
-                        if (images) {
-                            res.render('admin_one_album', {
-                                adminPath: adminPath,
-                                locals: res.locals,
-                                images: images,
-                                album: a
-                            });
-                        }
+                        res.render('admin_one_album', {
+                            adminPath: adminPath,
+                            locals: res.locals,
+                            images: images,
+                            album: a
+                        });
                     });
                 } else {
                     res.redirect(adminPath+'/gallery');
@@ -69,13 +77,13 @@ module.exports = function (router) {
     });
 
     router.post('/gallery/upload/:album', auth_user, function (req, res, next) {
-        var album = req.params.album;
+        var album =  validator.trim(xss(decodeURIComponent(req.params.album)));
         var userName = req.session.user.uid;
-        var desc = req.body.desc;
+        // var desc = validator.trim(xss(req.body.desc));
 
         Album.getOneAlbum(album, function (err, a) {
             if (err) {
-                res.send(err);
+                errorHandling(res, { error: err, type: 500});
                 return false;
             }
             if (a) {
@@ -91,18 +99,23 @@ module.exports = function (router) {
                     upload.on('end', function (fileInfo) {
                         Image.addImage({
                             path: '/static/'+userName+'/gallery/'+ album + '/' + fileInfo.name,
-                            desc: desc,
+                            desc: '',
                             album: album
                         }, function (err) {
                             if (err) {
-                                res.send(err);
+                                console.error(err);
                                 return false;
                             }
-                            // res.redirect(adminPath+'/gallery/'+album);
                         });
                     });
+                } else {
+                    errorHandling(res, { error: '您无权上传图片到该相册中。', type: 403});
+                    return false;
                 }
 
+            } else {
+                errorHandling(res, { error: '找不到该相册。', type: 404});
+                return false;
             }
         });
     });
