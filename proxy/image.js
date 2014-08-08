@@ -34,5 +34,5 @@ module.exports.updateImage = function (options, callback) {
 };
 
 module.exports.findOneAlbumImage = function (name, callback) {
-    Image.findOne({album: name}, callback);
+    Image.find({album: name}, callback);
 };

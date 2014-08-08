@@ -419,8 +419,215 @@ input[type='text']:focus {
   height: 100%;
   overflow: auto;
 
+  .images {
+    display: inline-block;
+  }
+
   .db-album-name {
     margin: 0;
+  }
+
+  .db-img-container {
+    display: inline-block;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #FFFFFF;
+  }
+
+  .db-img {
+    display: inline-block;
+    width: 20rem;
+    height: 16rem;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3) inset;
+  }
+
+  .db-upload-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+
+  .db-upload-inner {
+    position: absolute;
+    top: 4rem;
+    bottom: 1rem;
+    left: 5%;
+    right: 5%;
+    text-align: center;
+  }
+
+  .db-inner-wrapper {
+    position: relative;
+    max-height: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    border-radius: 0.3rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #FFFFFF;
+  }
+
+  .db-choose-img {
+    padding: 4rem 0;
+    border: 2px dashed #CCCCCC;
+  }
+
+  .db-upload-picker {
+    display: block;
+    width: 12rem;
+    margin: 1rem auto;
+    padding: 0.5rem 1rem;
+    color: #FFFFFF;
+    font-size: 1.8rem;
+    border-radius: 0.3rem;
+    background: #3BAFDA;
+    &:hover {
+      background: lighten(#3BAFDA, 10);
+    }
+  }
+
+  .upload-helper {
+    padding: 3rem 0 2rem;
+    text-align: left;
+    border-bottom: 1px solid #CCCCCC;
+    a {
+      display: inline-block;
+      padding: 0.5rem 0.2rem;
+      margin-right: 3rem;
+      color: #3BAFDA;
+      box-shadow: 0 1px 0 #CCCCCC;
+
+      &:hover {
+        box-shadow: 0 1px 0 #3BAFDA;
+      }
+    }
+  }
+
+  .db-img-list {
+    display: none;
+    table {
+      width: 100%;
+      text-align: left;
+    }
+    
+    th {
+      padding: 1rem;
+      width: 20%;
+      border-right: 1px solid #DEDEDE;
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    tbody {
+      tr {
+        &:nth-child(odd) {
+          background: #EEEEEE;
+        }
+      }
+    }
+    td {
+      padding: 0.5rem 1rem;
+      border-right: 1px solid #DEDEDE;
+      &:nth-child(5n) {
+        border-right: none;
+        text-align: center;
+      }
+
+      &:nth-child(4n) {
+        text-align: center;
+      }
+
+      &:nth-child(3n) {
+        padding: 0 1rem;
+      }
+    }
+  }
+
+  .file-progress {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 12px;
+    background: #CCCCCC;
+  }
+
+  .file-progress-inner {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #AAAAAA;
+  }
+
+  .upload-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    font-size: 1.7rem;
+    text-shadow: 0 1px 0 #FFFFFF;
+    background: #ECECEC;
+  }
+
+  .start-upload-all {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    padding: 1rem 2rem;
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #3296BA;
+    background: #3BAFDA;
+    &:hover {
+      background: lighten(#3BAFDA, 5%);
+    }
+
+  }
+  .close-upload {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: inline-block;
+    padding: 1rem 2rem;
+    color: #FFFFFF;
+    text-shadow: 0 1px 0 #7EB7CC;
+    background: #91D2EA;
+    &:hover {
+      background: lighten(#91D2EA, 5%);
+    }
+  }
+
+  .start-upload, .cancel-upload {
+    padding: 0.5rem 2rem;
+    color: #FFFFFF;
+    outline: none;
+    border: 1px solid #FFFFFF;
+    border-radius: 0.5rem;
+  }
+
+  .cancel-upload {
+    background: #FF4A45;
+  }
+
+  .start-upload {
+    background: #3BAFDA;
+  }
+
+  .upload-form {
+    display: none;
   }
 }
 
@@ -664,13 +871,17 @@ input[type='text']:focus {
   .upload-picker {
     display: block;
     text-align: center;
-    background: #E8E8E8;
+    border: 3px dashed #CCCCCC;
+    padding: 1rem 0 5rem;
     span {
-      position: relative;
-      top: -4rem;
       display: block;
-      color: #AAAAAA;
+      width: 14rem;
+      margin: 1rem auto;
+      padding: 0.5rem 2rem;
+      color: #FFFFFF;
       font-size: 2rem;
+      border-radius: 0.5rem;
+      background: #3BAFDA
     }
 
   }

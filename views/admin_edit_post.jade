@@ -215,8 +215,6 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                previewMaxWidth: 300,
-                previewMaxHeight: 300,
                 url: '#{adminPath}/upload/content',
 
             }).on('fileuploadadd', function (e, data) {
@@ -317,7 +315,7 @@ block new_post
                                         .upload-fail
                                             p.upload-error-text
                                             p.upload-error-detail
-                                        input.fileinput(type='file',name='picture')
+                                        input.fileinput(type='file',name='picture', accept='image/*')
                                 .imgurl
                                     input.form-control(type='text', placeholder='请输入图片地址。')
                                             

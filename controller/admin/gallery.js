@@ -96,7 +96,9 @@ module.exports = function (router) {
                         uploadUrl: req.url
                     })(req, res, next);
                     
+
                     upload.on('end', function (fileInfo) {
+                        console.log('count');
                         Image.addImage({
                             path: '/static/'+userName+'/gallery/'+ album + '/' + fileInfo.name,
                             desc: '',
@@ -106,6 +108,7 @@ module.exports = function (router) {
                                 console.error(err);
                                 return false;
                             }
+                            console.log('add image');
                         });
                     });
                 } else {

@@ -2,22 +2,139 @@ extends admin
 block album
     .db-album-detail
         h2.db-album-name #{album.name}
-        ul
+        .db-upload-img
+            a.upload-btn(href='javascript:;') 上传照片
+        .images#links(data-type='#{images}')
             - if (images && Object.prototype.toString.call(images) === '[object Array]')
                 - each img in images
-                    li: img(src='#{img.path}')
+                    a.db-img-container(href='#{img.path}')
+                        span.db-img(style='background-image:url(#{img.path})')
+                        span.db-img-desc #{img.desc}
             - else if (images && typeof images === 'object')
-                li: img(src='#{images.path}')
+                a.db-img-container(href='#{images.path}')
+                    span.db-img(style='background-image:url(#{images.path})')
+                    span.db-img-desc #{images.desc}
+            .blueimp-gallery.blueimp-gallery-controls#blueimp-gallery
+                .slides
+                h3.title
+                a.prev
+                a.next
+                a.close
+                a.play-pause
+                ol.indicator
+        .db-upload-container
+            .db-upload-inner
+                .db-inner-wrapper#uploader
+                    .db-choose-img
+                        img(src='/img/image.png')
+                        a.db-upload-picker(href='javascript:;') 选择图片
+                        p 或者拖动图片到此区域。
+                        form.upload-form(method='post',action='#{adminPath}/gallery/upload/#{album.name}',enctype='multipart/form-data')
+                            input.fileinput(type='file', name='iamge', accept='image/*',multiple)
+                    .db-img-list
+                        .upload-header
+                            span 上传相片
+                            a.start-upload-all(href='javascript:;') 开始上传
+                            a.close-upload(href='javascript:;') 取消
+                        .upload-helper
+                            a.add-more(href='javascript:;') 添加图片
+                            a.remove-all(href='javascript:;') 移除所有图片
+                        table
+                            thead
+                                th 文件名称
+                                th 文件大小
+                                th 上传进度
+                                th 开始上传
+                                th 取消上传
+                            tbody
 
-    
 
 block admin_script
     script(type='text/javascript', src='/js/jquery.ui.widget.js')
-    script(type='text/javascript', src='/js/jquery.blueimp-gallery.min.js')
     script(type='text/javascript', src='/js/jquery.iframe-transport.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/blueimp-gallery.min.js')
     script.
-        $("#fileupload").fileupload({
-            url: "#{adminPath}/gallery/upload/#{album.name}",
-            dataType: "json",
+        document.getElementById('links').onclick = function (event) {
+            event = event || window.event;
+            var target = event.target || event.srcElement,
+                link = target.src ? target.parentNode : target,
+                options = {index: link, event: event},
+                links = this.getElementsByTagName('a');
+            blueimp.Gallery(links, options);
+        };
+
+        $('.db-upload-picker').on('click', function () {
+            $('.fileinput').trigger('click');
         });
+
+        $('#uploader').fileupload({
+            dropZone: $('#uploader'),
+            autoUpload: true,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+
+        }).on('fileuploadadd', function (e, data) {
+            $('.db-choose-img').hide();
+            $('.db-img-list').show();
+            $.each(data.files, function (index, file) {
+                var size = file.size/(1024*1024) > 1 ? Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K'
+                var singleFile = $('<tr>')
+                                    .append($('<td>').html(file.name))
+                                    .append($('<td>').html(size))
+                                    .append($('<td><span class="file-progress"><span class="file-progress-inner"></span></span></td>'))
+                                    .append($('<td><button class="start-upload">上传</button></td>'))
+                                    .append($('<td><button class="cancel-upload">取消</button></td>'))
+                $('.db-img-list tbody').append(singleFile);
+            });
+            //- console.log(data)
+
+        }).on('fileuploadstart', function (e, data) {
+            //- $('.upload-progress').show();
+            console.log(['start', data])
+
+        }).on('fileuploadprogress', function (e, data) {
+            //- var percentage = parseInt(data.loaded/data.total * 100, 10);
+            //- $('.progress-inner').animate({
+            //-     width: percentage + '%'
+            //- });
+            console.log(['progress', data.index]);
+
+        }).on('fileuploaddone', function (e, data) {
+            //- $('.upload-progress').hide();
+            //- $('.preview-container').show();
+            //- var imgUrl = '/static/#{locals.current_user.uid}/content/' + $.parseJSON(data.response().result).files[0].name
+            //- $('.preview-container img').remove();
+            //- $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
+            //- $('.imgurl input').val(imgUrl).focus();
+            console.log(['success', data])
+
+        }).on('fileuploadfail', function (e, data) {
+            //- $('.upload-progress').hide();
+            //- $('.upload-fail').show();
+            //- $('.upload-error-text').html(data.textStatus);
+            //- $('.upload-error-detail').html(data.errorThrown);
+        });  
+
+        $('.close-upload').on('click', function () {
+            $('.db-upload-container').fadeOut(200);
+        });
+        
+        $('.upload-btn').on('click', function () {
+            $('.db-upload-container').fadeIn(200);
+        });
+
+        $('body').on('click', function (event) {
+            if (! $(event.target).hasClass('upload-btn') && $(event.target).parents('.db-upload-inner').length === 0) {
+                $('.db-upload-container').fadeOut(200);
+            }
+        });
+
+        $('.add-more').on('click', function () {
+            $('.fileinput').trigger('click');
+        });
+
+        $('.remove-all').on('click', function () {
+            console.log($('#uploader').fileupload('active'));
+        });
+block admin_css
+    link(rel='stylesheet', href='/css/blueimp-gallery.min.css')

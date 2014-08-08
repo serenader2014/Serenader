@@ -47,28 +47,36 @@ module.exports.getUserPublicAlbum = function (user, callback) {
 };
 
 module.exports.increaseCount = function (name) {
-    Album.find({name: name}, function (err, a) {
+    Album.findOne({name: name}, function (err, a) {
         if (err) {
             console.error(err);
             return false;
         }
         if (a) {
-            Album.findByIdAndUpdate({name: name}, {
+            Album.findOneAndUpdate({name: a.name}, {
                 count: a.count + 1
+            }, function (err, a) {
+                if (err) {
+                    console.error(err);
+                }
             });
         }
     });
 };
 
 module.exports.decreaseCount = function (name) {
-    Album.find({name: name}, function (err, a) {
+    Album.findOne({name: name}, function (err, a) {
         if (err) {
             console.error(err);
             return false;
         }
         if (a) {
-            Album.findByIdAndUpdate({name: name}, {
+            Album.findOnedAndUpdate({name: a.name}, {
                 count: a.count - 1
+            }, function (err, a) {
+                if (err) {
+                    console.error(err);
+                }
             });
         }
     });
