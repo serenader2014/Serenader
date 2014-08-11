@@ -4,19 +4,19 @@ var config = require('../config').config;
 var Setting = require('../proxy').setting;
 var Category = require('../proxy').category;
 var User = require('../proxy').user;
-var upload = require('jquery-file-upload-middleware');
+// var upload = require('jquery-file-upload-middleware');
 
 
 function route (app, req, res, next) {
-    upload.configure({
-        uploadDir: config.upload_dir,
-        imageVersions: {
-            thumbnail: {
-                width: 100,
-                height: 100
-            }
-        }
-    });
+    // upload.configure({
+    //     uploadDir: config.upload_dir,
+    //     imageVersions: {
+    //         thumbnail: {
+    //             width: 100,
+    //             height: 100
+    //         }
+    //     }
+    // });
     Setting.getSetting(function (err, setting) {
         if (err) process.exit(1);
 

@@ -1,4 +1,4 @@
-var upload = require('jquery-file-upload-middleware');
+var upload = require('blueimp-file-upload-expressjs');
 var validator = require('validator');
 var xss = require('xss');
 
@@ -10,6 +10,8 @@ var Image = require('../../proxy').image;
 var root = require('../../config').config.root_dir + '/data/';
 
 var errorHandling = require('../../routes').error;
+
+var userName,album;
 
 module.exports = function (router) {
     router.get('/gallery', auth_user, function (req, res, next) {
@@ -77,8 +79,8 @@ module.exports = function (router) {
     });
 
     router.post('/gallery/upload/:album', auth_user, function (req, res, next) {
-        var album =  validator.trim(xss(decodeURIComponent(req.params.album)));
-        var userName = req.session.user.uid;
+        album =  validator.trim(xss(decodeURIComponent(req.params.album)));
+        userName = req.session.user.uid;
         // var desc = validator.trim(xss(req.body.desc));
 
         Album.getOneAlbum(album, function (err, a) {
@@ -89,28 +91,48 @@ module.exports = function (router) {
             if (a) {
                 if (a.user === userName) {
                     var type = a.private ? 'private' : 'public';
-                    upload.fileHandler({
-                        uploadDir: function () {
-                            return root + type + '/' + userName + '/gallery/' + album;
-                        },
-                        uploadUrl: req.url
-                    })(req, res, next);
-                    
 
-                    upload.on('end', function (fileInfo) {
-                        console.log('count');
-                        Image.addImage({
-                            path: '/static/'+userName+'/gallery/'+ album + '/' + fileInfo.name,
-                            desc: '',
-                            album: album
-                        }, function (err) {
-                            if (err) {
-                                console.error(err);
-                                return false;
-                            }
-                            console.log('add image');
+                    var opt = {
+                        tmpDir: root + 'tmp',
+                        uploadDir: root + type + '/' + userName + '/gallery/' + album,
+                        uploadUrl: req.url,
+                        maxPostSize: 11000000000,
+                        minFileSize:  1,
+                        maxFileSize:  10000000000,
+                        acceptFileTypes:  /.+/i,
+                        inlineFileTypes:  /\.(gif|jpe?g|png)/i,
+                        imageTypes:  /\.(gif|jpe?g|png)/i,
+                        imageVersions: {
+                            width:  150,
+                            height: 150
+                        },
+                        accessControl: {
+                            allowOrigin: '*',
+                            allowMethods: 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
+                            allowHeaders: 'Content-Type, Content-Range, Content-Disposition'
+                        },
+                    };
+
+                    var uploader = upload(opt);
+
+                    uploader.post(req, res, function (fileInfo) {
+                        fileInfo.files.forEach(function (file, index) {
+                            Image.addImage({
+                                path: '/static/'+userName+'/gallery/'+ album + '/' + file.name,
+                                desc: '',
+                                album: album
+                            }, function (err) {
+                                if (err) {
+                                    console.error(err);
+                                    return false;
+                                }
+                                res.send(fileInfo);
+                            });
                         });
                     });
+
+                    
+
                 } else {
                     errorHandling(res, { error: '您无权上传图片到该相册中。', type: 403});
                     return false;

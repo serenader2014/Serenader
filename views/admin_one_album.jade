@@ -4,7 +4,7 @@ block album
         h2.db-album-name #{album.name}
         .db-upload-img
             a.upload-btn(href='javascript:;') 上传照片
-        .images#links(data-type='#{images}')
+        .images#links
             - if (images && Object.prototype.toString.call(images) === '[object Array]')
                 - each img in images
                     a.db-img-container(href='#{img.path}')
@@ -72,7 +72,7 @@ block admin_script
             dropZone: $('#uploader'),
             autoUpload: true,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-
+            singleFileUploads: true
         }).on('fileuploadadd', function (e, data) {
             $('.db-choose-img').hide();
             $('.db-img-list').show();
@@ -90,14 +90,14 @@ block admin_script
 
         }).on('fileuploadstart', function (e, data) {
             //- $('.upload-progress').show();
-            console.log(['start', data])
+            console.log(['start', data, arguments])
 
         }).on('fileuploadprogress', function (e, data) {
             //- var percentage = parseInt(data.loaded/data.total * 100, 10);
             //- $('.progress-inner').animate({
             //-     width: percentage + '%'
             //- });
-            console.log(['progress', data.index]);
+            console.log(['progress', data, arguments]);
 
         }).on('fileuploaddone', function (e, data) {
             //- $('.upload-progress').hide();
@@ -106,7 +106,7 @@ block admin_script
             //- $('.preview-container img').remove();
             //- $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
             //- $('.imgurl input').val(imgUrl).focus();
-            console.log(['success', data])
+            console.log(['success', data, arguments])
 
         }).on('fileuploadfail', function (e, data) {
             //- $('.upload-progress').hide();

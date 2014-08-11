@@ -222,11 +222,10 @@ block admin_script
             }).on('fileuploaddone', function (e, data) {
                 $('.upload-progress').hide();
                 $('.preview-container').show();
-                var imgUrl = '/static/#{locals.current_user.uid}/content/' + $.parseJSON(data.response().result).files[0].name
+                var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
                 $('.preview-container img').remove();
                 $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
                 $('.imgurl input').val(imgUrl).focus();
-
             }).on('fileuploadfail', function (e, data) {
                 $('.upload-progress').hide();
                 $('.upload-fail').show();
