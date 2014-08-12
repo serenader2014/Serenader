@@ -1,52 +1,64 @@
 extends admin
 block album
     .db-album-detail
-        h2.db-album-name #{album.name}
-        .db-upload-img
-            a.upload-btn(href='javascript:;') 上传照片
-        .images#links
-            - if (images && Object.prototype.toString.call(images) === '[object Array]')
-                - each img in images
-                    a.db-img-container(href='#{img.path}')
-                        span.db-img(style='background-image:url(#{img.path})')
-                        span.db-img-desc #{img.desc}
-            - else if (images && typeof images === 'object')
-                a.db-img-container(href='#{images.path}')
-                    span.db-img(style='background-image:url(#{images.path})')
-                    span.db-img-desc #{images.desc}
-            .blueimp-gallery.blueimp-gallery-controls#blueimp-gallery
-                .slides
-                h3.title
-                a.prev
-                a.next
-                a.close
-                a.play-pause
-                ol.indicator
-        .db-upload-container
-            .db-upload-inner
-                .db-inner-wrapper#uploader
-                    .db-choose-img
-                        img(src='/img/image.png')
-                        a.db-upload-picker(href='javascript:;') 选择图片
-                        p 或者拖动图片到此区域。
-                        form.upload-form(method='post',action='#{adminPath}/gallery/upload/#{album.name}',enctype='multipart/form-data')
-                            input.fileinput(type='file', name='iamge', accept='image/*',multiple)
-                    .db-img-list
-                        .upload-header
-                            span 上传相片
-                            a.start-upload-all(href='javascript:;') 开始上传
-                            a.close-upload(href='javascript:;') 取消
-                        .upload-helper
-                            a.add-more(href='javascript:;') 添加图片
-                            a.remove-all(href='javascript:;') 移除所有图片
-                        table
-                            thead
-                                th 文件名称
-                                th 文件大小
-                                th 上传进度
-                                th 开始上传
-                                th 取消上传
-                            tbody
+        .db-album-wrapper
+            .db-album-info
+                .db-album-cover
+                    .cover(style='background-image: url(#{album.cover})')
+                h2.db-album-name
+                    p #{album.name}
+                    a.upload-btn(href='javascript:;')
+                        i.glyphicon.glyphicon-cloud-upload.upload-icon
+                        | 上传相片
+                    a.edit-btn(href='javascript:;')
+                        i.glyphicon.glyphicon-edit.edit-icon
+                        | 编辑
+                .db-album-desc #{album.desc}
+            .images#links
+                - if (images.length === 0)
+                    p.no-image This album doesn't have any image yet!
+                - if (images && Object.prototype.toString.call(images) === '[object Array]')
+                    - each img in images
+                        a.db-img-container(href='#{img.path}')
+                            img.db-img(src='#{img.path}')
+                            span.db-img-desc #{img.desc}
+                - else if (images && typeof images === 'object')
+                    a.db-img-container(href='#{images.path}')
+                        span.db-img(style='background-image:url(#{images.path})')
+                        span.db-img-desc #{images.desc}
+                .blueimp-gallery.blueimp-gallery-controls#blueimp-gallery
+                    .slides
+                    h3.title
+                    a.prev
+                    a.next
+                    a.close
+                    a.play-pause
+                    ol.indicator
+            .db-upload-container
+                .db-upload-inner
+                    .db-inner-wrapper#uploader
+                        .db-choose-img
+                            img(src='/img/image.png')
+                            a.db-upload-picker(href='javascript:;') 选择图片
+                            p 或者拖动图片到此区域。
+                            form.upload-form(method='post',action='#{adminPath}/gallery/upload/#{album.name}',enctype='multipart/form-data')
+                                input.fileinput(type='file', name='image', accept='image/*',multiple)
+                        .db-img-list
+                            .upload-header
+                                span 上传相片
+                                a.start-upload-all(href='javascript:;') 开始上传
+                                a.close-upload(href='javascript:;') 取消
+                            .upload-helper
+                                a.add-more(href='javascript:;') 添加图片
+                                a.remove-all(href='javascript:;') 移除所有图片
+                            table
+                                thead
+                                    th 文件名称
+                                    th 文件大小
+                                    th 上传进度
+                                    th 开始上传
+                                    th 取消上传
+                                tbody
 
 
 block admin_script
@@ -55,14 +67,14 @@ block admin_script
     script(type='text/javascript', src='/js/jquery.fileupload.js')
     script(type='text/javascript', src='/js/blueimp-gallery.min.js')
     script.
-        document.getElementById('links').onclick = function (event) {
-            event = event || window.event;
-            var target = event.target || event.srcElement,
-                link = target.src ? target.parentNode : target,
-                options = {index: link, event: event},
-                links = this.getElementsByTagName('a');
-            blueimp.Gallery(links, options);
-        };
+        //- document.getElementById('links').onclick = function (event) {
+        //-     event = event || window.event;
+        //-     var target = event.target || event.srcElement,
+        //-         link = target.src ? target.parentNode : target,
+        //-         options = {index: link, event: event},
+        //-         links = this.getElementsByTagName('a');
+        //-     blueimp.Gallery(links, options);
+        //- };
 
         $('.db-upload-picker').on('click', function () {
             $('.fileinput').trigger('click');
@@ -70,7 +82,7 @@ block admin_script
 
         $('#uploader').fileupload({
             dropZone: $('#uploader'),
-            autoUpload: true,
+            autoUpload: false,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
             singleFileUploads: true
         }).on('fileuploadadd', function (e, data) {
@@ -124,7 +136,9 @@ block admin_script
         });
 
         $('body').on('click', function (event) {
-            if (! $(event.target).hasClass('upload-btn') && $(event.target).parents('.db-upload-inner').length === 0) {
+            if (! $(event.target).hasClass('upload-btn') && 
+                ! $(event.target).hasClass('upload-icon') &&
+                $(event.target).parents('.db-upload-inner').length === 0) {
                 $('.db-upload-container').fadeOut(200);
             }
         });

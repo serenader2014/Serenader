@@ -1,98 +1,99 @@
 extends admin
 block files
-    div.col-md-12
-        ol.breadcrumb.breadcrumb-arrow
-            - var i = '';
-            - baseLink.substring(baseLink.indexOf('/')+1).split('/').forEach(function (item, index) {
-                - i = i + item + '/';
-                li
-                    a(href='#{adminPath}/#{i}')  #{item}
-            - })
-    div.col-md-12
-        div.list-group
-            - var p = baseLink.split('/files')[1];
-            - folders.forEach(function (item, index) {
-                li.list-group-item
-                    p.list-group-item-heading
-                        i.glyphicon.glyphicon-folder-open
-                        a.db-filename(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
-                        div.btn-group
-                            button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-                                | 菜单
-                                span.caret
-                                span.sr-only Toggle dropdown
-                            ul.dropdown-menu(role='menu')
-                                li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
-                                li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除
-                    p
-                        span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
-                        span 修改于 #{item.lastModifiedTime.getFullYear()}年#{item.lastModifiedTime.getMonth()+1}月#{item.lastModifiedTime.getDate()}日， #{item.lastModifiedTime.getHours()} 时 #{item.lastModifiedTime.getMinutes()} 分 #{item.lastModifiedTime.getSeconds()} 秒,
-            - })
-            - files.forEach(function (item, index) {
-                li.list-group-item
-                    p.list-group-item-heading
-                        i.glyphicon.glyphicon-file
-                        - var type = (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') ? 'zip':'';
-                        - if (type === 'zip') {
-                            a.db-filename(href='#{adminPath}/files/zip/preview#{p}/#{item.name}') #{item.name}
-                        - } else {
+    .db-file-wrapper
+        .col-md-12
+            ol.breadcrumb.breadcrumb-arrow
+                - var i = '';
+                - baseLink.substring(baseLink.indexOf('/')+1).split('/').forEach(function (item, index) {
+                    - i = i + item + '/';
+                    li
+                        a(href='#{adminPath}/#{i}')  #{item}
+                - })
+        .col-md-12
+            div.list-group
+                - var p = baseLink.split('/files')[1];
+                - folders.forEach(function (item, index) {
+                    li.list-group-item
+                        p.list-group-item-heading
+                            i.glyphicon.glyphicon-folder-open
                             a.db-filename(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
-                        - }
-                        div.btn-group
-                            button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
-                                | 菜单
-                                span.caret
-                                span.sr-only Toggle dropdown
-                            ul.dropdown-menu(role='menu')
-                                li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
-                                - if (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') {
-                                    li: a.db-unzip-btn(href='#{adminPath}/files/zip/unzip#{p}/#{item.name}') 解压
-                                - }
-                                li: a(href='#{adminPath}#{baseLink}/#{item.name}?download=direct') 下载
-                                li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除                        
-                    p
-                        span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
-                        span 修改于 #{item.lastModifiedTime.getFullYear()}年#{item.lastModifiedTime.getMonth()+1}月#{item.lastModifiedTime.getDate()}日， #{item.lastModifiedTime.getHours()} 时 #{item.lastModifiedTime.getMinutes()} 分 #{item.lastModifiedTime.getSeconds()}秒 ,
-                        span 文件大小： #{Math.ceil(item.size/1024)} kb 
-                    
-            - })
-    div.modal.fade#delete-file
-        div.modal-dialog
-            div.modal-content
-                div.modal-header
-                    button.close(type='button', data-dismiss='modal')
-                        span(aria-hidden='true') &times;
-                        span.sr-only Close
-                    h4.modal-title 删除文件
-                div.modal-body
-                    p 该操作将会删除该文件。请确定是否执行该操作。
-                div.modal-footer
-                    form.db-delete-form(method='post', action='')
-                        button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                        button.btn.btn-primary(type='submit') 确定
-    div.modal.fade#rename-file
-        div.modal-dialog
-            div.modal-content
-                form.db-rename-form(method='post', action='')
-                    div.modal-header
+                            .btn-group
+                                button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                                    | 菜单
+                                    span.caret
+                                    span.sr-only Toggle dropdown
+                                ul.dropdown-menu(role='menu')
+                                    li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
+                                    li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除
+                        p
+                            span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
+                            span 修改于 #{item.lastModifiedTime.getFullYear()}年#{item.lastModifiedTime.getMonth()+1}月#{item.lastModifiedTime.getDate()}日， #{item.lastModifiedTime.getHours()} 时 #{item.lastModifiedTime.getMinutes()} 分 #{item.lastModifiedTime.getSeconds()} 秒,
+                - })
+                - files.forEach(function (item, index) {
+                    li.list-group-item
+                        p.list-group-item-heading
+                            i.glyphicon.glyphicon-file
+                            - var type = (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') ? 'zip':'';
+                            - if (type === 'zip') {
+                                a.db-filename(href='#{adminPath}/files/zip/preview#{p}/#{item.name}') #{item.name}
+                            - } else {
+                                a.db-filename(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
+                            - }
+                            .btn-group
+                                button.btn.btn-default.dropdown-toggle(data-toggle='dropdown')
+                                    | 菜单
+                                    span.caret
+                                    span.sr-only Toggle dropdown
+                                ul.dropdown-menu(role='menu')
+                                    li: a.db-rename-btn(href='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') 重命名
+                                    - if (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') {
+                                        li: a.db-unzip-btn(href='#{adminPath}/files/zip/unzip#{p}/#{item.name}') 解压
+                                    - }
+                                    li: a(href='#{adminPath}#{baseLink}/#{item.name}?download=direct') 下载
+                                    li: a.db-delete-btn(href='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') 删除                        
+                        p
+                            span 创建于 #{item.createTime.getFullYear()}年#{item.createTime.getMonth()+1}月#{item.createTime.getDate()}日， #{item.createTime.getHours()} 时 #{item.createTime.getMinutes()} 分 #{item.createTime.getSeconds()} 秒,
+                            span 修改于 #{item.lastModifiedTime.getFullYear()}年#{item.lastModifiedTime.getMonth()+1}月#{item.lastModifiedTime.getDate()}日， #{item.lastModifiedTime.getHours()} 时 #{item.lastModifiedTime.getMinutes()} 分 #{item.lastModifiedTime.getSeconds()}秒 ,
+                            span 文件大小： #{Math.ceil(item.size/1024)} kb 
+                        
+                - })
+        .modal.fade#delete-file
+            .modal-dialog
+                .modal-content
+                    .modal-header
                         button.close(type='button', data-dismiss='modal')
                             span(aria-hidden='true') &times;
                             span.sr-only Close
-                        h4.modal-title 重命名文件
-                    div.modal-body
-                        p 请输入新的文件名称
-                        input.db-new-name.form-control(type='text',name='name', value='')
-                    div.modal-footer
+                        h4.modal-title 删除文件
+                    .modal-body
+                        p 该操作将会删除该文件。请确定是否执行该操作。
+                    .modal-footer
+                        form.db-delete-form(method='post', action='')
                             button.btn.btn-default(type='button', data-dismiss='modal') 取消
                             button.btn.btn-primary(type='submit') 确定
+        .modal.fade#rename-file
+            .modal-dialog
+                .modal-content
+                    form.db-rename-form(method='post', action='')
+                        .modal-header
+                            button.close(type='button', data-dismiss='modal')
+                                span(aria-hidden='true') &times;
+                                span.sr-only Close
+                            h4.modal-title 重命名文件
+                        .modal-body
+                            p 请输入新的文件名称
+                            input.db-new-name.form-control(type='text',name='name', value='')
+                        .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                                button.btn.btn-primary(type='submit') 确定
 block admin_script
-    script(type='text/javascript')
-        | $(".db-delete-btn").on("click", function (event) {
-        |     event.preventDefault();
-        |     $(".db-delete-form").attr("action", $(this).attr("href"));
-        |     })
-        | $(".db-rename-btn").on("click", function (event) {
-        |     event.preventDefault();
-        |     $(".db-rename-form").attr("action", $(this).attr("href"));
-        |     $(".db-new-name").val($(this).parents(".list-group-item").find(".db-filename").html()).focus();
-        |     })
+    script(type='text/javascript').
+        $(".db-delete-btn").on("click", function (event) {
+            event.preventDefault();
+            $(".db-delete-form").attr("action", $(this).attr("href"));
+        });
+        $(".db-rename-btn").on("click", function (event) {
+            event.preventDefault();
+            $(".db-rename-form").attr("action", $(this).attr("href"));
+            $(".db-new-name").val($(this).parents(".list-group-item").find(".db-filename").html()).focus();
+        });

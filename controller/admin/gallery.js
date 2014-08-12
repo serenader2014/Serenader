@@ -39,6 +39,7 @@ module.exports = function (router) {
             name: name,
             desc: desc,
             user: userName,
+            cover: '/img/default_album.png',
             private: private
         }, function (err) {
             if (err) {

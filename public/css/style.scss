@@ -309,32 +309,27 @@ input[type='text']:focus {
 // Admin gallery section
 
 .db-gallery {
-  padding: 6.4rem 1rem 0 1rem;
+  padding: 6.4rem 1rem 2rem 1rem;
   height: 100%;
   overflow: auto;
-
-  .db-new-gallery {
-    display: inline-block;
-    float: left;
-    width: 22rem;
-    height: 25rem;
-    padding: 1rem;
-    border-radius: 0.3rem;
-    background: #FFFFFF;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-  }
 
   .album-name {
     padding: 0.8rem 1.5rem;
     height: auto;
     border: 1px solid #E0E0E0;
     border-radius: 0;
+    font-size: 1.5rem;
+  }
+
+  .album-private {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .album-desc {
     padding: 1rem;
     margin: 1rem 0;
-    height: 11rem;
+    height: 13rem;
     border-radius: 0;
     border: 1px solid #E0E0E0;
   }
@@ -343,6 +338,8 @@ input[type='text']:focus {
     display: block;
     padding: 1rem;
     width: 100%;
+    height: 3.5rem;
+    line-height: 1.5rem;
     font-size: 1.5rem;
     color: #FFFFFF;
     text-transform: uppercase;
@@ -353,11 +350,9 @@ input[type='text']:focus {
 
   .db-gallery-list {
     display: inline-block;
-    margin-left: 1.5rem;
 
     ul {
       padding: 0;
-      margin: 0;
       list-style: none;
     }
 
@@ -366,72 +361,134 @@ input[type='text']:focus {
       display: block;
       clear: both;
     }
+
+    li {
+      display: inline-block;
+      float: left;
+      width: 22rem;
+      height: 27rem;
+      padding: 1rem;
+      margin: 1.5rem;
+      border-radius: 0.3rem;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      background: #FFFFFF;
+
+      a {
+        display: block;
+      }
+
+      i {
+        margin-right: 1rem;
+        font-size: 1.3rem;
+        color: #9C9C9C;
+      }
+
+      .db-album-cover {
+        display: block;
+        width: 20rem;
+        height: 15rem;
+        background-color: #EEEEEE;
+        background-size: cover;
+        background-position: center;
+      }
+
+      .db-album-name {
+        display: block;
+        height: 3rem;
+        margin: 0.8rem 0 1rem;
+        padding: 0.5rem 0;
+        border-top: 1px solid #EEEEEE;
+        color: #555555;
+        font-size: 1.8rem;
+        text-align: center;
+        text-transform: uppercase;
+        word-wrap: break-word;
+        word-break: break-all;
+        line-height: 3rem;
+        overflow: hidden;
+      }
+
+      .db-album-desc {
+        display: block;
+        text-transform: capitalize;
+        max-height: 4rem;
+        overflow: hidden;
+      }
+      
+    }
   }
 
-  .single-album {
-    display: inline-block;
-    float: left;
-    width: 22rem;
-    height: 25rem;
-    padding: 1rem;
-    margin-right: 1.5rem;
-    border-radius: 0.3rem;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    background: #FFFFFF;
-
-    a {
-      display: block;
-    }
-
-    i {
-      margin-right: 1rem;
-      font-size: 1.3rem;
-      color: #9C9C9C;
-    }
-
-    .db-album-cover {
-      display: block;
-      width: 20rem;
-      height: 15rem;
-      background-color: #EEEEEE;
-    }
-
-    .db-album-name {
-      display: block;
-      margin: 0.8rem 0 1rem;
-      color: #555555;
-      font-size: 1.8rem;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .db-album-desc {
-      display: block;
-      text-transform: capitalize;
-      max-height: 4rem;
-      overflow: hidden;
-    }
-  }
 }
 
 .db-album-detail {
-  padding: 6.4rem 1rem 0 1rem;
+  padding: 6.4rem 1rem 1rem 1rem;
   height: 100%;
   overflow: auto;
 
+  .db-album-wrapper {
+    position: relative;
+    height: 100%;
+    padding-right: 28rem;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    background: #FFFFFF;
+  }
+
   .images {
     display: inline-block;
+    height: 100%;
+    width: 100%;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .no-image {
+    margin-top: 5rem;
+    text-align: center;
+    color: #CCCCCC;
+  }
+
+  .db-album-info {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 28rem;
+    padding: 2rem;
+    background: #F7F7F7;
+    padding-bottom: 1rem;
+    overflow-y:auto; 
+    box-shadow: -3px 3px 5px rgba(0,0,0,0.1);    
+  }
+
+  .db-album-cover {
+    .cover {
+      width: 18rem;
+      height: 18rem;
+      margin: 0 auto;
+      border-radius: 100%;
+      box-shadow: 0 0 3px rgba(0,0,0,0.1);
+      background-size: cover;
+      background-position: center;
+      background-color: #EEEEEE;
+    }
   }
 
   .db-album-name {
-    margin: 0;
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+    text-transform: uppercase;
+    color: #212E3B;
+    font-size: 2.8rem;
+    border-bottom: 1px solid #ECECEC;
   }
 
   .db-img-container {
     display: inline-block;
     padding: 1rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    background: #FFFFFF;
+    margin: 0 1rem 1rem 0;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    border: 1px solid #E8E8E8;
+    background: #FAFAFA;
   }
 
   .db-img {
@@ -440,7 +497,25 @@ input[type='text']:focus {
     height: 16rem;
     background-size: cover;
     background-position: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3) inset;
+  }
+
+  .upload-btn, .edit-btn {
+    display: inline-block;
+    padding: 1rem;
+    margin-right: 1rem;
+    font-size: 1.5rem;
+    color: #5D81A6;
+    border: 1px solid;
+    border-radius: 0.3rem; 
+    background: #FFFFFF;
+
+    &:hover {
+      color: #3BAFDA;
+    }
+  }
+
+  .upload-icon, .edit-icon {
+    margin-right: 0.5rem;
   }
 
   .db-upload-container {
@@ -786,7 +861,7 @@ input[type='text']:focus {
 .db-editor-wrapper {
   position: absolute;
   top: 5.2rem;
-  bottom: 0;
+  bottom: 1rem;
   left: 7rem;
   right: 0;
   padding: 1rem 1rem 0 1rem;
@@ -1068,6 +1143,13 @@ input[type='text']:focus {
     color: #384E63;
     line-height: 2.3rem;
   }
+}
+
+
+// admin panel file page
+
+.db-file-wrapper {
+  padding: 6.4rem 1rem 2rem 1rem;
 }
 
 

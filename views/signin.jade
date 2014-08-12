@@ -1,11 +1,12 @@
 extends layout
 block extra_css
-    style
-        | .db-sign {
-        | background: url(/static/background/#{background});
-        | background-position: center;
-        | background-size: cover;
-        | }
+    - var bg = background === '/img/default_background.jpg' ? '/img/default_background.jpg' : '/static/background/' + background;
+    style.
+        .db-sign {
+        background: url(#{bg});
+        background-position: center;
+        background-size: cover;
+        }
 block content
     .db-sign
         form.db-sign-form(action='#{adminPath}/signin', method='post')

@@ -1,17 +1,17 @@
 extends admin
 block gallery
     .db-gallery
-        .db-new-gallery
-            form.db-new-form(method='post', action='#{adminPath}/gallery/new')
-                input.form-control.album-name(type='text', name='name', placeholder='Album name')
-                textarea.form-control.album-desc(name='desc', placeholder='Album desc')
-                div.checkbox.album-private
-                    input(type='checkbox', name='private', checked='checked', id='flat-checkbox-1')
-                    label(for='flat-checkbox-1')
-                        | 私密相册
-                button.album-btn(type='submit') submit
         .db-gallery-list
             ul
+                li.db-new-gallery
+                    form.db-new-form(method='post', action='#{adminPath}/gallery/new')
+                        input.form-control.album-name(type='text', name='name', placeholder='Album name')
+                        textarea.form-control.album-desc(name='desc', placeholder='Album desc')
+                        div.checkbox.album-private
+                            input(type='checkbox', name='private', checked='checked', id='flat-checkbox-1')
+                            label(for='flat-checkbox-1')
+                                | 私密相册
+                        button.album-btn(type='submit') submit
                 - albums.forEach(function (item, index) {
                     li.single-album
                         a(href='#{adminPath}/gallery/#{item.name}') 

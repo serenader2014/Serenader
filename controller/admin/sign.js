@@ -10,11 +10,18 @@ var errorHandling = require('../../routes').error;
 var root = require('../../config').config.root_dir;
 
 module.exports = function (router) {
+    var bg;
+    if (list.length === 0) {
+        bg = '/img/default_background.jpg';
+    } else {
+        bg = list[Math.floor(Math.random()*list.length)];
+    }
+
     router.get('/signin', function (req, res, next) { 
         if (res.locals.current_user) {
             res.redirect(adminPath);
         } else {
-            res.render('signin', {background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signin', {background: bg});
         }
     });
 
@@ -24,7 +31,7 @@ module.exports = function (router) {
         var password = xss(validator.trim(req.body.password));
 
         if (! validator.isEmail(email)) {
-            res.render('signin', {error: '请输入有效的邮箱。',background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signin', {error: '请输入有效的邮箱。',background: bg});
         }
 
         User.getOneUserByEmail(email, function(err, u) {
@@ -51,7 +58,7 @@ module.exports = function (router) {
         if (res.locals.current_user) {
             res.redirect(adminPath);
         } else {
-            res.render('signup', {background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signup', {background: bg});
         }
     });
 
@@ -61,22 +68,22 @@ module.exports = function (router) {
         var password = xss(validator.trim(req.body.password));
 
         if (! uid || ! email || ! password) {
-            res.render('signup', {error: '请填写完整注册信息。',background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signup', {error: '请填写完整注册信息。',background: bg});
             return false;
         }
 
         if (! validator.isAlphanumeric(uid)) {
-            res.render('signup', {error: '用户名只能包含数字和字母。',background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signup', {error: '用户名只能包含数字和字母。',background: bg});
             return false;
         }
 
         if (! validator.isEmail(email)) {
-            res.render('signup', {error: '请输入有效的邮箱。',background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signup', {error: '请输入有效的邮箱。',background: bg});
             return false;
         }
 
         if (! validator.isLength(password, 6, 16)) {
-            res.render('signup', {error: '密码长度应该大于6位小于16位。',background: list[Math.floor(Math.random()*list.length)]});
+            res.render('signup', {error: '密码长度应该大于6位小于16位。',background: bg});
             return false;
         }
 
@@ -126,11 +133,11 @@ module.exports = function (router) {
                                     res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
                                 });
                             } else {
-                                res.render('signup', {error: '该Email已经被注册。请输入新的Email地址。',background: list[Math.floor(Math.random()*list.length)]});
+                                res.render('signup', {error: '该Email已经被注册。请输入新的Email地址。',background: bg});
                             }
                         });
                     } else {
-                        res.render('signup', {error: '该用户名已经被注册，请输入新的用户名。',background: list[Math.floor(Math.random()*list.length)]});
+                        res.render('signup', {error: '该用户名已经被注册，请输入新的用户名。',background: bg});
                     }
                 });
             }
