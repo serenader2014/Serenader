@@ -7,13 +7,13 @@ block album
                     .cover(style='background-image: url(#{album.cover})')
                 h2.db-album-name
                     p #{album.name}
-                    a.upload-btn(href='javascript:;')
-                        i.glyphicon.glyphicon-cloud-upload.upload-icon
-                        | 上传相片
-                    a.edit-btn(href='javascript:;')
-                        i.glyphicon.glyphicon-edit.edit-icon
-                        | 编辑
                 .db-album-desc #{album.desc}
+                a.upload-btn(href='javascript:;')
+                    i.glyphicon.glyphicon-cloud-upload.upload-icon
+                    | 上传相片
+                a.edit-btn(href='javascript:;')
+                    i.glyphicon.glyphicon-edit.edit-icon
+                    | 编辑
             .images#links
                 - if (images.length === 0)
                     p.no-image This album doesn't have any image yet!

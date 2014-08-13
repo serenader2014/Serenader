@@ -13,7 +13,9 @@ var root = config.root_dir + '/data/';
 
 module.exports = function (router) {
     router.get('/files', auth_user, function (req, res, next) {
-        res.redirect(adminPath + '/files/public');
+        res.render('admin_file_root', {
+            adminPath: adminPath, 
+        });
     });
     router.get('/files/:type', auth_user, function (req, res, next) {
         var url = parse(req.url);
@@ -68,7 +70,8 @@ module.exports = function (router) {
                             res.render('admin_file', {
                                 adminPath: adminPath, 
                                 locals: res.locals, 
-                                files: files, folders: folders, 
+                                files: files, 
+                                folders: folders, 
                                 baseLink: url.pathname
                             });
                         });
@@ -131,10 +134,16 @@ module.exports = function (router) {
         var pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
         fs.writeFile(pathname, newContent, {encoding: 'utf8'}, function (err) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                res.status(501).send({
+                    success: false,
+                    err: err
+                });
                 return false;
             } else {
-                res.redirect(adminPath+'/files/'+t+'/'+filePath+fileName);
+                res.send({
+                    success: true,
+                    err: ''
+                });
             }
         });
     });
@@ -294,8 +303,9 @@ module.exports = function (router) {
                 }
                 var fileName = acturalPath.substring(acturalPath.lastIndexOf('/')+1);
                 if (/txt|html|css|scss|sass|htm|xml|js|py|json|md|markdown|jade|php|xml/gi
-                    .test(fileName.substring(fileName.lastIndexOf('.')+1))) {    
+                    .test(fileName.substring(fileName.lastIndexOf('.')+1))) {
                     var mode = convertFileExtension(fileName.substring(fileName.lastIndexOf('.')+1));
+                    console.log(mode);
                     fs.readFile(pathname, {encoding:'utf8'}, function (err, data) {
                         if (err) {
                             errorHandling(res, { error: 'Read file error.', type: 500});
@@ -322,21 +332,25 @@ module.exports = function (router) {
 
 function convertFileExtension (fileName) {
     if (/html|xml|htm/i.test(fileName)) {
-        return {dependency: ['xml','htmlmixed'], mode: 'htmlmixed'};
+        return 'html';
     } else if (/css/i.test(fileName)) {
-        return {dependency: ['css'], mode: 'css'};
-    } else if (/scss|sass/i.test(fileName)) {
-        return {dependency: ['sass'], mode: 'sass'};
+        return 'css';
+    } else if (/scss/i.test(fileName)) {
+        return 'scss';
+    } else if (/sass/i.test(fileName)) {
+        return 'sass';
     } else if (/js|json/i.test(fileName)) {
-        return {dependency: ['javascript'], mode: 'javascript'};
+        return 'javascript';
     } else if (/jade/i.test(fileName)) {
-        return {dependency: ['javascript','css','xml','htmlmixed','jade'], mode: 'jade'};
+        return 'jade';
     } else if (/php/i.test(fileName)) {
-        return {dependency: ['htmlmixed','xml','javascript','css','clike','php'], mode: 'php'};
+        return 'php';
+    } else if (/md|markdown/i.test(fileName)) {
+        return 'markdown';
     } else if (/txt|md|markdown/i.test(fileName)) {
         return {dependency:[], mode: 'null'};
     } else if (/py/i.test(fileName)) {
-        return {dependency:['python'], mode: 'python'};
+        return 'python';
     }
 }
 

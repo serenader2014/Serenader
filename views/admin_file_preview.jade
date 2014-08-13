@@ -1,46 +1,66 @@
 extends admin
-block admin_css
-    link(rel='stylesheet', href='/css/codemirror.css')
-    link(rel='stylesheet', href='/theme/ambiance.css')
-
-
 
 block admin_script
-    script(type='text/javascript', src='/js/codemirror.js')
-    - mode.dependency.forEach(function (item, index) {
-        script(type='text/javascript', src='/mode/#{item}/#{item}.js')
-    - })
-    script(type='text/javascript')
-        | (function () {
-        |     var codeMirror = CodeMirror.fromTextArea($("#preview-file")[0], {
-        |         mode: '#{mode.mode}',    
-        |         indentUnit: 4,
-        |         lineNumbers: true,
-        |         lineWrapping: true,
-        |         readOnly: 'nocursor',
-        |         theme: 'ambiance'
-        |     });
-        |     $('.db-edit-btn').on('click', function (event) {
-        |         event.preventDefault();
-        |         codeMirror.setOption('readOnly',false);
-        |         codeMirror.focus();
-        |         $(this).after($('<button class="btn btn-default db-edit-submit" type="submit">确定</button>'))
-        |         });
-        | })()
+    script(type='text/javascript', src='/ace/ace.js')
+    script(type='text/javascript').
+        var editor = ace.edit('preview-file');
+        editor.session.setMode('ace/mode/#{mode}');
+        editor.setTheme('ace/theme/katzenmilch');
+        editor.session.setUseWrapMode(true);
+        editor.setFontSize(14);
+        editor.setReadOnly(true);
+
+        $('.db-edit-btn').on('click', function () {
+            if (editor.getReadOnly()) {
+                editor.setReadOnly(false);
+                $(this).html('取消');
+                $('.db-edit-save').show();
+            } else {
+                editor.setReadOnly(true);
+                $(this).html('编辑');
+                $('.db-edit-save').hide();
+            }
+        });
+
+        $('.db-edit-save').on('click', function () {
+            $.ajax({
+                type: 'POST',
+                url: $('#preview-file').data('url'),
+                data: {
+                    file: editor.getValue()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    $('.message')
+                        .find('.message-wrapper').html(data.success ? '修改成功' : '修改出错： ' + data.err)
+                        .addClass(data.success ? 'edit-success' : 'edit-error')
+                        .end()
+                        .fadeIn(200);
+                    setTimeout(function () {
+                        $('.message').fadeOut(200);
+                    }, 3000);
+                }
+            });
+        });
 
 block preview
-    div.col-md-12
-        ol.breadcrumb.breadcrumb-arrow
-            - var i = '';
-            - link.substring(link.indexOf('/')+1).split('/').forEach(function (item,index) {
-                - i = i + item + '/';
-                li: a(href='#{adminPath}/#{i}') #{item}
-            -   })
-    div.col-md-12
-        - var l = link.split('/');
-        - l.shift();
-        - l.shift();
-        - l = l.join('/');
-        form(method='post', action='#{adminPath}/files/edit/#{l}')
-            button.btn.btn-default.db-edit-btn 编辑
-            textarea#preview-file(name='file')=file
+    .db-file
+        .db-file-wrapper
+            .file-nav
+                ol
+                    - var i = '';
+                    - each item in link.substring(link.indexOf('/') + 1).split('/')
+                        - i = i + '/' + item;
+                        li
+                            a(href='#{adminPath}#{i}')  #{item} 
+                            span /
+                    button.db-edit-btn 编辑
+                    button.db-edit-save 保存
+            .file-preview
+                - var l = link.split('/');
+                - l.shift();
+                - l.shift();
+                - l = l.join('/');
+                #preview-file(data-url='#{adminPath}/files/edit/#{l}') #{file}
+            .message
+                .message-wrapper 修改成功.

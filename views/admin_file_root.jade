@@ -1,0 +1,33 @@
+extends admin
+block files
+    .db-file
+        .db-file-wrapper
+            .file-nav
+                ol
+                    li: a(href='#{adminPath}/files') files
+            .file-list
+                table.file-list-wrapper
+                    thead
+                        tr
+                            th Name
+                            th Create Time
+                            th Last Modified Time
+                            th Size
+                            th Actions
+                    tbody
+                        tr
+                            td
+                                i.glyphicon.glyphicon-folder-open
+                                a.db-filename(href='#{adminPath}/files/public') Public
+                            td 
+                            td 
+                            td 0
+                            td.db-action
+                        tr
+                            td
+                                i.glyphicon.glyphicon-folder-open
+                                a.db-filename(href='#{adminPath}/files/private') Private
+                            td 
+                            td 
+                            td 0
+                            td.db-action

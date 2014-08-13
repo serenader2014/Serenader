@@ -500,11 +500,12 @@ input[type='text']:focus {
   }
 
   .upload-btn, .edit-btn {
-    display: inline-block;
+    display: block;
     padding: 1rem;
-    margin-right: 1rem;
+    margin-top: 1rem;
     font-size: 1.5rem;
-    color: #5D81A6;
+    color: #2B5682;
+    text-align: center;
     border: 1px solid;
     border-radius: 0.3rem; 
     background: #FFFFFF;
@@ -1148,8 +1149,171 @@ input[type='text']:focus {
 
 // admin panel file page
 
-.db-file-wrapper {
-  padding: 6.4rem 1rem 2rem 1rem;
+.db-file {
+  padding: 6.4rem 1rem 0 1rem;
+  height: 100%;
+
+  .db-file-wrapper {
+    height: 100%;
+    padding-top: 3.5rem;
+    border: 5px solid #2BBFBD;
+    box-shadow: 0 0 10px rgba(8,8,8,0.1);
+    background: #FFFFFF;
+  }
+
+  .file-nav {
+    position: fixed;
+    top: 6.4rem;
+    left: 8rem;
+    right: 1rem;
+    padding: 1rem;
+    background: #2BBFBD;
+
+    ol {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    li {
+      display: inline-block;
+    }
+
+    a {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      margin: 0 0.5rem;
+      color: #FFFFFF;
+      font-size: 1.4rem;
+      line-height: 2rem;
+      text-shadow: 0 1px #26A3A1;
+
+      &:hover {
+        color: #26A3A1;
+        border-radius: 0.3rem;
+        text-shadow: 0 1px 0 #CCCCCC;
+        background: #FFFFFF;
+      }
+    }
+
+    span {
+      color: #FFFFFF;
+    }
+  }
+
+  .file-list {
+    height: 100%;
+    overflow: auto;
+  }
+
+  .file-list-wrapper {
+    width: 100%;
+    tbody {
+      tr {
+
+        width: 100%;
+        &:nth-child(odd) {
+          background: #F7F7F7;
+        }
+      }
+    }
+
+    .db-filename {
+      margin-left: 0.8rem;
+      text-shadow: 0 2px 2px #CECECE;
+      color: #333333;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    th {
+      padding: 1rem;      
+    }
+
+    td {
+      padding: 0.5rem 1rem;
+
+    }
+
+    .db-action {
+      button, a {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin-right: 1rem;
+        border: 1px solid #EEEEEE;
+        outline: none;
+        color: #FFFFFF;
+        border-radius: 0.5rem;
+        text-shadow: 0 1px 0 #2F8CAD;
+        background: #3BAFDA;
+
+        &:hover {
+          background: lighten(#3BAFDA, 5%);
+        }
+      }
+    }
+  }
+
+  .file-preview {
+    height: 100%;
+  }
+
+  #preview-file {
+    height: 100%;
+  }
+
+  .db-edit-btn, .db-edit-save {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1.1rem 2rem;
+    width: 7.5rem;
+    outline: none;
+    border: 1px solid #FFFFFF;
+    color: #2BBFBD;
+    text-decoration: underline;
+    background: #FFFFFF;
+  }
+
+  .db-edit-save {
+    display: none;
+    right: 7.5rem;
+    border-right: 1px solid;
+  }
+
+  .message {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    background: rgba(0,0,0,0.1);
+  }
+
+
+  .message-wrapper {
+    width: 40rem;
+    margin: 10rem auto 0;
+    padding: 1.5rem 2rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    background: #FFFFFF;
+
+  }
+  .edit-success {
+    color: #FFFFFF;
+    background: #5DDEC0;
+  }
+
+  .edit-error {
+    color: #FFFFFF;
+    background: #F16576;
+  }
 }
 
 
