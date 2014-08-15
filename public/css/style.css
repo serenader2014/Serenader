@@ -344,7 +344,7 @@ input[type='text']:focus {
     bottom: 0;
     width: 28rem;
     padding: 2rem;
-    background: #F7F7F7;
+    background: #FFFFFF;
     padding-bottom: 1rem;
     overflow-y: auto;
     box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.1); }
@@ -886,7 +886,7 @@ input[type='text']:focus {
   .db-file .db-file-wrapper {
     height: 100%;
     padding-top: 3.5rem;
-    border: 5px solid #2BBFBD;
+    border: 5px solid #FFFFFF;
     box-shadow: 0 0 10px rgba(8, 8, 8, 0.1);
     background: #FFFFFF; }
   .db-file .file-nav {
@@ -895,7 +895,8 @@ input[type='text']:focus {
     left: 8rem;
     right: 1rem;
     padding: 1rem;
-    background: #2BBFBD; }
+    border-bottom: 1px solid #EEEEEE;
+    background: #FFFFFF; }
     .db-file .file-nav ol {
       padding: 0;
       margin: 0;
@@ -906,17 +907,17 @@ input[type='text']:focus {
       display: inline-block;
       padding: 0.1rem 0.5rem;
       margin: 0 0.5rem;
-      color: #FFFFFF;
+      color: #3BAFDA;
       font-size: 1.4rem;
       line-height: 2rem;
-      text-shadow: 0 1px #26A3A1; }
+      text-shadow: 0 1px #CCCCCC; }
       .db-file .file-nav a:hover {
-        color: #26A3A1;
+        color: #FFFFFF;
         border-radius: 0.3rem;
         text-shadow: 0 1px 0 #CCCCCC;
-        background: #FFFFFF; }
+        background: #3BAFDA; }
     .db-file .file-nav span {
-      color: #FFFFFF; }
+      color: #3BAFDA; }
   .db-file .file-list {
     height: 100%;
     overflow: auto; }
