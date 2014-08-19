@@ -12,34 +12,34 @@ var errorHandling = require('../../routes').error;
 module.exports = function (router) {
 
     router.get('/post', auth_user, function (req, res, next) {
-        Draft.getUserDrafts(req.session.user.uid, function (err, drafts) {
-            if (err) {
-                errorHandling(res, { error: err, type: 500});
-                return false;
-            }
-            Post.getUserTenPosts(req.session.user.uid, function (err, posts) {
-                if (! err && posts) {
-                    Category.getAll(function (err, c) {
-                        if (! err && c) {
-                            res.render('admin_post_content', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
-                                posts: posts,
-                                drafts: drafts,
-                                categories: c
-                            });
-                        } else {
-                            errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
-                            return false;
-                        }
-                    });
+        Post.getUserTenPosts(req.session.user.uid, function (err, posts) {
+            if (! err && posts) {
+                Category.getAll(function (err, c) {
+                    if (! err && c) {
+                        var drafts = [];
+                        posts.forEach(function (p, i) {
+                            if (! p.published) {
+                                drafts.push(posts.splice(i, 1));
+                            }
+                        });
+                        res.render('admin_post_content', {
+                            adminPath: adminPath, 
+                            locals: res.locals, 
+                            posts: posts,
+                            drafts: drafts,
+                            categories: c
+                        });
+                    } else {
+                        errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
+                        return false;
+                    }
+                });
 
-                } else {
-                    errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
-                    return false;
-                }                
-            });        
-        });
+            } else {
+                errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
+                return false;
+            }                
+        });        
     });
 
     router.get('/post/new', auth_user, function (req, res, next) {
@@ -90,7 +90,7 @@ module.exports = function (router) {
         var post = validator.trim(xss(req.body.post));
         var category = validator.trim(xss(req.body.categories));
         var id = validator.trim(xss(req.params.id));
-        var draftId = validator.trim(xss(req.body.draftid));
+        var published = validator.trim(xss(req.body.publish));
         var tags;
         if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
             tags  =[];
@@ -108,18 +108,16 @@ module.exports = function (router) {
             date: date,
             post: post,
             tags: tags,
+            published: published,
             category: category
         }, function (err) {
             if (err) {
                 errorHandling(res, { error: err, type: 500});
                 return false;
             }
-            Draft.deleteDraft(draftId, function (err) {
-                if (err) {
-                    errorHandling(res, { error: err, type: 500});
-                    return false;
-                }
-                res.redirect(adminPath+'/post');
+
+            res.send({
+                status: 1
             });
         });
     });
@@ -137,112 +135,6 @@ module.exports = function (router) {
     });
 
 
-    router.post('/post/draft/new', auth_user, function (req, res, next) {
-        var now = new Date();
-        var title = req.body.title ? validator.trim(xss(req.body.title)) : '';
-        var author = req.session.user.uid;
-        var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
-        var post = req.body.post ? req.body.post : '';
-        var tags;
-        if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
-            tags  =[];
-            req.body.tags.forEach(function (tag) {
-                tags.push(validator.trim(xss(tag)));
-            });
-        } else if (Object.prototype.toString.call(req.body.tags) === '[object String]') {
-            tags = validator.trim(xss(req.body.tags));
-        } else {
-            tags = '';
-        }
-        var category = req.body.categories ? validator.trim(xss(req.body.categories)) : '';
-        var originalId = req.body.originalId ? validator.trim(xss(req.body.originalId)) : '';
-        var obj = {
-            title: title,
-            author: author,
-            date: date,
-            post: post,
-            tags: tags,
-            category: category,
-            originalId: originalId
-        };
-        Draft.createDraft(obj, function (err, d) {
-            res.send({
-                code: err ? 0 : 1,
-                id: d._id
-            });
-        });      
-    });
-
-    router.get('/post/draft/:id', auth_user, function (req, res, next) {
-        var id = req.params.id;
-
-        Draft.getOneDraftById(id, function (err, d) {
-            if (! err && d) {
-                if (d.author !== req.session.user.uid) {
-                    res.redirect(adminPath+'/post');
-                    return false;
-                }
-                Category.getAll(function (err, c) {
-                    if (! err && c) {
-                        res.render('admin_edit_draft', {adminPath: adminPath, locals: res.locals, categories: c, post: d});
-                    } else {
-                        errorHandling(res, { error: err ? err : 'No category was found.', type: 404});
-                        return false;
-                    }
-                });
-            } else {
-                errorHandling(res, { error: err ? err : 'No post was found.' , type: 404});
-                return false;
-            }
-        });         
-    });
-
-    router.post('/post/draft/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req.params.id));
-        var now = new Date();
-        var title = req.body.title ? validator.trim(xss(req.body.title)) : 'No title';
-        var author = req.session.user.uid;
-        var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
-        var post = req.body.post ? req.body.post : '';
-        var tags;
-        if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
-            tags  =[];
-            req.body.tags.forEach(function (tag) {
-                tags.push(validator.trim(xss(tag)));
-            });
-        } else if (Object.prototype.toString.call(req.body.tags) === '[object String]') {
-            tags = validator.trim(xss(req.body.tags));
-        } else {
-            tags = '';
-        }
-        var category = req.body.categories ? validator.trim(xss(req.body.categories)) : '';
-        var obj = {
-            id: id,
-            title: title,
-            author: author,
-            date: date,
-            post: post,
-            tags: tags,
-            category: category
-        };
-        Draft.updateDraft(obj, function (err, d) {
-            res.send({
-                code: err ? 0 : 1
-            });
-        });
-    });
-
-    router.post('/post/draft/delete/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req.params.id));
-        Draft.deleteDraft(id, function (err) {
-            if (err) {
-                errorHandling(res, { error: err, type: 500});
-                return false;
-            }
-            res.redirect(adminPath+'/post');
-        });
-    });
-
     router.post('/post/new', auth_user, function (req, res, next) {
         if (! req.body.post || ! req.body.title || ! req.body.categories) {
             errorHandling(res, { error: '请完善文章信息。', type: 401});
@@ -253,7 +145,7 @@ module.exports = function (router) {
         var author = req.session.user.uid;
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = req.body.post;
-        var draftId = validator.trim(xss(req.body.draftid));
+        var published = validator.trim(xss(req.body.publish));
         var tags;
         if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
             tags  =[];
@@ -271,18 +163,16 @@ module.exports = function (router) {
             date: date, 
             tags:tags, 
             post: post, 
+            published: published,
             category: category
         }, function (err) {
             if (err) {
                 errorHandling(res, { error: err, type: 500});
                 return false;
             }
-            Draft.deleteDraft(draftId, function (err) {
-                if (err) {
-                    errorHandling(res, { error: err, type: 500});
-                    return false;
-                }
-                res.redirect(adminPath+'/post');
+
+            res.send({
+                status: 1
             });
         });
     });

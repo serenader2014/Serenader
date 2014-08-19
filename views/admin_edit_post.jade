@@ -23,7 +23,6 @@ block admin_script
                     'Ctrl-I': insertImage
                 }
             });
-            var draftId = '';
             var previousTitle = '';
             var previousPost = '';
             var previousTags = '';
@@ -48,20 +47,28 @@ block admin_script
                     previousTags = tags;
                     previousCategory = category;
                     $.ajax({
-                        url: '#{adminPath}/post/draft/'+draftId,
+                        url: '#{adminPath}/post/edit/#{post._id}',
                         type: 'POST',
                         data: {
                             title: title,
                             categories: category,
                             post: post,
-                            tags: tags
+                            tags: tags,
+                            publish: false
                         },
                         success: function (data) {
-                            var time = new Date();
-                            $('.db-draft-info').html('Draft saved in '+time.toTimeString());
-                            setTimeout(function () {
-                                $('.db-draft-info').html('');
-                            }, 5000)
+                            data = $.parseJSON(data);
+                            if (data.status === 1) {
+
+                                var time = new Date();
+                                $('.db-draft-info').html('Draft saved in '+time.toTimeString());
+                                setTimeout(function () {
+                                    $('.db-draft-info').html('');
+                                }, 5000)
+                            } else {
+                                console.log('update draft error');
+                                $('.db-draft-info').html('Update draft error');
+                            }
                         }
                     });        
                 }
@@ -72,19 +79,17 @@ block admin_script
                     tags.push($(item).val()); 
                 });
                 $.ajax({
-                    url: '#{adminPath}/post/draft/new',
+                    url: '#{adminPath}/post/new',
                     type: 'POST',
                     data: {
                         title: $('input[name="title"]').val(),
                         categories: $('option:selected').val(),
                         post: editor.getValue(),
                         tags: tags,
-                        originalId: '#{post._id}'
+                        publish: false,
                     },
                     success: function (data) {
-                        if (data.code === 1 && data.id) {
-                            draftId = data.id;
-                            $('#new-post').append($('<input type="text" value="'+data.id+'" name="draftid" style="display:none"/>'))
+                        if (data.status === 1 ) {
                             var update = setInterval(updateDraft, 10000);
                         } else {
                             console.error('create draft error');
@@ -274,7 +279,7 @@ block new_post
                         a.db-editor-help(href='javascript:;')
                             i.glyphicon.glyphicon-question-sign
                         a.db-save-draft(href='javascript:;') Save draft
-                    textarea.new-post-area#new-post-area(name='post') #{post.post}
+                    textarea.new-post-area#new-post-area(name='post') #{post.content}
                 .db-tags
                     - each val in post.tags
                         a.db-single-tag(href='javascript:;')

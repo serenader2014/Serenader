@@ -7,9 +7,24 @@ module.exports.createNewPost = function (options, callback) {
     p.author = options.author;
     p.date = options.date;
     p.tags = options.tags;
-    p.post = options.post;
+    p.content = options.post;
+    p.excerpt = options.post.substring(0, 350+Math.random()*100);
     p.category = options.category;
+    p.published = true;
     Category.increaseCount(options.category);
+    p.save(callback);
+};
+
+module.exports.createNewDraft = function (options, callback) {
+    var p = new Post();
+    p.title = options.title;
+    p.author = options.author;
+    p.date = options.date;
+    p.tags = options.tags;
+    p.content = options.post;
+    p.excerpt = options.post.substring(0, 350+Math.random()*100);
+    p.category = options.category;
+    p.published = false;
     p.save(callback);
 };
 
@@ -24,7 +39,8 @@ module.exports.updatePost = function (options, callback) {
             if (options.author) { obj.author = options.author; }
             if (options.date) { obj.date = options.date; }
             if (options.tags) { obj.tags = options.tags; }
-            if (options.post) { obj.post = options.post; }
+            if (options.post) { obj.content = options.post; obj.excerpt = options.post.substring(0, 350+Math.random()*100);}
+            if (options.published) { obj.published = options.published; }
             if (options.category) { 
                 if (options.category !== p.category) {
                     Category.increaseCount(options.category);

@@ -1,0 +1,29 @@
+extends layout
+block extra_css
+    link(rel='stylesheet', href='/css/index.css')
+block extra_script
+    script(type='text/javascript', src='/js/marked.js')
+    script.
+        //- $('.post-content').each(function (index, p) {
+        //-     $(this).html(marked($(this).text()));
+        //-     //- console.log($(this).text())
+        //- });
+block content
+    .index-wrapper
+        .index-header
+            ul.header-list
+                li: a.active(href='') HOME
+                li: a(href='') BLOG
+                li: a(href='') GALLERY
+                li: a(href='') ABOUT
+        .fs.fs-1
+            .fs-wrapper
+                .blog-name #{blogName}
+                .blog-desc #{blogDesc}
+                .next
+                    a(href='javascript:;'): i.glyphicon.glyphicon-chevron-down
+        - each post, index in posts
+            .fs(class='fs-#{index+2}')
+                .fs-wrapper
+                    .post-title #{post.title}
+                    .post-content #{post.post}

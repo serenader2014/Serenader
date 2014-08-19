@@ -1,5 +1,7 @@
 extends layout
 block extra_css
+    link(rel='stylesheet', href='/css/index.css')
+    
     - var bg = background === '/img/default_background.jpg' ? '/img/default_background.jpg' : '/static/background/' + background;
     style.
         .db-sign {

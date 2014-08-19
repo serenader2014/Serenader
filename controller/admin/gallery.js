@@ -1,6 +1,7 @@
 var upload = require('blueimp-file-upload-expressjs');
 var validator = require('validator');
 var xss = require('xss');
+var form = require('formidable');
 
 var auth_user = require('./index').auth_user;
 var adminPath = require('./index').adminPath;
@@ -84,66 +85,115 @@ module.exports = function (router) {
         userName = req.session.user.uid;
         // var desc = validator.trim(xss(req.body.desc));
 
-        Album.getOneAlbum(album, function (err, a) {
-            if (err) {
-                errorHandling(res, { error: err, type: 500});
-                return false;
-            }
-            if (a) {
-                if (a.user === userName) {
-                    var type = a.private ? 'private' : 'public';
 
-                    var opt = {
-                        tmpDir: root + 'tmp',
-                        uploadDir: root + type + '/' + userName + '/gallery/' + album,
-                        uploadUrl: req.url,
-                        maxPostSize: 11000000000,
-                        minFileSize:  1,
-                        maxFileSize:  10000000000,
-                        acceptFileTypes:  /.+/i,
-                        inlineFileTypes:  /\.(gif|jpe?g|png)/i,
-                        imageTypes:  /\.(gif|jpe?g|png)/i,
-                        imageVersions: {
-                            width:  150,
-                            height: 150
-                        },
-                        accessControl: {
-                            allowOrigin: '*',
-                            allowMethods: 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
-                            allowHeaders: 'Content-Type, Content-Range, Content-Disposition'
-                        },
-                    };
+        // {"files": [
+        //   {
+        //     "name": "picture1.jpg",
+        //     "size": 902604,
+        //     "url": "http:\/\/example.org\/files\/picture1.jpg",
+        //     "thumbnailUrl": "http:\/\/example.org\/files\/thumbnail\/picture1.jpg",
+        //     "deleteUrl": "http:\/\/example.org\/files\/picture1.jpg",
+        //     "deleteType": "DELETE"
+        //   },
+        //   {
+        //     "name": "picture2.jpg",
+        //     "size": 841946,
+        //     "url": "http:\/\/example.org\/files\/picture2.jpg",
+        //     "thumbnailUrl": "http:\/\/example.org\/files\/thumbnail\/picture2.jpg",
+        //     "deleteUrl": "http:\/\/example.org\/files\/picture2.jpg",
+        //     "deleteType": "DELETE"
+        //   }
+        // ]}
 
-                    var uploader = upload(opt);
+        // {"files": [
+        //   {
+        //     "name": "picture1.jpg",
+        //     "size": 902604,
+        //     "error": "Filetype not allowed"
+        //   },
+        //   {
+        //     "name": "picture2.jpg",
+        //     "size": 841946,
+        //     "error": "Filetype not allowed"
+        //   }
+        // ]}
 
-                    uploader.post(req, res, function (fileInfo) {
-                        fileInfo.files.forEach(function (file, index) {
-                            Image.addImage({
-                                path: '/static/'+userName+'/gallery/'+ album + '/' + file.name,
-                                desc: '',
-                                album: album
-                            }, function (err) {
-                                if (err) {
-                                    console.error(err);
-                                    return false;
-                                }
-                                res.send(fileInfo);
-                            });
-                        });
-                    });
+        // {"files": [
+        //   {
+        //     "picture1.jpg": true
+        //   },
+        //   {
+        //     "picture2.jpg": true
+        //   }
+        // ]}                
+
+        var f = new form.IncomingForm();
+
+        f.parse(req, function (err, fields, files) {
+            res.send({fields: fields, files: files});
+        });
+
+
+        // Album.getOneAlbum(album, function (err, a) {
+        //     if (err) {
+        //         errorHandling(res, { error: err, type: 500});
+        //         return false;
+        //     }
+        //     if (a) {
+        //         if (a.user === userName) {
+        //             var type = a.private ? 'private' : 'public';
+
+        //             var opt = {
+        //                 tmpDir: root + 'tmp',
+        //                 uploadDir: root + type + '/' + userName + '/gallery/' + album,
+        //                 uploadUrl: req.url,
+        //                 maxPostSize: 11000000000,
+        //                 minFileSize:  1,
+        //                 maxFileSize:  10000000000,
+        //                 acceptFileTypes:  /.+/i,
+        //                 inlineFileTypes:  /\.(gif|jpe?g|png)/i,
+        //                 imageTypes:  /\.(gif|jpe?g|png)/i,
+        //                 imageVersions: {
+        //                     width:  150,
+        //                     height: 150
+        //                 },
+        //                 accessControl: {
+        //                     allowOrigin: '*',
+        //                     allowMethods: 'OPTIONS, HEAD, GET, POST, PUT, DELETE',
+        //                     allowHeaders: 'Content-Type, Content-Range, Content-Disposition'
+        //                 },
+        //             };
+
+        //             var uploader = upload(opt);
+
+        //             uploader.post(req, res, function (fileInfo) {
+        //                 fileInfo.files.forEach(function (file, index) {
+        //                     Image.addImage({
+        //                         path: '/static/'+userName+'/gallery/'+ album + '/' + file.name,
+        //                         desc: '',
+        //                         album: album
+        //                     }, function (err) {
+        //                         if (err) {
+        //                             console.error(err);
+        //                             return false;
+        //                         }
+        //                         res.send(fileInfo);
+        //                     });
+        //                 });
+        //             });
 
                     
 
-                } else {
-                    errorHandling(res, { error: '您无权上传图片到该相册中。', type: 403});
-                    return false;
-                }
+        //         } else {
+        //             errorHandling(res, { error: '您无权上传图片到该相册中。', type: 403});
+        //             return false;
+        //         }
 
-            } else {
-                errorHandling(res, { error: '找不到该相册。', type: 404});
-                return false;
-            }
-        });
+        //     } else {
+        //         errorHandling(res, { error: '找不到该相册。', type: 404});
+        //         return false;
+        //     }
+        // });
     });
 
 };

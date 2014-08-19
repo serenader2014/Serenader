@@ -6,7 +6,9 @@ var Post = new Schema({
     author: { type: String },
     date: { type: Array },
     tags: { type: Array },
-    post: { type: String },
+    content: { type: String },
+    excerpt: { type: String },
+    published: { type: Boolean },
     category: { type: String },
 });
 

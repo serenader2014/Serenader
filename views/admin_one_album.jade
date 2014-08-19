@@ -42,6 +42,7 @@ block album
                             a.db-upload-picker(href='javascript:;') 选择图片
                             p 或者拖动图片到此区域。
                             form.upload-form(method='post',action='#{adminPath}/gallery/upload/#{album.name}',enctype='multipart/form-data')
+                                input(type='text', name='a', value='aaa')
                                 input.fileinput(type='file', name='image', accept='image/*',multiple)
                         .db-img-list
                             .upload-header
@@ -51,14 +52,15 @@ block album
                             .upload-helper
                                 a.add-more(href='javascript:;') 添加图片
                                 a.remove-all(href='javascript:;') 移除所有图片
-                            table
-                                thead
-                                    th 文件名称
-                                    th 文件大小
-                                    th 上传进度
-                                    th 开始上传
-                                    th 取消上传
-                                tbody
+                            .upload-list
+                            //- table
+                            //-     thead
+                            //-         th 文件名称
+                            //-         th 文件大小
+                            //-         th 上传进度
+                            //-         th 开始上传
+                            //-         th 取消上传
+                            //-     tbody
 
 
 block admin_script
@@ -84,47 +86,47 @@ block admin_script
             dropZone: $('#uploader'),
             autoUpload: false,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-            singleFileUploads: true
-        }).on('fileuploadadd', function (e, data) {
-            $('.db-choose-img').hide();
-            $('.db-img-list').show();
-            $.each(data.files, function (index, file) {
-                var size = file.size/(1024*1024) > 1 ? Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K'
-                var singleFile = $('<tr>')
-                                    .append($('<td>').html(file.name))
-                                    .append($('<td>').html(size))
-                                    .append($('<td><span class="file-progress"><span class="file-progress-inner"></span></span></td>'))
-                                    .append($('<td><button class="start-upload">上传</button></td>'))
-                                    .append($('<td><button class="cancel-upload">取消</button></td>'))
-                $('.db-img-list tbody').append(singleFile);
-            });
-            //- console.log(data)
+            singleFileUploads: true,
 
-        }).on('fileuploadstart', function (e, data) {
-            //- $('.upload-progress').show();
-            console.log(['start', data, arguments])
+            add: function (e, data) {
+                $('.db-choose-img').hide();
+                $('.db-img-list').show();
+                $.each(data.files, function (index, file) {
+                    //- var singleFile = $('<tr>')
+                    //-                     .append($('<td>').html(file.name))
+                    //-                     .append($('<td>').html(size))
+                    //-                     .append($('<td></td>'))
+                    //-                     .append($('<td><button class="start-upload">上传</button></td>'))
+                    //-                     .append($('<td><button class="cancel-upload">取消</button></td>'))
+                    var size = file.size/(1024*1024) > 1 ? Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K'
+                    var singleFile = $('<div>')
+                                        .append($('<span>').html(file.name).addClass('file-name'))
+                                        .append($('<span>').html(size).addClass('file-size'))
+                                        .append($('<span class="file-progress"><span class="file-progress-inner"></span></span>'))
+                                        .append($('<button>').html('上传').addClass('start-upload'))
+                                        .append($('<button>').html('移除').addClass('remove-file'));
+                    $(singleFile).find('.start-upload').on('click', function () {
+                        data.submit();
+                    });
+                    $('.upload-list').append(singleFile);
+                });
 
-        }).on('fileuploadprogress', function (e, data) {
-            //- var percentage = parseInt(data.loaded/data.total * 100, 10);
-            //- $('.progress-inner').animate({
-            //-     width: percentage + '%'
-            //- });
-            console.log(['progress', data, arguments]);
+            },
+            start: function (e, data) {
+                console.log(['start', data, arguments])
 
-        }).on('fileuploaddone', function (e, data) {
-            //- $('.upload-progress').hide();
-            //- $('.preview-container').show();
-            //- var imgUrl = '/static/#{locals.current_user.uid}/content/' + $.parseJSON(data.response().result).files[0].name
-            //- $('.preview-container img').remove();
-            //- $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
-            //- $('.imgurl input').val(imgUrl).focus();
-            console.log(['success', data, arguments])
+            },
+            progress: function (e, data) {
+                console.log(['progress', data, arguments]);
 
-        }).on('fileuploadfail', function (e, data) {
-            //- $('.upload-progress').hide();
-            //- $('.upload-fail').show();
-            //- $('.upload-error-text').html(data.textStatus);
-            //- $('.upload-error-detail').html(data.errorThrown);
+            },
+            done: function (e, data) {
+
+                console.log(['success', data, arguments])
+            },
+            fail: function (e, data) {
+            
+            }
         });  
 
         $('.close-upload').on('click', function () {
