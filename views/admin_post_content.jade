@@ -10,7 +10,7 @@ block admin_script
         $('.delete-draft').on('click', function (event) {
             event.preventDefault();
             var id = $(this).data('id');
-            $('.delete-draft-form').attr('action', '#{adminPath}/post/draft/delete/'+id);
+            $('.delete-draft-form').attr('action', '#{adminPath}/post/delete/'+id);
         });
 
 block post_content
@@ -38,7 +38,7 @@ block post_content
             .db-post-wrapper
                 - if (drafts) 
                     - each draft in drafts
-                        a.post-single.draft(href='#{adminPath}/post/draft/#{draft._id}')
+                        a.post-single.draft(href='#{adminPath}/post/edit/#{draft._id}')
                             .post-main
                                 h3.post-title #{draft.title}
                                 span.delete-draft(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-draft'): i.glyphicon.glyphicon-trash
@@ -49,15 +49,16 @@ block post_content
                                     | Sorted in #{draft.category}                    
                 - if (posts.length > 0)
                     - each post,index in posts
-                        a.post-single(href='#{adminPath}/post/edit/#{post._id}')
-                            .post-main
-                                h3.post-title #{post.title}
-                                span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
-                            .post-meta
-                                span 
-                                    | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
-                                span
-                                    | Sorted in #{post.category}
+                        - if (post)
+                            a.post-single(href='#{adminPath}/post/edit/#{post._id}')
+                                .post-main
+                                    h3.post-title #{post.title}
+                                    span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
+                                .post-meta
+                                    span 
+                                        | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
+                                    span
+                                        | Sorted in #{post.category}
                 - else
                     .no-post You don't have any post yet.
         .modal.fade#delete-cate

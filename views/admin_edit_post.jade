@@ -28,7 +28,7 @@ block admin_script
             var previousTags = '';
             var previousCategory = '';
 
-            var updateDraft = function () {
+            var updatePost = function (publish, callback) {
                 var tags = [];
                 var title = $('input[name="title"]').val();
                 var category = $('option:selected').val();
@@ -36,7 +36,8 @@ block admin_script
                 $('input[name="tags"]').each(function (index, item) {
                     tags.push($(item).val()); 
                 });
-                if (previousCategory === category &&
+                if (! publish &&
+                    previousCategory === category &&
                     previousTags.toString() === tags.toString() &&
                     previousPost === post &&
                     previousTitle === title) {
@@ -50,57 +51,51 @@ block admin_script
                         url: '#{adminPath}/post/edit/#{post._id}',
                         type: 'POST',
                         data: {
-                            title: title,
+                            title: title || 'No title',
                             categories: category,
                             post: post,
                             tags: tags,
-                            publish: false
+                            publish: publish || false
                         },
                         success: function (data) {
-                            data = $.parseJSON(data);
                             if (data.status === 1) {
-
                                 var time = new Date();
-                                $('.db-draft-info').html('Draft saved in '+time.toTimeString());
-                                setTimeout(function () {
-                                    $('.db-draft-info').html('');
-                                }, 5000)
+                                if (! publish) {
+                                    $('.db-draft-info').html('Draft saved in '+time.toTimeString());
+                                    setTimeout(function () {
+                                        $('.db-draft-info').html('');
+                                    }, 5000)
+                                }
+                                if (callback) {
+                                    callback(true);
+                                }
                             } else {
-                                console.log('update draft error');
-                                $('.db-draft-info').html('Update draft error');
+                                //- console.log('update draft error');
+                                if (! publish) {
+                                    $('.db-draft-info').html('Update draft error');
+                                }
+                                if (callback) {
+                                    callback();
+                                }
                             }
                         }
                     });        
                 }
             };
-            var createDraft = function () {
-                var tags = [];
-                $('input[name="tags"]').each(function (index, item) {
-                    tags.push($(item).val()); 
-                });
-                $.ajax({
-                    url: '#{adminPath}/post/new',
-                    type: 'POST',
-                    data: {
-                        title: $('input[name="title"]').val(),
-                        categories: $('option:selected').val(),
-                        post: editor.getValue(),
-                        tags: tags,
-                        publish: false,
-                    },
-                    success: function (data) {
-                        if (data.status === 1 ) {
-                            var update = setInterval(updateDraft, 10000);
-                        } else {
-                            console.error('create draft error');
-                        }
-                    }
-                })
-                editor.off('change', createDraft);
-            };
-            editor.on('change', createDraft);
+
+            var update = setInterval(updatePost, 10000);
             $('.db-save-draft').on('click', function () {
-                updateDraft();
+                updatePost();
+            });
+            $('.db-publish').on('click', function (event) {
+                event.preventDefault();
+                updatePost(true, function (result) {
+                    if (result) {
+                        alert('Post published.');
+                    } else {
+                        alert('Post published failed.')
+                    }
+                });
             });
             editor.focus();
             $('select').selecter();
@@ -116,20 +111,17 @@ block admin_script
             });
 
             $('.db-tag').on('keyup', function (event) {
-                    event = event ? event : window.event;
                     if (event.which === 188){
                         $(this).val($(this).val().slice(0,$(this).val().length-1));
                         addTag();
                         $(this).val("");
                     }
             }).on('blur', function (event) {
-                    event = event ? event : window.event;
                     if ($(this).val() !== "") {
                         addTag();
                         $(this).val("");
                     }
             }).on('keydown', function (event) {
-                event = event ? event : window.event;
                 if (event.which === 8 ) {
                     if ($(this).val() === "") {
                         $(".db-single-tag:last").remove();

@@ -4,7 +4,6 @@ var validator = require('validator');
 var auth_user = require('./index').auth_user;
 var adminPath = require('./index').adminPath;
 var Post = require('../../proxy').post;
-var Draft = require('../../proxy').draft;
 var Category = require('../../proxy').category;
 var errorHandling = require('../../routes').error;
 
@@ -19,7 +18,8 @@ module.exports = function (router) {
                         var drafts = [];
                         posts.forEach(function (p, i) {
                             if (! p.published) {
-                                drafts.push(posts.splice(i, 1));
+                                drafts.push(p);
+                                posts[i] = '';
                             }
                         });
                         res.render('admin_post_content', {
@@ -91,6 +91,14 @@ module.exports = function (router) {
         var category = validator.trim(xss(req.body.categories));
         var id = validator.trim(xss(req.params.id));
         var published = validator.trim(xss(req.body.publish));
+        published = published === 'false' ? false : (published === 'true' ? true : undefined);
+        if (published === undefined) {
+            res.send({
+                status: 0,
+                id: 0
+            });
+            return;
+        }        
         var tags;
         if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
             tags  =[];
@@ -146,6 +154,14 @@ module.exports = function (router) {
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = req.body.post;
         var published = validator.trim(xss(req.body.publish));
+        published = published === 'false' ? false : (published === 'true' ? true : undefined);
+        if (published === undefined) {
+            res.send({
+                status: 0,
+                id: 0
+            });
+            return;
+        }
         var tags;
         if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
             tags  =[];
@@ -157,6 +173,8 @@ module.exports = function (router) {
         }
         var category = validator.trim(xss(req.body.categories));
 
+        console.log(published);
+
         Post.createNewPost({
             title: title, 
             author: author, 
@@ -165,14 +183,15 @@ module.exports = function (router) {
             post: post, 
             published: published,
             category: category
-        }, function (err) {
+        }, function (err, p) {
             if (err) {
                 errorHandling(res, { error: err, type: 500});
                 return false;
             }
 
             res.send({
-                status: 1
+                status: 1,
+                id: p._id
             });
         });
     });

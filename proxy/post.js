@@ -10,21 +10,10 @@ module.exports.createNewPost = function (options, callback) {
     p.content = options.post;
     p.excerpt = options.post.substring(0, 350+Math.random()*100);
     p.category = options.category;
-    p.published = true;
-    Category.increaseCount(options.category);
-    p.save(callback);
-};
-
-module.exports.createNewDraft = function (options, callback) {
-    var p = new Post();
-    p.title = options.title;
-    p.author = options.author;
-    p.date = options.date;
-    p.tags = options.tags;
-    p.content = options.post;
-    p.excerpt = options.post.substring(0, 350+Math.random()*100);
-    p.category = options.category;
-    p.published = false;
+    if (options.published === true) {
+        Category.increaseCount(options.category);
+    }
+    p.published = options.published;
     p.save(callback);
 };
 
@@ -40,11 +29,17 @@ module.exports.updatePost = function (options, callback) {
             if (options.date) { obj.date = options.date; }
             if (options.tags) { obj.tags = options.tags; }
             if (options.post) { obj.content = options.post; obj.excerpt = options.post.substring(0, 350+Math.random()*100);}
-            if (options.published) { obj.published = options.published; }
+            if (options.published !== undefined) { obj.published = options.published; }
             if (options.category) { 
-                if (options.category !== p.category) {
+                if (options.published === true && p.published === true && options.category !== p.category) {
                     Category.increaseCount(options.category);
                     Category.decreaseCount(p.category);
+                }
+                if (options.published === false && p.published === true) {
+                    Category.decreaseCount(p.category);
+                }
+                if (options.published === true && p.published === false) {
+                    Category.increaseCount(options.category);
                 }
                 obj.category = options.category; 
             }
@@ -72,7 +67,9 @@ module.exports.deletePost = function (id, callback) {
             callback(err);
         }
         if (p) {
-            Category.decreaseCount(p.category);
+            if (p.published === true) {
+                Category.decreaseCount(p.category);
+            }
             Post.findOneAndRemove({_id: id}, callback);
         }
     });
