@@ -53,12 +53,12 @@ module.exports.getOnePostById = function (id, callback) {
 };
 
 module.exports.getTenPosts = function (callback) {
-    Post.find({}, null,{limit: 10}, callback);
+    Post.find({}, null, {limit: 10, sort: {_id: -1}}, callback);
 };
 
 
 module.exports.getAllPosts = function (callback) {
-    Post.find({}, callback);
+    Post.find({}, null, {sort: {_id: -1}}, callback);
 };
 
 module.exports.deletePost = function (id, callback) {
@@ -75,10 +75,18 @@ module.exports.deletePost = function (id, callback) {
     });
 };
 
-module.exports.getUserPost = function (user, callback) {
-    Post.find({author: user}, callback);
+module.exports.getUserPosts = function (user, callback) {
+    Post.find({author: user}, null, {sort: {_id: -1}}, callback);
 };
 
 module.exports.getUserTenPosts = function (user, callback) {
-    Post.find({author: user}, null, {limit: 10}, callback);
+    Post.find({author: user}, null, {limit: 10, sort: {_id: -1}}, callback);
+};
+
+module.exports.getMoreTenPosts = function (page, callback) {
+    Post.find({}, null, {limit: 10, skip: page}).sort({_id: -1}).exec(callback);
+};
+
+module.exports.getUserMoreTenPosts = function (user, page, callback) {
+    Post.find({author: user}, null, {limit: 10, skip: page}).sort({_id: -1}).exec(callback);
 };

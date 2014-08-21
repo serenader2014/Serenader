@@ -3,27 +3,83 @@ block extra_css
     link(rel='stylesheet', href='/css/index.css')
 block extra_script
     script(type='text/javascript', src='/js/marked.js')
+    script(type='text/tempalte' id='template').
+        <div class='fs'>
+            <div class='fs-wrapper'>
+                <div class='post-wrapper'>
+                    <div class='post-title'>
+                        <a href=''></a>
+                    </div>
+                    <div class='post-info'>
+                        <a class='post-author' href=''></a>
+                        <a class='post-category' href=''></a>
+                        <span></span>
+                    </div>
+                    <div class='post-content'>
+                        <span class='post-excerpt'>
+                        </span>
+                        <span>
+                            <a href='' class='post-read-more'>Read More</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     script.
-        //- $('.post-content').each(function (index, p) {
-        //-     $(this).html(marked($(this).text()));
-        //-     //- console.log($(this).text())
-        //- });
+        $('.load-more a').on('click', function (event) {
+            var self = this;
+            event.preventDefault();
+            if (($('.fs').length - 1) % 10 !== 0 ) {
+                $(self).html('No more post.');
+            } else {
+                var page = ($('.fs').length - 1)/10;
+                $.ajax({
+                    type: 'GET',
+                    url: '/loadmore?page=' + page,
+                    dataType: 'json',
+                    success: function (data) {
+                        data.forEach(function (post, index) {
+                            var tmpl = $('#template').html();
+                            $('.fs:last').after(
+                                $(tmpl).addClass('fs-' + (+index + 1))
+                                    .find('.post-title a').attr('href', '/blog/' + post._id).html(post.title).end()
+                                    .find('.post-author').attr('href', '/u/' + post.author).html('@' + post.author).end()
+                                    .find('.post-category').attr('href', '/blog?category=' + post.category).html(post.category).end()
+                                    .find('.post-info span').html(post.date[0].month + '/' + post.date[0].date).end()
+                                    .find('.post-excerpt').html(post.excerpt).end()
+                            );
+                        });
+                    },
+                    error: function (err) {
+                        alert(err);
+                    }
+                });
+            }
+        });
 block content
     .index-wrapper
         .index-header
             ul.header-list
-                li: a.active(href='') HOME
-                li: a(href='') BLOG
-                li: a(href='') GALLERY
-                li: a(href='') ABOUT
-        .fs.fs-1
+                li: a.active(href='/') HOME
+                li: a(href='/blog') BLOG
+                li: a(href='/gallery') GALLERY
+                li: a(href='/about') ABOUT
+        .fs.fs-index
             .fs-wrapper
                 .blog-name #{blogName}
                 .blog-desc #{blogDesc}
                 .next
                     a(href='javascript:;'): i.glyphicon.glyphicon-chevron-down
         - each post, index in posts
-            .fs(class='fs-#{index+2}')
+            .fs(class='fs-#{index+1}')
                 .fs-wrapper
-                    .post-title #{post.title}
-                    .post-content #{post.excerpt} ...
+                    .post-wrapper
+                        .post-title: a(href='/blog/#{post._id}') #{post.title}
+                        .post-info 
+                            a.post-author(href='/u/#{post.author}') @#{post.author} 
+                            a.post-category(href='/blog?category=#{post.category}') #{post.category}
+                            span #{post.date[0].month}/#{post.date[0].date}
+                        .post-content
+                            span.post-excerpt  #{post.excerpt} ... 
+                            span: a.post-read-more(href='/blog/#{post._id}') Read More
+        .load-more: a(href='javascript:;') Load More Post

@@ -19,13 +19,13 @@ module.exports = function (router) {
         var userName = req.session.user.uid;
         Album.getUserAllAlbum(userName, function (err, a) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             }
             if (a) {
                 res.render('admin_gallery', {adminPath: adminPath, locals: res.locals, albums: a});
             } else {
-                errorHandling(res, { error: '找不到该相册。', type: 404});
+                errorHandling(req, res, { error: '找不到该相册。', type: 404});
                 return false;
             }
         });
@@ -44,7 +44,7 @@ module.exports = function (router) {
             private: private
         }, function (err) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             }
             res.redirect(adminPath+'/gallery');
@@ -56,14 +56,14 @@ module.exports = function (router) {
         var userName = req.session.user.uid;
         Album.getOneAlbum(album, function (err, a) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             } 
             if (a) {
                 if (a.user === userName || userName === 'admin') {
                     Image.findOneAlbumImage(a.name, function (err, images) {
                         if (err) {
-                            errorHandling(res, { error: err, type: 500});
+                            errorHandling(req, res, { error: err, type: 500});
                             return false;
                         }
                         res.render('admin_one_album', {
@@ -136,7 +136,7 @@ module.exports = function (router) {
 
         // Album.getOneAlbum(album, function (err, a) {
         //     if (err) {
-        //         errorHandling(res, { error: err, type: 500});
+        //         errorHandling(req, res, { error: err, type: 500});
         //         return false;
         //     }
         //     if (a) {
@@ -185,12 +185,12 @@ module.exports = function (router) {
                     
 
         //         } else {
-        //             errorHandling(res, { error: '您无权上传图片到该相册中。', type: 403});
+        //             errorHandling(req, res, { error: '您无权上传图片到该相册中。', type: 403});
         //             return false;
         //         }
 
         //     } else {
-        //         errorHandling(res, { error: '找不到该相册。', type: 404});
+        //         errorHandling(req, res, { error: '找不到该相册。', type: 404});
         //         return false;
         //     }
         // });

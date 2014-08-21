@@ -48,7 +48,7 @@ module.exports = function (router) {
                         }
                         fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
                             if (err) {
-                                errorHandling(res, { error: err, type: 500});
+                                errorHandling(req, res, { error: err, type: 500});
                                 return false;
                             }
                             f.forEach(function (item, index) {
@@ -61,7 +61,7 @@ module.exports = function (router) {
                                     }
                                 }
                                 catch (err) {
-                                    errorHandling(res, { error: err, type: 500});
+                                    errorHandling(req, res, { error: err, type: 500});
                                     return false;
                                 }
 
@@ -95,7 +95,7 @@ module.exports = function (router) {
         var type;
         fs.stat(oldPath, function (err, stats) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             } else {
                 type = stats.isDirectory() ? 'directory' : 'file';
@@ -104,7 +104,7 @@ module.exports = function (router) {
                 if (err && err.code === 'ENOENT') {
                     fs.rename(oldPath, targetPath,function (err) {
                         if (err) {
-                            errorHandling(res, { error: err, type: 500});
+                            errorHandling(req, res, { error: err, type: 500});
                             return false;
                         } else {
                             res.redirect(adminPath+'/files/'+t+'/'+filePath);
@@ -112,10 +112,10 @@ module.exports = function (router) {
                     });
                 } else {
                     if (stats.isDirectory() && type === 'directory') {
-                        errorHandling(res, { error: 'Directory already exist.', type: 500});
+                        errorHandling(req, res, { error: 'Directory already exist.', type: 500});
                         return false;
                     } else if (stats.isFile() && type === 'file') {
-                        errorHandling(res, { error: 'File already exist.', type: 500});
+                        errorHandling(req, res, { error: 'File already exist.', type: 500});
                         return false;
                     }
                 }
@@ -185,7 +185,7 @@ module.exports = function (router) {
                 });
                 fs.rename(pathname, trashPath + '/' +filePath + time + '-' +fileName ,function (err) {
                     if (err && err.code === 'EPERM') {
-                        errorHandling(res, { error: 'File/directory already exist.', type: 500});
+                        errorHandling(req, res, { error: 'File/directory already exist.', type: 500});
                         return false;
                     }
                     res.redirect(adminPath + '/files/' + t + '/' + filePath);
@@ -208,7 +208,7 @@ module.exports = function (router) {
         // TODO handle zip file
         fs. mkdir(pathname.split('.zip')[0], function (err) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             }
             // TODO fix the chinese charator problem
@@ -270,13 +270,13 @@ module.exports = function (router) {
         }
         fs.stat(pathname, function (err, stats) {
             if (err || ! stats) {
-                errorHandling(res, { error: 'Read directory/file error.', type: 500});
+                errorHandling(req, res, { error: 'Read directory/file error.', type: 500});
                 return false;
             }
             if (stats.isDirectory()) {
                 fs.readdir(pathname, function (err, f) {
                     if (err) {
-                        errorHandling(res, { error: 'Read directory error.', type: 500});
+                        errorHandling(req, res, { error: 'Read directory error.', type: 500});
                         return false;
                     }
                     f.forEach(function (item, index) {
@@ -308,7 +308,7 @@ module.exports = function (router) {
                     console.log(mode);
                     fs.readFile(pathname, {encoding:'utf8'}, function (err, data) {
                         if (err) {
-                            errorHandling(res, { error: 'Read file error.', type: 500});
+                            errorHandling(req, res, { error: 'Read file error.', type: 500});
                             return false;
                         }
                         res.render('admin_file_preview', {

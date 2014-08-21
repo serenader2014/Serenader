@@ -1,4 +1,6 @@
 extends layout
+block extra_css
+    link(rel='stylesheet', href='/css/index.css')
 block content
     .error-container
         .error-wrapper
@@ -7,4 +9,7 @@ block content
                 .error-words Oops... You broke the page.
                 .error-detail #{error}
                 .error-home 
-                    a(href='/') Return Home
+                    - if (referer)
+                        a(href='#{referer}') Return Previous Page
+                    - else
+                        a(href='/') Return Home Page

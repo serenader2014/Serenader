@@ -136,24 +136,42 @@ input[type='text']:focus {
   vertical-align: middle;
   text-align: center; }
 
-.fs-1 {
+.fs-index {
   background: rgba(121, 214, 214, 0.3);
   background-image: url(/img/default_index.jpg);
   background-position: center;
   background-size: cover;
   background-attachment: fixed; }
 
+.fs-1 {
+  background: #eae8fc; }
+
 .fs-2 {
-  background-color: rgba(121, 166, 214, 0.3); }
+  background: #f6e8fc; }
 
 .fs-3 {
-  background-color: rgba(126, 121, 214, 0.3); }
+  background: #fce8f6; }
 
 .fs-4 {
-  background-color: rgba(174, 121, 214, 0.3); }
+  background: #fce8ea; }
 
 .fs-5 {
-  background-color: rgba(217, 123, 190, 0.3); }
+  background: #fcf2e8; }
+
+.fs-6 {
+  background: #fafce8; }
+
+.fs-7 {
+  background: #eefce8; }
+
+.fs-8 {
+  background: #e8fcee; }
+
+.fs-9 {
+  background: #e8fcfa; }
+
+.fs-10 {
+  background: #e8f2fc; }
 
 .index-header {
   position: fixed;
@@ -183,6 +201,8 @@ input[type='text']:focus {
 .blog-name {
   color: rgba(255, 255, 255, 0.7);
   font-size: 15rem;
+  line-height: 12rem;
+  word-break: break-all;
   text-transform: uppercase; }
 
 .blog-desc {
@@ -199,3 +219,47 @@ input[type='text']:focus {
     color: #C2C2C2; }
     .next a:hover {
       color: #B0B0B0; }
+
+.post-wrapper {
+  max-width: 720px;
+  min-width: 320px;
+  margin: 0 auto;
+  font-family: "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif; }
+
+.post-title a {
+  display: inline-block;
+  font-size: 4rem;
+  font-weight: bold;
+  color: #2F2F2F;
+  text-transform: uppercase; }
+  .post-title a:hover {
+    color: #444444; }
+
+.post-info {
+  margin: 1rem 0; }
+  .post-info .post-author, .post-info .post-category {
+    padding: 0 0.5rem;
+    border-right: 1px solid; }
+  .post-info span {
+    padding: 0.5rem; }
+
+.post-read-more {
+  color: #454545;
+  font-style: italic;
+  text-decoration: underline; }
+  .post-read-more:hover {
+    color: #242424; }
+
+.post-content {
+  padding: 1rem;
+  font-size: 1.6rem;
+  line-height: 2.8rem;
+  color: #2F2F2F; }
+
+.load-more a {
+  display: block;
+  padding: 2rem 1rem;
+  border-top: 1px solid #B6CAE0;
+  text-align: center;
+  color: #153557;
+  background: #E8F2FC; }

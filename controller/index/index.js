@@ -8,7 +8,7 @@ var errorHandling = require('../../routes').error;
 rootRouter.get('/', function (req, res, next) {
     setting.getSetting(function (err, s) {
         if (err) {
-            errorHandling(res, { error: err, type: 500});
+            errorHandling(req, res, { error: err, type: 500});
             return;
         }
         var blogName = s ? s.name : config.name;
@@ -16,7 +16,7 @@ rootRouter.get('/', function (req, res, next) {
 
         post.getTenPosts(function (err, posts) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return;
             }
             var publishedPost = [];
@@ -30,6 +30,30 @@ rootRouter.get('/', function (req, res, next) {
     });
 });
 
+rootRouter.get('/loadmore', function (req, res, next) {
+    var page = req.query.page;
+
+    if (! page) {
+        res.send('No page was send.');
+        return;
+    } else {
+        post.getMoreTenPosts(page*10, function (err, posts) {
+            if (err) {
+                errorHandling(req, res, { error: err, type: 500});
+                return;
+            }
+            var publishedPost = [];
+            posts.forEach(function (p, index) {
+                if (p.published) {
+                    publishedPost.push(p);
+                }
+            });
+            res.json(publishedPost);
+        });
+    }
+});
+
 require('./gallery')(rootRouter);
+require('./post')(rootRouter);
 
 module.exports = rootRouter;

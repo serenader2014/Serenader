@@ -36,7 +36,7 @@ module.exports = function (router) {
 
         User.getOneUserByEmail(email, function(err, u) {
             if (err) {
-                errorHandling(res, { error: err, type: 500});
+                errorHandling(req, res, { error: err, type: 500});
                 return false;
             }
             if (u) {
@@ -44,11 +44,11 @@ module.exports = function (router) {
                     req.session.user = u;
                     res.redirect(adminPath);
                 } else {
-                    errorHandling(res, { error: 'incorrect password.', type: 403});
+                    errorHandling(req, res, { error: 'incorrect password.', type: 403});
                     return false;
                 }
             } else {
-                errorHandling(res, { error: 'User does not exist.',  type: 401});
+                errorHandling(req, res, { error: 'User does not exist.',  type: 401});
                 return false;
             }
         });
@@ -100,7 +100,7 @@ module.exports = function (router) {
                     role: 'admin'
                 }, function (err) {
                     if (err) {
-                        errorHandling(res, { error: err, type: 500});
+                        errorHandling(req, res, { error: err, type: 500});
                         return false;
                     }
                     res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
@@ -109,13 +109,13 @@ module.exports = function (router) {
             } else {
                 User.getOneUserById(uid, function (err, user) {
                     if (err) { 
-                        errorHandling(res, { error: err, type: 500});
+                        errorHandling(req, res, { error: err, type: 500});
                         return false;
                     }
                     if (! user) {
                         User.getOneUserByEmail(email, function (err, u) {
                             if (err) { 
-                                errorHandling(res, { error: err, type: 500});
+                                errorHandling(req, res, { error: err, type: 500});
                                 return false;
                             }
                             if (! u) {
@@ -127,7 +127,7 @@ module.exports = function (router) {
                                     role: 'user'
                                 }, function (err) {
                                     if (err) {
-                                        errorHandling(res, { error: err, type: 500});
+                                        errorHandling(req, res, { error: err, type: 500});
                                         return false;
                                     }
                                     res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');

@@ -196,7 +196,7 @@ input[type='text']:focus {
   text-align: center;
 }
 
-.fs-1 {
+.fs-index {
   background: rgba(121,214,214,0.3);
   background-image: url(/img/default_index.jpg);
   background-position: center;
@@ -204,20 +204,46 @@ input[type='text']:focus {
   background-attachment: fixed;
 }
 
+$fs-base-color: #E8F2FC;
+
+.fs-1 {
+  background: adjust-hue($fs-base-color, 36%);
+}
+
 .fs-2 {
-  background-color: rgba(121,166,214,0.3);
+  background: adjust-hue($fs-base-color, 72%);
 }
 
 .fs-3 {
-  background-color: rgba(126,121,214,0.3);
+  background: adjust-hue($fs-base-color, 108%);
 }
 
 .fs-4 {
-  background-color: rgba(174,121,214,0.3);
+  background: adjust-hue($fs-base-color, 144%);
 }
 
 .fs-5 {
-  background-color: rgba(217,123,190,0.3);
+  background: adjust-hue($fs-base-color, 180%);
+}
+
+.fs-6 {
+  background: adjust-hue($fs-base-color, 216%);
+}
+
+.fs-7 {
+  background: adjust-hue($fs-base-color, 252%);
+}
+
+.fs-8 {
+  background: adjust-hue($fs-base-color, 288%);
+}
+
+.fs-9 {
+  background: adjust-hue($fs-base-color, 324%);
+}
+
+.fs-10 {
+  background: adjust-hue($fs-base-color, 360%);
 }
 
 .index-header {
@@ -254,6 +280,8 @@ input[type='text']:focus {
 .blog-name {
   color: rgba(255,255,255,0.7);
   font-size: 15rem;
+  line-height: 12rem;
+  word-break: break-all;
   text-transform: uppercase;
 }
 
@@ -276,4 +304,62 @@ input[type='text']:focus {
       color: #B0B0B0;
     }
   }
+}
+
+.post-wrapper {
+  max-width: 720px;
+  min-width: 320px;
+  margin: 0 auto;
+  font-family: "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+
+.post-title {
+  a {
+    display: inline-block;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #2F2F2F;
+    text-transform: uppercase;
+    &:hover {
+      color: #444444;
+    }
+  }
+}
+
+.post-info {
+  margin: 1rem 0;
+  .post-author, .post-category {
+    padding: 0 0.5rem;
+    border-right: 1px solid;
+  }
+
+  span {
+    padding: 0.5rem;
+  }
+}
+
+.post-read-more {
+  color: #454545;
+  font-style: italic;
+  text-decoration: underline;
+  &:hover {
+    color: #242424;
+  }
+}
+
+.post-content {
+  padding: 1rem;
+  font-size: 1.6rem;
+  line-height: 2.8rem;
+  color: #2F2F2F;
+}
+
+.load-more a {
+  display: block;
+  padding: 2rem 1rem;
+  border-top: 1px solid #B6CAE0;
+  text-align: center;
+  // font-size: 2rem;
+  color: #153557;
+  background: #E8F2FC;
 }

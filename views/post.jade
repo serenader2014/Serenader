@@ -1,0 +1,11 @@
+extends layout
+block extra_css
+    link(rel='stylesheet', href='/css/index.css')
+block extra_script
+    script(type='text/javascript', src='/js/marked.js')
+    script.
+        $('.post-content').html(marked($('.post-content').text()));        
+block content
+    .post-wrapper
+        .post-title: a(href='/blog/#{post._id}') #{post.title}
+        .post-content #{post.content}
