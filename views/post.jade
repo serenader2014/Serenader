@@ -8,4 +8,9 @@ block extra_script
 block content
     .post-wrapper
         .post-title: a(href='/blog/#{post._id}') #{post.title}
+        .post-info 
+            a.post-author(href='/u/#{post.author}') @#{post.author} 
+            a.post-category(href='/blog?category=#{post.category}') #{post.category}
+            span #{post.date[0].month}/#{post.date[0].date}
+            span Views: #{post.views}
         .post-content #{post.content}

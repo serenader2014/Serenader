@@ -64,57 +64,6 @@
     background-image: url(blue@2x.png);
     -webkit-background-size: 176px 22px;
     background-size: 176px 22px; } }
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 300;
-  src: local("Open Sans Light"), local("OpenSans-Light"), url(../fonts/opensans-light.woff) format("woff"); }
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: local("Open Sans"), local("OpenSans"), url(../fonts/opensans.woff) format("woff"); }
-html {
-  font-family: 'Open Sans' 'Microsoft Yahei';
-  height: 100%; }
-
-body {
-  height: 100%; }
-
-input[type='text']:focus {
-  box-shadow: 4px 0 0 #3BAFDA inset;
-  outline: none; }
-
-.error-container {
-  display: table;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  background: #E4E6E5; }
-
-.error-wrapper {
-  display: table-cell;
-  height: 100%;
-  margin: 0 auto;
-  vertical-align: middle; }
-
-.error-header {
-  font-size: 20rem;
-  line-height: 15rem;
-  text-shadow: 2px 2px 0 #F7FAF9; }
-
-.error-words {
-  margin-top: 1rem;
-  font-size: 1.8rem; }
-
-.error-detail {
-  width: 50rem;
-  margin: 2rem auto;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1) inset;
-  background: #CCCCCC; }
-
 .db-admin {
   padding-left: 7rem;
   width: 100%;
@@ -157,6 +106,8 @@ input[type='text']:focus {
   float: left;
   width: 50%;
   padding: 1.8rem;
+  font-size: 1.5rem;
+  line-height: 1.8rem;
   text-align: center; }
 
 .db-nav-left, .db-nav-right {
@@ -171,6 +122,15 @@ input[type='text']:focus {
     padding: 1.8rem;
     font-size: 1.5rem;
     line-height: 1.8rem; }
+
+.db-user-avatar {
+  width: 1.8rem;
+  height: 1.8rem;
+  position: absolute;
+  top: 0.9rem;
+  right: 5rem;
+  border-radius: 100%;
+  background-size: cover; }
 
 .db-nav {
   position: absolute;
@@ -203,7 +163,7 @@ input[type='text']:focus {
     text-align: center; }
     .db-menu-wrapper li a {
       display: block;
-      color: #292f35;
+      color: #3F4852;
       font-size: 1.8rem; }
       .db-menu-wrapper li a:hover {
         color: #454F59; }
@@ -541,6 +501,7 @@ input[type='text']:focus {
 .no-post {
   margin-top: 8rem;
   text-align: center;
+  font-size: 1.4rem;
   color: #AAAAAA; }
 
 .post-single {
@@ -568,7 +529,7 @@ input[type='text']:focus {
   top: 0;
   right: 0;
   color: #CCCCCC;
-  font-size: 2rem; }
+  font-size: 2.5rem; }
   .delete-post:hover, .delete-draft:hover {
     color: #F2716D; }
 
@@ -784,11 +745,18 @@ input[type='text']:focus {
   margin-bottom: 1rem;
   background: #FFFFFF;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+  .db-new-header .light-selector {
+    border-top: 1px solid #ced6dc;
+    border-bottom: 1px solid #ced6dc;
+    border-left: 0;
+    border-right: 0;
+    outline: none; }
   .db-new-header input {
     border-radius: 0;
     padding: 0 1rem;
     height: 50px;
-    border-color: #ced6dc;
+    border: 1px solid #ced6dc;
+    width: 100%;
     font-size: 3rem;
     color: #485159;
     font-weight: 700; }
@@ -803,7 +771,7 @@ input[type='text']:focus {
   position: absolute;
   top: 0;
   right: 0;
-  width: 10.8rem; }
+  outline: none; }
 
 .selecter-selected, .selecter-item {
   padding: 9px !important;

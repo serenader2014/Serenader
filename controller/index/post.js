@@ -6,15 +6,13 @@ var errorHandling = require('../../routes').error;
 
 
 module.exports = function (router) {
-    router.get('/post', function (req, res, next) {
-        Post.getAllPost(function (err, p) {
+    router.get('/blog', function (req, res, next) {
+        Post.getAllPosts(function (err, p) {
             if (err) {
                 errorHandling(req, res, {error: err, type: 500});
                 return;
             }
-            if (p) {
-                res.render('postlist', {posts: p});
-            }
+            res.render('postlist', {posts: p});
         });
     });
 
@@ -27,6 +25,11 @@ module.exports = function (router) {
             }
             if (p) {
                 res.render('post', { post: p});
+                p.views = p.views + 1;
+                p.save();
+            } else {
+                errorHandling(req, res, { error: '找不到该文章。', type: 404});
+                return;
             }
         });
     });

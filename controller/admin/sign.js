@@ -88,7 +88,8 @@ module.exports = function (router) {
         }
 
         var hashedPwd = md5(password);
-        var avatar = 'http://www.gravatar.com/avatar/'+md5(email.toLowerCase());
+
+        var avatar = 'http://www.gravatar.com/avatar/'+crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
         User.getAllUser(function (err, users) {
             if (users.length <= 0) {
@@ -130,14 +131,26 @@ module.exports = function (router) {
                                         errorHandling(req, res, { error: err, type: 500});
                                         return false;
                                     }
-                                    res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
+                                    // res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
+                                    res.json({
+                                        status: 1,
+                                        username: uid
+                                    });
                                 });
                             } else {
-                                res.render('signup', {error: '该Email已经被注册。请输入新的Email地址。',background: bg});
+                                // res.render('signup', {error: '该Email已经被注册。请输入新的Email地址。',background: bg});
+                                res.json({
+                                    status: 0,
+                                    error: '该Email已经被注册。请输入新的Email地址。'
+                                });
                             }
                         });
                     } else {
-                        res.render('signup', {error: '该用户名已经被注册，请输入新的用户名。',background: bg});
+                        // res.render('signup', {error: '该用户名已经被注册，请输入新的用户名。',background: bg});
+                        res.json({
+                            status: 0,
+                            error: '该用户名已经被注册，请输入新的用户名。'
+                        });
                     }
                 });
             }

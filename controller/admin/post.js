@@ -86,6 +86,7 @@ module.exports = function (router) {
         var now = new Date();
         var title = validator.trim(xss(req.body.title));
         var author = req.session.user.uid;
+        var avatar = req.session.user.avatar;
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = validator.trim(xss(req.body.post));
         var category = validator.trim(xss(req.body.categories));
@@ -113,6 +114,7 @@ module.exports = function (router) {
             id: id,
             title: title,
             author: author,
+            authorAvatar: avatar,
             date: date,
             post: post,
             tags: tags,
@@ -151,6 +153,8 @@ module.exports = function (router) {
         var now = new Date();
         var title = validator.trim(xss(req.body.title));
         var author = req.session.user.uid;
+        var avatar = req.session.user.avatar;
+        console.log(req.session.user);
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = req.body.post;
         var published = validator.trim(xss(req.body.publish));
@@ -178,6 +182,7 @@ module.exports = function (router) {
         Post.createNewPost({
             title: title, 
             author: author, 
+            authorAvatar: avatar,
             date: date, 
             tags:tags, 
             post: post, 

@@ -1,0 +1,71 @@
+select.light-selector {
+    display: none;
+}
+
+div.light-selector {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    border: 1px solid #EEEEEE;
+    color: #555555;
+    background: #FFFFFF;
+    box-sizing: border-box;
+}
+
+div.light-selector:hover {
+    color: #222222;
+    background: #EEEEEE;
+}
+
+span.ls-current {
+    display: block;
+    position: relative;
+    padding: 0 20px;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+span.ls-current:after {
+    position: absolute;
+    top: 48%;
+    right: 10px;
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 5px solid #333333;
+    border-bottom: 5px solid transparent;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+}
+
+div.ls-wrapper {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    z-index: 999;
+    box-sizing: border-box;
+}
+
+ul.ls-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #fff;
+}
+
+ul.ls-list li {
+    padding: 0 20px;
+    cursor: pointer;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+ul.ls-list li.selected {
+    background: #239FCC;
+    color: #fff;
+}

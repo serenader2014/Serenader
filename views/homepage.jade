@@ -4,35 +4,31 @@ block extra_css
 block extra_script
     script(type='text/javascript', src='/js/marked.js')
     script(type='text/tempalte' id='template').
-        <div class='fs'>
-            <div class='fs-wrapper'>
-                <div class='post-wrapper'>
-                    <div class='post-title'>
-                        <a href=''></a>
-                    </div>
-                    <div class='post-info'>
-                        <a class='post-author' href=''></a>
-                        <a class='post-category' href=''></a>
-                        <span></span>
-                    </div>
-                    <div class='post-content'>
-                        <span class='post-excerpt'>
-                        </span>
-                        <span>
-                            <a href='' class='post-read-more'>Read More</a>
-                        </span>
-                    </div>
-                </div>
+        <div class='post-wrapper'>
+            <div class='post-title'>
+                <a href=''></a>
+            </div>
+            <div class='post-info'>
+                <a class='post-author' href=''></a>
+                <a class='post-category' href=''></a>
+                <span></span>
+            </div>
+            <div class='post-content'>
+                <span class='post-excerpt'>
+                </span>
+                <span>
+                    <a href='' class='post-read-more'>Read More</a>
+                </span>
             </div>
         </div>
     script.
         $('.load-more a').on('click', function (event) {
             var self = this;
             event.preventDefault();
-            if (($('.fs').length - 1) % 10 !== 0 ) {
+            if (($('.post-wrapper').length - 1) % 10 !== 0 ) {
                 $(self).html('No more post.');
             } else {
-                var page = ($('.fs').length - 1)/10;
+                var page = ($('.post-wrapper').length - 1)/10;
                 $.ajax({
                     type: 'GET',
                     url: '/loadmore?page=' + page,
@@ -40,8 +36,8 @@ block extra_script
                     success: function (data) {
                         data.forEach(function (post, index) {
                             var tmpl = $('#template').html();
-                            $('.fs:last').after(
-                                $(tmpl).addClass('fs-' + (+index + 1))
+                            $('.post-wrapper:last').after(
+                                $(tmpl)
                                     .find('.post-title a').attr('href', '/blog/' + post._id).html(post.title).end()
                                     .find('.post-author').attr('href', '/u/' + post.author).html('@' + post.author).end()
                                     .find('.post-category').attr('href', '/blog?category=' + post.category).html(post.category).end()
@@ -56,30 +52,33 @@ block extra_script
                 });
             }
         });
+
+        $('.blog-name').hover(function () {
+            $('.blog-desc').fadeIn(100);
+        }, function () {
+            $('.blog-desc').fadeOut(100);
+        });
 block content
-    .index-wrapper
-        .index-header
-            ul.header-list
+    .index
+        .blog
+            h2.blog-name 
+                a(href='/') #{blogName}
+                .blog-desc #{blogDesc}
+        .navbar
+            ul.navbar-list
                 li: a.active(href='/') HOME
                 li: a(href='/blog') BLOG
                 li: a(href='/gallery') GALLERY
                 li: a(href='/about') ABOUT
-        .fs.fs-index
-            .fs-wrapper
-                .blog-name #{blogName}
-                .blog-desc #{blogDesc}
-                .next
-                    a(href='javascript:;'): i.glyphicon.glyphicon-chevron-down
-        - each post, index in posts
-            .fs(class='fs-#{index+1}')
-                .fs-wrapper
-                    .post-wrapper
-                        .post-title: a(href='/blog/#{post._id}') #{post.title}
-                        .post-info 
-                            a.post-author(href='/u/#{post.author}') @#{post.author} 
-                            a.post-category(href='/blog?category=#{post.category}') #{post.category}
-                            span #{post.date[0].month}/#{post.date[0].date}
-                        .post-content
-                            span.post-excerpt  #{post.excerpt} ... 
-                            span: a.post-read-more(href='/blog/#{post._id}') Read More
-        .load-more: a(href='javascript:;') Load More Post
+        .index-wrapper
+            - each post in posts
+                .post-wrapper
+                    .post-title: a(href='/blog/#{post._id}') #{post.title}
+                    .post-info 
+                        a.post-author(href='/u/#{post.author}'): img(src='#{post.authorAvatar}') 
+                        a.post-category(href='/blog?category=#{post.category}') #{post.category}
+                        span #{post.date[0].month}/#{post.date[0].date}
+                    .post-content
+                        span.post-excerpt  #{post.excerpt} ... 
+                        span: a.post-read-more(href='/blog/#{post._id}') Read More
+            .load-more: a(href='javascript:;') Load More Post

@@ -41,7 +41,7 @@ block post_content
                         a.post-single.draft(href='#{adminPath}/post/edit/#{draft._id}')
                             .post-main
                                 h3.post-title #{draft.title}
-                                span.delete-draft(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-draft'): i.glyphicon.glyphicon-trash
+                                span.delete-draft(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-draft'): i.fa.fa-trash-o
                             .post-meta
                                 span 
                                     | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
@@ -53,7 +53,7 @@ block post_content
                             a.post-single(href='#{adminPath}/post/edit/#{post._id}')
                                 .post-main
                                     h3.post-title #{post.title}
-                                    span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.glyphicon.glyphicon-trash
+                                    span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
                                 .post-meta
                                     span 
                                         | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
@@ -61,45 +61,36 @@ block post_content
                                         | Sorted in #{post.category}
                 - else
                     .no-post You don't have any post yet.
-        .modal.fade#delete-cate
-            .modal-dialog
-                .modal-content
-                    .modal-header
-                        button.close(type='button', data-dismiss='modal')
-                            span(aria-hidden='true') &times;
-                            span.sr-only Close
-                        h4.modal-title 删除分类
-                    .modal-body
-                        p 该操作将会删除该分类。删除之前请确保分类下面没有文章。若分类下面仍有文章，则无法删除该分类。
-                    .modal-footer
-                        form.delete-cate-form(action='', method='post')
-                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                            button.btn.btn-primary(type='submit') 确定
-        .modal.fade#delete-post
-            .modal-dialog
-                .modal-content
-                    .modal-header
-                        button.close(type='button', data-dismiss='modal')
-                            span(aria-hidden='true') &times;
-                            span.sr-only Close
-                        h4.modal-title 删除文章
-                    .modal-body
-                        p 该操作将会删除该文章。删除前请做好备份。
-                    .modal-footer
-                        form.delete-post-form(action='', method='post')
-                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                            button.btn.btn-primary(type='submit') 确定
-        .modal.fade#delete-draft
-            .modal-dialog
-                .modal-content
-                    .modal-header
-                        button.close(type='button', data-dismiss='modal')
-                            span(aria-hidden='true') &times;
-                            span.sr-only Close
-                        h4.modal-title 删除草稿
-                    .modal-body
-                        p 请确认是否删除该草稿。
-                    .modal-footer
-                        form.delete-draft-form(action='', method='post')
-                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                            button.btn.btn-primary(type='submit') 确定
+        .modal#delete-cate
+            .modal-wrapper
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 删除分类
+                .modal-body
+                    p 该操作将会删除该分类。删除之前请确保分类下面没有文章。若分类下面仍有文章，则无法删除该分类。
+                .modal-footer
+                    form.delete-cate-form(action='', method='post')
+                        button(type='button', data-dismiss='modal') 取消
+                        button(type='submit') 确定
+        .modal#delete-post
+            .modal-wrapper
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 删除文章
+                .modal-body
+                    p 该操作将会删除该文章。删除前请做好备份。
+                .modal-footer
+                    form.delete-post-form(action='', method='post')
+                        button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
+        .modal#delete-draft
+            .modal-content
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 删除草稿
+                .modal-body
+                    p 请确认是否删除该草稿。
+                .modal-footer
+                    form.delete-draft-form(action='', method='post')
+                        button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定

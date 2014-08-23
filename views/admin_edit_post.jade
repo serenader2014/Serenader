@@ -1,12 +1,13 @@
 extends admin
 
 block admin_css
+    link(rel='stylesheet', href='/css/jquery.light-selector.css')
     link(rel='stylesheet', href='/css/codemirror.css')
 
 block admin_script
     script(tpye='text/javascript', src='/js/codemirror.js')
     script(type='text/javascript', src='/js/marked.js')
-    script(tpye='text/javascript', src='/js/jquery.fs.selecter.min.js')
+    script(tpye='text/javascript', src='/js/jquery.light-selector.js')
     script(type='text/javascript', src='/js/jquery.ui.widget.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
     script(type='text/javascript', src='/js/jquery.iframe-transport.js')
@@ -98,7 +99,9 @@ block admin_script
                 });
             });
             editor.focus();
-            $('select').selecter();
+            $('select').lightSelector().setSize({
+                width: 200
+            });
             $('.db-editor-fs').on('click', function () {
                 $('.db-new-editor').toggleClass('editor-fullscreen');
             });

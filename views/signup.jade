@@ -10,9 +10,8 @@ block extra_css
         }
 block content
     .db-sign
-        form.db-sign-form(action='#{adminPath}/signup', method='post')
-            - if (error)
-                span.db-err-msg #{error}
+        .db-sign-form
+            span.db-err-msg
             .db-outer
                 .db-inner
                     span.db-sign-title Sign up
@@ -40,3 +39,32 @@ block content
                     span.db-info
                         | Created By serenader with 
                         span.heart ❤
+
+block extra_script
+    script.
+        $('.db-submit').on('click', function (event) {
+            event.preventDefault();
+            var id = $('input[name="id"]').val();
+            var email = $('input[name="email"]').val();
+            var password = $('input[name="password"]').val();
+            $.ajax({
+                type: 'POST',
+                data: {
+                    id: id,
+                    email: email,
+                    password: password
+                },
+                url: '#{adminPath}/signup',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status === 1) {
+                        alert('signup success');
+                        setTimeout(function () {
+                            window.location = '#{adminPath}/signup';
+                        }, 3000);
+                    } else {
+                        $('.db-err-msg').show().html(result.error);
+                    }
+                }
+            });
+        });

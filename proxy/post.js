@@ -5,6 +5,7 @@ module.exports.createNewPost = function (options, callback) {
     var p = new Post();
     p.title = options.title;
     p.author = options.author;
+    p.authorAvatar = options.authorAvatar;
     p.date = options.date;
     p.tags = options.tags;
     p.content = options.post;
@@ -26,6 +27,7 @@ module.exports.updatePost = function (options, callback) {
             var obj = {};
             if (options.title) { obj.title = options.title; }
             if (options.author) { obj.author = options.author; }
+            if (options.authorAvatar) { obj.authorAvatar = options.authorAvatar; }
             if (options.date) { obj.date = options.date; }
             if (options.tags) { obj.tags = options.tags; }
             if (options.post) { obj.content = options.post; obj.excerpt = options.post.substring(0, 350+Math.random()*100);}
@@ -58,7 +60,7 @@ module.exports.getTenPosts = function (callback) {
 
 
 module.exports.getAllPosts = function (callback) {
-    Post.find({}, null, {sort: {_id: -1}}, callback);
+    Post.find({}, 'title author category date', {sort: {_id: -1}}, callback);
 };
 
 module.exports.deletePost = function (id, callback) {

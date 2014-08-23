@@ -15,31 +15,30 @@ block content
                 div.db-nav-menu
                     ul.db-menu-wrapper
                         li: a(href='#{adminPath}') 
-                            i.glyphicon.glyphicon-home
+                            i.fa.fa-home
                         li: a(href='#{adminPath}/post') 
-                            i.glyphicon.glyphicon-list-alt
+                            i.fa.fa-archive
                         li: a(href='#{adminPath}/gallery')
-                            i.glyphicon.glyphicon-picture
+                            i.fa.fa-image
                         li: a(href='#{adminPath}/files/public')
-                            i.glyphicon.glyphicon-file
+                            i.fa.fa-folder-open
                         li: a(href='#{adminPath}/upload')
-                            i.glyphicon.glyphicon-cloud-upload
+                            i.fa.fa-cloud-upload
                         - if (locals.current_user.role === 'admin')
                             li.db-setting-btn: a(href='#{adminPath}/settings')
-                                i.glyphicon.glyphicon-cog
+                                i.fa.fa-wrench
         .db-header-container
             nav.db-header-nav
                 .container-fluid
                     ul.db-nav-left
                         li
                             a(href='#{adminPath}/post/new') 
-                                span.glyphicon.glyphicon-plus 
+                                i.fa.fa-pencil
                     .db-dashboard-title Dashboard
                     ul.db-nav-right
-                        li: a.db-user-header(href='#{adminPath}/u/#{locals.current_user.uid}')
-                            i.glyphicon.glyphicon-user
+                        li: a.db-user-avatar(href='#{adminPath}/u/#{locals.current_user.uid}' style='background-image: url(#{locals.current_user.avatar})')
                         li: a(href='#{adminPath}/signout')
-                            i.glyphicon.glyphicon-log-out
+                            i.fa.fa-sign-out
                             
 
 
