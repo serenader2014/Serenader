@@ -79,6 +79,9 @@ block admin_script
                                     callback();
                                 }
                             }
+                        },
+                        error: function (err) {
+                            msg('error', '提交文章到服务器失败！' + err.statusText);
                         }
                     });
                 }
@@ -104,8 +107,11 @@ block admin_script
                             $('#new-post').append($('<input type="text" value="'+data.id+'" name="draftid" style="display:none"/>'))
                             var update = setInterval(updatePost, 10000);
                         } else {
-                            console.error('create draft error');
+                            msg('error', '创建草稿失败！');
                         }
+                    },
+                    error: function (err) {
+                        msg('error', '提交草稿到服务器失败！'+ err.statusText)
                     }
                 })
                 editor.off('change', createDraft);
@@ -116,17 +122,27 @@ block admin_script
             });
             $('.db-publish').on('click', function (event) {
                 event.preventDefault();
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                if ( !title || !category || !post) {
+                    msg('error', '请完善文章信息。');
+                    return false;
+                }                
                 updatePost(true, function (result) {
                     if (result) {
-                        alert('Post published.');
+                        msg('success', '文章发表成功！', function () {
+                            window.location = '#{adminPath}/post';
+                        });
                     } else {
-                        alert('Post published failed.')
+                        msg('error', '文章发表失败！');
                     }
                 });
             });
             $('.db-new-title').focus();
             $('select').lightSelector().setSize({
-                width: 200
+                width: 200,
+                height: 60
             });
             $('.db-editor-fs').on('click', function () {
                 fullScreen();
@@ -269,10 +285,10 @@ block new_post
         .db-new-main
             form#new-post(method='post', action='#{adminPath}/post/new')
                 .db-new-header
-                    .col-xs-12.col-md-12.db-title-wrapper
-                        input.db-new-title.form-control#post-title(type='text', name='title', placeholder='Post Title')
+                    .db-title-wrapper
+                        input.db-new-title#post-title(type='text', name='title', placeholder='Post Title')
                         .db-cate-selecter(tabindex="0")
-                            select(name='categories', tabindex='-1')
+                            select(name='categories')
                                 - if (categories)
                                     - each item in categories
                                         option(value='#{item.name}') #{item.name}
@@ -282,56 +298,53 @@ block new_post
                         span Markdown
                         span.db-draft-info
                         a.db-editor-fs(href='javascript:;')
-                            i.glyphicon.glyphicon-fullscreen
+                            i.fa.fa-arrows-alt
                         a.db-editor-preview(href='javascript:;')
-                            i.glyphicon.glyphicon-eye-open
+                            i.fa.fa-eye
                         a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
-                            i.glyphicon.glyphicon-picture
+                            i.fa.fa-photo
                         a.db-editor-help(href='javascript:;')
-                            i.glyphicon.glyphicon-question-sign
+                            i.fa.fa-tint
                         a.db-save-draft(href='javascript:;') Save draft
                     textarea.new-post-area#new-post-area(name='post')
                 .db-tags
-                    input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
-                    button.btn.btn-primary.db-publish(form='new-post') 发表
+                    input.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
+                    button.btn.btn-primary.db-publish(form='new-post')
+                        i.fa.fa-send-o
+                        | 发表
                 .db-preview
                     .db-preview-wrapper
                         .db-preview-header
                             a.db-preview-close(href='javascript:;'): i.glyphicon.glyphicon-remove-sign
                             p Markdown Preview
                         .db-preview-main
+                .modal#insert
+                    .modal-wrapper
+                        .modal-header
+                            button.close.fa.fa-times(type='button', data-dismiss='modal')
+                            h4.modal-title 插入图片
+                        .modal-body
+                            .imgupload#uploader
+                                form(enctype='multipart/form-data')
+                                    a.upload-picker(href='javascript:;')
+                                        img(src='/img/image.png')
+                                        span 选择图片
 
-                
-                .modal.fade#insert(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                    .modal-dialog
-                        .modal-content
-                            .modal-header
-                                button.close(type='button', data-dismiss='modal')
-                                    span(aria-hidden='true') &times;
-                                    span.sr-only Close
-                                h4.modal-title 插入图片
-                            .modal-body
-                                .imgupload#uploader
-                                    form(enctype='multipart/form-data')
-                                        a.upload-picker(href='javascript:;')
-                                            img(src='/img/image.png')
-                                            span 选择图片
+                                    .upload-progress
+                                        .progress-outer
+                                            .progress-inner
+                                        p 正在上传……
+                                    .preview-container
+                                        button.btn.btn-primary.select-another 重新上传
+                                        button.btn.remove-img 移除图片
+                                    .upload-fail
+                                        p.upload-error-text
+                                        p.upload-error-detail
+                                    input.fileinput(type='file',name='picture', accept='image/*')
+                            .imgurl
+                                input.form-control(type='text', placeholder='请输入图片地址。')
+                                        
 
-                                        .upload-progress
-                                            .progress-outer
-                                                .progress-inner
-                                            p 正在上传……
-                                        .preview-container
-                                            button.btn.btn-primary.select-another 重新上传
-                                            button.btn.btn-default.remove-img 移除图片
-                                        .upload-fail
-                                            p.upload-error-text
-                                            p.upload-error-detail
-                                        input.fileinput(type='file',name='picture', accept='image/*')
-                                .imgurl
-                                    input.form-control(type='text', placeholder='请输入图片地址。')
-                                            
-
-                            .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                                button.btn.btn-primary.insert-img(type='button') 插入
+                        .modal-footer
+                            button.btn(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary.insert-img(type='button') 插入

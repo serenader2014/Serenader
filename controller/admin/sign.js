@@ -1,11 +1,14 @@
 var crypto = require('crypto');
 var fs = require('fs');
 var xss = require('xss');
+var request = require('request');
+var fs = require('fs');
 
 var validator = require('validator');
 var adminPath = require('./index').adminPath;
 var User = require('../../proxy').user;
 var errorHandling = require('../../routes').error;
+var makeFolder = require('../../app').makeFolder;
 
 var root = require('../../config').config.root_dir;
 
@@ -88,8 +91,9 @@ module.exports = function (router) {
         }
 
         var hashedPwd = md5(password);
+        var hashedEmail = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
-        var avatar = 'http://www.gravatar.com/avatar/'+crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+        var avatar = 'http://www.gravatar.com/avatar/'+hashedEmail;
 
         User.getAllUser(function (err, users) {
             if (users.length <= 0) {
@@ -97,15 +101,27 @@ module.exports = function (router) {
                     uid: uid,
                     email: email,
                     pwd: hashedPwd,
-                    avatar: avatar,
+                    avatar: '/static/' + uid + '/avatar.jpg',
                     role: 'admin'
                 }, function (err) {
                     if (err) {
                         errorHandling(req, res, { error: err, type: 500});
                         return false;
                     }
-                    res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
-
+                    res.json({
+                        status: 1,
+                        username: uid
+                    });
+                    makeFolder([
+                        '/data/public/' + uid + '/upload', 
+                        '/data/public/' + uid + '/gallery', 
+                        '/data/private/' + uid + '/upload', 
+                        '/data/private/' + uid + '/gallery'
+                    ], function () {
+                        downloadAvatar(hashedPwd, '/data/public/' + uid + '/avatar.jpg', function () {
+                            console.log('Avatar download success.');
+                        });
+                    });
                 });
             } else {
                 User.getOneUserById(uid, function (err, user) {
@@ -131,14 +147,22 @@ module.exports = function (router) {
                                         errorHandling(req, res, { error: err, type: 500});
                                         return false;
                                     }
-                                    // res.redirect(req.originalUrl.substring(0,req.originalUrl.lastIndexOf('/'))+'/signin');
                                     res.json({
                                         status: 1,
                                         username: uid
                                     });
+                                    makeFolder([
+                                        '/data/public/' + uid + '/upload', 
+                                        '/data/public/' + uid + '/gallery', 
+                                        '/data/private/' + uid + '/upload', 
+                                        '/data/private/' + uid + '/gallery'
+                                    ], function () {
+                                        downloadAvatar(hashedPwd, '/data/public/' + uid + '/avatar.jpg', function () {
+                                            console.log('Avatar download success.');
+                                        });
+                                    });                                    
                                 });
                             } else {
-                                // res.render('signup', {error: '该Email已经被注册。请输入新的Email地址。',background: bg});
                                 res.json({
                                     status: 0,
                                     error: '该Email已经被注册。请输入新的Email地址。'
@@ -146,7 +170,6 @@ module.exports = function (router) {
                             }
                         });
                     } else {
-                        // res.render('signup', {error: '该用户名已经被注册，请输入新的用户名。',background: bg});
                         res.json({
                             status: 0,
                             error: '该用户名已经被注册，请输入新的用户名。'
@@ -195,4 +218,10 @@ function md5 (password) {
     var raw = crypto.createHash('md5').update(password+salt);
     var result = raw.digest('hex');
     return result;
+}
+
+function downloadAvatar (hashedEmail, fileName, callback) {
+    var url = 'http://www.gravatar.com/avatar/' + hashedEmail;
+    fileName = root + fileName;
+    request.head(url).pipe(fs.createWriteStream(fileName)).on('close', callback);
 }

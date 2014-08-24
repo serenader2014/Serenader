@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -13,6 +14,45 @@ var Setting = require('./proxy').setting;
 
 var app = express();
 module.exports = app;
+
+var mk = module.exports.makeFolder = function (dir, callback) {
+    if (typeof dir === 'string') {
+        makefolder(dir, callback);
+    } else if (Object.prototype.toString.call(dir) === '[object Array]') {
+        dir.forEach(function (d, index) {
+            if (index === dir.length - 1) {
+                makefolder(d, callback);
+            } else {
+                makefolder(d);
+            }
+        });
+    }
+    function makefolder (dir, cb) {
+        var dirArr = [];
+        var tmp = '';
+        dir.split('/').forEach(function (d) {
+            tmp = tmp + '/' + d;
+            dirArr.push(tmp);
+        });
+        dirArr.forEach(function (d, index) {
+            fs.mkdir(__dirname + d, function (err) {
+                if (err && err.code !== 'EEXIST') {
+                    console.error(err);
+                    console.log(__dirname + d);
+                }
+                if (index === dirArr.length - 1) {
+                    if (cb && typeof cb === 'function') {
+                        cb();
+                    }
+                }
+            });
+        });
+    }
+};
+
+mk(config.dir, function () {
+    console.log('make folder success');
+});
 
 mongoose.connect(config.db, function (err) {
     if (err) {

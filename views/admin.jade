@@ -2,7 +2,7 @@ extends layout
 
 block extra_css
     link(rel='stylesheet', href='/css/style.css')
-    link(rel='stylesheet', href='/css/jquery.fileupload.css')
+    //- link(rel='stylesheet', href='/css/jquery.fileupload.css')
     block admin_css
 
 
@@ -29,17 +29,16 @@ block content
                                 i.fa.fa-wrench
         .db-header-container
             nav.db-header-nav
-                .container-fluid
-                    ul.db-nav-left
-                        li
-                            a(href='#{adminPath}/post/new') 
-                                i.fa.fa-pencil
-                    .db-dashboard-title Dashboard
-                    ul.db-nav-right
-                        li: a.db-user-avatar(href='#{adminPath}/u/#{locals.current_user.uid}' style='background-image: url(#{locals.current_user.avatar})')
-                        li: a(href='#{adminPath}/signout')
-                            i.fa.fa-sign-out
-                            
+                ul.db-nav-left
+                    li
+                        a(href='#{adminPath}/post/new') 
+                            i.fa.fa-pencil
+                .db-dashboard-title Dashboard
+                ul.db-nav-right
+                    li: a.db-user-avatar(href='#{adminPath}/u/#{locals.current_user.uid}' style='background-image: url(#{locals.current_user.avatar})')
+                    li: a(href='#{adminPath}/signout')
+                        i.fa.fa-sign-out
+                        
 
 
         block post_content
@@ -52,6 +51,5 @@ block content
         block preview
         block album
 block extra_script
-    script(type='text/javascript', src='/js/icheck.min.js')
     block admin_script
  

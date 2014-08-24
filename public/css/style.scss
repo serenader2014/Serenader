@@ -202,7 +202,7 @@
       color: #3F4852;
       font-size: 1.8rem;
       &:hover {
-        color: #454F59;
+        color: #586573;
       }
     }
   }
@@ -789,8 +789,10 @@
     position: absolute;
     top: 0;
     right: 0;
-    line-height: 1.9rem;
     margin: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
+    border-radius: 0.4rem;
+    line-height: 1.9rem;
   }
 }
 
@@ -865,7 +867,7 @@
   right: 0;
   z-index: 1;
   padding: 1rem 2rem;
-  font-size: 1rem;
+  font-size: 1.4rem;
   background: rgba(250,250,250,0.8);
 
   a {
@@ -979,7 +981,7 @@
   input {
     border-radius: 0;
     padding: 0 1rem;
-    height: 50px;
+    height: 60px;
     border: 1px solid #ced6dc;
     width: 100%;
     font-size: 3rem;
@@ -1032,12 +1034,9 @@
   font-size: 1.5rem;
 
   .db-tag {
-    padding: 15px;
     width: 30rem;
-    display: inline-block;
     height: 100%;
     border: none;
-    border-radius:0;
     &:focus {
       box-shadow: none;
     }
@@ -1046,7 +1045,7 @@
 
 .db-single-tag {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.8rem 1rem;
   margin-left: 0.5rem;
   border-radius: 0.5rem;
   background: #3BAFDA;
@@ -1058,19 +1057,22 @@
 
   i {
     position: relative;
-    top: 2px;
-    left: 2px;
+    top: 1px;
+    left: 4px;
   }
 }
 
 .db-publish {
   position: absolute;
+  top: 0;
   bottom: 0;
   right: 0;
-  border: none;
   border-radius: 0;
   line-height: 28px;
   padding: 10px 50px;
+  i {
+    margin-right: 1rem;
+  }
 }
 
 .db-new-main {
@@ -1080,7 +1082,7 @@
 
 .db-new-editor {
   position: absolute;
-  top: 60px;
+  top: 70px;
   bottom: 60px;
   left: 0;
   right: 0;
@@ -1266,6 +1268,3 @@
     background: #F16576;
   }
 }
-
-
-

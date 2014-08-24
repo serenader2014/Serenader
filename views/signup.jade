@@ -58,10 +58,9 @@ block extra_script
                 dataType: 'json',
                 success: function (result) {
                     if (result.status === 1) {
-                        alert('signup success');
-                        setTimeout(function () {
-                            window.location = '#{adminPath}/signup';
-                        }, 3000);
+                        msg('success', '注册成功！'+result.username + '欢迎使用！', function () {
+                            window.location = '#{adminPath}/signin';
+                        });
                     } else {
                         $('.db-err-msg').show().html(result.error);
                     }

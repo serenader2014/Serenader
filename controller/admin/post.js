@@ -122,7 +122,10 @@ module.exports = function (router) {
             category: category
         }, function (err) {
             if (err) {
-                errorHandling(req, res, { error: err, type: 500});
+                res.status(500).json({
+                    status: 0,
+                    error: err
+                });
                 return false;
             }
 
@@ -137,10 +140,15 @@ module.exports = function (router) {
         var id = validator.trim(xss(req.params.id));
         Post.deletePost(id, function (err) {
             if (err) {
-                errorHandling(req, res, { error: err, type: 500});
+                res.status(500).json({
+                    status: 0,
+                    error: err
+                });
                 return false;
             }
-            res.redirect(adminPath+'/post');
+            res.json({
+                status: 1
+            });
         });
     });
 
@@ -154,7 +162,6 @@ module.exports = function (router) {
         var title = validator.trim(xss(req.body.title));
         var author = req.session.user.uid;
         var avatar = req.session.user.avatar;
-        console.log(req.session.user);
         var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
         var post = req.body.post;
         var published = validator.trim(xss(req.body.publish));
@@ -177,8 +184,6 @@ module.exports = function (router) {
         }
         var category = validator.trim(xss(req.body.categories));
 
-        console.log(published);
-
         Post.createNewPost({
             title: title, 
             author: author, 
@@ -190,10 +195,12 @@ module.exports = function (router) {
             category: category
         }, function (err, p) {
             if (err) {
-                errorHandling(req, res, { error: err, type: 500});
+                res.status(500).json({
+                    status: 0,
+                    error: err
+                });
                 return false;
             }
-
             res.send({
                 status: 1,
                 id: p._id

@@ -30,57 +30,37 @@ module.exports = function (router) {
         if (url.pathname.substring(url.pathname.length-1) === '/') {
             res.redirect(adminPath+url.pathname.substring(0, url.pathname.length-1));
         }
-        fs.stat(root, function (err, stats) {
-            if (err && err.code === 'ENOENT') {
-                fs.mkdirSync(root);
+
+        fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
+            if (err) {
+                errorHandling(req, res, { error: err, type: 500});
+                return false;
             }
-            fs.stat(root + type + '/', function (err, stats) {
-                if (err && err.code === 'ENOENT') {
-                    fs.mkdirSync(root + type);
-                }
-                fs.stat(root + type + '/' + userName , function (err, stats) {
-                    if (err && err.code === 'ENOENT') {
-                        fs.mkdirSync(root + type + '/' + userName);
+            f.forEach(function (item, index) {
+                try {
+                    var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
+                    if (stat.isDirectory()) {
+                        folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
+                    } else {
+                        files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
                     }
-                    fs.stat(root + type + '/' + userName + '/upload', function (err, stats) {
-                        if (err && err.code === 'ENOENT') {
-                            fs.mkdirSync(root + type + '/' + userName + '/upload');
-                        }
-                        fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
-                            if (err) {
-                                errorHandling(req, res, { error: err, type: 500});
-                                return false;
-                            }
-                            f.forEach(function (item, index) {
-                                try {
-                                    var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
-                                    if (stat.isDirectory()) {
-                                        folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                                    } else {
-                                        files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                                    }
-                                }
-                                catch (err) {
-                                    errorHandling(req, res, { error: err, type: 500});
-                                    return false;
-                                }
+                }
+                catch (err) {
+                    errorHandling(req, res, { error: err, type: 500});
+                    return false;
+                }
 
-                            });
+            });
 
-                            res.render('admin_file', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
-                                files: files, 
-                                folders: folders, 
-                                baseLink: url.pathname
-                            });
-                        });
-                    });
-                });
+            res.render('admin_file', {
+                adminPath: adminPath, 
+                locals: res.locals, 
+                files: files, 
+                folders: folders, 
+                baseLink: url.pathname
             });
         });
     });
-
 
     router.post('/files/rename/*', auth_user, function (req, res, next) {
         var url = parse(req.url);

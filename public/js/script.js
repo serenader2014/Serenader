@@ -22,3 +22,25 @@ $('button').on('click', function (e) {
         $(this).parents('.modal').fadeOut(100);
     }
 });
+
+
+function msg (type, str, callback) {
+    var t = 'msg-' + type,
+        msgContainer = $('<div>').addClass('msg'),
+        msgWrapper = $('<div>').addClass('msg-wrapper'),
+        msgContent = $('<div>').addClass('msg-content');
+
+    msgContainer.append(msgWrapper.append(msgContent));
+    $('body').append(msgContainer);
+
+    $('.msg').fadeIn(200).addClass(t);
+    $('.msg-content').html(str);
+    setTimeout(function () {
+        $('.msg').fadeOut(200, function () {
+            $('.msg').remove();
+        });
+        if (callback && typeof callback === 'function') {
+            callback();
+        }
+    }, 2000);
+}

@@ -71,7 +71,6 @@ block admin_script
                                     callback(true);
                                 }
                             } else {
-                                //- console.log('update draft error');
                                 if (! publish) {
                                     $('.db-draft-info').html('Update draft error');
                                 }
@@ -79,7 +78,10 @@ block admin_script
                                     callback();
                                 }
                             }
-                        }
+                        },
+                        error: function (err) {
+                            msg('error', '提交文章到服务器失败！' + err.statusText);
+                        }                        
                     });        
                 }
             };
@@ -90,17 +92,27 @@ block admin_script
             });
             $('.db-publish').on('click', function (event) {
                 event.preventDefault();
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                if ( !title || !category || !post) {
+                    msg('error', '请完善文章信息。');
+                    return false;
+                }
                 updatePost(true, function (result) {
                     if (result) {
-                        alert('Post published.');
+                        msg('success', '文章更新成功！', function () {
+                            window.location = '#{adminPath}/post';
+                        });
                     } else {
-                        alert('Post published failed.')
+                        msg('error', '文章发表失败！');
                     }
                 });
             });
             editor.focus();
             $('select').lightSelector().setSize({
-                width: 200
+                width: 200,
+                height: 60
             });
             $('.db-editor-fs').on('click', function () {
                 $('.db-new-editor').toggleClass('editor-fullscreen');
@@ -139,7 +151,7 @@ block admin_script
                 tagInput.val(tag.text());
                 $(".db-tag").before(tag);
                 tag.append(tagInput);
-                tag.append($("<i class='glyphicon glyphicon-remove'></i>"));
+                tag.append($("<i class='fa fa-times'></i>"));
             }
 
             $('.db-tags').on('click','.db-single-tag', function () {
@@ -266,23 +278,25 @@ block new_post
                         span Markdown
                         span.db-draft-info
                         a.db-editor-fs(href='javascript:;')
-                            i.glyphicon.glyphicon-fullscreen
+                            i.fa.fa-arrows-alt
                         a.db-editor-preview(href='javascript:;')
-                            i.glyphicon.glyphicon-eye-open
+                            i.fa.fa-eye
                         a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
-                            i.glyphicon.glyphicon-picture
+                            i.fa.fa-photo
                         a.db-editor-help(href='javascript:;')
-                            i.glyphicon.glyphicon-question-sign
+                            i.fa.fa-tint
                         a.db-save-draft(href='javascript:;') Save draft
                     textarea.new-post-area#new-post-area(name='post') #{post.content}
                 .db-tags
                     - each val in post.tags
                         a.db-single-tag(href='javascript:;')
                             | #{val}
-                            i.glyphicon.glyphicon-remove
+                            i.fa.fa-times
                             input.db-tag-input(name='tags', value='#{val}')
                     input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
-                    button.btn.btn-primary.db-publish(form='new-post') 更新
+                    button.btn.btn-primary.db-publish(form='new-post')
+                        i.fa.fa-send-o
+                        | 更新
                 .db-preview
                     .db-preview-wrapper
                         .db-preview-header
