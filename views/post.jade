@@ -1,16 +1,18 @@
-extends layout
-block extra_css
-    link(rel='stylesheet', href='/css/index.css')
-block extra_script
+extends index_layout
+block index_script
     script(type='text/javascript', src='/js/marked.js')
     script.
-        $('.post-content').html(marked($('.post-content').text()));        
-block content
+        marked.setOptions({
+            sanitize: true
+        });
+        $('.post-content').html(marked($('.post-content').text()));
+block inner
     .post-wrapper
         .post-title: a(href='/blog/#{post._id}') #{post.title}
         .post-info 
-            a.post-author(href='/u/#{post.author}') @#{post.author} 
+            a.post-author(href='/u/#{post.author}')
+                img(src='#{post.authorAvatar}')
             a.post-category(href='/blog?category=#{post.category}') #{post.category}
             span #{post.date[0].month}/#{post.date[0].date}
             span Views: #{post.views}
-        .post-content #{post.content}
+        .post-content!=post.content

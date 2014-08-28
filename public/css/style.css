@@ -119,11 +119,16 @@
     display: inline-block; }
   .db-nav-left a, .db-nav-right a {
     display: inline-block;
+    width: 5.1rem;
+    text-align: center;
     padding: 1.8rem;
     font-size: 1.5rem;
     line-height: 1.8rem; }
 
-.db-user-avatar {
+.db-nav-left .navbar-btn {
+  display: none; }
+
+.db-nav-right .db-user-avatar {
   width: 1.8rem;
   height: 1.8rem;
   position: absolute;
@@ -526,7 +531,7 @@
 
 .delete-post, .delete-draft {
   position: absolute;
-  top: 0;
+  top: -0.5rem;
   right: 0;
   color: #CCCCCC;
   font-size: 2.5rem; }
@@ -673,8 +678,13 @@
   padding: 1rem 2rem;
   font-size: 1.4rem;
   background: rgba(250, 250, 250, 0.8); }
+  .db-editor-helper .db-editor-info {
+    display: inline-block;
+    float: left; }
+  .db-editor-helper .db-helper-btn {
+    display: inline-block;
+    float: right; }
   .db-editor-helper a {
-    float: right;
     margin-left: 1rem;
     color: #6A7585; }
 
@@ -963,3 +973,82 @@
   .db-file .edit-error {
     color: #FFFFFF;
     background: #F16576; }
+
+@media screen and (max-width: 980px) {
+  body {
+    overflow: hidden; }
+
+  .db-nav-left .navbar-btn {
+    display: inline-block;
+    transition: all 0.3s; }
+
+  .navbar-btn.active {
+    color: #FFFFFF;
+    background: #121920; }
+
+  .db-admin {
+    padding-left: 0; }
+
+  .db-nav {
+    display: none;
+    top: 5.3rem;
+    left: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 99; }
+
+  .db-brand-wrapper a {
+    padding: 1.8rem;
+    width: auto;
+    color: #3F4852;
+    background: none; }
+
+  .db-dashboard-title {
+    display: none; }
+
+  .db-nav-left, .db-nav-right {
+    width: auto; }
+
+  .db-menu-wrapper li {
+    padding: 0;
+    text-align: center; }
+    .db-menu-wrapper li a {
+      width: 5.1rem;
+      padding: 1.8rem;
+      font-size: 1.5rem;
+      line-height: 1.8rem; }
+  .db-menu-wrapper .db-setting-btn {
+    position: static;
+    bottom: 0;
+    width: auto; }
+
+  .db-nav-menu {
+    display: inline-block;
+    height: 100%;
+    width: 100%; }
+
+  .db-editor-wrapper {
+    left: 0; }
+
+  .db-editor-wrapper.show-navbar {
+    left: 7rem; }
+
+  .db-post-main {
+    padding: 6.4rem 1rem 0 1rem; }
+
+  .db-sidebar {
+    display: none; }
+
+  .db-draft-info {
+    display: none; }
+
+  .db-new-header .light-selector {
+    width: 100px !important; }
+
+  .db-single-tag {
+    display: none; }
+
+  .db-tag {
+    display: none; }
+
+  .db-publish {
+    width: 100%; } }

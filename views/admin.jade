@@ -11,11 +11,12 @@ block content
         nav.db-nav
             div.db-nav-wrapper
                 div.db-brand-wrapper
-                    a.db-brand(href='/') BLOG
+                    a.db-brand(href='/')
+                        i.fa.fa-home
                 div.db-nav-menu
                     ul.db-menu-wrapper
                         li: a(href='#{adminPath}') 
-                            i.fa.fa-home
+                            i.fa.fa-dashboard
                         li: a(href='#{adminPath}/post') 
                             i.fa.fa-archive
                         li: a(href='#{adminPath}/gallery')
@@ -30,6 +31,9 @@ block content
         .db-header-container
             nav.db-header-nav
                 ul.db-nav-left
+                    li.navbar-btn
+                        a(href='javascript:;')
+                            i.fa.fa-list
                     li
                         a(href='#{adminPath}/post/new') 
                             i.fa.fa-pencil

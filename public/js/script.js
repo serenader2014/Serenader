@@ -44,3 +44,8 @@ function msg (type, str, callback) {
         }
     }, 2000);
 }
+
+$('.db-header-nav .navbar-btn').on('click', function () {
+    $('.db-nav').slideToggle(200);
+    $(this).toggleClass('active');
+});

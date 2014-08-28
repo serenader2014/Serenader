@@ -1,8 +1,5 @@
-extends layout
-block extra_css
-    link(rel='stylesheet', href='/css/index.css')
-
-block content
+extends index_layout
+block inner
     .post-list
         ul
         - each post, index in posts

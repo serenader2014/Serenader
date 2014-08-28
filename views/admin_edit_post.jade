@@ -261,8 +261,8 @@ block new_post
         .db-new-main
             form#new-post(method='post', action='#{adminPath}/post/edit/#{post._id}')
                 .db-new-header
-                    .col-xs-12.col-md-12.db-title-wrapper
-                        input.db-new-title.form-control#post-title(type='text', name='title', placeholder='Post Title', value='#{post.title}')
+                    .db-title-wrapper
+                        input.db-new-title#post-title(type='text', name='title', placeholder='Post Title', value='#{post.title}')
                         .db-cate-selecter(tabindex="0")
                             select(name='categories', tabindex='-1')
                                 - if (categories) {
@@ -275,17 +275,19 @@ block new_post
                                 - }
                 .db-new-editor
                     .db-editor-helper
-                        span Markdown
-                        span.db-draft-info
-                        a.db-editor-fs(href='javascript:;')
-                            i.fa.fa-arrows-alt
-                        a.db-editor-preview(href='javascript:;')
-                            i.fa.fa-eye
-                        a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
-                            i.fa.fa-photo
-                        a.db-editor-help(href='javascript:;')
-                            i.fa.fa-tint
-                        a.db-save-draft(href='javascript:;') Save draft
+                        .db-editor-info
+                            span Markdown
+                            span.db-draft-info
+                        .db-helper-btn
+                            a.db-save-draft(href='javascript:;') Save draft
+                            a.db-editor-help(href='javascript:;')
+                                i.fa.fa-tint
+                            a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
+                                i.fa.fa-photo
+                            a.db-editor-preview(href='javascript:;')
+                                i.fa.fa-eye
+                            a.db-editor-fs(href='javascript:;')
+                                i.fa.fa-arrows-alt
                     textarea.new-post-area#new-post-area(name='post') #{post.content}
                 .db-tags
                     - each val in post.tags

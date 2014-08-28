@@ -295,17 +295,19 @@ block new_post
                                         
                 .db-new-editor
                     .db-editor-helper
-                        span Markdown
-                        span.db-draft-info
-                        a.db-editor-fs(href='javascript:;')
-                            i.fa.fa-arrows-alt
-                        a.db-editor-preview(href='javascript:;')
-                            i.fa.fa-eye
-                        a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
-                            i.fa.fa-photo
-                        a.db-editor-help(href='javascript:;')
-                            i.fa.fa-tint
-                        a.db-save-draft(href='javascript:;') Save draft
+                        .db-editor-info
+                            span Markdown
+                            span.db-draft-info
+                        .db-helper-btn
+                            a.db-save-draft(href='javascript:;') Save draft
+                            a.db-editor-help(href='javascript:;')
+                                i.fa.fa-tint
+                            a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
+                                i.fa.fa-photo
+                            a.db-editor-preview(href='javascript:;')
+                                i.fa.fa-eye
+                            a.db-editor-fs(href='javascript:;')
+                                i.fa.fa-arrows-alt
                     textarea.new-post-area#new-post-area(name='post')
                 .db-tags
                     input.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
