@@ -14,18 +14,12 @@ rootRouter.get('/', function (req, res, next) {
         var blogName = s ? s.name : config.name;
         var blogDesc = s ? s.desc : config.description;
 
-        post.getTenPosts(function (err, posts) {
+        post.getTenPublishedPosts(function (err, posts) {
             if (err) {
                 errorHandling(req, res, { error: err, type: 500});
                 return;
             }
-            var publishedPost = [];
-            posts.forEach(function (p, index) {
-                if (p.published) {
-                    publishedPost.push(p);
-                }
-            });
-            res.render('homepage', { blogName: blogName, blogDesc: blogDesc, posts: publishedPost});
+            res.render('homepage', { blogName: blogName, blogDesc: blogDesc, posts: posts});
         });
     });
 });

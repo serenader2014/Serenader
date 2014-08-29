@@ -1,3 +1,4 @@
+
 var Post = require('../models').Post;
 var Category = require('./category');
 
@@ -58,6 +59,9 @@ module.exports.getTenPosts = function (callback) {
     Post.find({}, null, {limit: 10, sort: {_id: -1}}, callback);
 };
 
+module.exports.getTenPublishedPosts = function (callback) {
+    Post.find({published: true}, null, {limit: 10, sort: {_id: -1}}, callback);
+};
 
 module.exports.getAllPosts = function (callback) {
     Post.find({}, 'title author category date', {sort: {_id: -1}}, callback);

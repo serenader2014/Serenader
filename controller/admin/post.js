@@ -45,7 +45,11 @@ module.exports = function (router) {
     router.get('/post/new', auth_user, function (req, res, next) {
         Category.getAll(function (err, c) {
             if (! err && c) {
-                res.render('admin_new_post', {adminPath: adminPath, locals: res.locals, categories: c});
+                if (isMobile(req)) {
+                    res.render('admin_new_post_mobile', {adminPath: adminPath, locals: res.locals, categories: c});
+                } else {
+                    res.render('admin_new_post', {adminPath: adminPath, locals: res.locals, categories: c});
+                }
             } else {
                 errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
                 return false;
@@ -64,7 +68,21 @@ module.exports = function (router) {
                 }
                 Category.getAll(function (err, c) {
                     if (! err && c) {
-                        res.render('admin_edit_post', {adminPath: adminPath, locals: res.locals, categories: c, post: p});
+                        if (isMobile(req)) {
+                            res.render('admin_edit_post_mobile', {
+                                adminPath: adminPath, 
+                                locals: res.locals, 
+                                categories: c, 
+                                post: p
+                            });
+                        } else {
+                            res.render('admin_edit_post', {
+                                adminPath: adminPath, 
+                                locals: res.locals, 
+                                categories: c, 
+                                post: p
+                            });
+                        }
                     } else {
                         errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
                         return false;
@@ -283,3 +301,16 @@ module.exports = function (router) {
         });
     });
 };
+
+function isMobile (req) {
+    var mobileUA = ['Android','iPhone','iPad','Windows Phone'];
+    var UAheader = req.headers['user-agent'];
+    var result = false;
+    mobileUA.forEach(function (u, index) {
+        var reg = new RegExp(u, 'gi');
+        if (reg.test(UAheader)) {
+            result = true;
+        }
+    });
+    return result;
+}

@@ -5,14 +5,29 @@ block index_script
         marked.setOptions({
             sanitize: true
         });
-        $('.post-content').html(marked($('.post-content').text()));
+        $('.post-content .post').html(marked($('.post-content .post').text()));
 block inner
-    .post-wrapper
+    .post-wrapper.single
         .post-title: a(href='/blog/#{post._id}') #{post.title}
         .post-info 
             a.post-author(href='/u/#{post.author}')
                 img(src='#{post.authorAvatar}')
             a.post-category(href='/blog?category=#{post.category}') #{post.category}
-            span #{post.date[0].month}/#{post.date[0].date}
-            span Views: #{post.views}
-        .post-content!=post.content
+            span.post-date #{post.date[0].month}/#{post.date[0].date}
+            span.post-view Views: #{post.views}
+        .post-content
+            .post!=post.content
+            .post-tags
+                - each tag in post.tags
+                    span: a(href='/blog?tag=#{tag}') #{tag}
+        .post-pagination
+            a.prev-post(href='javascript:;')
+                span
+                    i.fa.fa-angle-double-left
+                    | 上一篇
+                span #{prev}
+            a.next-post(href='javascript:;')
+                span
+                    | 下一篇
+                    i.fa.fa-angle-double-right
+                span #{next}

@@ -1,0 +1,202 @@
+extends admin
+
+block admin_css
+    link(rel='stylesheet', href='/css/jquery.light-selector.css')
+    style.
+        .new-post-area {
+            width: 100%;
+            height: 100%;
+            padding: 3.4rem 1rem 0;
+            margin: 0;
+            font-size: 1.5rem;
+            line-height: 2rem;
+            border: none;
+            font-family: "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+            outline: none;
+        }
+        .header-btn {
+            position: fixed;
+            top: 1.2rem;
+            right: 45%;
+            padding: 0.6rem 0;
+            width: 3rem;
+            color: #FFFFFF;
+            border-radius: 100%;
+            line-height: 1.8rem;
+            font-size: 2rem;
+            text-align: center;
+            z-index: 999;
+            background: #B2DEFF;
+        }
+        .db-new-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            padding-top: 5.4rem;
+            margin: 0;
+            z-index: 9999;
+            box-shadow: 0 0 0;
+            background: none;
+        }
+        .db-title-wrapper {
+            padding: 1rem;
+            max-width: 80rem;
+            margin: 1rem auto;
+            border: 1px solid #EEEEEE;
+            border-radius: 0.4rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
+            background: #FFFFFF;
+        }
+        .db-cate-selecter {
+            position: static;            
+        }
+        .light-selector {
+            width: 100% !important;
+            border: 1px solid #ced6dc !important;
+        }
+        .db-tag {
+            font-size: 1.8rem !important;
+            font-weight: normal !important;
+        }
+        .trangle {
+            position: absolute;
+            top: 3.4rem;
+            left: 45%;
+            z-index: 99;
+        }
+        .trangle-inner {
+            position: relative;
+            overflow: hidden;
+            width: 40px;
+            height: 40px;
+        }
+        .trangle-inner:after {
+            display: block;
+            content: '';
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            bottom: -12px;
+            left: 8px;
+            border: 1px solid #CCCCCC;
+            transform: rotate(45deg);
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            background: #FFFFFF;
+        }
+        .db-new-editor {
+            top: 0;
+        }
+        .draft-setting {
+            margin-top: 1rem;
+        }
+        .draft-setting input {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            margin-right: 1rem;
+            vertical-align: middle;
+        }
+
+block admin_script
+    script(tpye='text/javascript', src='/js/jquery.light-selector.js')
+    script(type='text/javascript').
+        (function () {
+            $('select').lightSelector().setSize({
+                width: 200,
+                height: 60
+            });
+            $('.db-editor-fs').on('click', function () {
+                $('.db-new-editor').toggleClass('editor-fullscreen');
+            });
+            $('.header-btn').on('click', function () {
+                $('.db-new-header').fadeIn(200);
+                $(this).find('i').removeClass('fa-angle-double-down').addClass('fa-angle-double-up');
+            });
+            $('.db-new-header').on('click', function (event) {
+                if (event.target === this) {
+                    $(this).fadeOut(200);
+                    $('.header-btn').find('i').removeClass('fa-angle-double-up').addClass('fa-angle-double-down');
+                }
+            });
+            $('.db-publish').on('click', function (event) {
+                event.preventDefault();
+                var post = $('#new-post-area').val(),
+                    title = $('#post-title').val(),
+                    cate = $('option:selected').val(),
+                    publish = $('input[name="publish"]').is(':checked') ? true : false,
+                    tags = [],
+                    tmp,
+                    i = 0;
+                tmp = $('.db-tag').val().split(' ');
+                for (; i < tmp.length; i++ ) {
+                    if (tmp[i] !== '') {
+                        tags.push(tags[i]);
+                    }
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '#{adminPath}/post/edit/#{post._id}',
+                    data: {                            
+                        title: title || 'No title',
+                        categories: cate,
+                        post: post,
+                        tags: tags,
+                        publish: publish
+
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === 0) {
+                            msg(result.error);
+                        } else {
+                            msg('success','文章更新成功！', function () {
+                                window.location = '#{adminPath}/post';
+                            });
+                        }
+                    }
+                });
+            });      
+        })();
+
+block new_post
+    section.db-editor-wrapper
+        .db-new-main
+            form#new-post(method='post', action='#{adminPath}/post/edit/#{post._id}')
+                a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
+                .db-new-header
+                    .trangle
+                        .trangle-inner                    
+                    .db-title-wrapper
+                        input.db-new-title#post-title(type='text', name='title', placeholder='Post Title', value='#{post.title}')
+                        - var tag = post.tags.join(' ')
+                        input.db-tag(type='text', placeholder='文章标签。多个标签请用空格隔开。', name='tags', value='#{tag}')
+                        .db-cate-selecter(tabindex="0")
+                            select(name='categories', tabindex='-1')
+                                - if (categories) {
+                                    - each val in categories
+                                        - if (val.name === post.category) {
+                                            option(value='#{val.name}', selected) #{val.name}
+                                        - } else {
+                                            option(value='#{val.name}') #{val.name}
+                                        - }
+                                - }
+                        .draft-setting
+                            input(type='checkbox', name='publish')
+                            label(for='publish') 立即发表
+                .db-new-editor
+                    .db-editor-helper
+                        .db-editor-info
+                            span Markdown
+                        .db-helper-btn
+                            a.db-editor-help(href='javascript:;')
+                                i.fa.fa-tint
+                            a.db-editor-fs(href='javascript:;')
+                                i.fa.fa-arrows-alt
+                    textarea.new-post-area#new-post-area(name='post') #{post.content}
+                .db-tags
+                    button.btn.btn-primary.db-publish(form='new-post')
+                        i.fa.fa-send-o
+                        | 更新

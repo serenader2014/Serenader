@@ -226,7 +226,8 @@
   }
 
   .post-wrapper {
-    margin-bottom: 3rem;
+    max-width: 620px;
+    margin: 0 auto 3rem;    
     padding-bottom: 3rem;
     border-bottom: 1px solid #EEEEEE;
   }
@@ -255,7 +256,9 @@
   }
 
   .post-title {
-    margin: 1rem 0;
+    margin: 1rem 0 1rem -2.5rem;
+    padding-left: 2rem;
+    border-left: 0.5rem solid;
     a {
       font-size: 3rem;
       line-height: 4.5rem;
@@ -263,7 +266,9 @@
   }
 
   .post-info {
-    margin: 1rem 0;
+    margin: 1rem -2.5rem;
+    padding: 1rem 2.5rem;
+    background: #F5F5F5;
     a {
       font-size: 1.4rem;
     }
@@ -283,7 +288,7 @@
       }
     }
 
-    .post-category {
+    .post-date, .post-category {
       margin-right: 0.5rem;
       padding-right: 0.5rem;
       border-right: 1px solid #CCCCCC;
@@ -301,9 +306,30 @@
     text-decoration: underline;
   }
 
-  .post-wrapper {
-    max-width: 620px;
-    margin: auto;
+  .post-pagination {
+    font-size: 1.5rem;
+    padding-top: 2rem;
+
+    .prev-post {
+      float: left;
+    }
+
+    .next-post {
+      float: right;
+    }
+
+    i {
+      margin: 0 0.5rem;
+    }
+  }
+
+  .post-tags a {
+    display: inline-block;
+    margin: 1rem;
+    line-height: 2.5rem;
+    color: #999999;
+    font-size: 1.4rem;
+    border-bottom: 1px dashed;
   }
 }
 
@@ -545,14 +571,16 @@
 
 @media screen and (max-width: 980px) {
   .content {
-    padding-left: 1rem;
+    padding: 5rem 2.5rem;
 
     .main {
       padding: 0;
+      margin: 0;
     }
 
     .index-wrapper {
-      padding: 2rem 1rem;
+      padding: 2rem 2.5rem;
+      margin: 0 -1.5rem;
     }
     .navbar {
       position: fixed;
@@ -567,6 +595,7 @@
         display: none;
         padding: 0;
         margin-top: 1.5rem;
+        width: 120px;
         text-align: center;
         list-style: none;
         border-radius: 0.4rem;
@@ -582,7 +611,7 @@
         display: inline-block;
         padding: 1rem;
         border-radius: 0.3rem;
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: #444444;
         box-shadow: 0 0 5px rgba(0,0,0,0.15);
         transition: all 0.3s;
@@ -602,7 +631,7 @@
         a {
           display: block;
           padding: 1rem 2.5rem;
-          border-bottom: 1px solid #454545;
+          border-bottom: 1px solid #666666;
           color: #FFFFFF;
           &:hover {
             background: #696969;
@@ -623,7 +652,15 @@
     }
 
     .post-title a {
+
       font-size: 2.4rem;
     }
+
+  }
+  .single .post-content {
+    margin: 0 -1.5rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    background: #FFFFFF;
   }
 }
