@@ -1,0 +1,17 @@
+content
+    themes
+        serenader
+    data
+        public
+            background
+        private
+        tmp
+        trash
+    images
+
+core
+    server
+        controllers
+        models
+    client
+        views

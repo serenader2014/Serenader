@@ -1,0 +1,340 @@
+extends admin
+
+block admin_css
+    link(rel='stylesheet', href='/css/jquery.light-selector.css')
+    link(rel='stylesheet', href='/css/codemirror.css')
+
+block admin_script
+    script(tpye='text/javascript', src='/js/codemirror.js')
+    script(type='text/javascript', src='/js/marked.js')
+    script(tpye='text/javascript', src='/js/jquery.light-selector.js')
+    script(type='text/javascript', src='/js/jquery.ui.widget.js')
+    script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
+    script(type='text/javascript').
+        (function () {
+            var editor = CodeMirror.fromTextArea($('#new-post-area')[0], {
+                mode: null,
+                indentUnit: 4,
+                lineWrapping: true,
+                extraKeys: {
+                    'F11': fullScreen,
+                    'Ctrl-P': mdPreview,
+                    'Alt-C': closePreview,
+                    'Ctrl-I': insertImage
+                }
+            });
+            var previousTitle = '';
+            var previousPost = '';
+            var previousTags = '';
+            var previousCategory = '';
+
+            var updatePost = function (publish, callback) {
+                var tags = [];
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                $('input[name="tags"]').each(function (index, item) {
+                    tags.push($(item).val()); 
+                });
+                if (! publish &&
+                    previousCategory === category &&
+                    previousTags.toString() === tags.toString() &&
+                    previousPost === post &&
+                    previousTitle === title) {
+                    return ;
+                } else {
+                    previousTitle = title;
+                    previousPost = post;
+                    previousTags = tags;
+                    previousCategory = category;
+                    $.ajax({
+                        url: '#{adminPath}/post/edit/#{post._id}',
+                        type: 'POST',
+                        data: {
+                            title: title || 'No title',
+                            categories: category,
+                            post: post,
+                            tags: tags,
+                            publish: publish || false
+                        },
+                        success: function (data) {
+                            if (data.status === 1) {
+                                var time = new Date();
+                                if (! publish) {
+                                    $('.db-draft-info').html('Draft saved in '+time.toTimeString());
+                                    setTimeout(function () {
+                                        $('.db-draft-info').html('');
+                                    }, 5000)
+                                }
+                                if (callback) {
+                                    callback(true);
+                                }
+                            } else {
+                                if (! publish) {
+                                    $('.db-draft-info').html('Update draft error');
+                                }
+                                if (callback) {
+                                    callback();
+                                }
+                            }
+                        },
+                        error: function (err) {
+                            msg('error', '提交文章到服务器失败！' + err.statusText);
+                        }                        
+                    });        
+                }
+            };
+
+            var update = setInterval(updatePost, 10000);
+            $('.db-save-draft').on('click', function () {
+                updatePost();
+            });
+            $('.db-publish').on('click', function (event) {
+                event.preventDefault();
+                var title = $('input[name="title"]').val();
+                var category = $('option:selected').val();
+                var post = editor.getValue();
+                if ( !title || !category || !post) {
+                    msg('error', '请完善文章信息。');
+                    return false;
+                }
+                updatePost(true, function (result) {
+                    if (result) {
+                        msg('success', '文章更新成功！', function () {
+                            window.location = '#{adminPath}/post';
+                        });
+                    } else {
+                        msg('error', '文章发表失败！');
+                    }
+                });
+            });
+            editor.focus();
+            $('select').lightSelector().setSize({
+                width: 200,
+                height: 60
+            });
+            $('.db-editor-fs').on('click', function () {
+                $('.db-new-editor').toggleClass('editor-fullscreen');
+            });
+            $('.db-editor-preview').on('click', function () {
+                $('.db-preview-main').html(marked(editor.getValue()));
+                $('.db-preview').fadeIn();
+            });
+            $('.db-preview-close').on('click', function () {
+                $('.db-preview').fadeOut()
+            });
+
+            $('.db-tag').on('keyup', function (event) {
+                    if (event.which === 188){
+                        $(this).val($(this).val().slice(0,$(this).val().length-1));
+                        addTag();
+                        $(this).val("");
+                    }
+            }).on('blur', function (event) {
+                    if ($(this).val() !== "") {
+                        addTag();
+                        $(this).val("");
+                    }
+            }).on('keydown', function (event) {
+                if (event.which === 8 ) {
+                    if ($(this).val() === "") {
+                        $(".db-single-tag:last").remove();
+                    }
+                }
+            });
+
+            function addTag () {
+                var tag = $("<a class='db-single-tag' href='javascript:;'></a>");
+                var tagInput = $("<input name='tags' class='db-tag-input' />");
+                tag.html($(".db-tag").val());
+                tagInput.val(tag.text());
+                $(".db-tag").before(tag);
+                tag.append(tagInput);
+                tag.append($("<i class='fa fa-times'></i>"));
+            }
+
+            $('.db-tags').on('click','.db-single-tag', function () {
+                $(this).remove();
+            }).on('click', function () {
+                $('.db-tag').focus();
+            });
+
+            function mdPreview () {
+                $('.db-preview-main').html(marked(editor.getValue()));
+                $('.db-preview').fadeIn();
+                editor.focus();
+            }
+
+            function fullScreen () {
+                $('.db-new-editor').toggleClass('editor-fullscreen');
+            }
+
+            function closePreview () {
+                $('.db-preview').fadeOut()
+            }
+
+            function insertImage () {
+                $('.db-editor-insertimg').trigger('click');
+            }            
+
+            $('.db-tags').on('click','.db-single-tag', function () {
+                $(this).remove();
+            }).on('click', function () {
+                $('.db-tag').focus();
+            });
+
+            $('.upload-picker').on('click', function (event) {
+                event.preventDefault();
+                $('.fileinput').trigger('click');
+            });
+
+            $('.insert-img').on('click', function (event) {
+                event.preventDefault();
+                var imgUrl = $('.imgurl input').val();
+                editor.replaceSelection('![]('+imgUrl+')');
+                $('#insert .close').trigger('click');
+            });
+
+            $('.imgurl input').on('keydown', function (event) {
+                if (event.which === 13) {
+                    event.preventDefault();
+                    $('.insert-img').trigger('click');
+                }
+            });
+
+            $('.select-another').on('click', function (event) {
+                event.preventDefault();
+                $('.upload-picker').trigger('click');
+            });
+
+            $('.remove-img').on('click', function (event) {
+                event.preventDefault();
+                $('.preview-container').hide();
+                $('.upload-picker').show();
+                $('.imgurl input').val('');
+            });
+
+            $('body').on('click', function () {
+                if (! $('#insert').is(':visible')) {
+                    $('.preview-container').hide();
+                    $('.upload-fail').hide();
+                    $('.upload-picker').show();
+                }
+            });
+
+            $('#uploader').fileupload({
+                dropZone: $('#uploader'),
+                autoUpload: true,
+                acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+                url: '#{adminPath}/upload/content',
+
+            }).on('fileuploadadd', function (e, data) {
+                $('.upload-picker').hide();
+
+            }).on('fileuploadstart', function (e, data) {
+                $('.upload-progress').show();
+
+            }).on('fileuploadprogress', function (e, data) {
+                var percentage = parseInt(data.loaded/data.total * 100, 10);
+                $('.progress-inner').animate({
+                    width: percentage + '%'
+                });
+
+            }).on('fileuploaddone', function (e, data) {
+                $('.upload-progress').hide();
+                $('.preview-container').show();
+                var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
+                $('.preview-container img').remove();
+                $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
+                $('.imgurl input').val(imgUrl).focus();
+            }).on('fileuploadfail', function (e, data) {
+                $('.upload-progress').hide();
+                $('.upload-fail').show();
+                $('.upload-error-text').html(data.textStatus);
+                $('.upload-error-detail').html(data.errorThrown);
+            });            
+        })();
+
+block new_post
+    section.db-editor-wrapper
+        .db-new-main
+            form#new-post(method='post', action='#{adminPath}/post/edit/#{post._id}')
+                .db-new-header
+                    .db-title-wrapper
+                        input.db-new-title#post-title(type='text', name='title', placeholder='Post Title', value='#{post.title}')
+                        .db-cate-selecter(tabindex="0")
+                            select(name='categories', tabindex='-1')
+                                - if (categories) {
+                                    - each val in categories
+                                        - if (val.name === post.category) {
+                                            option(value='#{val.name}', selected) #{val.name}
+                                        - } else {
+                                            option(value='#{val.name}') #{val.name}
+                                        - }
+                                - }
+                .db-new-editor
+                    .db-editor-helper
+                        .db-editor-info
+                            span Markdown
+                            span.db-draft-info
+                        .db-helper-btn
+                            a.db-save-draft(href='javascript:;') Save draft
+                            a.db-editor-help(href='javascript:;')
+                                i.fa.fa-tint
+                            a.db-editor-insertimg(href='#', data-toggle='modal', data-target='#insert')
+                                i.fa.fa-photo
+                            a.db-editor-preview(href='javascript:;')
+                                i.fa.fa-eye
+                            a.db-editor-fs(href='javascript:;')
+                                i.fa.fa-arrows-alt
+                    textarea.new-post-area#new-post-area(name='post') #{post.content}
+                .db-tags
+                    - each val in post.tags
+                        a.db-single-tag(href='javascript:;')
+                            | #{val}
+                            i.fa.fa-times
+                            input.db-tag-input(name='tags', value='#{val}')
+                    input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
+                    button.btn.btn-primary.db-publish(form='new-post')
+                        i.fa.fa-send-o
+                        | 更新
+                .db-preview
+                    .db-preview-wrapper
+                        .db-preview-header
+                            a.db-preview-close(href='javascript:;'): i.fa.fa-remove
+                            p Markdown Preview
+                        .db-preview-main
+                .modal.fade#insert(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                    .modal-dialog
+                        .modal-content
+                            .modal-header
+                                button.close(type='button', data-dismiss='modal')
+                                    span(aria-hidden='true') &times;
+                                    span.sr-only Close
+                                h4.modal-title 插入图片
+                            .modal-body
+                                .imgupload#uploader
+                                    form(enctype='multipart/form-data')
+                                        a.upload-picker(href='javascript:;')
+                                            img(src='/img/image.png')
+                                            span 选择图片
+
+                                        .upload-progress
+                                            .progress-outer
+                                                .progress-inner
+                                            p 正在上传……
+                                        .preview-container
+                                            button.btn.btn-primary.select-another 重新上传
+                                            button.btn.btn-default.remove-img 移除图片
+                                        .upload-fail
+                                            p.upload-error-text
+                                            p.upload-error-detail
+                                        input.fileinput(type='file',name='picture', accept='image/*')
+                                .imgurl
+                                    input.form-control(type='text', placeholder='请输入图片地址。')
+                                            
+
+                            .modal-footer
+                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                                button.btn.btn-primary.insert-img(type='button') 插入

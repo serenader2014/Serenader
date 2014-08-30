@@ -1,0 +1,15 @@
+extends layout
+block extra_css
+    link(rel='stylesheet', href='/css/index.css')
+block content
+    .error-container
+        .error-wrapper
+            .error-header #{type}
+            .error-main
+                .error-words Oops... You broke the page.
+                .error-detail #{error}
+                .error-home 
+                    - if (referer)
+                        a(href='#{referer}') Return Previous Page
+                    - else
+                        a(href='/') Return Home Page

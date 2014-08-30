@@ -1,0 +1,72 @@
+extends layout
+block extra_css
+    link(rel='stylesheet', href='/css/index.css')
+    
+    - var bg = background === '/img/default_background.jpg' ? '/img/default_background.jpg' : '/static/background/' + background;
+    style.
+        .db-sign {
+        background: url(#{bg});
+        background-position: center;
+        background-size: cover;
+        }
+block extra_script
+    script.
+        $('.db-submit').on('click', function (e) {
+            e.preventDefault();
+            var username = $('input[name="username"]').val(),
+                password = $('input[name="password"]').val();
+            progress.show('正在登录中...', function () {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        username: username,
+                        password: password
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', result.user + ' 欢迎回来 ~', function () {
+                                    window.location = '#{adminPath}';
+                                }, 1000);
+                            } else {
+                                msg('error', result.error, function () {
+
+                                });
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        msg('error', '无法提交登录请求到服务器！');
+                    }
+                });
+            });
+        });
+
+block content
+    .db-sign
+        form.db-sign-form(action='#{adminPath}/signin', method='post')
+            .db-outer
+                .db-inner
+                    span.db-sign-title Sign in
+            .db-outer
+                .db-inner
+                    i.fa.fa-user.db-icon.db-sign-icon
+                    input(type='text', name='username')
+            .db-outer
+                .db-inner
+                    i.fa.fa-lock.db-icon.db-sign-icon
+                    input(type='password', name='password')
+            .db-outer
+                button.db-submit(type='submit') Submit
+            .db-outer
+                .db-inner.db-sign-helper
+                    span: a.db-sign-btn(href='#{adminPath}/signup') 注册
+                    span: a.db-forget-btn(href='') 忘记密码？
+            .db-outer
+                .db-inner
+                    hr
+                    span.db-info
+                        | Created By serenader with 
+                        i.fa.fa-heart
+            

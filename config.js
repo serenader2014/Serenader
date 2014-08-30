@@ -1,23 +1,52 @@
 var path = require('path'),
     pkg = require('./package.json'),
-    Setting = require('./proxy').setting;
+    config = {
+        name: 'Serenader',
+        description: 'A blog created by serenader, with some interesting features',
+        version: pkg.version,
+        site_logo: '',
+        site_icon: '',
+        upload_dir: path.join(__dirname, 'upload'),
+        db: 'mongodb://127.0.0.1/serenader',
+        session_secret: 'cute cat',
+        port: 80,
+        allow_sign_up: true,
+        root_dir: __dirname,
+        admin_path: '/admin',
+        theme: 'serenader',
+        url: {
+            admin: '/admin',
+            adminPost: '/post',
+            adminNewPost: '/post/new',
+            adminEditPost: '/post/edit',
+            adminDeletePost: '/post/delete',
+            adminNewCategory: '/category/new',
+            adminEditCategory: '/category/edit',
+            adminDeleteCategory: '/category/delete',
+            adminGallery: '/gallery',
+            adminNewGallery: '/gallery/new',
+            adminGalleryUpload: '/gallery/upload',
+            adminFile: '/files',
+            adminFileRename: '/files/rename',
+            adminFileEdit: '/files/edit',
+            adminFileDelete: '/files/delete',
+            adminFileZip: '/files/zip/unzip',
+            adminUpload: '/upload',
+            adminSetting: '/setting',
+            adminUser: '/u',
+            adminSignIn: '/signin',
+            adminSignUp: '/signup',
+            adminSignOut: '/signout',
+            indexPost: '/blog',
+            indexCategory: '/blog?category=',
+            indexTag: '/blog?tag=',
+            indexGallery: '/gallery',
+            indexAbout: '/about',
 
-var config = {
-    name: 'Serenader',
-    description: 'A blog created by serenader, with some interesting features',
-    version: pkg.version,
-    site_logo: '',
-    site_icon: '',
-    upload_dir: path.join(__dirname, 'upload'),
-    db: 'mongodb://127.0.0.1/serenader',
-    session_secret: 'cute cat',
-    port: 80,
-    allow_sign_up: true,
-    root_dir: __dirname,
-    admin_path: '/admin',
-    dir: [
-        '/data/private','/data/public/background','/data/tmp','/data/trash' 
-    ]
+        },
+        dir: [
+            // '/data/private','/data/public/background','/data/tmp','/data/trash' 
+        ]
 };
 
 module.exports.config = config;

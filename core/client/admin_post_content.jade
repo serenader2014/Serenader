@@ -1,0 +1,130 @@
+extends admin
+
+block admin_script
+    script.
+        $('.delete-post').on('click', function (event) {
+            event.preventDefault();
+            var id = $(this).data('id'),
+                index = $('.delete-post').index($(this));
+            $('#delete-post .btn-danger').data('url', '#{adminPath}/post/delete/'+id).data('index', index);
+        });
+
+        $('#delete-post .btn-danger').on('click', function () {
+            var self = this;
+            $(self).prev().click();
+            progress.show('正在删除中...');
+            $.ajax({
+                type: 'POST',
+                url: $(self).data('url'),
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status === 1) {
+                        progress.hide(function () {
+                            msg('success', '删除文章成功！', function () {
+                                $('.post-single').eq($(self).data('index')).fadeOut(200, function () {
+                                    $(this).remove();
+                                });
+                            });
+                        });
+                    }
+                }
+            });
+        });
+
+        $('.db-cate-btn').on('click', function (event) {
+            event.preventDefault();
+            progress.show('添加新的分类中...', function () {
+                var cateName = $('.db-cate-input').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '#{adminPath}/category/new',
+                    data: {
+                        name: cateName
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '创建新分类成功！', function () {
+                                    var li = $('<li>').addClass('db-cate-list').append($('<a>').)
+                                });
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err);
+                        });
+                    }
+                });
+            });
+        });
+
+block post_content
+    .db-post-content
+        .db-sidebar
+            .db-sidebar-container
+                h3.db-sidebar-title 文章分类
+                ul
+                    - if (categories)
+                        - categories.forEach(function (item, index, array) {
+                            li.db-cate-list
+                                a(href='/category?c=#{index}') #{item.name} (#{item.count})
+                                //- span.badge #{item.count}
+                                //- .db-cate-ctrl
+                                    a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
+                                    a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
+                        -   })
+                    - else
+                        li 没有分类
+                    li.db-add-cate
+                        form.db-cate-wrapper(method='post', action='#{adminPath}/category/new' id='newcate')
+                            input.form-control.db-cate-input(type='text', name='name', placeholder='添加一条新的分类')
+                            button.btn.btn-primary.db-cate-btn(type='submit', form='newcate') 添加
+        .db-post-main
+            .db-post-wrapper
+                - if (drafts) 
+                    - each draft in drafts
+                        a.post-single.draft(href='#{adminPath}/post/edit/#{draft._id}')
+                            .post-main
+                                h3.post-title #{draft.title}
+                                span.delete-post(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
+                            .post-meta
+                                span 
+                                    | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
+                                span
+                                    | Sorted in #{draft.category}                    
+                - if (posts.length > 0)
+                    - each post,index in posts
+                        - if (post)
+                            a.post-single(href='#{adminPath}/post/edit/#{post._id}')
+                                .post-main
+                                    h3.post-title #{post.title}
+                                    span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
+                                .post-meta
+                                    span 
+                                        | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
+                                    span
+                                        | Sorted in #{post.category}
+                - else
+                    .no-post You don't have any post yet.
+        .modal#delete-cate
+            .modal-wrapper
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 删除分类
+                .modal-body
+                    p 该操作将会删除该分类。删除之前请确保分类下面没有文章。若分类下面仍有文章，则无法删除该分类。
+                .modal-footer
+                    button.btn(type='button', data-dismiss='modal') 取消
+                    button.btn.btn-danger(type='submit') 确定
+        .modal#delete-post
+            .modal-wrapper
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 删除文章
+                .modal-body
+                    p 该操作将会删除该文章。删除前请做好备份。
+                .modal-footer
+                    button.btn(type='button', data-dismiss='modal') 取消
+                    button.btn.btn-danger(type='submit') 确定

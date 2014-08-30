@@ -1,9 +1,9 @@
 {
-    "name" : "test",
+    "name" : "serenader",
     "version": "0.1.0",
     "private": true,
     "scripts" : {
-        "start": "node app.js"
+        "start": "node index.js"
     },
     "dependencies": {
         "express" : "4.2.0",
