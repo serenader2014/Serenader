@@ -68,8 +68,8 @@ PostSchema.statics.getOnePostById = function (id, callback) {
 PostSchema.statics.getTenPosts = function (callback) {
     this.find({}, null, {limit: 10, sort: {_id: -1}}, callback);
 };
-PostSchema.statics.getTenPublishedPosts = function (callback) {
-    this.find({published: true}, null, {limit: 10, sort: {_id: -1}}, callback);
+PostSchema.statics.getHomePagePublishedPosts = function (callback) {
+    this.find({published: true}, null, {limit: require('../index').setting.posts_per_page, sort: {_id: -1}}, callback);
 };
 PostSchema.statics.getAllPosts = function (callback) {
     this.find({}, 'title author category date', {sort: {_id: -1}}, callback);

@@ -15,7 +15,6 @@ var express = require('express'),
     app = express();
 
 
-module.exports = app;
 
 mk(config.dir, function () {
     console.log('make folder success');
@@ -46,7 +45,7 @@ app.use(session({
 
 app.use(function (req, res, next) {
     if (req.session.user) {
-        res.locals.current_user = req.session.user;
+        app.locals.currentUser = req.session.user;
         req.session.cookie.expires = new Date(Date.now()+1000*60*30);
         req.session.cookie.maxAge = 1000*60*30;
         res.cookie('serenader','0.1',{
@@ -57,13 +56,29 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.locals.url = config.url;
+
 Setting.getSetting(function (err, s) {
     var theme, dir;
     if (err) {
         console.error(err);
+        res.send(err);
         return false;
     }
-    theme = s && s.theme ? s.theme : config.theme;
+    if (!s) {
+        Setting.createSetting(config.blogConfig, function (err, setting) {
+            if (err) {
+                errorHandling(req, res, {error: err, type: 500});
+                return false;
+            }
+        });
+        app.locals.setting = config.blogConfig;
+    } else {
+        app.locals.setting = s;
+    }
+    module.exports = app.locals;
+    theme = app.locals.setting.theme;
+
     dir = config.root_dir + '/content/themes/' + theme + '/assets';
     app.use(express.static(dir));
     app.use(express.static(config.root_dir + '/core/client/assets'));
@@ -77,7 +92,7 @@ Setting.getSetting(function (err, s) {
             errorHandling(req, res, {type: 404, error: 'Not found'});
         }
     });
-    app.use('/static', express.static(path.join(__dirname, 'data/private')));
+    app.use('/static', express.static(config.root_dir + '/content/data/private'));
 
 
     route(app);

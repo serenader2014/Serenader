@@ -139,7 +139,7 @@ block admin_script
                 }
                 $.ajax({
                     type: 'POST',
-                    url: '#{adminPath}/post/new',
+                    url: '#{url.admin}#{url.adminNewPost}',
                     data: {                            
                         title: title || 'No title',
                         categories: cate,
@@ -154,7 +154,7 @@ block admin_script
                             msg(result.error);
                         } else {
                             msg('success','文章发布成功！', function () {
-                                window.location = '#{adminPath}/post';
+                                window.location = '#{url.admin}#{url.adminPost}';
                             });
                         }
                     }
@@ -165,7 +165,7 @@ block admin_script
 block new_post
     section.db-editor-wrapper
         .db-new-main
-            form#new-post(method='post', action='#{adminPath}/post/new')
+            form#new-post(method='post', action='#{url.admin}#{url.adminNewPost}')
                 a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
                 .db-new-header
                     .trangle

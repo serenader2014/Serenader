@@ -2,14 +2,13 @@ var crypto = require('crypto'),
     fs = require('fs'),
     xss = require('xss'),
     request = require('request'),
-    fs = require('fs'),
     validator = require('validator'),
     User = require('../../models').User,
     errorHandling = require('../../utils/error'),
     makeFolder = require('../../utils/makefolder'),
     root = require('../../../../config').config.root_dir,
     url = require('../../../../config').config.url,
-    adminPath = url.admin;
+    locals = require('../../index');
 
 module.exports = function (router) {
     var bg;
@@ -20,8 +19,8 @@ module.exports = function (router) {
     }
 
     router.get(url.adminSignIn, function (req, res, next) { 
-        if (res.locals.current_user) {
-            res.redirect(adminPath);
+        if (req.session.user) {
+            res.redirect(url.admin);
         } else {
             res.render('signin', {background: bg});
         }
@@ -29,8 +28,8 @@ module.exports = function (router) {
 
 
     router.post(url.adminSignIn, function (req, res, next) {
-        var username = xss(validator.trim(req.body.username));
-        var password = xss(validator.trim(req.body.password));
+        var username = xss(validator.trim(req.body.username)),
+            password = xss(validator.trim(req.body.password));
         User.getOneUserById(username, function(err, u) {
             if (err) {
                 res.json({
@@ -65,17 +64,26 @@ module.exports = function (router) {
     });
 
     router.get(url.adminSignUp, function (req, res, next) {
-        if (res.locals.current_user) {
-            res.redirect(adminPath);
+        if (req.session.user) {
+            res.redirect(url.admin);
         } else {
             res.render('signup', {background: bg});
         }
     });
 
     router.post(url.adminSignUp, function (req, res, next) {
-        var uid = xss(validator.trim(req.body.id));
-        var email = xss(validator.trim(req.body.email));
-        var password = xss(validator.trim(req.body.password));
+        var uid, email, password, hashedPwd, hashedEmail;
+        
+        if (! locals.setting.allow_sign_up) {
+            res.json({
+                status: 0,
+                error: '帐号注册功能已经被系统管理员禁用！'
+            });
+            return false;
+        }
+        uid = xss(validator.trim(req.body.id));
+        email = xss(validator.trim(req.body.email));
+        password = xss(validator.trim(req.body.password));
 
         if (! uid || ! email || ! password) {
             res.json({
@@ -109,8 +117,8 @@ module.exports = function (router) {
             return false;
         }
 
-        var hashedPwd = md5(password);
-        var hashedEmail = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
+        hashedPwd = md5(password);
+        hashedEmail = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
         User.getAllUser(function (err, users) {
             if (users.length <= 0) {
@@ -133,12 +141,12 @@ module.exports = function (router) {
                         username: uid,
                     });
                     makeFolder([
-                        '/data/public/' + uid + '/upload', 
-                        '/data/public/' + uid + '/gallery', 
-                        '/data/private/' + uid + '/upload', 
-                        '/data/private/' + uid + '/gallery'
+                        '/content/data/public/' + uid + '/upload', 
+                        '/content/data/public/' + uid + '/gallery', 
+                        '/content/data/private/' + uid + '/upload', 
+                        '/content/data/private/' + uid + '/gallery'
                     ], function () {
-                        downloadAvatar(hashedEmail, '/data/public/' + uid + '/avatar.jpg', function () {
+                        downloadAvatar(hashedEmail, '/content/data/public/' + uid + '/avatar.jpg', function () {
                             console.log('Avatar download success.');
                         });
                     });
@@ -181,12 +189,12 @@ module.exports = function (router) {
                                         username: uid
                                     });
                                     makeFolder([
-                                        '/data/public/' + uid + '/upload', 
-                                        '/data/public/' + uid + '/gallery', 
-                                        '/data/private/' + uid + '/upload', 
-                                        '/data/private/' + uid + '/gallery'
+                                        '/content/data/public/' + uid + '/upload', 
+                                        '/content/data/public/' + uid + '/gallery', 
+                                        '/content/data/private/' + uid + '/upload', 
+                                        '/content/data/private/' + uid + '/gallery'
                                     ], function () {
-                                        downloadAvatar(hashedPwd, '/data/public/' + uid + '/avatar.jpg', function () {
+                                        downloadAvatar(hashedPwd, '/content/data/public/' + uid + '/avatar.jpg', function () {
                                             console.log('Avatar download success.');
                                         });
                                     });                                    
@@ -212,7 +220,7 @@ module.exports = function (router) {
 
     router.get(url.adminSignOut, function (req, res, next) {
         req.session.destroy();
-        res.redirect(adminPath);
+        res.redirect(url.admin);
     });
 };
 

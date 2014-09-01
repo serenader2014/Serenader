@@ -138,7 +138,7 @@ block admin_script
                 }
                 $.ajax({
                     type: 'POST',
-                    url: '#{adminPath}/post/edit/#{post._id}',
+                    url: '#{url.admin}#{url.adminEditPost}/#{post._id}',
                     data: {                            
                         title: title || 'No title',
                         categories: cate,
@@ -153,7 +153,7 @@ block admin_script
                             msg(result.error);
                         } else {
                             msg('success','文章更新成功！', function () {
-                                window.location = '#{adminPath}/post';
+                                window.location = '#{url.admin}#{url.adminPost}';
                             });
                         }
                     }
@@ -164,7 +164,7 @@ block admin_script
 block new_post
     section.db-editor-wrapper
         .db-new-main
-            form#new-post(method='post', action='#{adminPath}/post/edit/#{post._id}')
+            form#new-post(method='post', action='#{url.admin}#{url.adminEditPost}/#{post._id}')
                 a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
                 .db-new-header
                     .trangle

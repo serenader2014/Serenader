@@ -16,18 +16,18 @@ block content
                     ul.db-menu-wrapper
                         li: a(href='/')
                             i.fa.fa-home
-                        li: a(href='#{adminPath}') 
+                        li: a(href='#{url.admin}') 
                             i.fa.fa-dashboard
-                        li: a(href='#{adminPath}/post') 
+                        li: a(href='#{url.admin}#{url.adminPost}') 
                             i.fa.fa-archive
-                        li: a(href='#{adminPath}/gallery')
+                        li: a(href='#{url.admin}#{url.adminGallery}')
                             i.fa.fa-image
-                        li: a(href='#{adminPath}/files/public')
+                        li: a(href='#{url.admin}#{url.adminFile}')
                             i.fa.fa-folder-open
-                        li: a(href='#{adminPath}/upload')
+                        li: a(href='#{url.admin}#{url.adminUpload}')
                             i.fa.fa-cloud-upload
-                        - if (locals.current_user.role === 'admin')
-                            li.db-setting-btn: a(href='#{adminPath}/settings')
+                        - if (currentUser.role === 'admin')
+                            li.db-setting-btn: a(href='#{url.admin}#{url.adminSetting}')
                                 i.fa.fa-wrench
         .db-header-container
             nav.db-header-nav
@@ -36,12 +36,12 @@ block content
                         a(href='javascript:;')
                             i.fa.fa-list
                     li
-                        a(href='#{adminPath}/post/new') 
+                        a(href='#{url.admin}#{url.adminNewPost}') 
                             i.fa.fa-pencil
                 .db-dashboard-title Dashboard
                 ul.db-nav-right
-                    li: a.db-user-avatar(href='#{adminPath}/u/#{locals.current_user.uid}' style='background-image: url(#{locals.current_user.avatar})')
-                    li: a(href='#{adminPath}/signout')
+                    li: a.db-user-avatar(href='#{url.admin}#{url.adminUser}/#{currentUser.uid}' style='background-image: url(#{currentUser.avatar})')
+                    li: a(href='#{url.admin}#{url.adminSignOut}')
                         i.fa.fa-sign-out
                         
 

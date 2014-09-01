@@ -21,6 +21,7 @@
         "connect-mongo": "0.4.1",
         "adm-zip": "0.4.4",
         "formidable": "1.0.15",
-        "request": "2.40.0"
+        "request": "2.40.0",
+        "underscore": "1.7.0"
     }
 }

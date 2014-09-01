@@ -1,12 +1,10 @@
-var xss = require('xss');
-var validator = require('validator');
-
-var auth_user = require('./index').auth_user;
-var adminPath = require('./index').adminPath;
-var Post = require('../../proxy').post;
-var Category = require('../../proxy').category;
-var url = require('../../config').config.url;
-var errorHandling = require('../../routes').error;
+var xss = require('xss'),
+    validator = require('validator'),
+    auth_user = require('../../utils/auth_user'),
+    Post = require('../../models').Post,
+    Category = require('../../models').Category,
+    url = require('../../../../config').config.url,
+    errorHandling = require('../../utils/error');
 
 
 module.exports = function (router) {
@@ -24,8 +22,6 @@ module.exports = function (router) {
                             }
                         });
                         res.render('admin_post_content', {
-                            adminPath: adminPath, 
-                            locals: res.locals, 
                             posts: posts,
                             drafts: drafts,
                             categories: c
@@ -47,9 +43,9 @@ module.exports = function (router) {
         Category.getAll(function (err, c) {
             if (! err && c) {
                 if (isMobile(req)) {
-                    res.render('admin_new_post_mobile', {adminPath: adminPath, locals: res.locals, categories: c});
+                    res.render('admin_new_post_mobile', {categories: c});
                 } else {
-                    res.render('admin_new_post', {adminPath: adminPath, locals: res.locals, categories: c});
+                    res.render('admin_new_post', {categories: c});
                 }
             } else {
                 errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
@@ -64,22 +60,18 @@ module.exports = function (router) {
         Post.getOnePostById(id, function (err, p) {
             if (! err && p) {
                 if (req.session.user.role !== 'admin' && p.author !== req.session.user.uid) {
-                    res.redirect(adminPath+'/post');
+                    res.redirect(url.admin+'/post');
                     return false;
                 }
                 Category.getAll(function (err, c) {
                     if (! err && c) {
                         if (isMobile(req)) {
                             res.render('admin_edit_post_mobile', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
                                 categories: c, 
                                 post: p
                             });
                         } else {
                             res.render('admin_edit_post', {
-                                adminPath: adminPath, 
-                                locals: res.locals, 
                                 categories: c, 
                                 post: p
                             });
@@ -98,19 +90,21 @@ module.exports = function (router) {
     });
 
     router.post(url.adminEditPost + '/:id', auth_user, function (req, res, next) {
+        var now, title, author, avatar, date, post, category, id, published, tags;
         if (! req.body.post || ! req.body.title || ! req.body.categories) {
-            errorHandling(req, res, { error: '请完善文章信息。', type: 401});
+            res.json({
+                status: 0,
+                error: '请完善文章信息。'
+            });
             return false;
         }
-        var now = new Date();
-        var title = validator.trim(xss(req.body.title));
-        var author = req.session.user.uid;
-        var avatar = req.session.user.avatar;
-        var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
-        var post = validator.trim(xss(req.body.post));
-        var category = validator.trim(xss(req.body.categories));
-        var id = validator.trim(xss(req.params.id));
-        var published = validator.trim(xss(req.body.publish));
+        title = validator.trim(xss(req.body.title));
+        author = req.session.user.uid;
+        avatar = req.session.user.avatar;
+        post = validator.trim(xss(req.body.post));
+        category = validator.trim(xss(req.body.categories));
+        id = validator.trim(xss(req.params.id));
+        published = validator.trim(xss(req.body.publish));
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
             res.send({
@@ -119,13 +113,12 @@ module.exports = function (router) {
             });
             return;
         }        
-        var tags;
-        if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
+        if (Array.isArray(req.body.tags)) {
             tags  =[];
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(xss(tag)));
             });
-        } else if (Object.prototype.toString.call(req.body.tags) === '[object String]') {
+        } else if (typeof req.body.tags === 'string') {
             tags = validator.trim(xss(req.body.tags));
         }
 
@@ -133,8 +126,6 @@ module.exports = function (router) {
             id: id,
             title: title,
             author: author,
-            authorAvatar: avatar,
-            date: date,
             post: post,
             tags: tags,
             published: published,
@@ -173,17 +164,17 @@ module.exports = function (router) {
 
 
     router.post(url.adminNewPost, auth_user, function (req, res, next) {
+        var now, title, author, avatar, date, post, published, tags, category;
         if (! req.body.post || ! req.body.title || ! req.body.categories) {
             errorHandling(req, res, { error: '请完善文章信息。', type: 401});
             return false;
         }        
-        var now = new Date();
-        var title = validator.trim(xss(req.body.title));
-        var author = req.session.user.uid;
-        var avatar = req.session.user.avatar;
-        var date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
-        var post = req.body.post;
-        var published = validator.trim(xss(req.body.publish));
+        now = new Date();
+        title = validator.trim(xss(req.body.title));
+        author = req.session.user.uid;
+        date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
+        post = req.body.post;
+        published = validator.trim(xss(req.body.publish));
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
             res.send({
@@ -192,16 +183,15 @@ module.exports = function (router) {
             });
             return;
         }
-        var tags;
-        if (Object.prototype.toString.call(req.body.tags) === '[object Array]') {
+        if (Array.isArray(req.body.tags)) {
             tags  =[];
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(xss(tag)));
             });
-        } else if (Object.prototype.toString.call(req.body.tags) === '[object String]') {
+        } else if (typeof req.body.tags === 'string') {
             tags = validator.trim(xss(req.body.tags));
         }
-        var category = validator.trim(xss(req.body.categories));
+        category = validator.trim(xss(req.body.categories));
 
         Post.createNewPost({
             title: title, 
@@ -229,12 +219,16 @@ module.exports = function (router) {
 
 
 
-    router.post('/category/new', auth_user, function (req, res, next) {
+    router.post(url.adminNewCategory, auth_user, function (req, res, next) {
+        var name;
         if (! req.body.name) {
-            errorHandling(req, res, { error: '请输入分类名称。', type: 401});
+            res.json({
+                status: 0,
+                error: ''
+            });
             return false;
         }
-        var name = validator.trim(xss(req.body.name));
+        name = validator.trim(xss(req.body.name));
 
         Category.getOneByName(name, function (err, c) {
             if (err) {
@@ -268,49 +262,79 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminEditCategory + '/id', auth_user, function (req, res, next) {
+    router.post(url.adminEditCategory + '/:id', auth_user, function (req, res, next) {
+        var id, name;
         if (! req.body.name) {
-            errorHandling(req, res, { error: '请输入分类名称。', type: 401});
+            res.json({
+                status: 0,
+                error: '请输入分类名称。'
+            });
             return false;
         }
-        var id = validator.trim(xss(req.params.id));
-        var name = validator.trim(xss(req.body.name));
+        id = validator.trim(xss(req.params.id));
+        name = validator.trim(xss(req.body.name));
 
-        Category.getOneByName(name, function (err, c) {
+        Category.getOneById(id, function (err, c) {
             if (err) {
-                errorHandling(req, res, { error: err, type: 500});
+                res.json({
+                    status: 0,
+                    error: err
+                });
                 return false;
             }
             if (c) {
                 Category.update(id, name, function (err) {
                     if (err) {
-                        errorHandling(req, res, { error: err, type: 500});
+                        res.json({
+                            status: 0,
+                            error: err
+                        });
                         return false;
                     }
-                    res.redirect(adminPath+'/post');
+                    res.json({
+                        status: 1,
+                        error: ''
+                    });
+                });
+            } else {
+                res.json({
+                    status: 0,
+                    error: '找不到该分类。'
                 });
             }
         });
     });
 
     router.post(url.adminDeleteCategory + '/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req,params.id));
+        var id = validator.trim(xss(req.params.id));
         Category.getOneById(id, function (err, c) {
             if (err) {
-                errorHandling(req, res, { error: err, type: 500});
+                res.json({
+                    status: 0,
+                    error: err
+                });
                 return false;
             }
             if (c) {
                 if (c.count > 0) {
-                    errorHandling(req, res, {error: '该分类下面仍然有文章。删除前请确保分类已经没有文章。', type: 500});
+                    res.json({
+                        status: 0,
+                        error: '该分类下面仍然有文章。删除前请确保分类已经没有文章。'
+                    });
                     return false;
                 } else {
                     Category.delete(id, function (err) {
                         if (err) {
-                            errorHandling(req, res, { error: err, type: 500});
+                            res.json({
+                                status: 0,
+                                error: err
+                            });
                             return false;
                         }
-                        res.redirect(adminPath+'/post');
+                        res.json({
+                            status: 1,
+                            error: ''
+                        });
                     });
                 }
             }

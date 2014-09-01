@@ -11,7 +11,7 @@ block extra_css
 block content
     .db-sign
         .db-sign-form
-            form(action='#{adminPath}/signup', method='POST')
+            form(action='#{url.admin}#{url.adminSignUp}', method='POST')
                 .db-outer
                     .db-inner
                         span.db-sign-title Sign up
@@ -31,7 +31,7 @@ block content
                     button.db-submit(type='submit') Submit
                 .db-outer
                     .db-inner.db-sign-helper
-                        span: a.db-sign-btn(href='#{adminPath}/signin') 登录
+                        span: a.db-sign-btn(href='#{url.admin}#{url.adminSignIn}') 登录
                         span: a.db-forget-btn(href='') 忘记密码？
                 .db-outer
                     .db-inner
@@ -55,21 +55,20 @@ block extra_script
                         email: email,
                         password: password
                     },
-                    url: '#{adminPath}/signup',
                     dataType: 'json',
                     success: function (result) {
                         progress.hide(function () {
                             if (result.status === 1) {
                                 msg('success', '注册成功！'+result.username + '欢迎使用！', function () {
-                                    window.location = '#{adminPath}/signin';
+                                    window.location = '#{url.admin}#{url.adminSignIn}';
                                 });
                             } else {
-                                msg('error', result.error);
+                                msg('error', result.error, null, 10000);
                             }
                         });
                     },
                     error: function (err) {
-                        msg('error', '请求注册失败！');
+                        msg('error', '请求注册失败！', null, 10000);
                     }
                 });
             });

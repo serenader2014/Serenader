@@ -50,7 +50,7 @@ block admin_script
                     previousTags = tags;
                     previousCategory = category;
                     $.ajax({
-                        url: '#{adminPath}/post/edit/' + draftId,
+                        url: '#{url.admin}#{url.adminEditPost}/' + draftId,
                         type: 'POST',
                         data: {
                             title: title || 'No title',
@@ -92,7 +92,7 @@ block admin_script
                     tags.push($(item).val()); 
                 });
                 $.ajax({
-                    url: '#{adminPath}/post/new',
+                    url: '#{url.admin}#{url.adminNewPost}',
                     type: 'POST',
                     data: {
                         title: $('input[name="title"]').val() || 'No title',
@@ -132,7 +132,7 @@ block admin_script
                 updatePost(true, function (result) {
                     if (result) {
                         msg('success', '文章发表成功！', function () {
-                            window.location = '#{adminPath}/post';
+                            window.location = '#{url.admin}#{url.adminPost}';
                         });
                     } else {
                         msg('error', '文章发表失败！');
@@ -251,7 +251,7 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                url: '#{adminPath}/upload/content',
+                url: '#{url.admin}/upload/content',
 
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
@@ -268,7 +268,7 @@ block admin_script
             }).on('fileuploaddone', function (e, data) {
                 $('.upload-progress').hide();
                 $('.preview-container').show();
-                var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
+                //- var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
                 $('.preview-container img').remove();
                 $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
                 $('.imgurl input').val(imgUrl).focus();
@@ -283,7 +283,7 @@ block admin_script
 block new_post
     section.db-editor-wrapper
         .db-new-main
-            form#new-post(method='post', action='#{adminPath}/post/new')
+            form#new-post(method='post', action='#{url.admin}#{url.adminNewPost}')
                 .db-new-header
                     .db-title-wrapper
                         input.db-new-title#post-title(type='text', name='title', placeholder='Post Title')

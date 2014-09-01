@@ -27,17 +27,15 @@ block extra_script
                         progress.hide(function () {
                             if (result.status === 1) {
                                 msg('success', result.user + ' 欢迎回来 ~', function () {
-                                    window.location = '#{adminPath}';
+                                    window.location = '#{url.admin}';
                                 }, 1000);
                             } else {
-                                msg('error', result.error, function () {
-
-                                });
+                                msg('error', result.error, null, 10000);
                             }
                         });
                     },
                     error: function (err) {
-                        msg('error', '无法提交登录请求到服务器！');
+                        msg('error', '无法提交登录请求到服务器！', null, 10000);
                     }
                 });
             });
@@ -45,7 +43,7 @@ block extra_script
 
 block content
     .db-sign
-        form.db-sign-form(action='#{adminPath}/signin', method='post')
+        form.db-sign-form(action='#{url.admin}#{url.adminSignIn}', method='post')
             .db-outer
                 .db-inner
                     span.db-sign-title Sign in
@@ -61,7 +59,7 @@ block content
                 button.db-submit(type='submit') Submit
             .db-outer
                 .db-inner.db-sign-helper
-                    span: a.db-sign-btn(href='#{adminPath}/signup') 注册
+                    span: a.db-sign-btn(href='#{url.admin}#{url.adminSignUp}') 注册
                     span: a.db-forget-btn(href='') 忘记密码？
             .db-outer
                 .db-inner

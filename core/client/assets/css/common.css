@@ -106,10 +106,13 @@ input[type="text"] {
     display: inline-block;
     width: 100%;
     padding: 0 1rem;
+    margin: 0;
     font-size: 1.4rem;
     color: #454545;
     transition: box-shadow 0.1s;
     font-family: "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+    border: 1px solid #EEEEEE;
+    outline: none;
 }
 
 input[type="text"]:focus {
@@ -125,6 +128,7 @@ input[type="text"]:focus {
     cursor: pointer;
     color: #081E29;
     font-size: 1.4rem;
+    font-family: 'Open Sans';
     transition: background 0.3s;
     background: #FFFFFF;
 }

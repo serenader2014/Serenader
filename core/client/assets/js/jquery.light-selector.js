@@ -24,7 +24,7 @@
 
             return arr;
         })();
-        self.current = 0;
+        self.current = self.origin.options().index(self.origin.selected());
         self.status = {
             isExpanded: false
         };
@@ -73,7 +73,7 @@
 
             self.e.addClass(self.css.selector.substring(1));
             self.origin.options().each(function (index, option) {
-                optionsList.append($('<li>').html($(option).html()));
+                optionsList.append($('<li>').html($(option).html()).addClass(self.current === index ? self.css.optionSelected.substring(1) : ''));
             });
 
             self.selector = self.e.next();

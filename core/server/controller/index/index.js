@@ -6,21 +6,12 @@ var express = require('express'),
     errorHandling = require('../../utils/error');
 
 rootRouter.get('/', function (req, res, next) {
-    Setting.getSetting(function (err, s) {
+    post.getHomePagePublishedPosts(function (err, posts) {
         if (err) {
             errorHandling(req, res, { error: err, type: 500});
             return;
         }
-        var blogName = s ? s.name : config.name;
-        var blogDesc = s ? s.desc : config.description;
-
-        post.getTenPublishedPosts(function (err, posts) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return;
-            }
-            res.render('homepage', { blogName: blogName, blogDesc: blogDesc, posts: posts});
-        });
+        res.render('index', {posts: posts});
     });
 });
 

@@ -6,7 +6,7 @@ block admin_script
             event.preventDefault();
             var id = $(this).data('id'),
                 index = $('.delete-post').index($(this));
-            $('#delete-post .btn-danger').data('url', '#{adminPath}/post/delete/'+id).data('index', index);
+            $('#delete-post .btn-danger').data('url', '#{url.admin}#{url.adminDeletePost}/'+id).data('index', index);
         });
 
         $('#delete-post .btn-danger').on('click', function () {
@@ -37,7 +37,7 @@ block admin_script
                 var cateName = $('.db-cate-input').val();
                 $.ajax({
                     type: 'POST',
-                    url: '#{adminPath}/category/new',
+                    url: '#{url.admin}#{url.adminNewCategory}',
                     data: {
                         name: cateName
                     },
@@ -46,8 +46,13 @@ block admin_script
                         progress.hide(function () {
                             if (result.status === 1) {
                                 msg('success', '创建新分类成功！', function () {
-                                    var li = $('<li>').addClass('db-cate-list').append($('<a>').)
+                                    var li = $('<li>')
+                                        .addClass('db-cate-list')
+                                        .append($('<a>').attr('href', '?category=' + cateName).html(cateName+' (0)'));
+                                    $('.db-sidebar-container ul').append(li);
                                 });
+                            } else {
+                                msg('error', '创建新分类失败: ' + result.error);
                             }
                         });
                     },
@@ -60,6 +65,94 @@ block admin_script
             });
         });
 
+        $('body').on('click','.db-cate-list>a', function (event) {
+            event.preventDefault();
+            var name = $(this).attr('href').split('?category=')[1];
+            $('.post-single').fadeOut(150, function () {
+                if ($('.post-single').index($(this)) === $('.post-single').length - 1) {
+                    $('.post-category').each(function (index, item) {
+                        if ($(item).html().indexOf(name) !== -1) {
+                            $(item).parents('.post-single').fadeIn();
+                        }
+                    });
+                }
+            });
+        });
+
+        $('body').on('click', '.db-cate-delete', function (event) {
+            event.preventDefault();
+            $('#delete-cate .btn-danger').data('url', $(this).attr('href')).data('index', $('.db-cate-delete').index($(this)));
+        });
+
+        $('#delete-cate .btn-danger').on('click', function (event) {
+            event.preventDefault();
+            var self = this;
+            $(self).prev().click();
+            progress.show('正在删除分类中...', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: $(self).data('url'),
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '删除分类成功！', function () {
+                                    $('.db-cate-list').eq($(self).data('index')).fadeOut(200, function () {
+                                        $(this).remove();
+                                    });
+                                });
+                            } else {
+                                msg('error', '删除分类失败: ' + result.error, null, 10000);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err.statusText, null, 10000);
+                            console.log(err);
+                        });
+                    }
+                });
+            });
+        });
+
+        $('body').on('click', '.db-cate-edit',function (event) {
+            event.preventDefault();
+            $('#edit-cate .btn-primary').data('url', $(this).attr('href')).data('index', $('.db-cate-edit').index($(this)));
+        });
+
+        $('#edit-cate .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            var self = this;
+            var name = $('.new-cate-name').val();
+            $(self).prev().click();
+            progress.show('正在修改中...', function () {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        name: name
+                    },
+                    url: $(self).data('url'),
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '修改分类名称成功。', function () {
+                                    var target = $('.db-cate-list').eq($(self).data('index')).find('a').eq(0);
+                                    var num = target.html().split('(')[1];
+                                    target.html(name + ' (' + num)
+                                });
+                            } else {
+                                msg('error', '修改分类名称失败： ' + result.error, null, 10000);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err.statusText, null, 10000);
+                        });
+                    }
+                });
+            });
+        });
 block post_content
     .db-post-content
         .db-sidebar
@@ -67,44 +160,44 @@ block post_content
                 h3.db-sidebar-title 文章分类
                 ul
                     - if (categories)
-                        - categories.forEach(function (item, index, array) {
+                        - each item in categories
                             li.db-cate-list
-                                a(href='/category?c=#{index}') #{item.name} (#{item.count})
-                                //- span.badge #{item.count}
-                                //- .db-cate-ctrl
-                                    a.db-cate-edit(href='#{adminPath}/category/#{item._id}/edit') 修改
-                                    a.db-cate-delete(href='#{adminPath}/category/#{item._id}/delete', data-toggle='modal', data-target='#delete-cate') 删除
-                        -   })
+                                a(href='?category=#{item.name}') #{item.name} (#{item.count})
+                                .db-cate-ctrl
+                                    a.db-cate-edit(href='#{url.admin}#{url.adminEditCategory}/#{item._id}', data-id='#{item._id}', data-toggle='modal', data-target='#edit-cate')
+                                        i.fa.fa-edit
+                                    a.db-cate-delete(href='#{url.admin}#{url.adminDeleteCategory}/#{item._id}', data-toggle='modal', data-target='#delete-cate', data-id='#{item.id}')
+                                        i.fa.fa-times
                     - else
                         li 没有分类
                     li.db-add-cate
-                        form.db-cate-wrapper(method='post', action='#{adminPath}/category/new' id='newcate')
+                        form.db-cate-wrapper(method='post', action='#{url.admin}#{url.adminNewCategory}' id='newcate')
                             input.form-control.db-cate-input(type='text', name='name', placeholder='添加一条新的分类')
-                            button.btn.btn-primary.db-cate-btn(type='submit', form='newcate') 添加
+                            button.btn.btn-primary.db-cate-btn(type='submit') 添加
         .db-post-main
             .db-post-wrapper
                 - if (drafts) 
                     - each draft in drafts
-                        a.post-single.draft(href='#{adminPath}/post/edit/#{draft._id}')
+                        a.post-single.draft(href='#{url.admin}#{url.adminEditPost}/#{draft._id}')
                             .post-main
                                 h3.post-title #{draft.title}
                                 span.delete-post(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
                             .post-meta
                                 span 
                                     | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
-                                span
+                                span.post-category
                                     | Sorted in #{draft.category}                    
                 - if (posts.length > 0)
                     - each post,index in posts
                         - if (post)
-                            a.post-single(href='#{adminPath}/post/edit/#{post._id}')
+                            a.post-single(href='#{url.admin}#{url.adminEditPost}/#{post._id}')
                                 .post-main
                                     h3.post-title #{post.title}
                                     span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
                                 .post-meta
                                     span 
                                         | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
-                                    span
+                                    span.post-category
                                         | Sorted in #{post.category}
                 - else
                     .no-post You don't have any post yet.
@@ -128,3 +221,14 @@ block post_content
                 .modal-footer
                     button.btn(type='button', data-dismiss='modal') 取消
                     button.btn.btn-danger(type='submit') 确定
+        .modal#edit-cate
+            .modal-wrapper
+                .modal-header
+                    button.close.fa.fa-times(type='button', data-dismiss='modal')
+                    h4.modal-title 修改分类名称
+                .modal-body
+                    p 请输入新的分类名称
+                    input.new-cate-name(type='text', placeholder='分类名称')
+                .modal-footer
+                    button.btn(type='button', data-dismiss='modal') 取消
+                    button.btn.btn-primary(type='submit') 确定

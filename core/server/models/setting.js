@@ -1,14 +1,15 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    _ = require('underscore'),
+    Schema = mongoose.Schema,
 
-var SettingSchema = new Schema({
+    SettingSchema = new Schema({
     name: { type: String },
     desc: { type: String },
     logo: { type: String },
     favicon: { type: String },
-    nav: { type: Array },
     allow_sign_up: { type: Boolean },
     theme: { type: String },
+    posts_per_page: { type: Number },
     id: { type: String }
 });
 
@@ -19,24 +20,14 @@ SettingSchema.statics.getSetting = function (callback) {
 
 SettingSchema.statics.createSetting = function (options, callback) {
     var setting = new this();
+    _.extend(setting, options);
     setting.id = 'blog';
-    setting.name = options.name;
-    setting.desc = options.desc;
-    setting.logo = options.logo;
-    setting.favicon = options.favicon;
-    setting.nav = options.nav;
-    setting.allow_sign_up = options.allow_sign_up;
     setting.save(callback);
 };
 
 SettingSchema.statics.updateSetting = function (options, callback) {
     var obj = {};
-    if (options.name) { obj.name = options.name; }
-    if (options.desc) { obj.desc = options.desc; }
-    if (options.logo) { obj.logo = options.logo; }
-    if (options.favicon) { obj.favicon = options.favicon; }
-    if (options.nav) { obj.nav = options.nav; }
-    if (options.allow_sign_up) { obj.allow_sign_up = options.allow_sign_up; }
+    _.extend(obj, options);
 
     this.findOneAndUpdate({id: 'blog'}, obj, callback);
 };

@@ -59,8 +59,8 @@ block index_script
 block inner
     .blog
         h2.blog-name 
-            a(href='/') #{blogName}
-            .blog-desc #{blogDesc}
+            a(href='/') #{setting.name}
+            .blog-desc #{setting.desc}
     .index-wrapper
         - if (posts.length === 0)
             .no-post The website doesn't have any post yet!

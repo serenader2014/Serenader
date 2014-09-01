@@ -584,10 +584,16 @@
 
 .db-cate-list {
   position: relative;
-  padding: 0 4rem; }
-  .db-cate-list .badge {
+  padding: 0 4rem;
+  font-size: 1.4rem; }
+  .db-cate-list .db-cate-ctrl {
     position: absolute;
-    right: 0; }
+    top: 0;
+    right: 2rem;
+    z-index: 99; }
+    .db-cate-list .db-cate-ctrl a {
+      display: inline-block;
+      padding: 1rem; }
   .db-cate-list a {
     display: block;
     color: #9E9E9E;
@@ -975,6 +981,71 @@
   .db-file .edit-error {
     color: #FFFFFF;
     background: #F16576; }
+
+.setting-section {
+  padding: 6.4rem 1rem 0;
+  height: 100%; }
+  .setting-section .setting-wrapper {
+    position: relative;
+    padding: 1rem;
+    height: 100%;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    background: #FFFFFF; }
+  .setting-section .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 3rem;
+    border-bottom: 1px solid #EEEEEE;
+    font-size: 2.5rem;
+    line-height: 3rem;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.8); }
+    .setting-section .header button {
+      float: right;
+      padding: 0.8rem 2.3rem;
+      font-size: 1.4rem;
+      font-weight: 100;
+      text-transform: uppercase;
+      border-radius: 0.3rem; }
+  .setting-section .content {
+    padding: 8rem 0 5rem;
+    height: 100%;
+    overflow: auto; }
+  .setting-section .row {
+    padding: 1rem; }
+    .setting-section .row input[type='text'] {
+      width: 75%;
+      height: 4rem;
+      vertical-align: middle;
+      font-size: 1.5rem; }
+    .setting-section .row input[type='checkbox'] {
+      vertical-align: middle; }
+    .setting-section .row textarea {
+      width: 75%;
+      height: 10rem;
+      padding: 1rem;
+      border: 1px solid #EEEEEE;
+      vertical-align: top;
+      font-family: 'Open Sans';
+      font-size: 1.4rem;
+      outline: none;
+      transition: box-shadow 0.2s; }
+      .setting-section .row textarea:focus {
+        outline: none;
+        box-shadow: 4px 0 0 #3BAFDA inset; }
+    .setting-section .row label {
+      display: inline-block;
+      padding-right: 2rem;
+      width: 25%;
+      font-size: 1.5rem;
+      text-align: right;
+      vertical-align: middle;
+      color: #7C838A; }
+    .setting-section .row .light-selector {
+      vertical-align: middle;
+      width: 15rem !important; }
 
 @media screen and (max-width: 980px) {
   body {

@@ -1,19 +1,13 @@
 var path = require('path'),
     pkg = require('./package.json'),
     config = {
-        name: 'Serenader',
-        description: 'A blog created by serenader, with some interesting features',
         version: pkg.version,
-        site_logo: '',
-        site_icon: '',
         upload_dir: path.join(__dirname, 'upload'),
         db: 'mongodb://127.0.0.1/serenader',
         session_secret: 'cute cat',
         port: 80,
-        allow_sign_up: true,
         root_dir: __dirname,
         admin_path: '/admin',
-        theme: 'serenader',
         url: {
             admin: '/admin',
             adminPost: '/post',
@@ -44,9 +38,23 @@ var path = require('path'),
             indexAbout: '/about',
 
         },
+        blogConfig: {
+            name: 'Serenader',
+            desc: 'A blog created by serenader, with some interesting features',
+            logo: '/static/logo.png',
+            favicon: '/static/favicon.ico',
+            allow_sign_up: true,
+            theme: 'serenader',
+            post_per_page: 10
+        },
         dir: [
-            // '/data/private','/data/public/background','/data/tmp','/data/trash' 
+            '/content/data/private',
+            '/content/data/public',
+            '/content/data/public/background',
+            '/content/data/tmp',
+            '/content/data/trash',
+            '/content/images'
         ]
-};
+    };
 
 module.exports.config = config;
