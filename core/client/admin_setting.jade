@@ -75,8 +75,11 @@ block settings
                                 option(value=t, selected= setting.theme === t ? true : false) #{t}
                     .row
                         label(for='signup') Allow Sign Up
-                        - if (setting.allow_sign_up)
-                            input(type='checkbox', name='signup' checked)
-                        - else
-                            input(type='checkbox', name='signup')
+                        span.checkbox
+                            - if (setting.allow_sign_up)
+                                i.fa.fa-check-square-o
+                                input(type='checkbox', name='signup' checked)
+                            - else
+                                i.fa.fa-square-o
+                                input(type='checkbox', name='signup')
                         

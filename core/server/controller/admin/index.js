@@ -7,7 +7,7 @@ adminHomePage.get('/', auth_user, function (req, res, next) {
     res.render('admin_index');
 });
 
-// require('./file')(adminHomePage);
+require('./file')(adminHomePage);
 // require('./gallery')(adminHomePage);
 require('./post')(adminHomePage);
 require('./setting')(adminHomePage);

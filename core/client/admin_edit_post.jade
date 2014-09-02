@@ -24,10 +24,13 @@ block admin_script
                     'Ctrl-I': insertImage
                 }
             });
-            var previousTitle = '';
-            var previousPost = '';
-            var previousTags = '';
-            var previousCategory = '';
+            var previousTitle = $('input[name="title"]').val();
+            var previousPost = editor.getValue();
+            var previousTags = [];
+            var previousCategory = $('option:selected').val();
+            $('input[name="tags"]').each(function (index, item) {
+                previousTags.push($(item).val());
+            }); 
 
             var updatePost = function (publish, callback) {
                 var tags = [];
@@ -92,21 +95,27 @@ block admin_script
             });
             $('.db-publish').on('click', function (event) {
                 event.preventDefault();
-                var title = $('input[name="title"]').val();
-                var category = $('option:selected').val();
-                var post = editor.getValue();
-                if ( !title || !category || !post) {
-                    msg('error', '请完善文章信息。');
-                    return false;
-                }
-                updatePost(true, function (result) {
-                    if (result) {
-                        msg('success', '文章更新成功！', function () {
-                            window.location = '#{url.admin}#{url.adminPost}';
+                progress.show('文章更新中...', function () {
+                    var title = $('input[name="title"]').val();
+                    var category = $('option:selected').val();
+                    var post = editor.getValue();
+                    if ( !title || !category || !post) {
+                        progress.hide(function () {
+                            msg('error', '请完善文章信息。');
                         });
-                    } else {
-                        msg('error', '文章发表失败！');
+                        return false;
                     }
+                    updatePost(true, function (result) {
+                        progress.hide(function () {
+                            if (result) {
+                                msg('success', '文章更新成功！', function () {
+                                    window.location = '#{url.admin}#{url.adminPost}';
+                                });
+                            } else {
+                                msg('error', '文章发表失败！');
+                            }
+                        });
+                    });
                 });
             });
             editor.focus();

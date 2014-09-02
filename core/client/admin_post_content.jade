@@ -67,6 +67,8 @@ block admin_script
 
         $('body').on('click','.db-cate-list>a', function (event) {
             event.preventDefault();
+            $('.db-cate-list').removeClass('active');
+            $(this).parent().addClass('active');
             var name = $(this).attr('href').split('?category=')[1];
             $('.post-single').fadeOut(150, function () {
                 if ($('.post-single').index($(this)) === $('.post-single').length - 1) {
@@ -153,8 +155,13 @@ block admin_script
                 });
             });
         });
+
+        $('.header-btn').on('click', function () {
+            $('.db-sidebar').toggle();
+        });
 block post_content
     .db-post-content
+        a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
         .db-sidebar
             .db-sidebar-container
                 h3.db-sidebar-title 文章分类

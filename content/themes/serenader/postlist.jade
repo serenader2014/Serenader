@@ -3,4 +3,4 @@ block inner
     .post-list
         ul
         - each post, index in posts
-            li: a(href='/blog/#{post._id}') #{post.title}
+            li: a(href='#{url.indexPost}/#{post._id}') #{post.title}

@@ -314,6 +314,10 @@ input[type="text"]:focus {
     height: 100%;
 }
 
+.progress i {
+    margin-right: 1rem;
+}
+
 .progress-inner {
     padding: 0 1rem;
     margin-top: 8rem;
@@ -330,4 +334,19 @@ input[type="text"]:focus {
     border: 1px solid #CCCCCC;
     border-color: rgba(0,0,0,0.2);
     background: #FFFFFF;
+}
+
+/*   Checkbox style   */
+.checkbox {
+    cursor: pointer;
+}
+.checkbox input {
+    display: none;
+}
+.checkbox i {
+    margin-right: 1rem;
+    width: 1.5rem;
+    font-size: 2rem;
+    color: #AAAAAA;
+    vertical-align: middle;
 }

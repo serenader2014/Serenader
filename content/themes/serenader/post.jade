@@ -8,18 +8,18 @@ block index_script
         $('.post-content .post').html(marked($('.post-content .post').text()));
 block inner
     .post-wrapper.single
-        .post-title: a(href='/blog/#{post._id}') #{post.title}
+        .post-title: a(href='#{url.indexPost}/#{post._id}') #{post.title}
         .post-info 
-            a.post-author(href='/u/#{post.author}')
-                img(src='#{post.authorAvatar}')
-            a.post-category(href='/blog?category=#{post.category}') #{post.category}
+            a.post-author(href='#{url.indexUser}/#{post.author}')
+                img(src='/static/#{post.author}/avatar.jpg')
+            a.post-category(href='#{url.indexCategory}#{post.category}') #{post.category}
             span.post-date #{post.date[0].month}/#{post.date[0].date}
             span.post-view Views: #{post.views}
         .post-content
             .post!=post.content
             .post-tags
                 - each tag in post.tags
-                    span: a(href='/blog?tag=#{tag}') #{tag}
+                    span: a(href='#{url.indexTag}#{tag}') #{tag}
         .post-pagination
             a.prev-post(href='javascript:;')
                 span

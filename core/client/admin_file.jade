@@ -8,89 +8,177 @@ block files
                     - baseLink.substring(baseLink.indexOf('/')+1).split('/').forEach(function (item, index) {
                         - i = i + '/' + item;
                         li
-                            a(href='#{adminPath}#{i}')  #{item} 
+                            a(href='#{url.admin}#{i}')  #{item} 
                             span /
                     - })
+                .file-tools
+                    ul
+                        li.btn.select-all
+                            i.fa.fa-check-square
+                            | Select all
+                        li.btn.select-none
+                            i.fa.fa-check-square-o
+                            | Select none
+                        li.btn.new-folder
+                            i.fa.fa-folder-o
+                            | New folder
+                        li.btn.new-file
+                            i.fa.fa-file-o
+                            | New file
+                        li.btn.rename(data-toggle='modal', data-target='#rename-file')
+                            i.fa.fa-edit
+                            | Rename
+                        li.btn.move
+                            i.fa.fa-scissors
+                            | Move
+                        li.btn.copy
+                            i.fa.fa-copy
+                            | Copy
+                        li.btn.download
+                            i.fa.fa-download
+                            | Download
+                        li.btn.btn-danger.delete(data-toggle='modal', data-target='#delete-file')
+                            i.fa.fa-trash-o
+                            | Delete
             .file-list
                 table.file-list-wrapper
                     thead
                         tr
                             th Name
-                            th Create Time
+                            th Created Time
                             th Last Modified Time
                             th Size
-                            th Actions
                     tbody
                         - var p = baseLink.split('/files')[1];
                         - each item, index in folders
                             tr
                                 td
-                                    i.glyphicon.glyphicon-folder-open
-                                    a.db-filename(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
+                                    span.checkbox
+                                        i.fa.fa-square-o
+                                        input(type='checkbox')
+                                    i.fa.fa-folder-open
+                                    a.db-filename(href='#{url.admin}#{baseLink}/#{item.name}') #{item.name}
                                 td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
                                 td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
                                 td 0
-                                td.db-action
-                                    button.db-rename-btn(data-url='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') Rename 
-                                    button.db-delete-btn(data-url='#{adminPath}/files/delete#{p}/#{item.name}', data-toggle='modal',data-target='#delete-file') Delete
 
                         - each item,index in files
                             tr
                                 td
-                                    i.glyphicon.glyphicon-file
+                                    span.checkbox
+                                        i.fa.fa-square-o
+                                        input(type='checkbox')
+                                    i.fa.fa-file
                                     - var type = (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') ? 'zip':'';
                                     - if (type === 'zip') {
-                                        a.db-filename(href='#{adminPath}/files/zip/preview#{p}/#{item.name}') #{item.name}
+                                        a.db-filename(href='#{url.admin}#{url.adminFilePreview}#{p}/#{item.name}') #{item.name}
                                     - } else {
-                                        a.db-filename(href='#{adminPath}#{baseLink}/#{item.name}') #{item.name}
+                                        a.db-filename(href='#{url.admin}#{baseLink}/#{item.name}') #{item.name}
                                     - }
                                 td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}/， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
                                 td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
                                 td #{Math.ceil(item.size/1024)} kb 
-                                td.db-action
-                                    button.db-rename-btn(data-url='#{adminPath}/files/rename#{p}/#{item.name}', data-toggle='modal', data-target='#rename-file') Rename
-                                    - if (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') {
-                                        button.db-unzip-btn(data-url='#{adminPath}/files/zip/unzip#{p}/#{item.name}') Unzip
-                                    - }
-                                    a(href='#{adminPath}#{baseLink}/#{item.name}?download=direct') Download
-                                    button.db-delete-btn(data-url='#{adminPath}/files/delete#{p}/#{item.name}',data-toggle='modal',data-target='#delete-file') Delete
             .modal.fade#delete-file
-                .modal-dialog
-                    .modal-content
-                        .modal-header
-                            button.close(type='button', data-dismiss='modal')
-                                span(aria-hidden='true') &times;
-                                span.sr-only Close
-                            h4.modal-title 删除文件
-                        .modal-body
-                            p 该操作将会删除该文件。请确定是否执行该操作。
-                        .modal-footer
-                            form.db-delete-form(method='post', action='')
-                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                                button.btn.btn-primary(type='submit') 确定
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 删除文件
+                    .modal-body
+                        p 即将删除以下文件/文件夹，删除前请做好备份！
+                        ul
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
             .modal.fade#rename-file
-                .modal-dialog
-                    .modal-content
-                        form.db-rename-form(method='post', action='')
-                            .modal-header
-                                button.close(type='button', data-dismiss='modal')
-                                    span(aria-hidden='true') &times;
-                                    span.sr-only Close
-                                h4.modal-title 重命名文件
-                            .modal-body
-                                p 请输入新的文件名称
-                                input.db-new-name.form-control(type='text',name='name', value='')
-                            .modal-footer
-                                    button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                                    button.btn.btn-primary(type='submit') 确定
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 重命名文件
+                    .modal-body
+                        p 请输入新的文件名称
+                        ul
+                    .modal-footer
+                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary(type='submit') 确定
 block admin_script
     script(type='text/javascript').
-        $(".db-delete-btn").on("click", function (event) {
+        $('.delete').on('click', function (event) {
             event.preventDefault();
-            $(".db-delete-form").attr("action", $(this).data("url"));
+            var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+            $('#delete-file .modal-body ul li').remove();
+            target.each(function (index, item) {
+                $('#delete-file .modal-body ul').append($('<li>').html($(item).html()));
+            });
         });
-        $(".db-rename-btn").on("click", function (event) {
+
+        $('#delete-file .btn-primary').on('click', function () {
             event.preventDefault();
-            $(".db-rename-form").attr("action", $(this).data("url"));
-            $(".db-new-name").val($(this).parents("tr").find(".db-filename").html()).focus();
+            $(this).prev().click();
+            progress.show('Deleting files...', function () {
+                var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+                if (target.length === 0) {
+                    progress.hide(function () {
+                        msg('error', '没有选中需要删除的文件。');
+                    });
+                    return false;
+                }
+                target.each(function (index, item) {
+                    var url = '#{url.admin}#{url.adminFileDelete}' + $(item).attr('href').split('#{url.admin}#{url.adminFile}')[1];
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        dataType: 'json',
+                        success: function (result) {
+                            progress.hide();
+                            if (result.status === 1) {
+                                msg('success', 'Delete file success.');
+                                $(item).parents('tr').fadeOut(200, function () {
+                                    $(this).remove();
+                                });
+                            } else {
+                                msg('error', 'Delete file error: ' + result.error, null, 10000);
+                            }
+                        },
+                        error: function (err) {
+                            progress.hide();
+                            msg('error', err, null, 10000);
+                        }
+                    });
+                });
+            });
+        });
+        $('#rename-file .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            progress.show('Renaming file...', function () {
+                
+            });
+        });
+        $('.select-all').on('click', function (event) {
+            event.preventDefault();
+            var target = $('tbody input[type="checkbox"]');
+            target.each(function (index, item) {
+                if (! $(item).is(':checked')) {
+                    $(item).parents('.checkbox').click();
+                }
+            });
+        });
+        $('.select-none').on('click', function (event) {
+            event.preventDefault();
+            var target = $('tbody input[type="checkbox"]');
+            target.each(function (index, item) {
+                if ($(item).is(':checked')) {
+                    $(item).parents('.checkbox').click();
+                }
+            });
+        });
+        $('.rename').on('click', function () {
+            var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+            target.each(function (index, item) {
+                $('#rename-file .modal-body ul')
+                    .append($('<li>')
+                        .append($('<span>').html($(item).html()))
+                        .append($('<input type="text">')));
+            });
         });

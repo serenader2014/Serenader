@@ -16,13 +16,14 @@ rootRouter.get('/', function (req, res, next) {
 });
 
 rootRouter.get('/loadmore', function (req, res, next) {
-    var page = req.query.page;
+    var page = req.query.page,
+        num = req.query.num;
 
     if (! page) {
         res.send('No page was send.');
         return;
     } else {
-        post.getMoreTenPosts(page*10, function (err, posts) {
+        post.getMorePosts(page*10, num, function (err, posts) {
             if (err) {
                 errorHandling(req, res, { error: err, type: 500});
                 return;
@@ -39,6 +40,6 @@ rootRouter.get('/loadmore', function (req, res, next) {
 });
 
 // require('./gallery')(rootRouter);
-// require('./post')(rootRouter);
+require('./post')(rootRouter);
 
 module.exports = rootRouter;

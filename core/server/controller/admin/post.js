@@ -221,6 +221,13 @@ module.exports = function (router) {
 
     router.post(url.adminNewCategory, auth_user, function (req, res, next) {
         var name;
+        if (req.session.user.role !== 'admin') {
+            res.json({
+                status: 0,
+                error: '无法创建新的分类，权限不足！'
+            });
+            return false;
+        }
         if (! req.body.name) {
             res.json({
                 status: 0,
@@ -264,6 +271,13 @@ module.exports = function (router) {
 
     router.post(url.adminEditCategory + '/:id', auth_user, function (req, res, next) {
         var id, name;
+        if (req.session.user.role !== 'admin') {
+            res.json({
+                status: 0,
+                error: '无法修改分类名称，权限不足！'
+            });
+            return false;
+        }        
         if (! req.body.name) {
             res.json({
                 status: 0,
@@ -291,6 +305,19 @@ module.exports = function (router) {
                         });
                         return false;
                     }
+                    Post.getPostsByCate(c.name, function (err, p) {
+                        if (err) {
+                            res.json({
+                                status: 0,
+                                error: err
+                            });
+                            return false;
+                        }
+                        p.forEach(function (item, index) {
+                            item.category = name;
+                            item.save();
+                        });
+                    });
                     res.json({
                         status: 1,
                         error: ''
@@ -307,6 +334,13 @@ module.exports = function (router) {
 
     router.post(url.adminDeleteCategory + '/:id', auth_user, function (req, res, next) {
         var id = validator.trim(xss(req.params.id));
+        if (req.session.user.role !== 'admin') {
+            res.json({
+                status: 0,
+                error: '无法删除分类，权限不足！'
+            });
+            return false;
+        }        
         Category.getOneById(id, function (err, c) {
             if (err) {
                 res.json({

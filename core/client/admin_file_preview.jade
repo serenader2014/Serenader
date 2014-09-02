@@ -13,33 +13,41 @@ block admin_script
         $('.db-edit-btn').on('click', function () {
             if (editor.getReadOnly()) {
                 editor.setReadOnly(false);
-                $(this).html('取消');
-                $('.db-edit-save').show();
+                $(this).find('span').html('Cancel');
+                editor.focus();
             } else {
                 editor.setReadOnly(true);
-                $(this).html('编辑');
-                $('.db-edit-save').hide();
+                $(this).find('span').html('Edit');
             }
         });
 
         $('.db-edit-save').on('click', function () {
-            $.ajax({
-                type: 'POST',
-                url: $('#preview-file').data('url'),
-                data: {
-                    file: editor.getValue()
-                },
-                dataType: 'json',
-                success: function (data) {
-                    $('.message')
-                        .find('.message-wrapper').html(data.success ? '修改成功' : '修改出错： ' + data.err)
-                        .addClass(data.success ? 'edit-success' : 'edit-error')
-                        .end()
-                        .fadeIn(200);
-                    setTimeout(function () {
-                        $('.message').fadeOut(200);
-                    }, 3000);
-                }
+            if (editor.getReadOnly()) {
+                return false;
+            }
+            progress.show('Saving change...', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: $('#preview-file').data('url'),
+                    data: {
+                        file: editor.getValue()
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', 'Save change success');
+                            } else {
+                                msg('error', 'Save change failed: ' + result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err);
+                        });
+                    }
+                });
             });
         });
 
@@ -52,15 +60,19 @@ block preview
                     - each item in link.substring(link.indexOf('/') + 1).split('/')
                         - i = i + '/' + item;
                         li
-                            a(href='#{adminPath}#{i}')  #{item} 
+                            a(href='#{url.admin}#{i}')  #{item} 
                             span /
-                    button.db-edit-btn 编辑
-                    button.db-edit-save 保存
+                .file-tools
+                    ul
+                        li.btn.db-edit-btn
+                            i.fa.fa-edit
+                            span Edit
+                        li.btn.db-edit-save
+                            i.fa.fa-save
+                            span Save             
             .file-preview
                 - var l = link.split('/');
                 - l.shift();
                 - l.shift();
                 - l = l.join('/');
-                #preview-file(data-url='#{adminPath}/files/edit/#{l}') #{file}
-            .message
-                .message-wrapper 修改成功.
+                #preview-file(data-url='#{url.admin}/files/edit/#{l}') #{file}

@@ -28,7 +28,7 @@ block index_script
             progress.show('正在载入更多文章...', function () {
                 $.ajax({
                     type: 'GET',
-                    url: '/loadmore?page=' + page,
+                    url: '/loadmore?page=' + page + '&num=#{setting.posts_per_page}',
                     dataType: 'json',
                     success: function (data) {
                         progress.hide(function () {
@@ -40,9 +40,9 @@ block index_script
                                 var tmpl = $('#template').html();
                                 $('.post-wrapper:last').after(
                                     $(tmpl)
-                                        .find('.post-title a').attr('href', '/blog/' + post._id).html(post.title).end()
-                                        .find('.post-author').attr('href', '/u/' + post.author).find('img').attr('src',post.authorAvatar).end().end()
-                                        .find('.post-category').attr('href', '/blog?category=' + post.category).html(post.category).end()
+                                        .find('.post-title a').attr('href', '#{url.indexPost}/' + post._id).html(post.title).end()
+                                        .find('.post-author').attr('href', '#{url.indexUser}/' + post.author).find('img').attr('src','/static/' + post.author + '/avatar.jpg').end().end()
+                                        .find('.post-category').attr('href', '#{url.indexCategory}=' + post.category).html(post.category).end()
                                         .find('.post-date').html(post.date[0].month + '/' + post.date[0].date).end()
                                         .find('.post-views').html('Views: ' + post.views).end()
                                         .find('.post-excerpt').html(post.excerpt + '...').end()
@@ -51,7 +51,9 @@ block index_script
                         });
                     },
                     error: function (err) {
-                        msg('error', err);
+                        progress.hide(function () {
+                            msg('error', err.statusText, null, 10000);
+                        });
                     }
                 });
             });
@@ -66,16 +68,16 @@ block inner
             .no-post The website doesn't have any post yet!
         - each post in posts
             .post-wrapper
-                .post-title: a(href='/blog/#{post._id}') #{post.title}
+                .post-title: a(href='#{url.indexPost}/#{post._id}') #{post.title}
                 .post-info 
-                    a.post-author(href='/u/#{post.author}'): img(src='#{post.authorAvatar}') 
-                    a.post-category(href='/blog?category=#{post.category}') #{post.category}
+                    a.post-author(href='#{url.indexUser}/#{post.author}'): img(src='/static/#{post.author}/avatar.jpg') 
+                    a.post-category(href='#{url.indexCategory}#{post.category}') #{post.category}
                     span.post-date #{post.date[0].month}/#{post.date[0].date}
                     span.post-views Views: #{post.views}
                 .post-content
                     span.post-excerpt  #{post.excerpt} ... 
-                    span: a.post-read-more(href='/blog/#{post._id}') Read More
-        - if (posts.length === 10)
+                    span: a.post-read-more(href='#{url.indexPost}/#{post._id}') Read More
+        - if (posts.length === setting.posts_per_page)
             .load-more
                 a(href='javascript:;')
                     i.fa.fa-angle-double-down

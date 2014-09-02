@@ -35,8 +35,9 @@ block admin_css
             bottom: 0;
             right: 0;
             left: 0;
-            padding-top: 5.4rem;
+            padding: 5.4rem 1rem 0;
             margin: 0;
+            font-size: 1.4rem;
             z-index: 9999;
             box-shadow: 0 0 0;
             background: none;
@@ -63,28 +64,19 @@ block admin_css
         }
         .trangle {
             position: absolute;
-            top: 3.4rem;
-            left: 45%;
+            top: 4.5rem;
+            left: 46%;
             z-index: 99;
         }
         .trangle-inner {
             position: relative;
             overflow: hidden;
-            width: 40px;
-            height: 40px;
-        }
-        .trangle-inner:after {
-            display: block;
-            content: '';
-            width: 20px;
-            height: 20px;
-            position: absolute;
-            bottom: -12px;
-            left: 8px;
-            border: 1px solid #CCCCCC;
-            transform: rotate(45deg);
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-            background: #FFFFFF;
+            width: 0;
+            height: 0;
+            border-top: 13px solid transparent;
+            border-bottom: 13px solid #FFFFFF;
+            border-left: 13px solid transparent;
+            border-right: 13px solid transparent;
         }
         .db-new-editor {
             top: 0;
@@ -100,6 +92,9 @@ block admin_css
             vertical-align: middle;
         }
 
+        .db-new-header input {
+            margin-bottom: 1rem;
+        }
 block admin_script
     script(tpye='text/javascript', src='/js/jquery.light-selector.js')
     script(type='text/javascript').
@@ -123,40 +118,50 @@ block admin_script
             });
             $('.db-publish').on('click', function (event) {
                 event.preventDefault();
-                var post = $('#new-post-area').val(),
-                    title = $('#post-title').val(),
-                    cate = $('option:selected').val(),
-                    publish = $('input[name="publish"]').is(':checked') ? true : false,
-                    tags = [],
-                    tmp,
-                    i = 0;
-                tmp = $('.db-tag').val().split(' ');
-                for (; i < tmp.length; i++ ) {
-                    if (tmp[i] !== '') {
-                        tags.push(tags[i]);
-                    }
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: '#{url.admin}#{url.adminEditPost}/#{post._id}',
-                    data: {                            
-                        title: title || 'No title',
-                        categories: cate,
-                        post: post,
-                        tags: tags,
-                        publish: publish
-
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        if (result.status === 0) {
-                            msg(result.error);
-                        } else {
-                            msg('success','文章更新成功！', function () {
-                                window.location = '#{url.admin}#{url.adminPost}';
-                            });
+                progress.show('文章更新中...', function () {
+                    var post = $('#new-post-area').val(),
+                        title = $('#post-title').val(),
+                        cate = $('option:selected').val(),
+                        publish = $('input[name="publish"]').is(':checked') ? true : false,
+                        tags = [],
+                        tmp,
+                        i = 0;
+                    tmp = $('.db-tag').val().split(' ');
+                    for (; i < tmp.length; i++ ) {
+                        if (tmp[i] !== '') {
+                            tags.push(tags[i]);
                         }
                     }
+                    $.ajax({
+                        type: 'POST',
+                        url: '#{url.admin}#{url.adminEditPost}/#{post._id}',
+                        data: {                            
+                            title: title || 'No title',
+                            categories: cate,
+                            post: post,
+                            tags: tags,
+                            publish: publish
+
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                            progress.hide(function () {
+                                if (result.status === 0) {
+                                    msg(result.error);
+                                } else {
+                                    msg('success','文章更新成功！', function () {
+                                        window.location = '#{url.admin}#{url.adminPost}';
+                                    });
+                                }
+                            });
+                        },
+                        error: function (err) {
+                            progress.hide(function () {
+                                msg('error', err.statusText);
+                            });
+                        }
+                    });
+
                 });
             });      
         })();

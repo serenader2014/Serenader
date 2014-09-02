@@ -4,7 +4,30 @@ block files
         .db-file-wrapper
             .file-nav
                 ol
-                    li: a(href='#{adminPath}/files') files
+                    li: a(href='#{url.admin}#{url.adminFile}') files
+                .file-tools
+                    ul
+                        li.btn.new-folder
+                            i.fa.fa-folder-o
+                            | New folder
+                        li.btn.new-file
+                            i.fa.fa-file
+                            | New file
+                        li.btn.rename
+                            i.fa.fa-edit
+                            | Rename
+                        li.btn.move
+                            i.fa.fa-scissors
+                            | Move
+                        li.btn.copy
+                            i.fa.fa-copy
+                            | Copy
+                        li.btn.delete(data-toggle='modal', data-target='#delete-file')
+                            i.fa.fa-trash-o
+                            | Delete
+                        li.btn.download
+                            i.fa.fa-download
+                            | Download
             .file-list
                 table.file-list-wrapper
                     thead
@@ -13,21 +36,18 @@ block files
                             th Create Time
                             th Last Modified Time
                             th Size
-                            th Actions
                     tbody
                         tr
                             td
-                                i.glyphicon.glyphicon-folder-open
-                                a.db-filename(href='#{adminPath}/files/public') Public
+                                i.fa.fa-folder-open
+                                a.db-filename(href='#{url.admin}#{url.adminPublicFile}') Public
                             td 
                             td 
                             td 0
-                            td.db-action
                         tr
                             td
-                                i.glyphicon.glyphicon-folder-open
-                                a.db-filename(href='#{adminPath}/files/private') Private
+                                i.fa.fa-folder-open
+                                a.db-filename(href='#{url.admin}#{url.adminPrivateFile}') Private
                             td 
                             td 
                             td 0
-                            td.db-action

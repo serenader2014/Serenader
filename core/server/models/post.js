@@ -62,6 +62,10 @@ PostSchema.statics.updatePost = function (options, callback) {
         }
     });
 };
+
+PostSchema.statics.getPostsByCate = function (name, callback) {
+    this.find({category: name}, null, {sort: {_id: -1}},callback);
+};
 PostSchema.statics.getOnePostById = function (id, callback) {
     this.findById(id, callback);
 };
@@ -96,8 +100,8 @@ PostSchema.statics.getUserPosts = function (user, callback) {
 PostSchema.statics.getUserTenPosts = function (user, callback) {
     this.find({author: user}, null, {limit: 10, sort: {_id: -1}}, callback);
 };
-PostSchema.statics.getMoreTenPosts = function (page, callback) {
-    this.find({}, null, {limit: 10, skip: page}).sort({_id: -1}).exec(callback);
+PostSchema.statics.getMorePosts = function (page, num, callback) {
+    this.find({}, null, {limit: num, skip: page}).sort({_id: -1}).exec(callback);
 };
 PostSchema.statics.getUserMoreTenPosts = function (user, page, callback) {
     this.find({author: user}, null, {limit: 10, skip: page,  sort: {_id: -1}}, callback);

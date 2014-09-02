@@ -49,6 +49,9 @@
     background: rgba(255, 255, 255, 0.2);
     cursor: pointer;
     outline: none;
+    font-family: 'Open Sans';
+    font-weight: 100;
+    text-transform: uppercase;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
     .db-sign-form .db-submit:hover {
       background: rgba(230, 230, 230, 0.2); }

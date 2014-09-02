@@ -1,12 +1,12 @@
-var Post = require('../../proxy').post;
-var validator = require('validator');
-var xss = require('xss');
-
-var errorHandling = require('../../routes').error;
+var validator = require('validator'),
+    xss = require('xss'),
+    Post = require('../../models').Post,
+    errorHandling = require('../../utils/error'),
+    url = require('../../../../config').config.url;
 
 
 module.exports = function (router) {
-    router.get('/blog', function (req, res, next) {
+    router.get(url.indexPost, function (req, res, next) {
         Post.getAllPosts(function (err, p) {
             if (err) {
                 errorHandling(req, res, {error: err, type: 500});
@@ -16,7 +16,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get('/blog/:id', function (req, res, next) {
+    router.get(url.indexPost + '/:id', function (req, res, next) {
         var id = validator.trim(xss(req.params.id));
         Post.getOnePostById(id, function (err, p) {
             if (err) {

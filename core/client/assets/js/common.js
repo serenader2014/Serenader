@@ -29,7 +29,7 @@ var progress = {
     }
 };
 
-$('a,span,button').on('click', function () {
+$('a,span,button,li').on('click', function () {
     if ($(this).data('toggle') === 'modal') {
         var target = $(this).data('target');
         $(target).fadeIn(100);
@@ -49,6 +49,16 @@ $('button').on('click', function (e) {
     }
 });
 
+$('.checkbox').on('click', function () {
+    if ($(this).find('input[type="checkbox"]').is(':checked')) {
+        $(this).find('input[type="checkbox"]').prop('checked', false);
+        $(this).find('i').removeClass('fa-check-square-o').addClass('fa-square-o');
+    } else {
+        $(this).find('input[type="checkbox"]').prop('checked', true);
+        $(this).find('i').removeClass('fa-square-o').addClass('fa-check-square-o');
+    }
+});
+
 
 function msg (type, str, callback, time) {
     var t = 'msg-' + type,
@@ -59,11 +69,11 @@ function msg (type, str, callback, time) {
     msgContainer.append(msgWrapper.append(msgContent));
     $('body').append(msgContainer);
 
-    $('.msg').fadeIn(200).addClass(t);
-    $('.msg-content').html(str);
+    msgContainer.fadeIn(200).addClass(t);
+    msgContent.html(str);
     setTimeout(function () {
-        $('.msg').fadeOut(200, function () {
-            $('.msg').remove();
+        msgContainer.fadeOut(200, function () {
+            msgContainer.remove();
         });
         if (callback && typeof callback === 'function') {
             callback();

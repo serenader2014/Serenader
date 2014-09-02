@@ -23,61 +23,6 @@
     color:    #ced6dc;
 }
 
-
-/* iCheck plugin Flat skin, blue
------------------------------------ */
-.icheckbox_flat-blue,
-.iradio_flat-blue {
-    display: inline-block;
-    *display: inline;
-    vertical-align: middle;
-    margin: 0;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    background: url(blue.png) no-repeat;
-    border: none;
-    cursor: pointer;
-}
-
-.icheckbox_flat-blue {
-    background-position: 0 0;
-}
-    .icheckbox_flat-blue.checked {
-        background-position: -22px 0;
-    }
-    .icheckbox_flat-blue.disabled {
-        background-position: -44px 0;
-        cursor: default;
-    }
-    .icheckbox_flat-blue.checked.disabled {
-        background-position: -66px 0;
-    }
-
-.iradio_flat-blue {
-    background-position: -88px 0;
-}
-    .iradio_flat-blue.checked {
-        background-position: -110px 0;
-    }
-    .iradio_flat-blue.disabled {
-        background-position: -132px 0;
-        cursor: default;
-    }
-    .iradio_flat-blue.checked.disabled {
-        background-position: -154px 0;
-    }
-
-/* HiDPI support */
-@media (-o-min-device-pixel-ratio: 5/4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
-    .icheckbox_flat-blue,
-    .iradio_flat-blue {
-        background-image: url(blue@2x.png);
-        -webkit-background-size: 176px 22px;
-        background-size: 176px 22px;
-    }
-}
-
 // Admin panel global style
 
 .db-admin {
@@ -660,6 +605,10 @@
   height: 100%;
 }
 
+.header-btn {
+  display: none;
+}
+
 .db-post-wrapper {
   height: 100%;
   overflow-x: hidden;
@@ -763,8 +712,12 @@
   position: relative;
   padding: 0 4rem;
   font-size: 1.4rem;
+  &:hover .db-cate-ctrl {
+    display: block;
+  }
 
   .db-cate-ctrl {
+    display: none;
     position: absolute;
     top: 0;
     right: 2rem;
@@ -782,6 +735,16 @@
       color: #8A8A8A;
     }
   }
+}
+
+.db-cate-list.active {
+  background: #EEEEEE;
+}
+
+input.new-cate-name {
+  margin: 2rem 0;
+  height: 5rem;
+  font-size: 1.8rem;
 }
 
 .db-add-cate {
@@ -1130,7 +1093,7 @@
 
   .db-file-wrapper {
     height: 100%;
-    padding-top: 3.5rem;
+    padding-top: 8.4rem;
     border: 5px solid #FFFFFF;
     box-shadow: 0 0 10px rgba(8,8,8,0.1);
     background: #FFFFFF;
@@ -1142,11 +1105,10 @@
     left: 8rem;
     right: 1rem;
     padding: 1rem;
-    border-bottom: 1px solid #EEEEEE;
     background: #FFFFFF;
 
     ol {
-      padding: 0;
+      padding: 0 1rem;
       margin: 0;
       list-style: none;
     }
@@ -1160,7 +1122,7 @@
       padding: 0.1rem 0.5rem;
       margin: 0 0.5rem;
       color: #3BAFDA;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       line-height: 2rem;
       text-shadow: 0 1px #CCCCCC;
 
@@ -1177,9 +1139,28 @@
     }
   }
 
+  .file-tools {
+    margin-top: 1rem;
+    padding: 1rem;
+    font-size: 1.3rem;
+    background: #F7F7F7;
+    border-bottom: 1px solid #EEEEEE;
+    border-top: 1px solid #EEEEEE;
+    li {
+      display: inline-block;
+      padding: 0.5rem 0.8rem;
+      margin-right: 1rem;
+      border-radius: 0.4rem;
+    }
+    i {
+      margin-right: 0.5rem;
+    }
+  }
+
   .file-list {
     height: 100%;
     overflow: auto;
+    font-size: 1.4rem;
   }
 
   .file-list-wrapper {
@@ -1205,12 +1186,18 @@
     }
 
     th {
-      padding: 1rem;      
+      text-align: left;
+      padding: 1rem;
     }
 
     td {
       padding: 0.5rem 1rem;
-
+      input[type='checkbox'] {
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 1rem;
+        vertical-align: middle;
+      }
     }
 
     .db-action {
@@ -1240,55 +1227,31 @@
     height: 100%;
   }
 
-  .db-edit-btn, .db-edit-save {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 1.1rem 2rem;
-    width: 7.5rem;
-    outline: none;
-    border: 1px solid #FFFFFF;
-    color: #2BBFBD;
-    text-decoration: underline;
-    background: #FFFFFF;
+  #delete-file {
+    .modal-body {
+      li {
+        display: inline-block;
+        padding: 0.5rem 0;
+        margin: 1rem;
+        border-bottom: 1px solid #CCCCCC;
+      }
+    }
   }
 
-  .db-edit-save {
-    display: none;
-    right: 7.5rem;
-    border-right: 1px solid;
-  }
-
-  .message {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
-    background: rgba(0,0,0,0.1);
-  }
-
-
-  .message-wrapper {
-    width: 40rem;
-    margin: 10rem auto 0;
-    padding: 1.5rem 2rem;
-    border-radius: 0.5rem;
-    text-align: center;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
-    background: #FFFFFF;
-
-  }
-  .edit-success {
-    color: #FFFFFF;
-    background: #5DDEC0;
-  }
-
-  .edit-error {
-    color: #FFFFFF;
-    background: #F16576;
+  #rename-file {
+    .modal-body {
+      li {
+        margin: 1rem;
+        span {
+          display: inline-block;
+          padding: 1rem 0;
+        }
+        input {
+          height: 4rem;
+          font-size: 1.7rem;
+        }
+      }
+    }
   }
 }
 
@@ -1410,6 +1373,28 @@
     background: none;
   }
 
+  .header-btn {
+    display: block;
+    position: fixed;
+    top: 1.2rem;
+    right: 45%;
+    padding: 0.6rem 0;
+    width: 3rem;
+    color: #FFFFFF;
+    border-radius: 100%;
+    line-height: 1.8rem;
+    font-size: 2rem;
+    text-align: center;
+    z-index: 999;
+    background: #B2DEFF;
+}
+
+  .db-sidebar {
+    top: 6.4rem;
+    box-shadow: -0.4rem 0 1rem rgba(0,0,0,0.2);
+    z-index: 99;
+  }
+
   .db-nav-wrapper {
     height: auto;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -1442,9 +1427,8 @@
       padding: 0;
       text-align: center;
       a {
-        width: 5.1rem;
         padding: 1.8rem;
-        font-size: 1.5rem;
+        font-size: 2rem;
         line-height: 1.8rem;
       }
     }
