@@ -257,7 +257,7 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                url: '#{url.admin}/upload/content',
+                url: '#{url.admin}#{url.adminUpload}',
 
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();

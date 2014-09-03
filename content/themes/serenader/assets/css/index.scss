@@ -253,12 +253,16 @@
   }
 
   .post-title {
-    margin: 1rem 0 1rem -2.5rem;
+    margin: 1rem 0 2rem -2.5rem;
     padding-left: 2rem;
     border-left: 0.5rem solid;
     a {
-      font-size: 3rem;
-      line-height: 4.5rem;
+      font-size: 5rem;
+      font-weight: 800;
+      color: #555555;
+      &:hover {
+        color: #666666;
+      }
     }
   }
 

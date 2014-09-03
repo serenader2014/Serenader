@@ -175,12 +175,15 @@
     .content .load-more i {
       margin: 0 1rem; }
   .content .post-title {
-    margin: 1rem 0 1rem -2.5rem;
+    margin: 1rem 0 2rem -2.5rem;
     padding-left: 2rem;
     border-left: 0.5rem solid; }
     .content .post-title a {
-      font-size: 3rem;
-      line-height: 4.5rem; }
+      font-size: 5rem;
+      font-weight: 800;
+      color: #555555; }
+      .content .post-title a:hover {
+        color: #666666; }
   .content .post-info {
     margin: 1rem -2.5rem;
     padding: 1rem 2.5rem;

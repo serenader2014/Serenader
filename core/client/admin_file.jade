@@ -34,6 +34,9 @@ block files
                         li.btn.copy
                             i.fa.fa-copy
                             | Copy
+                        li.btn.upload(data-toggle='modal', data-target='#upload-file')
+                            i.fa.fa-cloud-upload
+                            | Upload files
                         li.btn.download
                             i.fa.fa-download
                             | Download
@@ -78,7 +81,7 @@ block files
                                 td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}/， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
                                 td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
                                 td #{Math.ceil(item.size/1024)} kb 
-            .modal.fade#delete-file
+            .modal#delete-file
                 .modal-wrapper
                     .modal-header
                         button.close(type='button', data-dismiss='modal')
@@ -90,7 +93,7 @@ block files
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 确定
-            .modal.fade#rename-file
+            .modal#rename-file
                 .modal-wrapper
                     .modal-header
                         button.close(type='button', data-dismiss='modal')
@@ -100,9 +103,24 @@ block files
                         p 请输入新的文件名称
                         ul
                     .modal-footer
-                            button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                            button.btn.btn-primary(type='submit') 确定
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
+            .modal#upload-file
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 上传文件
+                    .modal-body
+                        #uploader
+                            input.file(type='file')
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 上传
 block admin_script
+    script(type='text/javascript', src='/js/jquery.ui.widget.js')
+    script(type='text/javascript', src='/js/jquery.fileupload.js')
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')    
     script(type='text/javascript').
         $('.delete').on('click', function (event) {
             event.preventDefault();
@@ -137,7 +155,7 @@ block admin_script
                                 $(item).parents('tr').fadeOut(200, function () {
                                     $(this).remove();
                                 });
-                            } else {
+                            } else { 
                                 msg('error', 'Delete file error: ' + result.error, null, 10000);
                             }
                         },
@@ -181,4 +199,36 @@ block admin_script
                         .append($('<span>').html($(item).html()))
                         .append($('<input type="text">')));
             });
+        });
+
+        $('#uploader').fileupload({
+            dropZone: $('#uploader'),
+            autoUpload: true,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            url: '#{url.admin}/upload/content',
+
+        }).on('fileuploadadd', function (e, data) {
+            $('.upload-picker').hide();
+
+        }).on('fileuploadstart', function (e, data) {
+            $('.upload-progress').show();
+
+        }).on('fileuploadprogress', function (e, data) {
+            var percentage = parseInt(data.loaded/data.total * 100, 10);
+            $('.progress-inner').animate({
+                width: percentage + '%'
+            });
+
+        }).on('fileuploaddone', function (e, data) {
+            $('.upload-progress').hide();
+            $('.preview-container').show();
+            //- var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
+            $('.preview-container img').remove();
+            $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
+            $('.imgurl input').val(imgUrl).focus();
+        }).on('fileuploadfail', function (e, data) {
+            $('.upload-progress').hide();
+            $('.upload-fail').show();
+            $('.upload-error-text').html(data.textStatus);
+            $('.upload-error-detail').html(data.errorThrown);
         });

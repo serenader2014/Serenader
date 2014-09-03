@@ -1,15 +1,11 @@
-var adminPath = require('./index').adminPath;
-var auth_user = require('./index').auth_user;
-var User = require('../../proxy').user;
-var url = require('../../config').config.url;
-
-
-
+var auth_user = require('../../utils/auth_user'),
+    User = require('../../models').User,
+    url = require('../../../../config').config.url;
 
 module.exports = function (router) {
     router.get(url.adminUser + '/:user', auth_user, function (req, res, next) {
         var user = req.params.user;
-        res.render('admin_user', {adminPath: adminPath, locals: res.locals, user: user});
+        res.render('admin_user', {user: user});
     });
 
     router.post(url.adminUser + '/:user', auth_user, function (req, res, next) {
