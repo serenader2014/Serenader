@@ -212,6 +212,8 @@
   }
 
   .album-desc {
+    display: block;
+    width: 100%;
     padding: 1rem;
     margin: 1rem 0;
     height: 13rem;
@@ -890,6 +892,16 @@ input.new-cate-name {
 
 .preview-container {
   display: none;
+  position: relative;
+
+  .remove-img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 3rem;
+    border: none;
+    background: rgba(255,255,255,0.5);
+  }
 }
 
 .upload-fail {
@@ -908,8 +920,8 @@ input.new-cate-name {
 }
 
 .img-preview {
-  width: 100%;
   height: 100%;
+  width: 100%;
 }
 
 .imgurl {

@@ -8,7 +8,7 @@ adminHomePage.get('/', auth_user, function (req, res, next) {
 });
 
 require('./file')(adminHomePage);
-// require('./gallery')(adminHomePage);
+require('./gallery')(adminHomePage);
 require('./post')(adminHomePage);
 require('./setting')(adminHomePage);
 require('./sign')(adminHomePage);

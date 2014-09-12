@@ -50,7 +50,8 @@ $('button').on('click', function (e) {
 });
 
 $('.checkbox').on('click', function () {
-    if ($(this).find('input[type="checkbox"]').is(':checked')) {
+    console.log('clik');
+    if ($(this).find('input[type="checkbox"]').prop('checked')) {
         $(this).find('input[type="checkbox"]').prop('checked', false);
         $(this).find('i').removeClass('fa-check-square-o').addClass('fa-square-o');
     } else {

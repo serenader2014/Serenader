@@ -240,9 +240,24 @@ block admin_script
 
             $('.remove-img').on('click', function (event) {
                 event.preventDefault();
-                $('.preview-container').hide();
-                $('.upload-picker').show();
-                $('.imgurl input').val('');
+                var url = '#{url.admin}#{url.adminPostUpload}/' + $(this).data('url').split('/').pop();
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    dataType: 'json', 
+                    success: function (result) {
+                        if (result.status === 1) {
+                            $('.preview-container').hide();
+                            $('.upload-picker').show();
+                            $('.imgurl input').val('').show();
+                        } else {
+                            msg('error', '删除原来的图片失败！');
+                        }
+                    },
+                    error: function (err) {
+                        msg('error', err.statusText);
+                    }
+                });
             });
 
             $('body').on('click', function () {
@@ -257,8 +272,7 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                url: '#{url.admin}#{url.adminUpload}',
-
+                url: '#{url.admin}#{url.adminPostUpload}',
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
 
@@ -272,12 +286,13 @@ block admin_script
                 });
 
             }).on('fileuploaddone', function (e, data) {
+                var img  = data.result[0];
                 $('.upload-progress').hide();
                 $('.preview-container').show();
-                //- var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
                 $('.preview-container img').remove();
-                $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
-                $('.imgurl input').val(imgUrl).focus();
+                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.smallUrl));
+                $('.remove-img').data('url', img.url);
+                $('.imgurl input').val(img.url).hide();
             }).on('fileuploadfail', function (e, data) {
                 $('.upload-progress').hide();
                 $('.upload-fail').show();
@@ -343,8 +358,8 @@ block new_post
                                             .progress-inner
                                         p 正在上传……
                                     .preview-container
-                                        button.btn.btn-primary.select-another 重新上传
-                                        button.btn.remove-img 移除图片
+                                        button.btn.remove-img
+                                            i.fa.fa-trash
                                     .upload-fail
                                         p.upload-error-text
                                         p.upload-error-detail

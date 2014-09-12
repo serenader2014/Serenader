@@ -41,7 +41,7 @@ block album
                             img(src='/img/image.png')
                             a.db-upload-picker(href='javascript:;') 选择图片
                             p 或者拖动图片到此区域。
-                            form.upload-form(method='post',action='#{adminPath}/gallery/upload/#{album.name}',enctype='multipart/form-data')
+                            form.upload-form(method='post',action='#{url.admin}#{url.adminGalleryUpload}/#{album.name}',enctype='multipart/form-data')
                                 input(type='text', name='a', value='aaa')
                                 input.fileinput(type='file', name='image', accept='image/*',multiple)
                         .db-img-list

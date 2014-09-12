@@ -11,6 +11,7 @@ var path = require('path'),
         url: {
             admin: '/admin',
             adminPost: '/post',
+            adminPostUpload: '/post/upload',
             adminNewPost: '/post/new',
             adminEditPost: '/post/edit',
             adminDeletePost: '/post/delete',
