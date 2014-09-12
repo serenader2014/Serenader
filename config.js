@@ -39,7 +39,7 @@ var path = require('path'),
             indexTag: '/blog?tag=',
             indexGallery: '/gallery',
             indexAbout: '/about',
-
+            indexUser: '/u',
         },
         blogConfig: {
             name: 'Serenader',

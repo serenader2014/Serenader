@@ -1,6 +1,7 @@
 var im = require('imagemagick'),
     formidable = require('formidable'),
     path = require('path'),
+    fs = require('fs'),
     auth_user = require('../../utils/auth_user'),
     config = require('../../../../config').config,
     root = config.root_dir,
@@ -77,27 +78,28 @@ var uploadImg = module.exports.uploadImg = function (req, res, opt) {
 
     form.uploadDir = options.tmpDir;
 
-    // form.on('fileBegin', function (name, file) {
-    //     tmpFiles.push(file.path);
-    //     var fileinfo = new FileInfo(file);
-    //     fileinfo.safeName(uploadDir);
-    //     map[path.basename(file.path)] = fileinfo;
-    //     files.push(fileinfo);
-    //     console.log(files);
-    // }).on('field', function () {
+    form.on('fileBegin', function (name, file) {
+        var fileinfo = new FileInfo(file);
+        tmpFiles.push(file.path);
+        fileinfo.safeName(uploadDir);
+        map[path.basename(file.path)] = fileinfo;
+        files.push(fileinfo);
+        console.log(files);
+    }).on('field', function () {
 
-    // }).on('file', function (name, file) {
+    }).on('file', function (name, file) {
 
-    // }).on('aborted', function () {
+    }).on('aborted', function () {
 
-    // }).on('error', function () {
+    }).on('error', function () {
 
-    // }).on('progress', function () {
+    }).on('progress', function () {
 
-    // }).on('end', function () {
-    //     console.log(arguments);
-    // });
-    form.parse(req, function () {
+    }).on('end', function () {
         console.log(arguments);
+    });
+    form.parse(req, function (err, field, files) {
+        console.log(arguments);
+        
     });
 };
