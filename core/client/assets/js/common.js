@@ -42,6 +42,12 @@ $('.modal').on('click', function (e) {
     }
 });
 
+$('.db-preview').on('click', function (e) {
+    if (e.target === this) {
+        $(this).fadeOut(100);
+    }
+});
+
 $('button').on('click', function (e) {
     if ($(this).data('dismiss') === 'modal') {
         e.preventDefault();

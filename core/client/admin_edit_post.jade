@@ -236,27 +236,27 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                //- url: '#{url.admin}/upload/content',
-
+                url: '#{url.admin}#{url.adminPostUpload}',
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
+                $('.imgurl input').hide();
 
             }).on('fileuploadstart', function (e, data) {
                 $('.upload-progress').show();
 
             }).on('fileuploadprogress', function (e, data) {
                 var percentage = parseInt(data.loaded/data.total * 100, 10);
-                $('.progress-inner').animate({
+                $('.upload-progress-inner').animate({
                     width: percentage + '%'
                 });
 
             }).on('fileuploaddone', function (e, data) {
+                var img = data.result[0];
                 $('.upload-progress').hide();
                 $('.preview-container').show();
-                //- var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
                 $('.preview-container img').remove();
-                $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
-                $('.imgurl input').val(imgUrl).focus();
+                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.url));
+                $('.imgurl input').val(img.url);
             }).on('fileuploadfail', function (e, data) {
                 $('.upload-progress').hide();
                 $('.upload-fail').show();
@@ -314,36 +314,33 @@ block new_post
                             a.db-preview-close(href='javascript:;'): i.fa.fa-remove
                             p Markdown Preview
                         .db-preview-main
-                .modal.fade#insert(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                    .modal-dialog
-                        .modal-content
-                            .modal-header
-                                button.close(type='button', data-dismiss='modal')
-                                    span(aria-hidden='true') &times;
-                                    span.sr-only Close
-                                h4.modal-title 插入图片
-                            .modal-body
-                                .imgupload#uploader
-                                    form(enctype='multipart/form-data')
-                                        a.upload-picker(href='javascript:;')
-                                            img(src='/img/image.png')
-                                            span 选择图片
+                .modal#insert
+                    .modal-wrapper
+                        .modal-header
+                            button.close.fa.fa-times(type='button', data-dismiss='modal')
+                            h4.modal-title 插入图片
+                        .modal-body
+                            .imgupload#uploader
+                                form(enctype='multipart/form-data')
+                                    a.upload-picker(href='javascript:;')
+                                        img(src='/img/image.png')
+                                        span 选择图片
 
-                                        .upload-progress
-                                            .progress-outer
-                                                .progress-inner
-                                            p 正在上传……
-                                        .preview-container
-                                            button.btn.btn-primary.select-another 重新上传
-                                            button.btn.btn-default.remove-img 移除图片
-                                        .upload-fail
-                                            p.upload-error-text
-                                            p.upload-error-detail
-                                        input.fileinput(type='file',name='picture', accept='image/*')
-                                .imgurl
-                                    input.form-control(type='text', placeholder='请输入图片地址。')
-                                            
+                                    .upload-progress
+                                        .upload-progress-outer
+                                            .upload-progress-inner
+                                        p 正在上传……
+                                    .preview-container
+                                        button.btn.remove-img
+                                            i.fa.fa-trash
+                                    .upload-fail
+                                        p.upload-error-text
+                                        p.upload-error-detail
+                                    input.fileinput(type='file',name='picture', accept='image/*')
+                            .imgurl
+                                input.form-control(type='text', placeholder='请输入图片地址。')
+                                        
 
-                            .modal-footer
-                                button.btn.btn-default(type='button', data-dismiss='modal') 取消
-                                button.btn.btn-primary.insert-img(type='button') 插入
+                        .modal-footer
+                            button.btn(type='button', data-dismiss='modal') 取消
+                            button.btn.btn-primary.insert-img(type='button') 插入

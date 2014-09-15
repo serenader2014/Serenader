@@ -24,8 +24,6 @@ block content
                             i.fa.fa-image
                         li: a(href='#{url.admin}#{url.adminFile}')
                             i.fa.fa-folder-open
-                        li: a(href='#{url.admin}#{url.adminUpload}')
-                            i.fa.fa-cloud-upload
                         - if (currentUser.role === 'admin')
                             li.db-setting-btn: a(href='#{url.admin}#{url.adminSetting}')
                                 i.fa.fa-wrench

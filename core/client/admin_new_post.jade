@@ -224,6 +224,10 @@ block admin_script
                 var imgUrl = $('.imgurl input').val();
                 editor.replaceSelection('![]('+imgUrl+')');
                 $('#insert .close').trigger('click');
+                $('.imgurl input').val('').show();
+                $('.preview-container').hide();
+                $('.upload-progress').hide();
+                $('.upload-picker').show();
             });
 
             $('.imgurl input').on('keydown', function (event) {
@@ -275,22 +279,20 @@ block admin_script
                 url: '#{url.admin}#{url.adminPostUpload}',
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
-
+                $('.imgurl input').hide();
             }).on('fileuploadstart', function (e, data) {
                 $('.upload-progress').show();
-
             }).on('fileuploadprogress', function (e, data) {
                 var percentage = parseInt(data.loaded/data.total * 100, 10);
-                $('.progress-inner').animate({
+                $('.upload-progress-inner').animate({
                     width: percentage + '%'
                 });
-
             }).on('fileuploaddone', function (e, data) {
                 var img  = data.result[0];
                 $('.upload-progress').hide();
                 $('.preview-container').show();
                 $('.preview-container img').remove();
-                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.smallUrl));
+                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.url));
                 $('.remove-img').data('url', img.url);
                 $('.imgurl input').val(img.url).hide();
             }).on('fileuploadfail', function (e, data) {
@@ -338,7 +340,7 @@ block new_post
                 .db-preview
                     .db-preview-wrapper
                         .db-preview-header
-                            a.db-preview-close(href='javascript:;'): i.glyphicon.glyphicon-remove-sign
+                            a.db-preview-close(href='javascript:;'): i.fa.fa-remove
                             p Markdown Preview
                         .db-preview-main
                 .modal#insert
@@ -354,8 +356,8 @@ block new_post
                                         span 选择图片
 
                                     .upload-progress
-                                        .progress-outer
-                                            .progress-inner
+                                        .upload-progress-outer
+                                            .upload-progress-inner
                                         p 正在上传……
                                     .preview-container
                                         button.btn.remove-img

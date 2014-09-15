@@ -79,12 +79,12 @@ table {
 /*   Global   */
 * {
     box-sizing: border-box;
-    font-family: "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 
 html {
     height: 100%;
     font-size: 10px;
+    font-family: "Open Sans", "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 
 body {
@@ -349,4 +349,8 @@ input[type="text"]:focus {
     font-size: 2rem;
     color: #AAAAAA;
     vertical-align: middle;
+}
+
+.checkbox .fa-check-square-o {
+    color: #549DEBp;
 }
