@@ -12,6 +12,4 @@ node_modules
 
 .sass-cache
 
-data
-trash
-gallery
+content/data
