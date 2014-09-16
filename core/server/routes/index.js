@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Setting = require('../models').Setting,
     Category = require('../models').Category,
     config = require('../../../config').config,
+    fs = require('fs'),
     root = config.root_dir,
     errorHandling = require('../utils/error');
 

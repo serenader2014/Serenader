@@ -79,8 +79,11 @@ Setting.getSetting(function (err, s) {
     module.exports = app.locals;
     theme = app.locals.setting.theme;
 
-    dir = config.root_dir + '/content/themes/' + theme + '/assets';
-    app.use(express.static(dir));
+    app.use(function (req, res, next) {
+        var theme = app.locals.setting.theme,
+            dir = config.root_dir + '/content/themes/' + theme + '/assets';
+        express.static(dir)(req, res, next);
+    });
     app.use(express.static(config.root_dir + '/core/client/assets'));
     app.use('/static', express.static(config.root_dir + '/content/data/public'));
     app.use('/static/:user/*', function (req, res, next) {
