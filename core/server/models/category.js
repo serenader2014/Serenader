@@ -1,10 +1,10 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
 
-var CategorySchema = new Schema({
-    name: { type: String },
-    count: { type: Number }
-});
+    CategorySchema = new Schema({
+        name: { type: String },
+        count: { type: Number }
+    });
 
 CategorySchema.statics.createNew = function (name, callback) {
     var c = new this();

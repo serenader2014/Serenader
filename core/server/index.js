@@ -7,19 +7,22 @@ var express = require('express'),
     session = require('express-session'),
     mongoose = require('mongoose'),
     MongoStore = require('connect-mongo')(session),
+
     mk = require('./utils/makefolder'),
     route = require('./routes'),
     Setting = require('./models').Setting,
     config = require('../../config').config,
     errorHandling = require('./utils/error');
+
     app = express();
 
 
-
+// create the necessary folders
 mk(config.dir, function () {
-    console.log('make folder success');
+    console.log('make folders success');
 });
 
+// connect to the mongodb
 mongoose.connect(config.db, function (err) {
     if (err) {
         console.error('connect to %s error: ',config.db,err.message);
@@ -43,6 +46,7 @@ app.use(session({
     saveUninitialized: true,
 }));
 
+// validate wheather the visitor has logined or not
 app.use(function (req, res, next) {
     if (req.session.user) {
         app.locals.currentUser = req.session.user;
@@ -56,6 +60,7 @@ app.use(function (req, res, next) {
     next();
 });
 
+// cache the global system url, will be used in the template file
 app.locals.url = config.url;
 
 Setting.getSetting(function (err, s) {

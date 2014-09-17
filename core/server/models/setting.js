@@ -3,15 +3,15 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
 
     SettingSchema = new Schema({
-    name: { type: String },
-    desc: { type: String },
-    logo: { type: String },
-    favicon: { type: String },
-    allow_sign_up: { type: Boolean },
-    theme: { type: String },
-    posts_per_page: { type: Number },
-    id: { type: String }
-});
+        name: { type: String },
+        desc: { type: String },
+        logo: { type: String },
+        favicon: { type: String },
+        allow_sign_up: { type: Boolean },
+        theme: { type: String },
+        posts_per_page: { type: Number },
+        id: { type: String }
+    });
 
 
 SettingSchema.statics.getSetting = function (callback) {

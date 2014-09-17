@@ -23,20 +23,20 @@ block admin_script
                     'Alt-C': closePreview,
                     'Ctrl-I': insertImage
                 }
-            });
-            var previousTitle = $('input[name="title"]').val();
-            var previousPost = editor.getValue();
-            var previousTags = [];
-            var previousCategory = $('option:selected').val();
+                }),
+                previousTitle = $('input[name="title"]').val(),
+                previousPost = editor.getValue(),
+                previousTags = [],
+                previousCategory = $('option:selected').val();
             $('input[name="tags"]').each(function (index, item) {
                 previousTags.push($(item).val());
             }); 
 
             var updatePost = function (publish, callback) {
-                var tags = [];
-                var title = $('input[name="title"]').val();
-                var category = $('option:selected').val();
-                var post = editor.getValue();
+                var tags = [],
+                    title = $('input[name="title"]').val(),
+                    category = $('option:selected').val(),
+                    post = editor.getValue();
                 $('input[name="tags"]').each(function (index, item) {
                     tags.push($(item).val()); 
                 });
@@ -231,7 +231,6 @@ block admin_script
                     $('.upload-picker').show();
                 }
             });
-
             $('#uploader').fileupload({
                 dropZone: $('#uploader'),
                 autoUpload: true,
@@ -240,23 +239,23 @@ block admin_script
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
                 $('.imgurl input').hide();
-
             }).on('fileuploadstart', function (e, data) {
                 $('.upload-progress').show();
-
             }).on('fileuploadprogress', function (e, data) {
                 var percentage = parseInt(data.loaded/data.total * 100, 10);
                 $('.upload-progress-inner').animate({
                     width: percentage + '%'
                 });
-
             }).on('fileuploaddone', function (e, data) {
-                var img = data.result[0];
+                var img  = data.result[0];
                 $('.upload-progress').hide();
-                $('.preview-container').show();
-                $('.preview-container img').remove();
-                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.url));
-                $('.imgurl input').val(img.url);
+                $('.preview-container')
+                    .find('img').remove().end()
+                    .append($('<img class="img-preview"/>')
+                    .attr('src', img.url))
+                    .show();
+                $('.remove-img').data('url', img.url);
+                $('.imgurl input').val(img.url).hide();
             }).on('fileuploadfail', function (e, data) {
                 $('.upload-progress').hide();
                 $('.upload-fail').show();

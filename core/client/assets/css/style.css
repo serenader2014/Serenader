@@ -597,15 +597,199 @@ input.new-cate-name {
   left: 7rem;
   right: 0;
   padding: 1rem 1rem 0 1rem; }
+  .db-editor-wrapper .fs-preview {
+    display: none; }
+    .db-editor-wrapper .fs-preview img {
+      width: 100%; }
+    .db-editor-wrapper .fs-preview h1, .db-editor-wrapper .fs-preview h2, .db-editor-wrapper .fs-preview h3,
+    .db-editor-wrapper .fs-preview h4, .db-editor-wrapper .fs-preview h5, .db-editor-wrapper .fs-preview h6 {
+      text-rendering: optimizeLegibility;
+      line-height: 1;
+      margin-top: 0;
+      font-family: 'Open Sans', sans-serif; }
+    .db-editor-wrapper .fs-preview h1 {
+      font-size: 5rem;
+      line-height: 1.2em;
+      letter-spacing: -2px;
+      text-indent: -3px; }
+    .db-editor-wrapper .fs-preview h2 {
+      font-size: 4rem;
+      line-height: 1.2em;
+      letter-spacing: -1px;
+      text-indent: -2px; }
+    .db-editor-wrapper .fs-preview h3 {
+      font-size: 3.5rem; }
+    .db-editor-wrapper .fs-preview h4 {
+      font-size: 3rem; }
+    .db-editor-wrapper .fs-preview h5 {
+      font-size: 2.5rem; }
+    .db-editor-wrapper .fs-preview h6 {
+      font-size: 2rem; }
+    .db-editor-wrapper .fs-preview a {
+      color: #4a4a4a;
+      transition: color ease 0.3s; }
+    .db-editor-wrapper .fs-preview a:hover {
+      color: #57A3E8; }
+    .db-editor-wrapper .fs-preview h1 a, .db-editor-wrapper .fs-preview h2 a, .db-editor-wrapper .fs-preview h3 a,
+    .db-editor-wrapper .fs-preview h4 a, .db-editor-wrapper .fs-preview h5 a, .db-editor-wrapper .fs-preview h6 a {
+      color: #50585D; }
+    .db-editor-wrapper .fs-preview p, .db-editor-wrapper .fs-preview ul, .db-editor-wrapper .fs-preview ol, .db-editor-wrapper .fs-preview dl {
+      margin: 1.6em 0; }
+    .db-editor-wrapper .fs-preview ol ol, .db-editor-wrapper .fs-preview ul ul,
+    .db-editor-wrapper .fs-preview ul ol, .db-editor-wrapper .fs-preview ol ul {
+      margin: 0.4em 0; }
+    .db-editor-wrapper .fs-preview dl dt {
+      float: left;
+      width: 180px;
+      overflow: hidden;
+      clear: left;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: bold;
+      margin-bottom: 1em; }
+    .db-editor-wrapper .fs-preview dl dd {
+      margin-left: 200px;
+      margin-bottom: 1em; }
+    .db-editor-wrapper .fs-preview hr {
+      display: block;
+      height: 1px;
+      border: 0;
+      border-top: 1px solid #efefef;
+      margin: 3.2em 0;
+      padding: 0; }
+    .db-editor-wrapper .fs-preview blockquote {
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 1.6em 0 1.6em -2.2em;
+      padding: 0 0 0 1.6em;
+      border-left: #4a4a4a 0.4em solid; }
+    .db-editor-wrapper .fs-preview blockquote p {
+      margin: 0.8em 0;
+      font-style: italic; }
+    .db-editor-wrapper .fs-preview blockquote small {
+      display: inline-block;
+      margin: 0.8em 0 0.8em 1.5em;
+      font-size: 0.9em;
+      color: #ccc; }
+    .db-editor-wrapper .fs-preview blockquote small:before {
+      content: '\2014 \00A0'; }
+    .db-editor-wrapper .fs-preview blockquote cite {
+      font-weight: bold; }
+    .db-editor-wrapper .fs-preview blockquote cite a {
+      font-weight: normal; }
+    .db-editor-wrapper .fs-preview mark {
+      background-color: #ffc336; }
+    .db-editor-wrapper .fs-preview code, .db-editor-wrapper .fs-preview tt {
+      padding: 1px 3px;
+      font-family: Inconsolata, monospace, sans-serif;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      border: 1px solid #E3EDF3;
+      background: #F7FAFB;
+      border-radius: 2px; }
+    .db-editor-wrapper .fs-preview pre {
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 1.6em 0;
+      border: 1px solid #E3EDF3;
+      width: 100%;
+      padding: 10px;
+      font-family: Inconsolata, monospace, sans-serif;
+      font-size: 0.9em;
+      white-space: pre;
+      overflow: auto;
+      background: #F7FAFB;
+      border-radius: 3px; }
+    .db-editor-wrapper .fs-preview pre code, .db-editor-wrapper .fs-preview tt {
+      font-size: inherit;
+      white-space: -moz-pre-wrap;
+      white-space: pre-wrap;
+      background: transparent;
+      border: none;
+      padding: 0; }
+    .db-editor-wrapper .fs-preview kbd {
+      display: inline-block;
+      margin-bottom: 0.4em;
+      padding: 1px 8px;
+      border: #ccc 1px solid;
+      color: #666;
+      text-shadow: #fff 0 1px 0;
+      font-size: 0.9em;
+      font-weight: bold;
+      background: #f4f4f4;
+      border-radius: 4px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 1px 0 0 white inset; }
+    .db-editor-wrapper .fs-preview table {
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      margin: 1.6em 0;
+      width: 100%;
+      max-width: 100%;
+      background-color: transparent; }
+    .db-editor-wrapper .fs-preview table th,
+    .db-editor-wrapper .fs-preview table td {
+      padding: 8px;
+      line-height: 20px;
+      text-align: left;
+      vertical-align: top;
+      border-top: 1px solid #efefef; }
+    .db-editor-wrapper .fs-preview table th {
+      color: #000; }
+    .db-editor-wrapper .fs-preview table caption + thead tr:first-child th,
+    .db-editor-wrapper .fs-preview table caption + thead tr:first-child td,
+    .db-editor-wrapper .fs-preview table colgroup + thead tr:first-child th,
+    .db-editor-wrapper .fs-preview table colgroup + thead tr:first-child td,
+    .db-editor-wrapper .fs-preview table thead:first-child tr:first-child th,
+    .db-editor-wrapper .fs-preview table thead:first-child tr:first-child td {
+      border-top: 0; }
+    .db-editor-wrapper .fs-preview table tbody + tbody {
+      border-top: 2px solid #efefef; }
+    .db-editor-wrapper .fs-preview table table table {
+      background-color: #fff; }
+    .db-editor-wrapper .fs-preview table tbody > tr:nth-child(odd) > td,
+    .db-editor-wrapper .fs-preview table tbody > tr:nth-child(odd) > th {
+      background-color: #f6f6f6; }
+    .db-editor-wrapper .fs-preview table.plain tbody > tr:nth-child(odd) > td,
+    .db-editor-wrapper .fs-preview table.plain tbody > tr:nth-child(odd) > th {
+      background: transparent; }
+    .db-editor-wrapper .fs-preview iframe, .db-editor-wrapper .fs-preview .fluid-width-video-wrapper {
+      display: block;
+      margin: 1.6em 0; }
   .db-editor-wrapper .editor-fullscreen {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 999; }
+    z-index: 99; }
     .db-editor-wrapper .editor-fullscreen .CodeMirror {
+      width: 50%;
+      display: inline-block;
       background: #FBFCF7; }
+    .db-editor-wrapper .editor-fullscreen .fs-preview {
+      position: relative;
+      display: inline-block;
+      height: 100%;
+      width: 50%;
+      padding: 4.5rem 1.5rem 0;
+      border-left: 1px solid #EEEEEE;
+      vertical-align: top;
+      background: #FBFCF7; }
+    .db-editor-wrapper .editor-fullscreen .fs-preview-title {
+      position: absolute;
+      top: 3rem;
+      left: 0;
+      right: 0;
+      padding: 1rem 0;
+      text-align: center;
+      color: #AAAAAA;
+      font-size: 1.2rem;
+      background: rgba(255, 255, 255, 0.8); }
+    .db-editor-wrapper .editor-fullscreen .fs-preview-container {
+      padding-top: 2rem;
+      height: 100%;
+      overflow: auto; }
 
 .db-preview {
   display: none;

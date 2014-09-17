@@ -25,7 +25,7 @@ var im = require('imagemagick'),
     },
     nameCountReg = /(?:(?: \(([\d]+)\))?(\.[^.]+))?$/,
     nameCountFunc = function (s, index, ext) {
-        return '(' + ((parseInt(index, 10) || 0) + 1) + ')' + (ext || '');
+        return ((parseInt(index, 10) || 0) + 1) + (ext || '');
     },
     FileInfo = function (file) {
         this.name = file.name;
@@ -119,7 +119,6 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
 
     form.uploadDir = options.tmpDir;
 
-    form.parse(req);
 
     form.on('fileBegin', function (name, file) {
         var fileinfo = new FileInfo(file);
@@ -132,6 +131,7 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         f[name] = value;
         field.push(f);
     }).on('file', function (name, file) {
+        console.log(arguments);
         var fileinfo = map[path.basename(file.path)];
         fileinfo.size = file.size;
 
@@ -187,4 +187,5 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         //     }
         // ]
     });
+    form.parse(req);
 };

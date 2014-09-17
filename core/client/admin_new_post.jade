@@ -24,6 +24,13 @@ block admin_script
                     'Ctrl-I': insertImage
                 }
             });
+            var editorContainer = $('.db-new-editor');
+            editor.on('change', function () {
+                if (editorContainer.hasClass('editor-fullscreen')) {
+                    console.log('aaa');
+                    $('.fs-preview-container').html(marked(editor.getValue()));
+                }
+            });
             var draftId = '';
             var previousTitle = '';
             var previousPost = '';
@@ -203,6 +210,8 @@ block admin_script
 
             function fullScreen () {
                 $('.db-new-editor').toggleClass('editor-fullscreen');
+                $('.fs-preview-container').html(marked(editor.getValue()));
+
             }
 
             function closePreview () {
@@ -290,9 +299,11 @@ block admin_script
             }).on('fileuploaddone', function (e, data) {
                 var img  = data.result[0];
                 $('.upload-progress').hide();
-                $('.preview-container').show();
-                $('.preview-container img').remove();
-                $('.preview-container').append($('<img class="img-preview"/>').attr('src', img.url));
+                $('.preview-container')
+                    .find('img').remove().end()
+                    .append($('<img class="img-preview"/>')
+                    .attr('src', img.url))
+                    .show();
                 $('.remove-img').data('url', img.url);
                 $('.imgurl input').val(img.url).hide();
             }).on('fileuploadfail', function (e, data) {
@@ -332,6 +343,9 @@ block new_post
                             a.db-editor-fs(href='javascript:;')
                                 i.fa.fa-arrows-alt
                     textarea.new-post-area#new-post-area(name='post')
+                    .fs-preview
+                        .fs-preview-title MarkDown Preview
+                        .fs-preview-container
                 .db-tags
                     input.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
                     button.btn.btn-primary.db-publish(form='new-post')

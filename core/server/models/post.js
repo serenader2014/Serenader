@@ -1,19 +1,19 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    _ = require('underscore'),
+    Category = require('./category'),
 
-var Category = require('./category');
-
-var PostSchema = new Schema({
-    title: { type: String },
-    author: { type: String },
-    date: { type: Array },
-    tags: { type: Array },
-    content: { type: String },
-    excerpt: { type: String },
-    published: { type: Boolean },
-    category: { type: String },
-    views: { type: Number, default: 0 }
-});
+    PostSchema = new Schema({
+        title: { type: String },
+        author: { type: String },
+        date: { type: Array },
+        tags: { type: Array },
+        content: { type: String },
+        excerpt: { type: String },
+        published: { type: Boolean },
+        category: { type: String },
+        views: { type: Number, default: 0 }
+    });
 
 PostSchema.statics.createNewPost = function (options, callback) {
     var p = new this();
@@ -24,9 +24,6 @@ PostSchema.statics.createNewPost = function (options, callback) {
     p.content = options.post;
     p.excerpt = options.post.substring(0, 350+Math.random()*100);
     p.category = options.category;
-    if (options.published === true) {
-        Category.increaseCount(options.category);
-    }
     p.published = options.published;
     p.save(callback);
 };
@@ -38,13 +35,9 @@ PostSchema.statics.updatePost = function (options, callback) {
         }
         if (p) {
             var obj = {};
-            if (options.title) { obj.title = options.title; }
-            if (options.author) { obj.author = options.author; }
-            if (options.authorAvatar) { obj.authorAvatar = options.authorAvatar; }
-            if (options.date) { obj.date = options.date; }
-            if (options.tags) { obj.tags = options.tags; }
-            if (options.post) { obj.content = options.post; obj.excerpt = options.post.substring(0, 350+Math.random()*100);}
-            if (options.published !== undefined) { obj.published = options.published; }
+
+            _.extend(obj, options);
+            console.log(options.tags);
             if (options.category) { 
                 if (options.published === true && p.published === true && options.category !== p.category) {
                     Category.increaseCount(options.category);
@@ -56,7 +49,6 @@ PostSchema.statics.updatePost = function (options, callback) {
                 if (options.published === true && p.published === false) {
                     Category.increaseCount(options.category);
                 }
-                obj.category = options.category; 
             }
             self.findByIdAndUpdate(options.id, obj, callback);
         }

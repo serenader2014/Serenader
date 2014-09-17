@@ -49,7 +49,7 @@ var path = require('path'),
             favicon: '/static/favicon.ico',
             allow_sign_up: true,
             theme: 'serenader',
-            post_per_page: 10
+            posts_per_page: 10
         },
         dir: [
             '/content/data/private',

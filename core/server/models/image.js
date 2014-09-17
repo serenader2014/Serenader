@@ -1,13 +1,13 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
 
-var Album = require('./album');
+    Album = require('./album'),
 
-var ImageSchema = new Schema({
-    path: { type: String },
-    desc: { type: String },
-    album: { type: String }
-});
+    ImageSchema = new Schema({
+        path: { type: String },
+        desc: { type: String },
+        album: { type: String }
+    });
 
 ImageSchema.statics.addImage = function (options, callback) {
     var img = new this();

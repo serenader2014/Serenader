@@ -120,6 +120,8 @@ module.exports = function (router) {
             });
         } else if (typeof req.body.tags === 'string') {
             tags = validator.trim(xss(req.body.tags));
+        } else if (req.body.tags === undefined) {
+            tags = [];
         }
 
         Post.updatePost({
@@ -190,6 +192,8 @@ module.exports = function (router) {
             });
         } else if (typeof req.body.tags === 'string') {
             tags = validator.trim(xss(req.body.tags));
+        } else if (req.body.tags === undefined) {
+            tags = [];
         }
         category = validator.trim(xss(req.body.categories));
 

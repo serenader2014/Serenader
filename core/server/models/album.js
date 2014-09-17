@@ -1,14 +1,15 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-
-var AlbumSchema = new Schema({
-    name: { type: String },
-    desc: { type: String },
-    cover: { type: String },
-    user: { type: String },
-    count: { type: Number },
-    private: { type: Boolean }
-});
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    _ = require('underscore'),
+    
+    AlbumSchema = new Schema({
+        name: { type: String },
+        desc: { type: String },
+        cover: { type: String },
+        user: { type: String },
+        count: { type: Number },
+        private: { type: Boolean }
+    });
 
 
 AlbumSchema.statics.addAlbum = function (options, callback) {
@@ -24,10 +25,7 @@ AlbumSchema.statics.addAlbum = function (options, callback) {
 
 AlbumSchema.statics.updateAlbum = function (options, callback) {
     var obj = {};
-    if (options.name) { obj.name = options.name; }
-    if (options.desc) { obj.desc = options.desc; }
-    if (options.user) { obj.user = options.user; }
-    if (options.private) { obj.private = options.private; }
+    _.extend(obj, options);
 
     this.findByIdAndUpdate(options.id, obj, callback);
 };

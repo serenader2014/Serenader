@@ -1,16 +1,17 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    _ = require('underscore'),
 
-var UserSchema = new Schema({
-    uid: { type: String , unique: true },
-    email: { type: String , unique: true },
-    pwd: { type: String },
-    website: { type: String },
-    profile_header: { type: String },
-    avatar: { type: String },
-    role: { type: String },
-    signature: { type: String }
-});
+    UserSchema = new Schema({
+        uid: { type: String , unique: true },
+        email: { type: String , unique: true },
+        pwd: { type: String },
+        website: { type: String },
+        profile_header: { type: String },
+        avatar: { type: String },
+        role: { type: String },
+        signature: { type: String }
+    });
 
 UserSchema.statics.getOneUserById = function (id, callback) {
     this.findOne({uid: id}, callback);
@@ -32,14 +33,7 @@ UserSchema.statics.createNewUser = function (options, callback) {
 };
 UserSchema.statics.updateUserProfile = function (options, callback) {
     var obj = {};
-    if (options.email) { obj.email = options.email; }
-    if (options.pwd) { obj.pwd = options.pwd; }
-    if (options.website) { obj.website = options.website; }
-    if (options.profile_header) { obj.profile_header = options.profile_header; }
-    if (options.role) { obj.role = options.role; }
-    if (options.avatar) { obj.avatar = options.avatar; }
-    if (options.signature) { obj.signature = options.signature; }
-
+    _.extend(obj, options);
     this.findOneAndUpdate({uid: options.uid}, obj, callback);
 };
 UserSchema.statics.deleteUserById = function (uid, callback) {
