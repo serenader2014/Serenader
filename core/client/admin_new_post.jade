@@ -27,7 +27,6 @@ block admin_script
             var editorContainer = $('.db-new-editor');
             editor.on('change', function () {
                 if (editorContainer.hasClass('editor-fullscreen')) {
-                    console.log('aaa');
                     $('.fs-preview-container').html(marked(editor.getValue()));
                 }
             });

@@ -37,7 +37,7 @@ PostSchema.statics.updatePost = function (options, callback) {
             var obj = {};
 
             _.extend(obj, options);
-            console.log(options.tags);
+            obj.content = options.post;
             if (options.category) { 
                 if (options.published === true && p.published === true && options.category !== p.category) {
                     Category.increaseCount(options.category);
