@@ -31,7 +31,12 @@ block admin_script
             $('input[name="tags"]').each(function (index, item) {
                 previousTags.push($(item).val());
             }); 
-
+            var editorContainer = $('.db-new-editor');
+            editor.on('change', function () {
+                if (editorContainer.hasClass('editor-fullscreen')) {
+                    $('.fs-preview-container').html(marked(editor.getValue()));
+                }
+            });
             var updatePost = function (publish, callback) {
                 var tags = [],
                     title = $('input[name="title"]').val(),
@@ -124,14 +129,13 @@ block admin_script
                 height: 60
             });
             $('.db-editor-fs').on('click', function () {
-                $('.db-new-editor').toggleClass('editor-fullscreen');
+                fullScreen();
             });
             $('.db-editor-preview').on('click', function () {
-                $('.db-preview-main').html(marked(editor.getValue()));
-                $('.db-preview').fadeIn();
+                mdPreview();
             });
             $('.db-preview-close').on('click', function () {
-                $('.db-preview').fadeOut()
+                closePreview();
             });
 
             $('.db-tag').on('keyup', function (event) {
@@ -177,6 +181,8 @@ block admin_script
 
             function fullScreen () {
                 $('.db-new-editor').toggleClass('editor-fullscreen');
+                $('.fs-preview-container').html(marked(editor.getValue()));
+
             }
 
             function closePreview () {
@@ -296,7 +302,10 @@ block new_post
                                 i.fa.fa-eye
                             a.db-editor-fs(href='javascript:;')
                                 i.fa.fa-arrows-alt
-                    textarea.new-post-area#new-post-area(name='post') #{post.content}
+                    textarea.new-post-area#new-post-area(name='post')!=post.content
+                    .fs-preview
+                        .fs-preview-title MarkDown Preview
+                        .fs-preview-container
                 .db-tags
                     - each val in post.tags
                         a.db-single-tag(href='javascript:;')

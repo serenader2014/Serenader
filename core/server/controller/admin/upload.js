@@ -46,7 +46,8 @@ FileInfo.prototype.validate = function (type) {
 };
 
 FileInfo.prototype.safeName = function (uploadDir) {
-    this.name = path.basename(this.name).replace(/^\.+/,'');
+    this.name = path.basename(this.name).replace(/^\.+/,'').replace(/(|)/, '');
+
 
     if (fs.existsSync(uploadDir + '/' + this.name)) {
         this.name = this.name.replace(nameCountReg, nameCountFunc);
@@ -110,7 +111,7 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         files = [],
         map = [],
         counter = 1,
-        field = [],
+        field = {},
         setNoCacheHeaders = function () {
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -127,11 +128,8 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         map[path.basename(file.path)] = fileinfo;
         files.push(fileinfo);
     }).on('field', function (name, value) {
-        var f = {};
-        f[name] = value;
-        field.push(f);
+        field[name] = value;
     }).on('file', function (name, file) {
-        console.log(arguments);
         var fileinfo = map[path.basename(file.path)];
         fileinfo.size = file.size;
 
@@ -139,7 +137,10 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
             fs.unlink(file.path);
             return false;
         }
-
+        console.log(['a', uploadDir]);
+        if (! fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
         fs.renameSync(file.path, uploadDir + '/' + fileinfo.name);
 
         if (options.imageTypes.test(fileinfo.name)) {

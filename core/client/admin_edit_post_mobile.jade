@@ -200,7 +200,7 @@ block new_post
                                 i.fa.fa-tint
                             a.db-editor-fs(href='javascript:;')
                                 i.fa.fa-arrows-alt
-                    textarea.new-post-area#new-post-area(name='post') #{post.content}
+                    textarea.new-post-area#new-post-area(name='post')!=post.content
                 .db-tags
                     button.btn.btn-primary.db-publish(form='new-post')
                         i.fa.fa-send-o

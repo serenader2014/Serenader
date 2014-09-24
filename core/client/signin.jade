@@ -1,6 +1,6 @@
 extends layout
 block extra_css
-    link(rel='stylesheet', href='/css/index.css')
+    link(rel='stylesheet', href='/css/sign.css')
     
     - var bg = background === '/img/default_background.jpg' ? '/img/default_background.jpg' : '/static/background/' + background;
     style.
@@ -27,7 +27,7 @@ block extra_script
                         progress.hide(function () {
                             if (result.status === 1) {
                                 msg('success', result.user + ' 欢迎回来 ~', function () {
-                                    window.location = '#{url.admin}';
+                                    window.location = '#{referer}';
                                 }, 1000);
                             } else {
                                 msg('error', result.error, null, 10000);

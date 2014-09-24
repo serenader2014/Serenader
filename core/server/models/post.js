@@ -38,6 +38,7 @@ PostSchema.statics.updatePost = function (options, callback) {
 
             _.extend(obj, options);
             obj.content = options.post;
+            obj.excerpt = options.post.substring(0, 350+Math.random()*100);
             if (options.category) { 
                 if (options.published === true && p.published === true && options.category !== p.category) {
                     Category.increaseCount(options.category);

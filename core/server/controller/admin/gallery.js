@@ -35,7 +35,7 @@ module.exports = function (router) {
         var name = validator.trim(xss(req.body.name)),
             desc = validator.trim(xss(req.body.desc)),
             userName = req.session.user.uid,
-            private = req.body.private ? true : false;
+            private = validator.trim(xss(req.body.private));
 
         Album.addAlbum({
             name: name,
@@ -85,11 +85,27 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminGalleryUpload + '/:album', auth_user, function (req, res, next) {
+    router.post(url.adminGalleryUpload + '/:type/:album', auth_user, function (req, res, next) {
         var album =  validator.trim(xss(decodeURIComponent(req.params.album))),
-            userName = req.session.user.uid;
+            type = validator.trim(xss(decodeURIComponent(req.params.type))),
+            userName = req.session.user.uid,
+            dir = root + type + '/' + userName + '/gallery/' + album;
 
-        
+        if (type !== 'public' && type !== 'private') {
+            res.json({
+                error: 'type error'
+            });
+            return false;
+        }
+
+        fileUpload(req, res, {
+            uploadDir: dir,
+            path: '/static/' + userName + '/gallery/' + album
+        }, function (files, field) {
+            console.log(field);
+            res.json(files);
+        });
+
     });
 
 };

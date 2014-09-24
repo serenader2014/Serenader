@@ -22,7 +22,7 @@ module.exports = function (router) {
         if (req.session.user) {
             res.redirect(url.admin);
         } else {
-            res.render('signin', {background: bg});
+            res.render('signin', {background: bg, referer: req.headers.referer || url.admin + '/' + url.adminSignIn});
         }
     });
 

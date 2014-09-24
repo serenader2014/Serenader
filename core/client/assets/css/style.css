@@ -310,139 +310,39 @@
       color: #3BAFDA; }
   .db-album-detail .upload-icon, .db-album-detail .edit-icon {
     margin-right: 0.5rem; }
-  .db-album-detail .db-upload-container {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999; }
-  .db-album-detail .db-upload-inner {
-    position: absolute;
-    top: 4rem;
-    bottom: 1rem;
-    left: 5%;
-    right: 5%;
-    text-align: center; }
-  .db-album-detail .db-inner-wrapper {
-    position: relative;
-    max-height: 100%;
-    margin: 0 auto;
-    padding: 2rem;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    border-radius: 0.3rem;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background: #FFFFFF; }
   .db-album-detail .db-choose-img {
-    padding: 4rem 0;
-    border: 2px dashed #CCCCCC; }
-  .db-album-detail .db-upload-picker {
-    display: block;
-    width: 12rem;
-    margin: 1rem auto;
-    padding: 0.5rem 1rem;
-    color: #FFFFFF;
-    font-size: 1.8rem;
-    border-radius: 0.3rem;
-    background: #3BAFDA; }
-    .db-album-detail .db-upload-picker:hover {
-      background: #66c1e2; }
-  .db-album-detail .upload-helper {
-    padding: 3rem 0 2rem;
-    text-align: left;
-    border-bottom: 1px solid #CCCCCC; }
-    .db-album-detail .upload-helper a {
-      display: inline-block;
-      padding: 0.5rem 0.2rem;
-      margin-right: 3rem;
-      color: #3BAFDA;
-      box-shadow: 0 1px 0 #CCCCCC; }
-      .db-album-detail .upload-helper a:hover {
-        box-shadow: 0 1px 0 #3BAFDA; }
-  .db-album-detail .db-img-list {
+    text-align: center; }
+    .db-album-detail .db-choose-img form {
+      display: none; }
+  .db-album-detail .img-list {
     display: none; }
-    .db-album-detail .db-img-list table {
-      width: 100%;
-      text-align: left; }
-    .db-album-detail .db-img-list th {
+    .db-album-detail .img-list table {
+      width: 100%; }
+    .db-album-detail .img-list th {
+      font-size: 1.6rem;
       padding: 1rem;
-      width: 20%;
-      border-right: 1px solid #DEDEDE; }
-      .db-album-detail .db-img-list th:last-child {
-        border-right: none; }
-    .db-album-detail .db-img-list tbody tr:nth-child(odd) {
+      text-align: left;
+      font-weight: bold;
       background: #EEEEEE; }
-    .db-album-detail .db-img-list td {
-      padding: 0.5rem 1rem;
-      border-right: 1px solid #DEDEDE; }
-      .db-album-detail .db-img-list td:nth-child(5n) {
-        border-right: none;
-        text-align: center; }
-      .db-album-detail .db-img-list td:nth-child(4n) {
-        text-align: center; }
-      .db-album-detail .db-img-list td:nth-child(3n) {
-        padding: 0 1rem; }
-  .db-album-detail .file-progress {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 12px;
-    background: #CCCCCC; }
-  .db-album-detail .file-progress-inner {
-    position: absolute;
-    display: inline-block;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: #AAAAAA; }
-  .db-album-detail .upload-header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 1rem 2rem;
-    font-size: 1.7rem;
-    text-shadow: 0 1px 0 #FFFFFF;
-    background: #ECECEC; }
-  .db-album-detail .start-upload-all {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: inline-block;
-    padding: 1rem 2rem;
-    color: #FFFFFF;
-    text-shadow: 0 1px 0 #3296BA;
-    background: #3BAFDA; }
-    .db-album-detail .start-upload-all:hover {
-      background: #50b8de; }
-  .db-album-detail .close-upload {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: inline-block;
-    padding: 1rem 2rem;
-    color: #FFFFFF;
-    text-shadow: 0 1px 0 #7EB7CC;
-    background: #91D2EA; }
-    .db-album-detail .close-upload:hover {
-      background: #a6dbee; }
-  .db-album-detail .start-upload, .db-album-detail .cancel-upload {
-    padding: 0.5rem 2rem;
-    color: #FFFFFF;
-    outline: none;
-    border: 1px solid #FFFFFF;
-    border-radius: 0.5rem; }
-  .db-album-detail .cancel-upload {
-    background: #FF4A45; }
-  .db-album-detail .start-upload {
-    background: #3BAFDA; }
-  .db-album-detail .upload-form {
-    display: none; }
+    .db-album-detail .img-list td {
+      font-size: 1.5rem;
+      padding: 0.5rem 1rem; }
+    .db-album-detail .img-list .file-progress {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+      height: 0.8rem;
+      background: #EFEFEF; }
+    .db-album-detail .img-list .file-progress-inner {
+      position: absolute;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: #CCCCCC; }
+  .db-album-detail .start-upload, .db-album-detail .remove-file {
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.3rem;
+    margin: 0 0.5rem; }
 
 .db-post-content {
   height: 100%; }
@@ -1207,41 +1107,49 @@ input.new-cate-name {
     top: 6.4rem;
     left: 8rem;
     right: 1rem;
-    padding: 1rem;
-    background: #FFFFFF; }
+    padding-top: 1rem;
+    background: #F7F7F7; }
     .db-file .file-nav ol {
-      padding: 0 1rem;
-      margin: 0;
-      list-style: none; }
+      padding: 0.5rem;
+      margin: 0 1rem;
+      list-style: none;
+      box-shadow: 0 0 7px rgba(0, 0, 0, 0.2) inset;
+      border-radius: 0.3rem;
+      background: #FFFFFF; }
     .db-file .file-nav li {
       display: inline-block; }
     .db-file .file-nav a {
       display: inline-block;
       padding: 0.1rem 0.5rem;
       margin: 0 0.5rem;
-      color: #3BAFDA;
+      color: #555555;
       font-size: 1.5rem;
-      line-height: 2rem;
-      text-shadow: 0 1px #CCCCCC; }
+      line-height: 2rem; }
       .db-file .file-nav a:hover {
         color: #FFFFFF;
         border-radius: 0.3rem;
         text-shadow: 0 1px 0 #CCCCCC;
-        background: #3BAFDA; }
+        background: #AAAAAA; }
     .db-file .file-nav span {
-      color: #3BAFDA; }
+      color: #555555; }
   .db-file .file-tools {
     margin-top: 1rem;
-    padding: 1rem;
     font-size: 1.3rem;
     background: #F7F7F7;
     border-bottom: 1px solid #EEEEEE;
     border-top: 1px solid #EEEEEE; }
     .db-file .file-tools li {
       display: inline-block;
-      padding: 0.5rem 0.8rem;
-      margin-right: 1rem;
-      border-radius: 0.4rem; }
+      padding: 1rem;
+      border: none;
+      border-left: 1px solid #EEEEEE;
+      text-shadow: 0 1px 0 #FFFFFF;
+      background: none; }
+      .db-file .file-tools li:hover {
+        color: #FFFFFF;
+        text-shadow: 0 1px 0 #000000;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) inset;
+        background: #555555; }
     .db-file .file-tools i {
       margin-right: 0.5rem; }
   .db-file .file-list {

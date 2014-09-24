@@ -27,3 +27,49 @@ block gallery
                                 | #{item.name} (#{item.count})
                             span.db-album-desc #{item.desc}
                 - })
+
+
+block admin_script
+    script.
+        $('.album-btn').on('click', function (event) {
+            event.preventDefault();
+
+            progress.show('正在创建相册...', function () {
+                var name = $('.album-name').val(),
+                    desc = $('.album-desc').val(),
+                    isPrivate = $('.album-private input').prop('checked');
+                $.ajax({
+                    type: 'POST',
+                    url: '#{url.admin}#{url.adminNewGallery}',
+                    data: {
+                        name: name,
+                        desc: desc,
+                        private: isPrivate
+                    },
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '创建相册成功！', function () {
+                                    var wrapper = $('<li>').addClass('single-album'),
+                                        link = $('<a>').attr('href', '#{url.admin}#{url.adminGallery}/' + name),
+                                        cover = $('<span>').addClass('db-album-cover').css({
+                                                'background-image': 'url(/img/default_album.png)'
+                                            }),
+                                        n = $('<span>').addClass('db-album-name').html(name + ' (0)'),
+                                        d = $('<span>').addClass('db-album-desc').html(desc);
+
+                                    wrapper.append(link.append(cover).append(n).append(d));
+                                    $('.db-gallery-list ul').append(wrapper);
+
+                                });
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err);
+                        });
+                    }
+                });
+            });
+        });

@@ -19,19 +19,16 @@ block files
                         li.btn.select-none
                             i.fa.fa-check-square-o
                             | Select none
-                        li.btn.new-folder
-                            i.fa.fa-folder-o
-                            | New folder
-                        li.btn.new-file
+                        li.btn.new-file(data-toggle='modal', data-target='#new')
                             i.fa.fa-file-o
-                            | New file
+                            | New file/folder
                         li.btn.rename(data-toggle='modal', data-target='#rename-file')
                             i.fa.fa-edit
                             | Rename
-                        li.btn.move
+                        li.btn.move(data-toggle='modal', data-target='#move')
                             i.fa.fa-scissors
                             | Move
-                        li.btn.copy
+                        li.btn.copy(data-toggle='modal', data-target='#copy')
                             i.fa.fa-copy
                             | Copy
                         li.btn.upload(data-toggle='modal', data-target='#upload-file')
@@ -40,7 +37,7 @@ block files
                         li.btn.download
                             i.fa.fa-download
                             | Download
-                        li.btn.btn-danger.delete(data-toggle='modal', data-target='#delete-file')
+                        li.btn.delete(data-toggle='modal', data-target='#delete-file')
                             i.fa.fa-trash-o
                             | Delete
             .file-list
@@ -117,6 +114,39 @@ block files
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 上传
+            .modal#new
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 创建新文件/文件夹
+                    .modal-body
+
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
+            .modal#copy
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 复制文件/文件夹
+                    .modal-body
+
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
+            .modal#move
+                .modal-wrapper
+                    .modal-header
+                        button.close(type='button', data-dismiss='modal')
+                            i.fa.fa-times
+                        h4.modal-title 移动文件/文件夹
+                    .modal-body
+
+                    .modal-footer
+                        button.btn(type='button', data-dismiss='modal') 取消
+                        button.btn.btn-primary(type='submit') 确定
 block admin_script
     script(type='text/javascript', src='/js/jquery.ui.widget.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
