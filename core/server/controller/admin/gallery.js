@@ -81,6 +81,9 @@ module.exports = function (router) {
                 } else {
                     res.redirect(adminPath+url.adminGallery);
                 }
+            } else {
+                errorHandling(req, res, { error: '找不到该相册。', type: 404 });
+                return false;
             }
         });
     });
@@ -102,10 +105,24 @@ module.exports = function (router) {
             uploadDir: dir,
             path: '/static/' + userName + '/gallery/' + album
         }, function (files, field) {
-            console.log(field);
-            res.json(files);
-        });
+            files.forEach(function (file, index) {
+                Image.addImage({
+                    path: file.url,
+                    album: album,
+                    thumb: file.thumbnailUrl
+                }, function (err) {
+                    if (err) {
+                        console.log(err);
+                        res.json([]);
+                        return false;
+                    }
 
+                    if (index === files.length - 1) {
+                        res.json(files);
+                    }
+                });
+            });
+        });
     });
 
 };

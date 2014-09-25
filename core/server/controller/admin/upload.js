@@ -16,10 +16,7 @@ var im = require('imagemagick'),
         imageTypes: /\.(gif|jpe?g|png)$/i,
         imageVersions: {
             'thumbnail': {
-                width: 100,
-            },
-            'small': {
-                width: 500,
+                width: 250,
             }
         },
     },
@@ -137,7 +134,6 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
             fs.unlink(file.path);
             return false;
         }
-        console.log(['a', uploadDir]);
         if (! fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }

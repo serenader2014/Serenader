@@ -446,14 +446,18 @@
       height: 100%;
       top: 0;
       left: 0;
-      background: #CCCCCC;
+      background: #32AAE6;
     }
   }
 
-  .start-upload, .remove-file {
+  .remove-file {
     padding: 0.5rem 1.5rem;
     border-radius: 0.3rem;
     margin: 0 0.5rem;
+  }
+
+  .start-upload {
+    display: none;
   }
 }
 

@@ -20,11 +20,7 @@ block album
                 - if (images && Object.prototype.toString.call(images) === '[object Array]')
                     - each img in images
                         a.db-img-container(href='#{img.path}')
-                            img.db-img(src='#{img.path}')
-                - else if (images && typeof images === 'object')
-                    a.db-img-container(href='#{images.path}')
-                        span.db-img(style='background-image:url(#{images.path})')
-                        span.db-img-desc #{images.desc}
+                            img.db-img(src='#{img.thumb}')
                 .blueimp-gallery.blueimp-gallery-controls#blueimp-gallery
                     .slides
                     h3.title
@@ -59,7 +55,7 @@ block album
                         
                     .modal-footer
                         button.btn(href='javascript:;') 取消
-                        button.btn.btn-primary(href='javascript:;') 完成
+                        button.btn.btn-primary.upload-all(href='javascript:;') 完成
 
 
 block admin_script
@@ -69,10 +65,22 @@ block admin_script
     script(type='text/javascript', src='/js/blueimp-gallery.min.js')
     - var type = album.private ? 'private' : 'public';
     script.
+        var uploadedImage = [];
+
         $('.upload-picker').on('click', function (event) {
             event.preventDefault();
             $('.fileinput').trigger('click');
         });
+
+        $('body').on('click', '.remove-file',function () {
+            $(this).parents('tr').fadeOut(function () {
+                this.remove();
+            });
+        }).on('click', '.upload-all', function () {
+            $('.start-upload').eq(0).trigger('click');
+        });
+
+
 
         $('#uploader').fileupload({
             dropZone: $('#uploader'),
@@ -80,37 +88,81 @@ block admin_script
             autoUpload: false,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
             singleFileUploads: true,
+            //- sequentialUploads: true,
+            dataType: 'json',
             add: function (e, data) {
                 $('.imgupload').hide();
                 $('.img-list').show();
                 $('.modal-footer .btn-primary').html('开始上传').addClass('upload-all');
-                $.each(data.files, function (index, file) {
-                    var size = file.size/(1024*1024) > 1 ? Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K'
-                    var singleFile = $('<tr>')
-                                        .append($('<td>').html(file.name).addClass('file-name'))
-                                        .append($('<td>').html(size).addClass('file-size'))
-                                        .append($('<td>')
-                                            .append($('<span class="file-progress"><span class="file-progress-inner"></span></span>')))
-                                        .append($('<td>')
-                                            .append($('<button>').html('上传').addClass('start-upload btn btn-primary'))
-                                            .append($('<button>').html('移除').addClass('remove-file btn btn-danger')));
-                    $(singleFile).find('.start-upload').on('click', function () {
-                        data.submit();
-                    });
-                    $('.upload-list').append(singleFile);
+                var file = data.files[0],
+                    size = file.size/(1024*1024) > 1 ? 
+                        Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K',
+                    singleFile = $('<tr>'),
+                    name = $('<td>').html(file.name).addClass('file-name'),
+                    size = $('<td>').html(size).addClass('file-size'),
+                    progress = $('<td>')
+                        .append($('<span class="file-progress"><span class="file-progress-inner"></span></span>')),
+                    action = $('<td>')
+                        .append($('<button>').html('上传').addClass('start-upload'))
+                        .append($('<button>').html('移除').addClass('remove-file btn btn-danger'))
+                        .append($('<span>').html('0%').addClass('file-upload-percentage'));
+
+                singleFile.append(name).append(size).append(progress).append(action);
+                action.find('.start-upload').on('click', function () {
+                    data.submit();
                 });
-            },
-            start: function (e, data) {
+                $('.upload-list').append(singleFile);
+                data.context = singleFile;
 
             },
             progress: function (e, data) {
-
+                var percentage = parseInt((data.loaded/data.total) * 100, 10) + '%';
+                data.context.find('.file-progress-inner').animate({
+                    width: percentage
+                });
+                data.context.find('.file-upload-percentage').html(percentage);
             },
             done: function (e, data) {
+                uploadedImage.push(data.result[0]);
+                data.context.find('.remove-file').off('click').on('click', function () {
+                    $.ajax({
+                        url: data.result[0].deleteUrl,
+                        type: data.result[0].deleteType,
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result.status === 1) {
+                                data.context.fadeOut(function () {
+                                    this.remove();
+                                });
+                            } else {
+                                msg('error', '删除图片失败！');
+                            }
+                        },
+                        error: function (err) {
+                            msg('error', err);
+                        }
+                    });
+                });
+                if (data.context.next().length) {
+                    data.context.next().find('.start-upload').trigger('click');
+                } else {
+                    $('.upload-all').html('上传完成').off('click').on('click', function () {
+                        $(this).parents('.modal').fadeOut(function () {
+                            $('.upload-list tr').remove();
+                            $('.img-list').hide();
+                            $('.imgupload').show();
+                            uploadedImage.forEach(function (img, index) {
+                                var aLink = $('<a href="' + img.url + '">').addClass('db-img-container'),
+                                    i = $('<img>').attr('src', img.thumbnailUrl);
 
+                                $('.images').append(aLink.append(i));
+                            });
+                        });
+                    });
+                }
             },
             fail: function (e, data) {
-            
+                
             }
         });
 block admin_css

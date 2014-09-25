@@ -5,12 +5,14 @@ var mongoose = require('mongoose'),
 
     ImageSchema = new Schema({
         path: { type: String },
-        album: { type: String }
+        album: { type: String },
+        thumb: {type: String }
     });
 
 ImageSchema.statics.addImage = function (options, callback) {
     var img = new this();
     img.path = options.path;
+    img.thumb = options.thumb;
     img.album = options.album;
     Album.increaseCount(options.album);
     img.save(callback);
@@ -33,6 +35,7 @@ ImageSchema.statics.getAllImages = function (callback) {
 ImageSchema.statics.updateImage = function (options, callback) {
     this.findByIdAndUpdate(id, {
         path: options.path,
+        thumb: options.thumb
     }, callback);
 };
 ImageSchema.statics.findOneAlbumImage = function (name, callback) {
