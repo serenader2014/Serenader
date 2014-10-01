@@ -73,7 +73,7 @@ AlbumSchema.statics.increaseCount = function (name) {
     });
 };
 
-AlbumSchema.statics.decreaseCount = function (name) {
+AlbumSchema.statics.decreaseCount = function (name, callback) {
     var self = this;
     self.findOne({name: name}, function (err, a) {
         if (err) {
@@ -81,11 +81,16 @@ AlbumSchema.statics.decreaseCount = function (name) {
             return false;
         }
         if (a) {
-            self.findOnedAndUpdate({name: a.name}, {
+            self.findOneAndUpdate({name: a.name}, {
                 count: a.count - 1
-            }, function (err, a) {
+            }, function (err, al) {
+                console.log(al.count);
                 if (err) {
                     console.error(err);
+                    return false;
+                }
+                if (callback && typeof callback === 'function') {
+                    callback();
                 }
             });
         }

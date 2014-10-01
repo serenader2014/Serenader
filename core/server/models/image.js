@@ -19,13 +19,15 @@ ImageSchema.statics.addImage = function (options, callback) {
 };
 ImageSchema.statics.deleteImage = function (id, callback) {
     var self = this;
-    self.findOneById(id, function (err, i) {
+    self.findById(id, function (err, i) {
         if (err) {
             console.error(err);
         }
         if (i) {
-            Album.decreaseCount(i.album);
-            self.findByIdAndRemove(id, callback);
+            Album.decreaseCount(i.album, function () {
+                console.log(i.album);
+                self.findByIdAndRemove(id, callback);
+            });
         }
     }); 
 };

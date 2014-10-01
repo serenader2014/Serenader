@@ -1,5 +1,6 @@
 var validator = require('validator'),
     xss = require('xss'),
+    fs = require('fs'),
 
     auth_user = require('../../utils/auth_user'),
     Album = require('../../models').Album,
@@ -9,6 +10,7 @@ var validator = require('validator'),
     root = config.root_dir + '/content/data/',
     url = config.url,
     fileUpload = require('./upload').fileUpload,
+    imageVersions = require('./upload').imageVersions,
 
     errorHandling = require('../../utils/error'),
 
@@ -125,4 +127,69 @@ module.exports = function (router) {
         });
     });
 
+    router.delete(url.adminGalleryDelete + '/:type/:album', auth_user, function (req, res, next) {
+        var album = validator.trim(xss(decodeURIComponent(req.params.album))),
+            type = validator.trim(xss(req.params.type)),
+            ids = req.body.ids,
+            userName = req.session.user.uid,
+            basePath = root + type + '/' + userName + '/gallery/' + album;
+
+        if (type !== 'public' && type !== 'private') {
+            res.json({
+                error: 'tpye error'
+            });
+            return false;
+        }
+
+        if (Object.prototype.toString.call(ids) !== '[object Array]') {
+            res.json({
+                error: 'ids is not a arrary'
+            });
+            return false;
+        }
+
+
+        ids.forEach(function (item, index) {
+            var id = validator.trim(xss(item.id));
+            Image.deleteImage(id, function (err, i) {
+                if (err) {
+                    res.json({
+                        status: 0,
+                        err: err
+                    });
+                    return false;
+                }
+
+                fs.unlink(basePath + '/' + item.path, function (err) {
+                    if (err) {
+                        res.json({
+                            status: 0,
+                            err: err
+                        });
+                        return false;
+                    }
+                    Object.keys(imageVersions).forEach(function (version, idx) {
+                        fs.unlink(basePath + '/' + version + '/' + item.path, function (err) {
+                            if (err) {
+                                res.json({
+                                    status: 0,
+                                    err: err
+                                });
+                                return false;
+                            }
+                            if (idx === Object.keys(imageVersions).length - 1) {
+                                if (index === ids.length - 1) {
+                                    res.json({
+                                        status: 1,
+                                        err: ''
+                                    });
+                                    return false;
+                                }
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    });
 };

@@ -186,3 +186,4 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
     });
     form.parse(req);
 };
+module.exports.imageVersions = options.imageVersions;

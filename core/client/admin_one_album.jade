@@ -8,19 +8,38 @@ block album
                 h2.db-album-name
                     p #{album.name}
                 .db-album-desc #{album.desc}
-                a.upload-btn(href='javascript:;', data-toggle='modal', data-target='#upload-image')
-                    i.glyphicon.glyphicon-cloud-upload.upload-icon
-                    | 上传相片
-                a.edit-btn(href='javascript:;')
-                    i.glyphicon.glyphicon-edit.edit-icon
-                    | 编辑
+                .db-album-menu
+                    a.upload-btn(href='javascript:;', data-toggle='modal', data-target='#upload-image')
+                        i.fa.fa-cloud-upload.upload-icon
+                        | 上传相片
+                    a.edit-btn(href='javascript:;')
+                        i.fa.fa-edit.edit-icon
+                        | 编辑相册
+                    a.delete-btn(href='javascript:;')
+                        i.fa.fa-trash
+                        | 删除图片
             .images#links
-                - if (images.length === 0)
-                    p.no-image This album doesn't have any image yet!
-                - if (images && Object.prototype.toString.call(images) === '[object Array]')
-                    - each img in images
-                        a.db-img-container(href='#{img.path}')
-                            img.db-img(src='#{img.thumb}')
+                .img-delete-menu
+                    ul
+                        li: a(href='javascript:;')
+                            i.fa.fa-check-square
+                            | Select all
+                        li: a(href='javascript:;')
+                            i.fa.fa-check-square-o
+                            | Select none
+                        li: a.delete(href='javascript:;')
+                            i.fa.fa-trash
+                            | Delete
+                        li: a.cancel-btn(href='javascript:;')
+                            i.fa.fa-times
+                            | Cancel
+                .images-container
+                    - if (images.length === 0)
+                        p.no-image This album doesn't have any image yet!
+                    - if (images && Object.prototype.toString.call(images) === '[object Array]')
+                        - each img in images
+                            a.db-img-container(href='#{img.path}', data-id='#{img.id}')
+                                img.db-img(src='#{img.thumb}')
                 .blueimp-gallery.blueimp-gallery-controls#blueimp-gallery
                     .slides
                     h3.title
@@ -51,8 +70,6 @@ block album
                                         th Progress
                                         th Action
                                 tbody.upload-list
-
-                        
                     .modal-footer
                         button.btn(href='javascript:;') 取消
                         button.btn.btn-primary.upload-all(href='javascript:;') 完成
@@ -72,13 +89,57 @@ block admin_script
             $('.fileinput').trigger('click');
         });
 
-        $('body').on('click', '.remove-file',function () {
-            $(this).parents('tr').fadeOut(function () {
-                this.remove();
-            });
-        }).on('click', '.upload-all', function () {
+        $('.upload-all').on('click', function () {
             $('.start-upload').eq(0).trigger('click');
         });
+
+        $('.delete-btn, .cancel-btn').on('click', function () {
+            var menu = $('.img-delete-menu');
+            if (menu.is(':visible')) {
+                menu.slideUp();
+                $('.db-img-container').off('click', selectImg).removeClass('selected');
+            } else {
+                menu.slideDown();
+                $('.db-img-container').on('click', selectImg);
+            }
+        });
+
+        $('.delete').on('click', function () {
+            var ids = [];
+            if (! $('.db-img-container.selected').length) {
+                return false;
+            }
+            $('.db-img-container.selected').each(function (index, item) {
+                ids.push({
+                    id: $(item).data('id'),
+                    path: $(item).attr('href').split('/').pop()
+                });
+            });
+            console.log(ids);
+            $.ajax({
+                type: 'delete',
+                url: '#{url.admin}/#{url.adminGalleryDelete}/#{type}/#{album.name}',
+                data: {
+                    ids: ids
+                },
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+
+        function selectImg (event) {
+            event.preventDefault();
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                $(this).addClass('selected');
+            }
+        }
 
 
 
@@ -88,7 +149,6 @@ block admin_script
             autoUpload: false,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
             singleFileUploads: true,
-            //- sequentialUploads: true,
             dataType: 'json',
             add: function (e, data) {
                 $('.imgupload').hide();
@@ -113,11 +173,10 @@ block admin_script
                 });
                 $('.upload-list').append(singleFile);
                 data.context = singleFile;
-
             },
             progress: function (e, data) {
                 var percentage = parseInt((data.loaded/data.total) * 100, 10) + '%';
-                data.context.find('.file-progress-inner').animate({
+                data.context.find('.file-progress-inner').css({
                     width: percentage
                 });
                 data.context.find('.file-upload-percentage').html(percentage);
@@ -151,18 +210,21 @@ block admin_script
                             $('.upload-list tr').remove();
                             $('.img-list').hide();
                             $('.imgupload').show();
+                            if (! $('.db-img-container').length) {
+                                $('.no-image').remove();
+                            }
                             uploadedImage.forEach(function (img, index) {
                                 var aLink = $('<a href="' + img.url + '">').addClass('db-img-container'),
-                                    i = $('<img>').attr('src', img.thumbnailUrl);
+                                    i = $('<img>').attr('src', img.thumbnailUrl).addClass('db-img');
 
-                                $('.images').append(aLink.append(i));
+                                $('.images-container').append(aLink.append(i));
                             });
                         });
                     });
                 }
             },
             fail: function (e, data) {
-                
+                alert('upload faild');
             }
         });
 block admin_css
