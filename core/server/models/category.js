@@ -12,8 +12,8 @@ CategorySchema.statics.createNew = function (name, callback) {
     c.count = 0;
     c.save(callback);
 };
-CategorySchema.statics.getAll = function (callback) {
-    this.find({}, callback);
+CategorySchema.statics.getAll = function () {
+    return this.find({}).exec();
 };
 CategorySchema.statics.update = function (id, name, callback) {
     this.findByIdAndUpdate(id, {

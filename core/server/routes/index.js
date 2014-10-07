@@ -1,13 +1,10 @@
 var mongoose = require('mongoose'),
-    Setting = require('../models').Setting,
-    Category = require('../models').Category,
     config = require('../../../config').config,
-    fs = require('fs'),
     root = config.root_dir,
     errorHandling = require('../utils/error');
 
 
-function route (app, req, res, next) {
+function route (app) {
 
     app.use(config.url.admin, function (req, res, next) {
         app.set('views', root + '/core/client');
@@ -29,18 +26,5 @@ function route (app, req, res, next) {
         });
     });
 
-    Category.getAll(function (err, c) {
-        if (err) {
-            errorHandling(req, res, {error: err, type: 500});
-            return false;
-        }
-        if (c.length === 0) {
-            Category.createNew('未分类', function (err) {
-                if (err) console.error(c);               
-            });
-        }
-    });
 }
-
-
 module.exports = route;
