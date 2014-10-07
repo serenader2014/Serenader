@@ -1,12 +1,12 @@
 var express = require('express'),
     path = require('path'),
-    fs = require('fs'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
     mongoose = require('mongoose'),
     MongoStore = require('connect-mongo')(session),
+    Promise = require('bluebird'),
 
     mk = require('./utils/makefolder'),
     route = require('./routes'),
@@ -18,10 +18,11 @@ var express = require('express'),
 
 
 // create the necessary folders
-mk(config.dir, function () {
-    console.log('make folders success');
-});
-
+function initFolders ()  {
+    mk(config.dir, function () {
+        console.log('make folders success');
+    });
+}
 // connect to the mongodb
 mongoose.connect(config.db, function (err) {
     if (err) {
@@ -63,36 +64,52 @@ app.use(function (req, res, next) {
 // cache the global system url, will be used in the template file
 app.locals.url = config.url;
 
-Setting.getSetting(function (err, s) {
-    var theme, dir;
-    if (err) {
-        console.error(err);
-        res.send(err);
-        return false;
-    }
-    if (!s) {
-        Setting.createSetting(config.blogConfig, function (err, setting) {
-            if (err) {
-                errorHandling(req, res, {error: err, type: 500});
-                return false;
+var getSetting = new Promise (function (resolve, reject) {
+    Setting.getSetting(function (err, s) {
+        if (err)  {
+            reject(err);
+        } else {
+            if (!s) {
+                reject('No setting');
+            } else {
+                resolve(s);
             }
+        }
+    });
+});
+
+getSetting.then(function (setting) {
+    app.locals.setting = setting;
+    return app.locals.setting;
+}).catch(function (err) {
+    if (err === 'No setting') {
+        return new Promise(function (resolve, reject) {
+            Setting.createSetting(config.blogConfig, function (err, setting) {
+                if (err) {
+                    reject(err);
+                    errorHandling(req, res, {error: err, type: 500});
+                    return false;
+                }
+                app.locals.setting = config.blogConfig;
+                resolve(app.locals.setting);
+            });
         });
-        app.locals.setting = config.blogConfig;
     } else {
-        app.locals.setting = s;
+        throw new Error(err);
     }
+}).then(function (setting) {
+    var theme, dir, server;
+
     module.exports = app.locals;
-    theme = app.locals.setting.theme;
+    theme = setting.theme;
 
     app.use(function (req, res, next) {
-        var theme = app.locals.setting.theme,
-            dir = config.root_dir + '/content/themes/' + theme + '/assets';
+        dir = config.root_dir + '/content/themes/' + theme + '/assets';
         express.static(dir)(req, res, next);
     });
     app.use(express.static(config.root_dir + '/core/client/assets'));
     app.use('/static', express.static(config.root_dir + '/content/data/public'));
     app.use('/static/:user/*', function (req, res, next) {
-        var url = req.url.split('/static/')[1];
         var user = req.params.user;
         if (req.session.user && req.session.user.uid === user) {
             next();
@@ -108,8 +125,8 @@ Setting.getSetting(function (err, s) {
 
     app.set('port', config.port);
 
-    var server = app.listen(app.get('port'), function () {
+    server = app.listen(app.get('port'), function () {
         console.log('Express server listenning on port '+ server.address().port);
     });
-});
 
+});

@@ -115,7 +115,6 @@ block admin_script
                     path: $(item).attr('href').split('/').pop()
                 });
             });
-            console.log(ids);
             $.ajax({
                 type: 'delete',
                 url: '#{url.admin}/#{url.adminGalleryDelete}/#{type}/#{album.name}',
@@ -124,7 +123,11 @@ block admin_script
                 },
                 dataType: 'json',
                 success: function (result) {
-                    console.log(result);
+                    if (result.status === 1) {
+                        $('.db-img-container.selected').remove();
+                    } else {
+                        msg('error', result.err);
+                    }
                 },
                 error: function (err) {
                     console.log(err);

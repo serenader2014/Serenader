@@ -14,8 +14,11 @@ ImageSchema.statics.addImage = function (options, callback) {
     img.path = options.path;
     img.thumb = options.thumb;
     img.album = options.album;
-    Album.increaseCount(options.album);
-    img.save(callback);
+    img.save(function () {
+        Album.increaseCount(options.album, function () {
+            callback();
+        });
+    });
 };
 ImageSchema.statics.deleteImage = function (id, callback) {
     var self = this;
@@ -24,9 +27,11 @@ ImageSchema.statics.deleteImage = function (id, callback) {
             console.error(err);
         }
         if (i) {
-            Album.decreaseCount(i.album, function () {
-                console.log(i.album);
-                self.findByIdAndRemove(id, callback);
+            self.findByIdAndRemove(id, function () {
+                Album.decreaseCount(i.album, function () {
+                    console.log(i.album);
+                    callback();
+                });
             });
         }
     }); 

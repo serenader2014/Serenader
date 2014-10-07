@@ -15,7 +15,7 @@ var mongoose = require('mongoose'),
 
 
 SettingSchema.statics.getSetting = function (callback) {
-    this.findOne({id: 'blog'}, callback);
+    return this.findOne({id: 'blog'}).exec(callback);
 };
 
 SettingSchema.statics.createSetting = function (options, callback) {

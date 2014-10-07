@@ -54,7 +54,7 @@ AlbumSchema.statics.getUserPublicAlbum = function (user, callback) {
     this.find({user: user}).nor([{private: true}]).exec(callback);
 };
 
-AlbumSchema.statics.increaseCount = function (name) {
+AlbumSchema.statics.increaseCount = function (name, callback) {
     var self = this;
     self.findOne({name: name}, function (err, a) {
         if (err) {
@@ -67,6 +67,10 @@ AlbumSchema.statics.increaseCount = function (name) {
             }, function (err, a) {
                 if (err) {
                     console.error(err);
+                    return false;
+                }
+                if (callback && typeof callback === 'function') {
+                    callback();
                 }
             });
         }
@@ -81,8 +85,9 @@ AlbumSchema.statics.decreaseCount = function (name, callback) {
             return false;
         }
         if (a) {
+            var c = a.count - 1;
             self.findOneAndUpdate({name: a.name}, {
-                count: a.count - 1
+                count: c
             }, function (err, al) {
                 console.log(al.count);
                 if (err) {

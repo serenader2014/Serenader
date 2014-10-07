@@ -1,5 +1,6 @@
-var fs = require('fs');
-var root = require('../../../config').config.root_dir;
+var Promise = require('bluebird'),
+    fs = Promise.promisifyAll(require('fs')),
+    root = require('../../../config').config.root_dir;
 
 module.exports = function (dir, callback) {
     if (typeof dir === 'string') {
@@ -13,6 +14,7 @@ module.exports = function (dir, callback) {
             }
         });
     }
+
     function makefolder (dir, cb) {
         var dirArr = [];
         var tmp = '';
@@ -32,6 +34,17 @@ module.exports = function (dir, callback) {
                     }
                 }
             });
+        });
+
+        return new Promise(function (resolve, reject) {
+            var dirArr,
+                tmp = '';
+            dirArr = dir.split('/').map(function (d) {
+                tmp = tmp + '/' + d;
+                return tmp;
+            });
+
+
         });
     }
 };
