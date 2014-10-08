@@ -1,50 +1,40 @@
 var Promise = require('bluebird'),
     mongoose = require('mongoose'),
     fs = Promise.promisifyAll(require('fs')),
-    models = require('./core/server/models/index'),
+    mkdir = Promise.promisifyAll(require('mkdirp')),
+    models = require('./core/server/models'),
     Post = models.Post,
     Setting = models.Setting,
     Category = models.Category,
+    log = require('./core/server/utils/log')(),
 
     config = require('./config').config,
     settings;
 
 function ConnectDB () {
-    console.log('Initialize system...');
+    log.info('Initialize system...');
     return new Promise(function (resolve, reject) {
         mongoose.connect(config.db, function (err) {
             if (err) {
                 reject(err);
             } else {
-                console.log('Mongodb connected successfully.');
+                log.success('Mongodb connected successfully.');
                 resolve();
             }
         });
     });
 }
 
-function makeFolders (dir) {
-    console.log('making folder: ' + dir);
-    return fs.mkdirAsync(dir).catch(Promise.OperationalError, function (err) {
-        if (err.cause.code === 'ENOENT') {
-            var tmp = dir.split('/'), newDir;
-            tmp.pop();
-            newDir = tmp.join('/');
-            return makeFolders(newDir);
-        } else if (err.cause.code === 'EEXIST') {
-            console.log('ignore existing folder:' + dir);
-        } else {
-            throw new Error(err.message);
-        }
+// First initialize the system, connect to database, create some necessary database records
+// and folders, then run the core server.
 
-    });
-}
-
+// connect to mongodb
 ConnectDB().then(function () {
     return Setting.getSetting();
 }).then(function (setting) {
     if (!setting) {
-        console.log('Creating default settings');
+        // create default settings if the database haven't store any record
+        log.info('Creating default settings');
         settings = config.blogConfig;
         return Setting.createSetting(config.blogConfig);
     } else {
@@ -53,23 +43,29 @@ ConnectDB().then(function () {
 }).then(function () {
     Category.getAll().then(function (category) {
         if (!category.length) {
-            console.log('Creating default category');
+            // create default category if the database haven't store any record
+            log.info('Creating default category');
             return Category.createNew('默认');
         }
     });
 }).catch(function (err) {
-    console.log(err);
+    // If it can't pass the initialize checking, it will 
+    // force exiting the process.
+    log.error('Initialize the system faild, please check your environment.');
+    log.error(err);
     process.exit(1);
     return false;
 }).then(function () {
     var dir = config.dir,
         root = config.root_dir;
-
+    // make some folders if they don't exist
     dir.reduce(function (sequence, dirPath) {
         return sequence.then(function () {
-            return makeFolders(dirPath);
+            mkdir.mkdirpAsync(root + dirPath);
+            log.info('Making folder:' + dirPath);
         });
     }, Promise.resolve());
 }).then(function (){
+    // run the core server
     require('./core/server')(settings);
 });

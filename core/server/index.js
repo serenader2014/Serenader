@@ -7,11 +7,11 @@ module.exports = function (setting) {
         mongoose = require('mongoose'),
         MongoStore = require('connect-mongo')(session),
 
-        mk = require('./utils/makefolder'),
         route = require('./routes'),
         Setting = require('./models').Setting,
         config = require('../../config').config,
         errorHandling = require('./utils/error'),
+        log = require('./utils/log')(),
 
         app = express(),
         theme, dir, server;
@@ -31,7 +31,7 @@ module.exports = function (setting) {
         resave: true,
         saveUninitialized: true,
     }));
-    // validate wheather the visitor has logined or not
+    // validate wheather the visitor has logged in or not
     app.use(function (req, res, next) {
         if (req.session.user) {
             app.locals.currentUser = req.session.user;
@@ -45,7 +45,7 @@ module.exports = function (setting) {
         next();
     });
 
-    // cache the global system url, will be used in the template file
+    // cache the global system url, will be used in the jade file
     app.locals.url = config.url;
 
     module.exports.setting = app.locals.setting = setting;
@@ -76,6 +76,6 @@ module.exports = function (setting) {
     app.set('port', config.port);
 
     server = app.listen(app.get('port'), function () {
-        console.log('Express server listenning on port '+ server.address().port);
+        log.info('Express server listenning on port '+ server.address().port);
     });
 };

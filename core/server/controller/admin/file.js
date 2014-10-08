@@ -1,4 +1,5 @@
-var fs = require('fs'),
+var Promise = require('bluebird'),
+    fs = Promise.promisifyAll(require('fs')),
     path = require('path'),
     parse = require('url').parse,
     config = require('../../../../config').config,
@@ -9,9 +10,11 @@ var fs = require('fs'),
 
 
 module.exports = function (router) {
+
     router.get(URL.adminFile, auth_user, function (req, res, next) {
         res.render('admin_file_root');
     });
+
     router.get(URL.adminFile + '/:type', auth_user, function (req, res, next) {
         var url = parse(req.url),
             files = [],
@@ -27,33 +30,65 @@ module.exports = function (router) {
             res.redirect(URL.admin+url.pathname.substring(0, url.pathname.length-1));
         }
 
-        fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return false;
-            }
-            f.forEach(function (item, index) {
-                try {
-                    var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
-                    if (stat.isDirectory()) {
-                        folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                    } else {
-                        files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                    }
-                }
-                catch (err) {
-                    errorHandling(req, res, { error: err, type: 500});
-                    return false;
-                }
-
-            });
-
+        fs.readdirAsync(root + type + '/' + userName + '/upload').then(function (files) {
+            files.reduce(function (p, file) {
+                return p.then(function () {
+                    return fs.statAsync(root + type + '/' + userName + '/upload/' + file)
+                        .then(function (stat) {
+                        if (stat.isDirectory()) {
+                            folders.push({
+                                name: file,
+                                createTime: stat.ctime,
+                                lastModifiedTime: stat.mtime
+                            });
+                        } else {
+                            files.push({
+                                name: file,
+                                size: stat.size,
+                                createTime: stat.ctime,
+                                lastModifiedTime: mtime
+                            });
+                        }
+                    });
+                });
+            }, Promise.resolve());
+        }).then(function () {
             res.render('admin_file', {
-                files: files, 
-                folders: folders, 
+                files: files,
+                folders: folders,
                 baseLink: url.pathname
-            });
+            });          
+        }).catch(function (err) {
+            errorHandling(req, res, { error: err.message, type: 500});
         });
+
+        // fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
+        //     if (err) {
+        //         errorHandling(req, res, { error: err, type: 500});
+        //         return false;
+        //     }
+        //     f.forEach(function (item, index) {
+        //         try {
+        //             var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
+        //             if (stat.isDirectory()) {
+        //                 folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
+        //             } else {
+        //                 files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
+        //             }
+        //         }
+        //         catch (err) {
+        //             errorHandling(req, res, { error: err, type: 500});
+        //             return false;
+        //         }
+
+        //     });
+
+        //     res.render('admin_file', {
+        //         files: files, 
+        //         folders: folders, 
+        //         baseLink: url.pathname
+        //     });
+        // });
     });
 
     router.post(URL.adminFileRename + '/*', auth_user, function (req, res, next) {

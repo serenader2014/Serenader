@@ -54,11 +54,9 @@ var path = require('path'),
         },
         dir: [
             '/content/data/private',
-            '/content/data/public',
             '/content/data/public/background',
             '/content/data/tmp',
             '/content/data/trash',
-            '/content/images'
         ]
     };
 
