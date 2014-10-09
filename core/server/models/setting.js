@@ -18,18 +18,19 @@ SettingSchema.statics.getSetting = function () {
     return this.findOne({id: 'blog'}).exec();
 };
 
-SettingSchema.statics.createSetting = function (options, callback) {
+SettingSchema.statics.createSetting = function (options) {
     var setting = new this();
     _.extend(setting, options);
     setting.id = 'blog';
-    setting.save(callback);
+    setting.save();
+    return setting;
 };
 
-SettingSchema.statics.updateSetting = function (options, callback) {
+SettingSchema.statics.updateSetting = function (options) {
     var obj = {};
     _.extend(obj, options);
 
-    this.findOneAndUpdate({id: 'blog'}, obj, callback);
+    return this.findOneAndUpdate({id: 'blog'}, obj);
 };
 
 var Setting = module.exports = mongoose.model('Setting', SettingSchema);

@@ -28,67 +28,18 @@ module.exports = function (router) {
         }
         if (url.pathname.substring(url.pathname.length-1) === '/') {
             res.redirect(URL.admin+url.pathname.substring(0, url.pathname.length-1));
+            return false;
         }
 
-        fs.readdirAsync(root + type + '/' + userName + '/upload').then(function (files) {
-            files.reduce(function (p, file) {
-                return p.then(function () {
-                    return fs.statAsync(root + type + '/' + userName + '/upload/' + file)
-                        .then(function (stat) {
-                        if (stat.isDirectory()) {
-                            folders.push({
-                                name: file,
-                                createTime: stat.ctime,
-                                lastModifiedTime: stat.mtime
-                            });
-                        } else {
-                            files.push({
-                                name: file,
-                                size: stat.size,
-                                createTime: stat.ctime,
-                                lastModifiedTime: mtime
-                            });
-                        }
-                    });
-                });
-            }, Promise.resolve());
-        }).then(function () {
+        readDir(root + type + '/' + userName + '/upload').then(function (obj) {
             res.render('admin_file', {
-                files: files,
-                folders: folders,
+                files: obj.files,
+                folders: obj.folders,
                 baseLink: url.pathname
             });          
         }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500});
         });
-
-        // fs.readdir(root + type + '/' + userName + '/upload', function (err, f) {
-        //     if (err) {
-        //         errorHandling(req, res, { error: err, type: 500});
-        //         return false;
-        //     }
-        //     f.forEach(function (item, index) {
-        //         try {
-        //             var stat = fs.statSync(root + type + '/' + userName + '/upload/' + item);
-        //             if (stat.isDirectory()) {
-        //                 folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-        //             } else {
-        //                 files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-        //             }
-        //         }
-        //         catch (err) {
-        //             errorHandling(req, res, { error: err, type: 500});
-        //             return false;
-        //         }
-
-        //     });
-
-        //     res.render('admin_file', {
-        //         files: files, 
-        //         folders: folders, 
-        //         baseLink: url.pathname
-        //     });
-        // });
     });
 
     router.post(URL.adminFileRename + '/*', auth_user, function (req, res, next) {
@@ -102,6 +53,12 @@ module.exports = function (router) {
             oldPath = root + t + '/' + userName + '/upload/' + filePath + fileName,
             targetPath = root + t + '/' +userName + '/upload/' + filePath + newName,
             type;
+
+        fs.statAsync(oldPath).then(function (stat) {
+            return stat.isDirectory() ? 'directory' : 'file';
+        }).then(function (type) {
+            
+        });
         fs.stat(oldPath, function (err, stats) {
             if (err) {
                 errorHandling(req, res, { error: err, type: 500});
@@ -224,66 +181,83 @@ module.exports = function (router) {
 
         if (acturalPath.substring(acturalPath.length-1) === '/') {
             res.redirect(adminPath+acturalPath.substring(0, req.url.length-1));
+            return false;
         }
         if (req.params.type !== 'public' && req.params.type !== 'private') {
             next();
+            return false;
         }
-        fs.stat(pathname, function (err, stats) {
-            if (err || ! stats) {
-                errorHandling(req, res, { error: 'Read directory/file error.', type: 500});
-                return false;
-            }
-            if (stats.isDirectory()) {
-                fs.readdir(pathname, function (err, f) {
-                    if (err) {
-                        errorHandling(req, res, { error: 'Read directory error.', type: 500});
-                        return false;
-                    }
-                    f.forEach(function (item, index) {
-                        var stat = fs.statSync(pathname+'/'+item);
-
-                        if (stat.isDirectory()) {
-                            folders.push({name:item,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                        } else {
-                            files.push({name:item,size:stat.size,createTime:stat.ctime,lastModifiedTime:stat.mtime});
-                        }
-                    });
+        fs.statAsync(pathname).then(function (stat) {
+            if (stat.isDirectory()) {
+                readDir(pathname).then(function (obj) {
                     res.render('admin_file', {
-                        files: files,
-                        folders: folders,
+                        files: obj.files,
+                        folders: obj.folders,
                         baseLink: acturalPath
                     });
                 });
-            } else if (stats.isFile()) {
+            } else if (stat.isFile()) {
                 if (req.query.download === 'direct') {
                     res.download(pathname.split('?download=direct')[0]);
                     return;
-                }
-                var fileName = acturalPath.substring(acturalPath.lastIndexOf('/')+1);
+                }                
                 if (/txt|html|css|scss|sass|htm|xml|js|py|json|md|markdown|jade|php|xml/gi
-                    .test(fileName.substring(fileName.lastIndexOf('.')+1))) {
-                    var mode = convertFileExtension(fileName.substring(fileName.lastIndexOf('.')+1));
-                    fs.readFile(pathname, {encoding:'utf8'}, function (err, data) {
-                        if (err) {
-                            errorHandling(req, res, { error: 'Read file error.', type: 500});
-                            return false;
-                        }
+                    .test(file_name.substring(file_name.lastIndexOf('.')+1))) {
+                    var mode = convertFileExtension(file_name.substring(file_name.lastIndexOf('.')+1));
+                    fs.readFileAsync(pathname, { encoding: 'utf8'}).then(function (data) {
                         res.render('admin_file_preview', {
-                            file: data, 
-                            link: acturalPath, 
+                            file: data,
+                            link: acturalPath,
                             mode: mode
                         });
                     });
                 } else {
                     res.sendfile(pathname);
                 }
+            } else {
+                res.sendfile(pathname);
             }
+        }).catch(function (err) {
+            errorHandling(req, res, { error: err.message, type: 500});
         });
     });
 };
 
 
+function readDir (dir) {
+    var files, folders;
+    files  = [];
+    folders = [];
 
+    return fs.readdirAsync(dir).then(function (f) {
+        return f.reduce(function (p, file) {
+            return p.then(function () {
+                return fs.statAsync(dir + '/' + file)
+                    .then(function (stat) {
+                    if (stat.isDirectory()) {
+                        folders.push({
+                            name: file,
+                            createTime: stat.ctime,
+                            lastModifiedTime: stat.mtime
+                        });
+                    } else {
+                        files.push({
+                            name: file,
+                            size: stat.size,
+                            createTime: stat.ctime,
+                            lastModifiedTime: stat.mtime
+                        });
+                    }
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            return {
+                files: files,
+                folders: folders
+            };
+        });
+    });
+}
 
 function convertFileExtension (fileName) {
     if (/html|xml|htm/i.test(fileName)) {

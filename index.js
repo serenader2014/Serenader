@@ -52,17 +52,17 @@ ConnectDB().then(function () {
     // If it can't pass the initialize checking, it will 
     // force exiting the process.
     log.error('Initialize the system faild, please check your environment.');
-    log.error(err);
+    log.error(err.message);
     process.exit(1);
     return false;
 }).then(function () {
     var dir = config.dir,
         root = config.root_dir;
     // make some folders if they don't exist
-    dir.reduce(function (sequence, dirPath) {
+    return dir.reduce(function (sequence, dirPath) {
         return sequence.then(function () {
-            mkdir.mkdirpAsync(root + dirPath);
-            log.info('Making folder:' + dirPath);
+            log.success('Making folder:' + dirPath);
+            return mkdir.mkdirpAsync(root + dirPath);
         });
     }, Promise.resolve());
 }).then(function (){

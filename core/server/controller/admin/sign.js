@@ -6,12 +6,15 @@ var Promise = require('bluebird'),
     validator = require('validator'),
     User = require('../../models').User,
     errorHandling = require('../../utils/error'),
+    log = require('../../utils/log')(),
     root = require('../../../../config').config.root_dir,
     url = require('../../../../config').config.url,
     locals = require('../../index').locals;
 
 module.exports = function (router) {
 
+    // read the background folder first, in order to render the sign in/up page's
+    // background
     readBgFolder().then(function (list) {
         var bg;
         if (list.length === 0) {
@@ -21,6 +24,8 @@ module.exports = function (router) {
         }
         return bg;
     }).then(function (bg) {
+
+        // router handler
 
         router.get(url.adminSignIn, function (req, res, next) { 
             if (req.session.user) {
@@ -114,42 +119,27 @@ module.exports = function (router) {
             hashedPwd = md5(password);
             hashedEmail = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
-            User.getAllUser().addCallback(function (users) {
+            User.getAllUser().then(function (users) {
                 if (users.length <= 0) {
                     return User.createNewUser({
                         uid: uid,
                         email: email,
                         pwd: hashedPwd,
-                        avatar: '/static/' + uid + '/avatar.jpg',
+                        avatar: 'http://www.gravatar.com/avatar/' + hashedEmail,
                         role: 'admin'
                     });
                 } else {
-                    return User.getOneUserById(uid).then(function (user) {
-                        var u;
-                        if (! user) {
-                            User.getOneUserByEmail(email).then(function (user) {
-                                if (! user) {
-                                    u = undefined;
-                                } else {
-                                    u = user;
-                                }
-                                return u;
-                            });
+                    return User.checkExist(uid, email).then(function (users) {
+                        if (users.length) {
+                            return '';
                         } else {
-                            u = user;
-                            return u;
-                        }
-                    }).then(function (user) {
-                        if (! user) {
                             return User.createNewUser({
-                                uid: user.uid,
+                                uid: uid,
                                 pwd: hashedPwd,
                                 email: email,
-                                avatar: '/static/' + user.uid + '/avatar.jpg',
+                                avatar: 'http://www.gravatar.com/avatar/' + hashedEmail,
                                 role: 'user'
-                            });                                
-                        } else {
-                            return ;
+                            });
                         }
                     });
                 }
@@ -157,10 +147,10 @@ module.exports = function (router) {
                 if (! user) {
                     res.json({
                         status: 0,
-                        error: '该用户名已经被注册，请输入新的用户名。'
+                        error: '该用户已经注册。'
                     });                    
                 } else {
-                    console.log(user);
+
                     var dir = [
                         '/content/data/public/' + user.uid + '/upload', 
                         '/content/data/public/' + user.uid + '/gallery', 
@@ -168,20 +158,27 @@ module.exports = function (router) {
                         '/content/data/private/' + user.uid + '/gallery'                    
                     ];
 
-                    dir.reduce(function (p, d) {
+                    return dir.reduce(function (p, d) {
                         return p.then(function () {
-                            return mkdir.mkdirpAsync(d);
+                            log.success('create user folders:' + d);
+                            return mkdir.mkdirpAsync(root + d);
                         });
-                    }, Promise.resolve());
+                    }, Promise.resolve()).then(function () {
+                        res.json({
+                            status: 1,
+                            username: user.uid
+                        });                    
+                    });
 
-                    res.json({
-                        status: 1,
-                        username: user.uid
-                    });                    
                 }
-            });     
+            }).then(null, function (err) {
+                log.error(err.message);
+                res.json({
+                    status: 0,
+                    error: err.message
+                });
+            });
         });
-
 
         router.get(url.adminSignOut, function (req, res, next) {
             req.session.destroy();
@@ -209,14 +206,8 @@ function readBgFolder () {
 
 
 function md5 (password) {
-    var salt = 'interesting';
-    var raw = crypto.createHash('md5').update(password+salt);
-    var result = raw.digest('hex');
+    var salt = 'interesting',
+        raw = crypto.createHash('md5').update(password+salt),
+        result = raw.digest('hex');
     return result;
 }
-
-// function downloadAvatar (hashedEmail, fileName, callback) {
-//     var url = 'http://www.gravatar.com/avatar/' + hashedEmail + '?s=400';
-//     fileName = root + fileName;
-//     request(url).pipe(fs.createWriteStream(fileName)).on('close', callback);
-// }

@@ -19,6 +19,9 @@ UserSchema.statics.getOneUserById = function (id) {
 UserSchema.statics.getOneUserByEmail = function (email) {
     return this.findOne({email: email}).exec();
 };
+UserSchema.statics.checkExist = function (id, email) {
+    return this.find().or([{uid: id}, {email: email}]).exec();
+};
 UserSchema.statics.getAllUser = function () {
     return this.find({}).exec();
 };
@@ -29,15 +32,16 @@ UserSchema.statics.createNewUser = function (options) {
     user.pwd = options.pwd;
     user.role = options.role;
     user.avatar = options.avatar;
-    return user.save();
+    user.save();
+    return user;
 };
-UserSchema.statics.updateUserProfile = function (options, callback) {
+UserSchema.statics.updateUserProfile = function (options) {
     var obj = {};
     _.extend(obj, options);
-    this.findOneAndUpdate({uid: options.uid}, obj, callback);
+    return this.findOneAndUpdate({uid: options.uid}, obj).exec();
 };
-UserSchema.statics.deleteUserById = function (uid, callback) {
-    this.findOneAndRemove({uid: uid}, callback);
+UserSchema.statics.deleteUserById = function (uid) {
+    return this.findOneAndRemove({uid: uid}).exec();
 };
 
 var User = module.exports = mongoose.model('User', UserSchema);
