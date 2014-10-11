@@ -155,7 +155,8 @@ module.exports = function (router) {
                         '/content/data/public/' + user.uid + '/upload', 
                         '/content/data/public/' + user.uid + '/gallery', 
                         '/content/data/private/' + user.uid + '/upload', 
-                        '/content/data/private/' + user.uid + '/gallery'                    
+                        '/content/data/private/' + user.uid + '/gallery',
+                        '/content/data/trash' + user.uid
                     ];
 
                     return dir.reduce(function (p, d) {

@@ -1,10 +1,12 @@
 var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs')),
+    mkdir = Promise.promisifyAll(require('mkdirp')),
     path = require('path'),
     parse = require('url').parse,
     config = require('../../../../config').config,
     URL = config.url,
     auth_user = require('../../utils/auth_user'),
+    log = require('../../utils/log')(),
     errorHandling = require('../../utils/error'),
     root = config.root_dir + '/content/data/';
 
@@ -54,37 +56,15 @@ module.exports = function (router) {
             targetPath = root + t + '/' +userName + '/upload/' + filePath + newName,
             type;
 
-        fs.statAsync(oldPath).then(function (stat) {
-            return stat.isDirectory() ? 'directory' : 'file';
-        }).then(function (type) {
-            
-        });
-        fs.stat(oldPath, function (err, stats) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return false;
-            } else {
-                type = stats.isDirectory() ? 'directory' : 'file';
-            }
-            fs.stat(targetPath, function (err, stats) {
-                if (err && err.code === 'ENOENT') {
-                    fs.rename(oldPath, targetPath,function (err) {
-                        if (err) {
-                            errorHandling(req, res, { error: err, type: 500});
-                            return false;
-                        } else {
-                            res.redirect(adminPath + URL.adminFile + '/' + t + '/' + filePath);
-                        }
-                    });
-                } else {
-                    if (stats.isDirectory() && type === 'directory') {
-                        errorHandling(req, res, { error: 'Directory already exist.', type: 500});
-                        return false;
-                    } else if (stats.isFile() && type === 'file') {
-                        errorHandling(req, res, { error: 'File already exist.', type: 500});
-                        return false;
-                    }
-                }
+        fs.renameAsync(oldPath, targetPath).then(function () {
+            res.json({
+                status: 1,
+                error: ''
+            });
+        }).catch(function (err) {
+            res.json({
+                status: 0,
+                error: err.message
             });
         });
     });
@@ -98,19 +78,16 @@ module.exports = function (router) {
             fileName = decodeURL(acturalPath, 'edit').fileName,
             t = decodeURL(acturalPath, 'edit').type,
             pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
-        fs.writeFile(pathname, newContent, {encoding: 'utf8'}, function (err) {
-            if (err) {
-                res.status(501).send({
-                    status: 0,
-                    error: err
-                });
-                return false;
-            } else {
-                res.send({
-                    status: 1,
-                    error: ''
-                });
-            }
+        fs.writeFileAsync(pathname, newContent, { encoding: 'utf8'}).then(function () {
+            res.json({
+                status: 1,
+                error: ''
+            });
+        }).catch(function (err) {
+            res.json({
+                status: 0,
+                error: err.message
+            });
         });
     });
 
@@ -122,50 +99,24 @@ module.exports = function (router) {
             filePath = decodeURL(acturalPath, 'delete').filePath,
             t = decodeURL(acturalPath, 'delete').type,
             pathname = root + t + '/' + userName + '/upload/' + filePath + fileName,
-            trashPath = root + 'trash/' + userName;
-        fs.stat(root+'trash/', function (err, stats) {
-            if (err && err.code === 'ENOENT') {
-                fs.mkdirSync(root+'trash');
-            }
-            fs.stat(trashPath, function (err, stats) {
-                var d, time, arr, tmp, result;
-
-                d = new Date();
-                time = (d.toDateString()).replace(/ /ig, '-');
-                if (err && err.code === 'ENOENT') {
-                    fs.mkdirSync(trashPath);
-                }
-                arr = filePath.split('/');
-                tmp = '';
-                result = [];
-                arr.forEach(function (item, index) {
-                    if (item !== '') {
-                        tmp = tmp + '/' + item;
-                        result.push(tmp);
-                    }
-                });
-                result.forEach(function (item, index) {
-                    fs.stat(trashPath+item, function (err, stats) {
-                        if (err && err.code === 'ENOENT') {
-                            fs.mkdirSync(trashPath+item);
-                        }
-                    });
-                });
-                fs.rename(pathname, trashPath + '/' +filePath + time + '-' +fileName ,function (err) {
-                    if (err && err.code === 'EPERM') {
-                        res.json({
-                            status: 0,
-                            error: 'File/directory already exist'
-                        });
-                        return false;
-                    }
-                    res.json({
-                        status: 1,
-                        error: ''
-                    });
-                });
+            trashPath = root + 'trash/' + userName,
+            d = new Date(),
+            time = (d.toDateString()).replace(/ /ig, '-');
+        
+        mkdir.mkdirpAsync(trashPath).then(function () {
+            return fs.renameAsync(pathname, trashPath + '/' +filePath + time + '-' +fileName);
+        }).then(function () {
+            res.json({
+                status: 1,
+                error: ''
             });
-        });                
+        }).catch(function (err) {
+            log.error(err.message);
+            res.json({
+                status: 0,
+                error: err.message
+            });
+        });          
     });
 
     router.get(URL.adminFile + '/:type/*', auth_user, function (req, res, next) {
