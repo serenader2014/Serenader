@@ -121,7 +121,7 @@ block files
                             i.fa.fa-times
                         h4.modal-title 创建新文件/文件夹
                     .modal-body
-
+                        input(type='text')
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 确定
@@ -150,7 +150,8 @@ block files
 block admin_script
     script(type='text/javascript', src='/js/jquery.ui.widget.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
-    script(type='text/javascript', src='/js/jquery.iframe-transport.js')    
+    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
+    - var link = baseLink.split('/').slice(2).join('/')
     script(type='text/javascript').
         $('.delete').on('click', function (event) {
             event.preventDefault();
@@ -195,6 +196,28 @@ block admin_script
                         }
                     });
                 });
+            });
+        });
+
+        $('#new .btn-primary').on('click', function (event) {
+            var name = $('#new input[type="text"]').val(),
+                type = '#{type}',
+                url = '#{url.admin}#{url.adminNewFile}/#{link}'
+
+            $.ajax({
+                type: 'POST',
+                data: {
+                    name: name,
+                    type: type
+                },
+                url: url,
+                dataType: 'json',
+                success: function (result) {
+                    console.log(result);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
             });
         });
         $('#rename-file .btn-primary').on('click', function (event) {

@@ -3,6 +3,8 @@ var Promise = require('bluebird'),
     mkdir = Promise.promisifyAll(require('mkdirp')),
     path = require('path'),
     parse = require('url').parse,
+    xss = require('xss'),
+    validator = require('validator'),
     config = require('../../../../config').config,
     URL = config.url,
     auth_user = require('../../utils/auth_user'),
@@ -42,6 +44,29 @@ module.exports = function (router) {
         }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500});
         });
+    });
+
+    router.post(URL.adminNewFile + '/*', auth_user, function (req, res, next) {
+        var fileName = xss(validator.trim(req.body.name)),
+            type = xss(validator.trim(req.body.type)),
+            url = parse(req.url),
+            acturalPath = decodeURIComponent(url.pathname),
+            acturalUrl = acturalPath.split(URL.adminNewFile + '/')[1],
+            tmpArr = acturalUrl.split('/'),
+            t = tmpArr.shift(),
+            sortPath = tmpArr.join('/');
+
+        if (type === 'file') {
+
+        } else if (type === 'folder') {
+
+        } else {
+            res.json({
+                status: 0,
+                error: 'not a valid type'
+            });
+            return false;
+        }
     });
 
     router.post(URL.adminFileRename + '/*', auth_user, function (req, res, next) {
@@ -144,7 +169,8 @@ module.exports = function (router) {
                     res.render('admin_file', {
                         files: obj.files,
                         folders: obj.folders,
-                        baseLink: acturalPath
+                        baseLink: acturalPath,
+                        type: t
                     });
                 });
             } else if (stat.isFile()) {
