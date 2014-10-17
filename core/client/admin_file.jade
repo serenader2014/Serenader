@@ -121,6 +121,10 @@ block files
                             i.fa.fa-times
                         h4.modal-title 创建新文件/文件夹
                     .modal-body
+                        label File
+                        input(type='radio', name='type', value='file')
+                        label Folder
+                        input(type='radio', name='type', value='folder')
                         input(type='text')
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
@@ -201,23 +205,36 @@ block admin_script
 
         $('#new .btn-primary').on('click', function (event) {
             var name = $('#new input[type="text"]').val(),
-                type = '#{type}',
-                url = '#{url.admin}#{url.adminNewFile}/#{link}'
+                type = $('input[type="radio"]:checked').val(),
+                url = '#{url.admin}#{url.adminNewFile}/#{link}',
+                self = this;
 
-            $.ajax({
-                type: 'POST',
-                data: {
-                    name: name,
-                    type: type
-                },
-                url: url,
-                dataType: 'json',
-                success: function (result) {
-                    console.log(result);
-                },
-                error: function (err) {
-                    console.log(err);
-                }
+            progress.show(function () {
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        name: name,
+                        type: type
+                    },
+                    url: url,
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', 'Creating new file/folder success!', function () {
+                                    $(self).siblings().trigger('click');
+                                });
+                            } else {
+                                msg('error', 'Creating new file/folder error:' + result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', 'Creating new file/folder error:' + err);
+                        });
+                    }
+                });
             });
         });
         $('#rename-file .btn-primary').on('click', function (event) {

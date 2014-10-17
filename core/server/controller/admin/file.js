@@ -49,17 +49,39 @@ module.exports = function (router) {
     router.post(URL.adminNewFile + '/*', auth_user, function (req, res, next) {
         var fileName = xss(validator.trim(req.body.name)),
             type = xss(validator.trim(req.body.type)),
+            userName = req.session.user.uid,
             url = parse(req.url),
             acturalPath = decodeURIComponent(url.pathname),
             acturalUrl = acturalPath.split(URL.adminNewFile + '/')[1],
             tmpArr = acturalUrl.split('/'),
             t = tmpArr.shift(),
-            sortPath = tmpArr.join('/');
+            sortPath = tmpArr.join('/'),
+            finalPath = root + t + '/' + userName + '/upload/' + sortPath + '/';
 
         if (type === 'file') {
-
+            fs.writeFileAsync(finalPath + fileName, '').then(function () {
+                res.json({
+                    status: 1,
+                    error: ''
+                });
+            }).catch(function (err) {
+                res.json({
+                    status: 0,
+                    error: err.message
+                });
+            });
         } else if (type === 'folder') {
-
+            fs.mkdirAsync(finalPath + fileName).then(function () {
+                res.json({
+                    status: 1,
+                    error: ''
+                });
+            }).catch(function (err) {
+                res.json({
+                    status: 0,
+                    error: err.message
+                });
+            });
         } else {
             res.json({
                 status: 0,
