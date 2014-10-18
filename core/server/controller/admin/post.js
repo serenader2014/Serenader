@@ -1,4 +1,5 @@
-var xss = require('xss'),
+var Promise = require('bluebird'),
+    xss = require('xss'),
     validator = require('validator'),
     auth_user = require('../../utils/auth_user'),
     Post = require('../../models').Post,
@@ -10,47 +11,37 @@ var xss = require('xss'),
 module.exports = function (router) {
 
     router.get(url.adminPost, auth_user, function (req, res, next) {
-        Post.getUserPosts(req.session.user.uid, function (err, posts) {
-            if (! err && posts) {
-                Category.getAll(function (err, c) {
-                    if (! err && c) {
-                        var drafts = [];
-                        posts.forEach(function (p, i) {
-                            if (! p.published) {
-                                drafts.push(p);
-                                posts[i] = '';
-                            }
-                        });
-                        res.render('admin_post_content', {
-                            posts: posts,
-                            drafts: drafts,
-                            categories: c
-                        });
-                    } else {
-                        errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
-                        return false;
+        Post.getUserPosts(req.session.user.uid).then(function (posts) {
+            Category.getAll().then(function (categories) {
+                var drafts = [];
+                posts.forEach(function (p, i) {
+                    if (! p.published) {
+                        drafts.push(p);
+                        posts[i] = '';
                     }
                 });
-
-            } else {
-                errorHandling(req, res, { error: err ? err : 'No post was found.' , type: 404});
-                return false;
-            }                
-        });        
+                res.render('admin_post_content', {
+                    posts: posts,
+                    drafts: drafts,
+                    categories: categories
+                });
+            }).then(null, function (err) {
+                errorHandling(req, res, { error: err.message, type: 404 });
+            });
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 404 });
+        });      
     });
 
     router.get(url.adminNewPost, auth_user, function (req, res, next) {
-        Category.getAll(function (err, c) {
-            if (! err && c) {
-                if (isMobile(req)) {
-                    res.render('admin_new_post_mobile', {categories: c});
-                } else {
-                    res.render('admin_new_post', {categories: c});
-                }
+        Category.getAll().then(function (c) {
+            if (isMobile(req)) {
+                res.render('admin_new_post_mobile', {categories: c});
             } else {
-                errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
-                return false;
+                res.render('admin_new_post', {categories: c});
             }
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 404 });
         });
     });
 

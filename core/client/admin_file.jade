@@ -121,10 +121,10 @@ block files
                             i.fa.fa-times
                         h4.modal-title 创建新文件/文件夹
                     .modal-body
-                        label File
-                        input(type='radio', name='type', value='file')
-                        label Folder
-                        input(type='radio', name='type', value='folder')
+                        label.radio-selector File
+                            input(type='radio', name='type', value='file')
+                        label.radio-selector Folder
+                            input(type='radio', name='type', value='folder')
                         input(type='text')
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
@@ -263,6 +263,7 @@ block admin_script
         });
         $('.rename').on('click', function () {
             var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+            $('#rename-file .modal-body li').remove();
             target.each(function (index, item) {
                 $('#rename-file .modal-body ul')
                     .append($('<li>')

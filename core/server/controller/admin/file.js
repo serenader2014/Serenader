@@ -200,19 +200,19 @@ module.exports = function (router) {
                     res.download(pathname.split('?download=direct')[0]);
                     return;
                 }                
-                if (/txt|html|css|scss|sass|htm|xml|js|py|json|md|markdown|jade|php|xml/gi
-                    .test(file_name.substring(file_name.lastIndexOf('.')+1))) {
-                    var mode = convertFileExtension(file_name.substring(file_name.lastIndexOf('.')+1));
-                    fs.readFileAsync(pathname, { encoding: 'utf8'}).then(function (data) {
-                        res.render('admin_file_preview', {
-                            file: data,
-                            link: acturalPath,
-                            mode: mode
+                handleCodePreview(file_name, function (type) {
+                    if (type) {
+                        fs.readFileAsync(pathname, { encoding: 'utf8'}).then(function (data) {
+                            res.render('admin_file_preview', {
+                                file: data,
+                                link: acturalPath,
+                                mode: type
+                            });
                         });
-                    });
-                } else {
-                    res.sendfile(pathname);
-                }
+                    } else {
+                        res.sendfile(pathname);
+                    }
+                });
             } else {
                 res.sendfile(pathname);
             }
@@ -258,25 +258,40 @@ function readDir (dir) {
     });
 }
 
-function convertFileExtension (fileName) {
-    if (/html|xml|htm/i.test(fileName)) {
-        return 'html';
-    } else if (fileName.toLowerCase() === 'css') {
-        return 'css';
-    } else if (/scss/i.test(fileName)) {
-        return 'scss';
-    } else if (/sass/i.test(fileName)) {
-        return 'sass';
-    } else if (/js|json/i.test(fileName)) {
-        return 'javascript';
-    } else if (/jade/i.test(fileName)) {
-        return 'jade';
-    } else if (/php/i.test(fileName)) {
-        return 'php';
-    } else if (/md|markdown|txt/i.test(fileName)) {
-        return 'markdown';
-    } else if (/py/i.test(fileName)) {
-        return 'python';
+function handleCodePreview (fileName, callback) {
+    switch (path.extname(fileName).toLowerCase()) {
+        case '.html':
+        case '.xml' :
+        case '.htm': 
+            callback('html'); 
+            break;
+        case '.scss':
+            callback('scss');
+            break;
+        case '.sass':
+            callback('sass');
+            break;
+        case '.js':
+        case '.json':
+            callback('javascript');
+            break;
+        case '.jade':
+            callback('jade');
+            break;
+        case '.php':
+            callback('php');
+            break;
+        case '.md':
+        case '.markdown':
+        case '.txt':
+            callback('markdown');
+            break;
+        case '.py':
+            callback('python');
+            break;
+        default:
+            callback(null);
+            break;
     }
 }
 

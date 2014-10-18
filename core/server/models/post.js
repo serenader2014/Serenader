@@ -2,6 +2,7 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('underscore'),
     Category = require('./category'),
+    Promise = require('bluebird'),
 
     PostSchema = new Schema({
         title: { type: String },
@@ -15,7 +16,7 @@ var mongoose = require('mongoose'),
         views: { type: Number, default: 0 }
     });
 
-PostSchema.statics.createNewPost = function (options, callback) {
+PostSchema.statics.createNewPost = function (options) {
     var p = new this();
     p.title = options.title;
     p.author = options.author;
@@ -25,79 +26,83 @@ PostSchema.statics.createNewPost = function (options, callback) {
     p.excerpt = options.post.substring(0, 350+Math.random()*100);
     p.category = options.category;
     p.published = options.published;
-    p.save(callback);
+    p.save();
+    return p;
 };
-PostSchema.statics.updatePost = function (options, callback) {
+PostSchema.statics.updatePost = function (options) {
     var self = this;
-    self.findById(options.id, function (err, p) {
-        if (err) {
-            callback(err);
-        }
-        if (p) {
-            var obj = {};
 
+    return self.findById(options.id).exec().then(function (post) {
+        if (post) {
+            var obj = {};
             _.extend(obj, options);
-            obj.content = options.post;
-            obj.excerpt = options.post.substring(0, 350+Math.random()*100);
-            if (options.category) { 
-                if (options.published === true && p.published === true && options.category !== p.category) {
-                    Category.increaseCount(options.category);
-                    Category.decreaseCount(p.category);
+            if (options.category) {
+                if (options.published === true && post.published === true && options.category !== post.category) {
+                    return Category.increaseCount(options.category).then(function () {
+                        return Category.decreaseCount(p.category);
+                    }).then(function () {
+                        return self.findByIdAndUpdate(options.id, obj).exec();
+                    });
                 }
                 if (options.published === false && p.published === true) {
-                    Category.decreaseCount(p.category);
+                    return Category.decreaseCount(p.category).then(function () {
+                        return self.findByIdAndUpdate(options.id, obj).exec();
+                    });
                 }
                 if (options.published === true && p.published === false) {
-                    Category.increaseCount(options.category);
+                    return Category.increaseCount(options.category).then(function () {
+                        return self.findByIdAndUpdate(options.id, obj).exec();
+                    });
                 }
+                
             }
-            self.findByIdAndUpdate(options.id, obj, callback);
         }
     });
+
 };
 
-PostSchema.statics.getPostsByCate = function (name, callback) {
-    this.find({category: name}, null, {sort: {_id: -1}},callback);
+PostSchema.statics.getPostsByCate = function (name) {
+    return this.find({category: name}, null, {sort: {_id: -1}}).exec();
 };
-PostSchema.statics.getOnePostById = function (id, callback) {
-    this.findById(id, callback);
+PostSchema.statics.getOnePostById = function (id) {
+    return this.findById(id).exec();
 };
-PostSchema.statics.getTenPosts = function (callback) {
-    this.find({}, null, {limit: 10, sort: {_id: -1}}, callback);
+PostSchema.statics.getTenPosts = function () {
+    return this.find({}, null, {limit: 10, sort: {_id: -1}}).exec();
 };
-PostSchema.statics.getHomePagePublishedPosts = function (callback) {
-    this.find({published: true}, null, {limit: require('../index').setting.posts_per_page, sort: {_id: -1}}, callback);
+PostSchema.statics.getHomePagePublishedPosts = function () {
+    return this.find(
+        { published: true }, null, { limit: require('../index').setting.posts_per_page, sort: { _id: -1 } }
+        ).exec();
 };
-PostSchema.statics.getAllPosts = function (callback) {
-    this.find({}, 'title author category date', {sort: {_id: -1}}, callback);
+PostSchema.statics.getAllPosts = function () {
+    return this.find({}, 'title author category date', {sort: {_id: -1}}).exec();
 };
-PostSchema.statics.deletePost = function (id, callback) {
+PostSchema.statics.deletePost = function (id) {
     var self = this;
-    self.findById(id, function (err, p) {
-        if (err) {
-            callback(err);
-        }
+    return self.findById(id).exec().then(function (p) {
         if (p) {
             if (p.published === true) {
-                Category.decreaseCount(p.category);
+                return Category.decreaseCount(p.category).then(function () {
+                    return self.findOneAndRemove({_id: id}, callback);
+                });
             }
-            self.findOneAndRemove({_id: id}, callback);
         }
     });
 };
 
-PostSchema.statics.getUserPosts = function (user, callback) {
-    this.find({author: user}, null, {sort: {_id: -1}}, callback);
+PostSchema.statics.getUserPosts = function (user) {
+    return this.find({author: user}, null, {sort: {_id: -1}}).exec();
 };
 
-PostSchema.statics.getUserTenPosts = function (user, callback) {
-    this.find({author: user}, null, {limit: 10, sort: {_id: -1}}, callback);
+PostSchema.statics.getUserTenPosts = function (user) {
+    return this.find({author: user}, null, {limit: 10, sort: {_id: -1}}).exec();
 };
-PostSchema.statics.getMorePosts = function (page, num, callback) {
-    this.find({}, null, {limit: num, skip: page}).sort({_id: -1}).exec(callback);
+PostSchema.statics.getMorePosts = function (page, num) {
+    return this.find({}, null, {limit: num, skip: page}).sort({_id: -1}).exec();
 };
-PostSchema.statics.getUserMoreTenPosts = function (user, page, callback) {
-    this.find({author: user}, null, {limit: 10, skip: page,  sort: {_id: -1}}, callback);
+PostSchema.statics.getUserMoreTenPosts = function (user, page) {
+    return this.find({author: user}, null, {limit: 10, skip: page,  sort: {_id: -1}}).exec();
 };
 
 var Post = module.exports = mongoose.model('Post', PostSchema);
