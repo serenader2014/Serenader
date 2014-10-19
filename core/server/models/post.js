@@ -48,21 +48,22 @@ PostSchema.statics.updatePost = function (options) {
         if (options.category) {
             if (options.published === true && post.published === true && options.category !== post.category) {
                 return Category.increaseCount(options.category).then(function () {
-                    return Category.decreaseCount(p.category);
+                    return Category.decreaseCount(post.category);
                 }).then(function () {
                     return self.findByIdAndUpdate(options.id, obj).exec();
                 });
             }
-            if (options.published === false && p.published === true) {
-                return Category.decreaseCount(p.category).then(function () {
+            if (options.published === false && post.published === true) {
+                return Category.decreaseCount(post.category).then(function () {
                     return self.findByIdAndUpdate(options.id, obj).exec();
                 });
             }
-            if (options.published === true && p.published === false) {
+            if (options.published === true && post.published === false) {
                 return Category.increaseCount(options.category).then(function () {
                     return self.findByIdAndUpdate(options.id, obj).exec();
                 });
-            }     
+            }
+            return self.findByIdAndUpdate(options.id, obj).exec();
         }
     });
 };
@@ -110,7 +111,9 @@ PostSchema.statics.deletePost = function (id) {
             return Category.decreaseCount(p.category).then(function () {
                 return self.findOneAndRemove({_id: id}).exec();
             });
-        }
+        } 
+        return self.findOneAndRemove({_id: id}).exec();
+        
     });
 };
 

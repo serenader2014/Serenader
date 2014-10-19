@@ -191,7 +191,7 @@ block post_content
                                 span.delete-post(data-id='#{draft._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
                             .post-meta
                                 span 
-                                    | Draft saved on #{draft.date[0].year}/#{draft.date[0].month}/#{draft.date[0].date}.
+                                    | Draft saved on #{draft.createDate.year}/#{draft.createDate.month}/#{draft.createDate.day}.
                                 span.post-category
                                     | Sorted in #{draft.category}                    
                 - if (posts.length > 0)
@@ -203,7 +203,7 @@ block post_content
                                     span.delete-post(data-id='#{post._id}', data-toggle='modal', data-target='#delete-post'): i.fa.fa-trash-o
                                 .post-meta
                                     span 
-                                        | Published on #{post.date[0].year}/#{post.date[0].month}/#{post.date[0].date}.
+                                        | Published on #{post.createDate.year}/#{post.createDate.month}/#{post.createDate.day}.
                                     span.post-category
                                         | Sorted in #{post.category}
                 - else

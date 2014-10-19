@@ -5,7 +5,8 @@ var Promise = require('bluebird'),
     Post = require('../../models').Post,
     Category = require('../../models').Category,
     url = require('../../../../config').config.url,
-    errorHandling = require('../../utils/error');
+    errorHandling = require('../../utils/error'),
+    log = require('../../utils/log')();
 
 
 module.exports = function (router) {
@@ -26,9 +27,11 @@ module.exports = function (router) {
                     categories: categories
                 });
             }).then(null, function (err) {
+                log.error(err.stack);
                 errorHandling(req, res, { error: err.message, type: 404 });
             });
         }).then(null, function (err) {
+            log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404 });
         });      
     });
@@ -41,6 +44,7 @@ module.exports = function (router) {
                 res.render('admin_new_post', {categories: c});
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404 });
         });
     });
@@ -66,9 +70,11 @@ module.exports = function (router) {
                     });
                 }
             }).then(null, function (err) {
+                log.error(err.stack);
                 errorHandling(req, res, { error: err.message, type: 404 });
             });
         }).then(null, function (err) {
+            log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404});
         }); 
     });
@@ -100,7 +106,7 @@ module.exports = function (router) {
         published = validator.trim(xss(req.body.publish));
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
-            res.send({
+            res.json({
                 status: 0,
                 id: 0
             });
@@ -111,10 +117,13 @@ module.exports = function (router) {
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(xss(tag)));
             });
-        } else if (typeof req.body.tags === 'string') {
-            tags = validator.trim(xss(req.body.tags));
-        } else if (req.body.tags === undefined) {
+        } else if (! req.body.tags) {
             tags = [];
+        } else {
+            res.json({
+                status: 0,
+                error: 'tags must be an array'
+            });
         }
 
         Category.getOneByName(category).then(function (c) {
@@ -144,6 +153,7 @@ module.exports = function (router) {
                 });
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             res.status(500).json({
                 status: 0,
                 error: err.message
@@ -159,6 +169,7 @@ module.exports = function (router) {
                 status: 1
             });
         }).then(null, function (err) {
+            log.error(err.stack);
             res.status(500).json({
                 status: 0,
                 error: err.message
@@ -202,6 +213,8 @@ module.exports = function (router) {
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(xss(tag)));
             });
+        } else if (!req.body.tags) {
+            tags = [];
         } else {
             res.json({
                 status: 0,
@@ -239,6 +252,7 @@ module.exports = function (router) {
                 });
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             res.status(500).json({
                 status: 0,
                 error: err.message
@@ -282,6 +296,7 @@ module.exports = function (router) {
                 });
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             res.json({
                 status: 0,
                 error: err.message
@@ -335,6 +350,7 @@ module.exports = function (router) {
                 });
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             res.json({
                 status: 0,
                 error: err.message
@@ -372,6 +388,7 @@ module.exports = function (router) {
                 });
             }
         }).then(null, function (err) {
+            log.error(err.stack);
             res.json({
                 status: 0,
                 error: err.message
