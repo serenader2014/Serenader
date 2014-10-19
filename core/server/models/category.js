@@ -3,16 +3,24 @@ var mongoose = require('mongoose'),
     Promise = require('bluebird'),
 
     CategorySchema = new Schema({
-        name: { type: String },
-        count: { type: Number }
+        name: String,
+        count: { type: Number, default: 0 }
     });
 
-CategorySchema.statics.createNew = function (name, callback) {
-    var c = new this();
-    c.name = name;
-    c.count = 0;
-    c.save(callback);
-    return c;
+CategorySchema.statics.createNew = function (name) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var c = new self();
+        c.name = name;
+        c.count = 0;
+        c.save(function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(c);
+            }
+        });
+    });
 };
 CategorySchema.statics.getAll = function () {
     return this.find({}).exec();

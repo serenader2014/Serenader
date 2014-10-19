@@ -5,60 +5,85 @@ var mongoose = require('mongoose'),
     Promise = require('bluebird'),
 
     PostSchema = new Schema({
-        title: { type: String },
-        author: { type: String },
-        date: { type: Array },
-        tags: { type: Array },
-        content: { type: String },
-        excerpt: { type: String },
-        published: { type: Boolean },
-        category: { type: String },
+        title: String,
+        author: String,
+        createDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
+        lastModifiedDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
+        tags: Array,
+        content: String,
+        excerpt: String,
+        published: Boolean,
+        category: String,
         views: { type: Number, default: 0 }
     });
 
 PostSchema.statics.createNewPost = function (options) {
-    var p = new this();
-    p.title = options.title;
-    p.author = options.author;
-    p.date = options.date;
-    p.tags = options.tags;
-    p.content = options.post;
-    p.excerpt = options.post.substring(0, 350+Math.random()*100);
-    p.category = options.category;
-    p.published = options.published;
-    p.save();
-    return p;
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var p = new self();
+        p.title = options.title;
+        p.author = options.author;
+        p.createDate = options.createDate;
+        p.lastModifiedDate = options.lastModifiedDate;
+        p.tags = options.tags;
+        p.content = options.content;
+        p.excerpt = options.content.substring(0, 350+Math.random()*100);
+        p.category = options.category;
+        p.published = options.published;
+        p.save(function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(p);
+            }
+        });
+    });
 };
 PostSchema.statics.updatePost = function (options) {
     var self = this;
 
     return self.findById(options.id).exec().then(function (post) {
-        if (post) {
-            var obj = {};
-            _.extend(obj, options);
-            if (options.category) {
-                if (options.published === true && post.published === true && options.category !== post.category) {
-                    return Category.increaseCount(options.category).then(function () {
-                        return Category.decreaseCount(p.category);
-                    }).then(function () {
-                        return self.findByIdAndUpdate(options.id, obj).exec();
-                    });
-                }
-                if (options.published === false && p.published === true) {
-                    return Category.decreaseCount(p.category).then(function () {
-                        return self.findByIdAndUpdate(options.id, obj).exec();
-                    });
-                }
-                if (options.published === true && p.published === false) {
-                    return Category.increaseCount(options.category).then(function () {
-                        return self.findByIdAndUpdate(options.id, obj).exec();
-                    });
-                }
-                
+        var obj = {};
+        _.extend(obj, options);
+        if (options.category) {
+            if (options.published === true && post.published === true && options.category !== post.category) {
+                return Category.increaseCount(options.category).then(function () {
+                    return Category.decreaseCount(p.category);
+                }).then(function () {
+                    return self.findByIdAndUpdate(options.id, obj).exec();
+                });
             }
+            if (options.published === false && p.published === true) {
+                return Category.decreaseCount(p.category).then(function () {
+                    return self.findByIdAndUpdate(options.id, obj).exec();
+                });
+            }
+            if (options.published === true && p.published === false) {
+                return Category.increaseCount(options.category).then(function () {
+                    return self.findByIdAndUpdate(options.id, obj).exec();
+                });
+            }     
         }
     });
+};
 
+PostSchema.statics.adjustCategory = function (oldCategory, newCategory) {
+    return this.find({category: oldCategory}).exec().then(function (posts) {
+        return posts.reduce(function (p, post) {
+            return p.then(function () {
+                return new Promise(function (resolve, reject) {
+                    post.category = newCategory;
+                    post.save(function (err) {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+            });
+        }, Promise.resolve());
+    });
 };
 
 PostSchema.statics.getPostsByCate = function (name) {
@@ -81,12 +106,10 @@ PostSchema.statics.getAllPosts = function () {
 PostSchema.statics.deletePost = function (id) {
     var self = this;
     return self.findById(id).exec().then(function (p) {
-        if (p) {
-            if (p.published === true) {
-                return Category.decreaseCount(p.category).then(function () {
-                    return self.findOneAndRemove({_id: id}, callback);
-                });
-            }
+        if (p.published === true) {
+            return Category.decreaseCount(p.category).then(function () {
+                return self.findOneAndRemove({_id: id}).exec();
+            });
         }
     });
 };

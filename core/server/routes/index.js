@@ -1,4 +1,5 @@
 var mongoose = require('mongoose'),
+    User = require('../models').User,
     config = require('../../../config').config,
     root = config.root_dir,
     errorHandling = require('../utils/error');

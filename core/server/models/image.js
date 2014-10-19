@@ -1,52 +1,53 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
+    Promise = require('bluebird'),
 
     Album = require('./album'),
 
     ImageSchema = new Schema({
-        path: { type: String },
-        album: { type: String },
-        thumb: {type: String }
+        path: String,
+        album: String,
+        thumb: String
     });
 
-ImageSchema.statics.addImage = function (options, callback) {
-    var img = new this();
-    img.path = options.path;
-    img.thumb = options.thumb;
-    img.album = options.album;
-    img.save(function () {
-        Album.increaseCount(options.album, function () {
-            callback();
+ImageSchema.statics.addImage = function (options) {
+    var self = this;
+    return (new Promise(function (resolve, reject) {
+        var img = new self();
+        img.path = options.path;
+        img.thumb = options.thumb;
+        img.album = options.album;
+        img.save(function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(img);
+            }
+        });
+    })).then(function () {
+        return Album.increaseCount(options.album);
+    });
+};
+ImageSchema.statics.deleteImage = function (id) {
+    var self = this;
+
+    return self.findById(id).exec().then(function (image) {
+        return self.findByIdAndRemove(id).exec().then(function () {
+            return Album.decreaseCount(image.album);
         });
     });
 };
-ImageSchema.statics.deleteImage = function (id, callback) {
-    var self = this;
-    self.findById(id, function (err, i) {
-        if (err) {
-            console.error(err);
-        }
-        if (i) {
-            self.findByIdAndRemove(id, function () {
-                Album.decreaseCount(i.album, function () {
-                    console.log(i.album);
-                    callback();
-                });
-            });
-        }
-    }); 
+ImageSchema.statics.getAllImages = function () {
+    return this.find({}).exec();
 };
-ImageSchema.statics.getAllImages = function (callback) {
-    this.find({}, callback);
-};
-ImageSchema.statics.updateImage = function (options, callback) {
-    this.findByIdAndUpdate(id, {
+ImageSchema.statics.updateImage = function (options) {
+    return this.findByIdAndUpdate(id, {
         path: options.path,
         thumb: options.thumb
-    }, callback);
+    }).exec();
 };
-ImageSchema.statics.findOneAlbumImage = function (name, callback) {
-    this.find({album: name}, callback);
+ImageSchema.statics.findOneAlbumImage = function (name) {
+    return this.find({album: name}).exec();
 };
 
 var Image = module.exports = mongoose.model('Image', ImageSchema);

@@ -1,16 +1,17 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('underscore'),
+    Promise = require('bluebird'),
 
     UserSchema = new Schema({
         uid: { type: String , unique: true },
         email: { type: String , unique: true },
-        pwd: { type: String },
-        website: { type: String },
-        profile_header: { type: String },
-        avatar: { type: String },
-        role: { type: String },
-        signature: { type: String }
+        pwd: String,
+        website: String,
+        profile_header: String,
+        avatar: String,
+        role: String,
+        signature: String
     });
 
 UserSchema.statics.getOneUserById = function (id) {
@@ -26,14 +27,22 @@ UserSchema.statics.getAllUser = function () {
     return this.find({}).exec();
 };
 UserSchema.statics.createNewUser = function (options) {
-    var user = new this();
-    user.uid = options.uid;
-    user.email = options.email;
-    user.pwd = options.pwd;
-    user.role = options.role;
-    user.avatar = options.avatar;
-    user.save();
-    return user;
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var user = new self();
+        user.uid = options.uid;
+        user.email = options.email;
+        user.pwd = options.pwd;
+        user.role = options.role;
+        user.avatar = options.avatar;
+        user.save(function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(user);
+            }
+        });
+    });
 };
 UserSchema.statics.updateUserProfile = function (options) {
     var obj = {};

@@ -156,7 +156,7 @@ module.exports = function (router) {
                         '/content/data/public/' + user.uid + '/gallery', 
                         '/content/data/private/' + user.uid + '/upload', 
                         '/content/data/private/' + user.uid + '/gallery',
-                        '/content/data/trash' + user.uid
+                        '/content/data/trash/' + user.uid
                     ];
 
                     return dir.reduce(function (p, d) {
@@ -173,7 +173,7 @@ module.exports = function (router) {
 
                 }
             }).then(null, function (err) {
-                log.error(err.message);
+                log.error(err.stack);
                 res.json({
                     status: 0,
                     error: err.message

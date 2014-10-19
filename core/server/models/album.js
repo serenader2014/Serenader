@@ -1,104 +1,100 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('underscore'),
+    Promise = require('bluebird'),
     
     AlbumSchema = new Schema({
-        name: { type: String },
-        desc: { type: String },
-        cover: { type: String },
-        user: { type: String },
-        count: { type: Number },
-        private: { type: Boolean }
+        name: String,
+        desc: String,
+        cover: String,
+        user: String ,
+        count: { type: Number, default: 0},
+        private: { type: Boolean, default: true }
     });
 
 
-AlbumSchema.statics.addAlbum = function (options, callback) {
-    var album = new this();
-    album.name = options.name;
-    album.desc = options.desc;
-    album.user = options.user;
-    album.private = options.private;
-    album.cover = options.cover;
-    album.count = 0;
-    album.save(callback);
+AlbumSchema.statics.addAlbum = function (options) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var album = new self();
+        album.name = options.name;
+        album.desc = options.desc;
+        album.user = options.user;
+        album.private = options.private;
+        album.cover = options.cover;
+        album.count = 0;
+        album.save(function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(album);
+            }
+        });
+    });
 };
 
-AlbumSchema.statics.updateAlbum = function (options, callback) {
+AlbumSchema.statics.updateAlbum = function (options) {
     var obj = {};
     _.extend(obj, options);
 
-    this.findByIdAndUpdate(options.id, obj, callback);
+    return this.findByIdAndUpdate(options.id, obj).exec();
 };
 
-AlbumSchema.statics.deleteAlbum = function (id, callback) {
-    this.findByIdAndRemove(id, callback);
+AlbumSchema.statics.deleteAlbum = function (id) {
+    return this.findByIdAndRemove(id).exec();
 };
 
-AlbumSchema.statics.getAllAlbum = function (callback) {
-    this.find({}, callback);
+AlbumSchema.statics.getAllAlbum = function () {
+    return this.find({}).exec();
 };
 
-AlbumSchema.statics.getOneAlbum = function (name, callback) {
-    this.findOne({name: name}, callback);
+AlbumSchema.statics.getOneAlbum = function (name) {
+    return this.findOne({name: name}).exec();
 };
 
-AlbumSchema.statics.getPublicAlbum = function (callback) {
-    this.find({}).nor([{private: true}]).exec(callback);
+AlbumSchema.statics.getPublicAlbum = function () {
+    return this.find({}).nor([{private: true}]).exec();
 };
 
-AlbumSchema.statics.getUserAllAlbum = function (user, callback) {
-    this.find({user: user}, callback);
+AlbumSchema.statics.getUserAllAlbum = function (user) {
+    return this.find({user: user}).exec();
 };
 
-AlbumSchema.statics.getUserPublicAlbum = function (user, callback) {
-    this.find({user: user}).nor([{private: true}]).exec(callback);
+AlbumSchema.statics.getUserPublicAlbum = function (user) {
+    return this.find({user: user}).nor([{private: true}]).exec();
 };
 
-AlbumSchema.statics.increaseCount = function (name, callback) {
+AlbumSchema.statics.increaseCount = function (name) {
     var self = this;
-    self.findOne({name: name}, function (err, a) {
-        if (err) {
-            console.error(err);
-            return false;
-        }
-        if (a) {
-            self.findOneAndUpdate({name: a.name}, {
-                count: a.count + 1
-            }, function (err, a) {
+
+    return self.findOne({name: name}).exec().then(function (album) {
+        return new Promise(function (resolve, reject) {
+            album.count = album.count + 1;
+            album.save(function (err) {
                 if (err) {
-                    console.error(err);
-                    return false;
-                }
-                if (callback && typeof callback === 'function') {
-                    callback();
+                    reject(err);
+                } else {
+                    resolve(album);
                 }
             });
-        }
+        });
     });
 };
 
 AlbumSchema.statics.decreaseCount = function (name, callback) {
     var self = this;
-    self.findOne({name: name}, function (err, a) {
-        if (err) {
-            console.error(err);
-            return false;
-        }
-        if (a) {
-            var c = a.count - 1;
-            self.findOneAndUpdate({name: a.name}, {
-                count: c
-            }, function (err, al) {
-                console.log(al.count);
+
+    return self.findOne({name: name}).exec().then(function (album) {
+        return new Promise(function (resolve, reject) {
+            album.count = album.count - 1;
+            album.save(function (err) {
                 if (err) {
-                    console.error(err);
-                    return false;
-                }
-                if (callback && typeof callback === 'function') {
-                    callback();
+                    reject(err);
+                } else {
+                    resolve(album);
                 }
             });
-        }
+        });
     });
 };
 

@@ -46,38 +46,31 @@ module.exports = function (router) {
     });
 
     router.get(url.adminEditPost + '/:id', auth_user, function (req, res, next) {
-        var id = req.params.id;
+        var id = validator.trim(xss(req.params.id));
 
-        Post.getOnePostById(id, function (err, p) {
-            if (! err && p) {
-                if (req.session.user.role !== 'admin' && p.author !== req.session.user.uid) {
-                    res.redirect(url.admin+'/post');
-                    return false;
-                }
-                Category.getAll(function (err, c) {
-                    if (! err && c) {
-                        if (isMobile(req)) {
-                            res.render('admin_edit_post_mobile', {
-                                categories: c, 
-                                post: p
-                            });
-                        } else {
-                            res.render('admin_edit_post', {
-                                categories: c, 
-                                post: p
-                            });
-                        }
-                    } else {
-                        errorHandling(req, res, { error: err ? err : 'No category was found.', type: 404});
-                        return false;
-                    }
-                });
-            } else {
-                errorHandling(req, res, { error: err ? err : 'No post was found.' , type: 404});
+        Post.getOnePostById(id).then(function (p) {
+            if (req.session.user.role !== 'admin' && p.author !== req.session.user.uid) {
+                res.redirect(url.admin+'/post');
                 return false;
             }
+            Category.getAll().then(function (c) {
+                if (isMobile(req)) {
+                    res.render('admin_edit_post_mobile', {
+                        categories: c, 
+                        post: p
+                    });
+                } else {
+                    res.render('admin_edit_post', {
+                        categories: c, 
+                        post: p
+                    });
+                }
+            }).then(null, function (err) {
+                errorHandling(req, res, { error: err.message, type: 404 });
+            });
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 404});
         }); 
-        
     });
 
     router.post(url.adminEditPost + '/:id', auth_user, function (req, res, next) {
@@ -89,6 +82,15 @@ module.exports = function (router) {
             });
             return false;
         }
+        now = new Date();
+        date = {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes(),
+            second: now.getSeconds()
+        };
         title = validator.trim(xss(req.body.title));
         author = req.session.user.uid;
         avatar = req.session.user.avatar;
@@ -115,25 +117,36 @@ module.exports = function (router) {
             tags = [];
         }
 
-        Post.updatePost({
-            id: id,
-            title: title,
-            author: author,
-            post: post,
-            tags: tags,
-            published: published,
-            category: category
-        }, function (err) {
-            if (err) {
-                res.status(500).json({
-                    status: 0,
-                    error: err
+        Category.getOneByName(category).then(function (c) {
+            if (c) {
+                return Post.updatePost({
+                    id: id,
+                    title: title,
+                    author: author,
+                    content: post,
+                    lastModifiedDate: date,
+                    tags: tags,
+                    published: published,
+                    category: category
                 });
+            } else {
                 return false;
             }
-
-            res.send({
-                status: 1
+        }).then(function (p) {
+            if (p) {
+                res.json({
+                    status: 1
+                });
+            } else {
+                res.json({
+                    status: 0,
+                    error: 'Category not found'
+                });
+            }
+        }).then(null, function (err) {
+            res.status(500).json({
+                status: 0,
+                error: err.message
             });
         });
     });
@@ -141,16 +154,14 @@ module.exports = function (router) {
 
     router.post(url.adminDeletePost + '/:id', auth_user, function (req, res, next) {
         var id = validator.trim(xss(req.params.id));
-        Post.deletePost(id, function (err) {
-            if (err) {
-                res.status(500).json({
-                    status: 0,
-                    error: err
-                });
-                return false;
-            }
+        Post.deletePost(id).then(function () {
             res.json({
                 status: 1
+            });
+        }).then(null, function (err) {
+            res.status(500).json({
+                status: 0,
+                error: err.message
             });
         });
     });
@@ -159,60 +170,81 @@ module.exports = function (router) {
     router.post(url.adminNewPost, auth_user, function (req, res, next) {
         var now, title, author, avatar, date, post, published, tags, category;
         if (! req.body.post || ! req.body.title || ! req.body.categories) {
-            errorHandling(req, res, { error: '请完善文章信息。', type: 401});
+            res.json({
+                status: 0,
+                error: '请完善文章信息。'
+            });
             return false;
-        }        
+        }
         now = new Date();
         title = validator.trim(xss(req.body.title));
         author = req.session.user.uid;
-        date = [{year: now.getFullYear(), month: now.getMonth(), date: now.getDate()}, now];
+        date = {
+            year: now.getFullYear(), 
+            month: now.getMonth() + 1, 
+            day: now.getDate(),
+            hour: now.getHours(),
+            minute: now.getMinutes(),
+            second: now.getSeconds()
+        };
         post = req.body.post;
         published = validator.trim(xss(req.body.publish));
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
-            res.send({
+            res.json({
                 status: 0,
                 id: 0
             });
             return;
         }
         if (Array.isArray(req.body.tags)) {
-            tags  =[];
+            tags = [];
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(xss(tag)));
             });
-        } else if (typeof req.body.tags === 'string') {
-            tags = validator.trim(xss(req.body.tags));
-        } else if (req.body.tags === undefined) {
-            tags = [];
+        } else {
+            res.json({
+                status: 0,
+                error: 'tags must be an array'
+            });
+            return false;
         }
         category = validator.trim(xss(req.body.categories));
 
-        Post.createNewPost({
-            title: title, 
-            author: author, 
-            authorAvatar: avatar,
-            date: date, 
-            tags:tags, 
-            post: post, 
-            published: published,
-            category: category
-        }, function (err, p) {
-            if (err) {
-                res.status(500).json({
-                    status: 0,
-                    error: err
+        Category.getOneByName(category).then(function (c) {
+            if (c) {
+                return Post.createNewPost({
+                    title: title, 
+                    author: author, 
+                    createDate: date, 
+                    lastModifiedDate: date,
+                    tags:tags, 
+                    content: post, 
+                    published: published,
+                    category: category
                 });
-                return false;
+            } else {
+                return null;
             }
-            res.send({
-                status: 1,
-                id: p._id
+        }).then(function (p) {
+            if (p) {
+                res.json({
+                    status: 1,
+                    id: p._id
+                });
+            } else {
+                res.json({
+                    status: 0,
+                    error: 'Category not found'
+                });
+            }
+        }).then(null, function (err) {
+            res.status(500).json({
+                status: 0,
+                error: err.message
             });
         });
     });
-
-
 
     router.post(url.adminNewCategory, auth_user, function (req, res, next) {
         var name;
@@ -226,41 +258,34 @@ module.exports = function (router) {
         if (! req.body.name) {
             res.json({
                 status: 0,
-                error: ''
+                error: 'Category name not valid'
             });
             return false;
         }
         name = validator.trim(xss(req.body.name));
 
-        Category.getOneByName(name, function (err, c) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    error: err
-                });
+        Category.getOneByName(name).then(function (c) {
+            if (! c) {
+                return Category.createNew(name);
+            } else {
                 return false;
             }
-            if (! c) {
-                Category.createNew(name, function (err) {
-                    if (err) {
-                        res.json({
-                            status: 0,
-                            error: err
-                        });
-                        return false;
-                    }
-                    res.json({
-                        status: 1,
-                        error: ''
-                    });
+        }).then(function (c) {
+            if (c) {
+                res.json({
+                    status: 1
                 });
             } else {
                 res.json({
                     status: 0,
-                    error: '该分类已存在。'
+                    error: 'This category is already exist'
                 });
-                return false;
             }
+        }).then(null, function (err) {
+            res.json({
+                status: 0,
+                error: err.message
+            });
         });
     });
 
@@ -283,47 +308,37 @@ module.exports = function (router) {
         id = validator.trim(xss(req.params.id));
         name = validator.trim(xss(req.body.name));
 
-        Category.getOneById(id, function (err, c) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    error: err
+        Category.getOneById(id).then(function (c) {
+            if (c) {
+                return Category.update(id, name).then(function (category) {
+                    return c.name;
                 });
+            } else {
                 return false;
             }
-            if (c) {
-                Category.update(id, name, function (err) {
-                    if (err) {
-                        res.json({
-                            status: 0,
-                            error: err
-                        });
-                        return false;
-                    }
-                    Post.getPostsByCate(c.name, function (err, p) {
-                        if (err) {
-                            res.json({
-                                status: 0,
-                                error: err
-                            });
-                            return false;
-                        }
-                        p.forEach(function (item, index) {
-                            item.category = name;
-                            item.save();
-                        });
-                    });
+        }).then(function (category) {
+            if (category) {
+                Post.adjustCategory(category, name).then(function () {
                     res.json({
-                        status: 1,
-                        error: ''
+                        status: 1
+                    });
+                }).then(null, function (err) {
+                    res.json({
+                        status: 0,
+                        error: err.message
                     });
                 });
             } else {
                 res.json({
                     status: 0,
-                    error: '找不到该分类。'
+                    error: 'can not found this category'
                 });
             }
+        }).then(null, function (err) {
+            res.json({
+                status: 0,
+                error: err.message
+            });
         });
     });
 
@@ -336,37 +351,31 @@ module.exports = function (router) {
             });
             return false;
         }        
-        Category.getOneById(id, function (err, c) {
-            if (err) {
+        Category.getOneById(id).then(function (c) {
+            if (c.count > 0) {
                 res.json({
                     status: 0,
-                    error: err
+                    error: '该分类下面仍然有文章。删除前请确保分类已经没有文章。'
                 });
                 return false;
-            }
-            if (c) {
-                if (c.count > 0) {
+            } else {
+                Category.delete(id).then(function () {
+                    res.json({
+                        status: 1,
+                        error: ''
+                    });
+                }).then(null, function (err) {
                     res.json({
                         status: 0,
-                        error: '该分类下面仍然有文章。删除前请确保分类已经没有文章。'
+                        error: err.message
                     });
-                    return false;
-                } else {
-                    Category.delete(id, function (err) {
-                        if (err) {
-                            res.json({
-                                status: 0,
-                                error: err
-                            });
-                            return false;
-                        }
-                        res.json({
-                            status: 1,
-                            error: ''
-                        });
-                    });
-                }
+                });
             }
+        }).then(null, function (err) {
+            res.json({
+                status: 0,
+                error: err.message
+            });
         });
     });
 };

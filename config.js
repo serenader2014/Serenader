@@ -9,6 +9,7 @@ var path = require('path'),
         root_dir: __dirname,
         admin_path: '/admin',
         url: {
+            avatar: '/avatar/u',
             admin: '/admin',
             adminPost: '/post',
             adminPostUpload: '/post/upload',

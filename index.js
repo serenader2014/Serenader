@@ -11,6 +11,7 @@ var Promise = require('bluebird'),
     config = require('./config').config,
     settings;
 
+
 function ConnectDB () {
     log.info('Initialize system...');
     return new Promise(function (resolve, reject) {
