@@ -1,8 +1,11 @@
 var im = require('imagemagick'),
     formidable = require('formidable'),
     path = require('path'),
-    fs = require('fs'),
+    Promise = require('bluebird'),
+    fs = Promise.promisifyAll(require('fs')),
+    mkdir = Promise.promisifyAll(require('mkdirp')),
     auth_user = require('../../utils/auth_user'),
+    log = require('../../utils/log')(),
     config = require('../../../../config').config,
     root = config.root_dir,
     url = config.url,
@@ -45,9 +48,8 @@ FileInfo.prototype.validate = function (type) {
 FileInfo.prototype.safeName = function (uploadDir) {
     this.name = path.basename(this.name).replace(/^\.+/,'').replace(/(|)/, '');
 
-
     if (fs.existsSync(uploadDir + '/' + this.name)) {
-        this.name = this.name.replace(nameCountReg, nameCountFunc);
+        this.name = this.name.replace(nameCountReg, nameCountFunc);    
     }
 };
 
@@ -73,9 +75,17 @@ module.exports = function (router) {
     router.post(url.adminPostUpload, auth_user, function (req, res, next) {
         fileUpload(req, res, {
             uploadDir: uploadDir(req),
-            path: '/static/' + req.session.user.uid + '/upload'
-        }, function (files, field) {
-            res.json(files);
+            path: '/static/' + req.session.user.uid + '/upload',
+            typeReg: options.imageTypes
+        }, function (err, files, field) {
+            if (err) {
+                res.json({
+                    status: 0,
+                    error: err
+                });
+            } else {
+                res.json(files);
+            }
         });
     });
 
@@ -83,24 +93,32 @@ module.exports = function (router) {
         var file = path.basename(decodeURIComponent(req.url)),
             dir = uploadDir(req);
         if (file) {
-            fs.unlink(dir + '/' + file, function (e) {
-                Object.keys(options.imageVersions).forEach(function (version) {
-                    fs.unlink(dir + '/' + version + '/' + file);
-                });
+            fs.unlinkAsync(dir + '/' + file).then(function () {
+                return Object.keys(options.imageVersions).reduce(function (p, version) {
+                    return p.then(function () {
+                        return fs.unlinkAsync(dir + '/' + version + '/' + file);
+                    });
+                }, Promise.resolve());
+            }).then(function () {
                 res.json({
                     status: 1
+                });
+            }).catch(function (err) {
+                log.error(err.stack);
+                res.json({
+                    status: 0,
+                    error: err.message
                 });
             });
         }
     });
-
-
 };
 
 var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) {
     // opt = {
     //     uploadDir: 'aaa',
-    //     path: 'aa'
+    //     path: 'aa',
+    //     typeReg: /\.(gif|jpe?g|png)$/i,
     // }
     var form = new formidable.IncomingForm(),
         uploadDir = opt.uploadDir,
@@ -109,6 +127,7 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         map = [],
         counter = 1,
         field = {},
+        p,
         setNoCacheHeaders = function () {
             res.setHeader('Pragma', 'no-cache');
             res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -119,57 +138,79 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
 
 
     form.on('fileBegin', function (name, file) {
+
         var fileinfo = new FileInfo(file);
         tmpFiles.push(file.path);
         fileinfo.safeName(uploadDir);
         map[path.basename(file.path)] = fileinfo;
         files.push(fileinfo);
+
     }).on('field', function (name, value) {
+
         field[name] = value;
+
     }).on('file', function (name, file) {
+
         var fileinfo = map[path.basename(file.path)];
         fileinfo.size = file.size;
 
-        if (! fileinfo.validate(options.imageTypes)) {
+        if (! fileinfo.validate(opt.typeReg)) {
             fs.unlink(file.path);
             return false;
         }
         if (! fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
-        fs.renameSync(file.path, uploadDir + '/' + fileinfo.name);
-
-        if (options.imageTypes.test(fileinfo.name)) {
-            Object.keys(options.imageVersions).forEach(function (version) {
-                if (! fs.existsSync(uploadDir + '/' + version)) {
-                    fs.mkdirSync(uploadDir + '/' + version);
-                }
-                var opt = options.imageVersions[version];
-                im.resize({
-                    width: opt.width,
-                    srcPath: uploadDir + '/' + fileinfo.name,
-                    dstPath: uploadDir + '/' + version + '/' + fileinfo.name
-                }, function (err) {
-                    if (err) {
-                        console.log(err);
-                    }
-                });
-            });
-        }
+        p = fs.renameAsync(file.path, uploadDir + '/' + fileinfo.name).then(function () {
+            if (options.imageTypes.test(fileinfo.name)) {
+                return Object.keys(options.imageVersions).reduce(function (p, version) {
+                    return p.then(fs.existsAsync(uploadDir + '/' + version)).then(function (exist) {
+                        if (! exist) {
+                            return mkdir.mkdirpAsync(uploadDir + '/' + version);
+                        }
+                    }).then(function () {
+                        var opt = options.imageVersions[version];
+                        return new Promise(function (resolve, reject) {
+                            im.resize({
+                                width: opt.width,
+                                srcPath: uploadDir + '/' + fileinfo.name,
+                                dstPath: uploadDir + '/' + version + '/' + fileinfo.name
+                            }, function (err) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve();
+                                }
+                            });
+                        });
+                    });
+                }, Promise.resolve());
+            }
+        });
 
     }).on('aborted', function () {
+
         tmpFiles.forEach(function (file) {
             fs.unlink(file);
         });
+
     }).on('progress', function (bR, bE) {
 
     }).on('error', function (e) {
+
         console.error(e);
+
     }).on('end', function () {
+
         files.forEach(function (fileinfo) {
             fileinfo.initUrls(req, opt.uploadDir, opt.path);
         });
-        callback(files, field);
+        p.then(function () {
+            callback(null, files, field);
+        }).catch(function (err) {
+            log.error(err.stack);
+            callback(err.message, files, field);
+        });
         // files = {
         //     deleteType: "DELETE",
         //     deleteUrl: "http://localhost/static/damn/upload/4fjHtYHdRlSemICxjjBu_IMG_8424(1).jpg",

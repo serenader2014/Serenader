@@ -301,7 +301,7 @@ block admin_script
                 $('.preview-container')
                     .find('img').remove().end()
                     .append($('<img class="img-preview"/>')
-                    .attr('src', img.url))
+                    .attr('src', img.thumbnailUrl))
                     .show();
                 $('.remove-img').data('url', img.url);
                 $('.imgurl input').val(img.url).hide();
