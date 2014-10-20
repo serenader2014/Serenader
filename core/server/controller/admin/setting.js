@@ -1,11 +1,12 @@
 var validator = require('validator'),
     xss = require('xss'),
-    fs = require('fs'),
+    Promise = require('bluebird'),
+    fs = Promise.promisifyAll(require('fs')),
     auth_user = require('../../utils/auth_user'),
     errorHandling = require('../../utils/error'),
     Setting = require('../../models').Setting,
     config = require('../../../../config').config,
-    locals = require('../../index');
+    locals = require('../../index').locals;
 
 module.exports = function (router) {
     router.get(config.url.adminSetting, auth_user, function (req, res, next) {
@@ -13,19 +14,21 @@ module.exports = function (router) {
             res.redirect(config.url.admin);
             return false;
         }
-        fs.readdir(config.root_dir + '/content/themes', function (err, files) {
+        fs.readdirAsync(config.root_dir + '/content/themes').then(function (files) {
             var themes = [];
-            if (err) {
-                errorHandling(req, res, { error: err.code, type: 500});
-                return false;
-            }
-            files.forEach(function (item,index) {
-                var file = fs.statSync(config.root_dir + '/content/themes/' + item);
-                if (file.isDirectory()) {
-                    themes.push(item);
-                }
+            files.reduce(function (p, item) {
+                return p.then(function () {
+                    return fs.statAsync(config.root_dir + '/content/themes/' + item).then(function (stat) {
+                        if (stat.isDirectory()) {
+                            themes.push(item);
+                        }
+                    });
+                });
+            }, Promise.resolve()).then(function () {
+                res.render('admin_setting', { themes: themes });
             });
-            res.render('admin_setting', { themes: themes });
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 500 });
         });
     });
 
@@ -52,19 +55,18 @@ module.exports = function (router) {
             theme: theme,
             posts_per_page: num
         };
-        Setting.updateSetting(obj, function (err, s) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    error: err
-                });
-                return false;
-            }
+        console.log(obj);
+        Setting.updateSetting(obj).then(function (s) {
             res.json({
                 status: 1,
                 error: ''
             });
             locals.setting = s;
+        }).then(null, function (err) {
+            res.json({
+                status: 0,
+                error: err.message
+            });
         });
     });
 };
