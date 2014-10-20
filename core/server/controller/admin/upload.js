@@ -164,11 +164,7 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
         p = fs.renameAsync(file.path, uploadDir + '/' + fileinfo.name).then(function () {
             if (options.imageTypes.test(fileinfo.name)) {
                 return Object.keys(options.imageVersions).reduce(function (p, version) {
-                    return p.then(fs.existsAsync(uploadDir + '/' + version)).then(function (exist) {
-                        if (! exist) {
-                            return mkdir.mkdirpAsync(uploadDir + '/' + version);
-                        }
-                    }).then(function () {
+                    return mkdir.mkdirpAsync(uploadDir + '/' + version).then(function () {
                         var opt = options.imageVersions[version];
                         return new Promise(function (resolve, reject) {
                             im.resize({

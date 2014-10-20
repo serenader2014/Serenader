@@ -1,8 +1,10 @@
-var validator = require('validator'),
+var Promise = require('bluebird'),
+    validator = require('validator'),
     xss = require('xss'),
-    fs = require('fs'),
+    fs = Promise.promisifyAll(require('fs')),
 
     auth_user = require('../../utils/auth_user'),
+    log = require('../../utils/log')(),
     Album = require('../../models').Album,
     Image = require('../../models').Image,
 
@@ -19,17 +21,15 @@ var validator = require('validator'),
 module.exports = function (router) {
     router.get(url.adminGallery, auth_user, function (req, res, next) {
         var userName = req.session.user.uid;
-        Album.getUserAllAlbum(userName, function (err, a) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return false;
-            }
+        Album.getUserAllAlbum(userName).then(function (a) {
             if (a) {
                 res.render('admin_gallery', {albums: a});
             } else {
                 errorHandling(req, res, { error: '找不到该相册。', type: 404});
                 return false;
             }
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 500});
         });
     });
 
@@ -45,36 +45,27 @@ module.exports = function (router) {
             user: userName,
             cover: '/img/default_album.png',
             private: private
-        }, function (err) {
-            if (err) {
-                res.json({
-                    status: 0,
-                    error: err
-                });
-                return false;
-            }
+        }).then(function () {
             res.json({
                 status: 1,
                 error: ''
             });
+        }).then(null, function (err) {
+            res.json({
+                status: 0,
+                error: err.code === 11000 ? 'This album name is already exist' : err.message
+            });
+            return false;
         });
     });
 
     router.get(url.adminGallery + '/:album', auth_user, function (req, res, next) {
         var album = validator.trim(xss(decodeURIComponent(req.params.album))),
             userName = req.session.user.uid;
-        Album.getOneAlbum(album, function (err, a) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return false;
-            } 
+        Album.getOneAlbum(album).then(function (a) {
             if (a) {
                 if (a.user === userName || userName === 'admin') {
-                    Image.findOneAlbumImage(a.name, function (err, images) {
-                        if (err) {
-                            errorHandling(req, res, { error: err, type: 500});
-                            return false;
-                        }
+                    Image.findOneAlbumImage(a.name).then(function (images) {
                         res.render('admin_one_album', {
                             images: images,
                             album: a
@@ -87,6 +78,8 @@ module.exports = function (router) {
                 errorHandling(req, res, { error: '找不到该相册。', type: 404 });
                 return false;
             }
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 500});
         });
     });
 
@@ -105,23 +98,31 @@ module.exports = function (router) {
 
         fileUpload(req, res, {
             uploadDir: dir,
-            path: '/static/' + userName + '/gallery/' + album
-        }, function (files, field) {
-            files.forEach(function (file, index) {
-                Image.addImage({
-                    path: file.url,
-                    album: album,
-                    thumb: file.thumbnailUrl
-                }, function (err) {
-                    if (err) {
-                        console.log(err);
-                        res.json([]);
-                        return false;
-                    }
-
-                    if (index === files.length - 1) {
-                        res.json(files);
-                    }
+            path: '/static/' + userName + '/gallery/' + album,
+            typeReg: /\.(gif|jpe?g|png)$/i
+        }, function (err, files, field) {
+            if (err) {
+                res.json({
+                    status: 0,
+                    error: err
+                });
+                return false;
+            }
+            files.reduce(function (p, file) {
+                return p.then(function () {
+                    return Image.addImage({
+                        path: file.url,
+                        album: album,
+                        thumb: file.thumbnailUrl
+                    });
+                });
+            }, Promise.resolve()).then(function () {
+                res.json(files);
+            }).then(null, function (err) {
+                log.error(err.stack);
+                res.json({
+                    status: 0,
+                    error: err.message
                 });
             });
         });
@@ -141,54 +142,36 @@ module.exports = function (router) {
             return false;
         }
 
-        if (Object.prototype.toString.call(ids) !== '[object Array]') {
+        if (! Array.isArray(ids)) {
             res.json({
                 error: 'ids is not a arrary'
             });
             return false;
         }
 
-
-        ids.forEach(function (item, index) {
+        ids.reduce(function (p, item) {
             var id = validator.trim(xss(item.id));
-            Image.deleteImage(id, function (err, i) {
-                if (err) {
-                    res.json({
-                        status: 0,
-                        err: err
+            return p.then(function () {
+                return Image.deleteImage(id);
+            }).then(function () {
+                return fs.unlinkAsync(basePath + '/' + decodeURIComponent(item.path));
+            }).then(function () {
+                return Object.keys(imageVersions).reduce(function (pms, version) {
+                    return pms.then(function () {
+                        return fs.unlinkAsync(basePath + '/' + version + '/' + decodeURIComponent(item.path));
                     });
-                    return false;
-                }
-
-                fs.unlink(basePath + '/' + item.path, function (err) {
-                    if (err) {
-                        res.json({
-                            status: 0,
-                            err: err
-                        });
-                        return false;
-                    }
-                    Object.keys(imageVersions).forEach(function (version, idx) {
-                        fs.unlink(basePath + '/' + version + '/' + item.path, function (err) {
-                            if (err) {
-                                res.json({
-                                    status: 0,
-                                    err: err
-                                });
-                                return false;
-                            }
-                            if (idx === Object.keys(imageVersions).length - 1) {
-                                if (index === ids.length - 1) {
-                                    res.json({
-                                        status: 1,
-                                        err: ''
-                                    });
-                                    return false;
-                                }
-                            }
-                        });
-                    });
-                });
+                }, Promise.resolve());
+            });
+        }, Promise.resolve()).then(function () {
+            res.json({
+                status: 1,
+                error: ''
+            });
+        }).then(null, function (err) {
+            log.error(err.stack);
+            res.json({
+                status: 0,
+                error: err.message
             });
         });
     });

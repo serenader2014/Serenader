@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
     Promise = require('bluebird'),
     
     AlbumSchema = new Schema({
-        name: String,
+        name: { type: String, unique: true },
         desc: String,
         cover: String,
         user: String ,
@@ -70,7 +70,7 @@ AlbumSchema.statics.increaseCount = function (name) {
     return self.findOne({name: name}).exec().then(function (album) {
         return new Promise(function (resolve, reject) {
             album.count = album.count + 1;
-            album.save(function (err) {
+            album.save(function (err, a) {
                 if (err) {
                     reject(err);
                 } else {
@@ -81,13 +81,13 @@ AlbumSchema.statics.increaseCount = function (name) {
     });
 };
 
-AlbumSchema.statics.decreaseCount = function (name, callback) {
+AlbumSchema.statics.decreaseCount = function (name) {
     var self = this;
 
     return self.findOne({name: name}).exec().then(function (album) {
         return new Promise(function (resolve, reject) {
             album.count = album.count - 1;
-            album.save(function (err) {
+            album.save(function (err, a) {
                 if (err) {
                     reject(err);
                 } else {

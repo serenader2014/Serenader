@@ -126,7 +126,7 @@ block admin_script
                     if (result.status === 1) {
                         $('.db-img-container.selected').remove();
                     } else {
-                        msg('error', result.err);
+                        msg('error', result.error);
                     }
                 },
                 error: function (err) {

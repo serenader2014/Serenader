@@ -62,6 +62,8 @@ block admin_script
                                     $('.db-gallery-list ul').append(wrapper);
 
                                 });
+                            } else {
+                                msg('error', '创建相册失败：' + result.error);
                             }
                         });
                     },
