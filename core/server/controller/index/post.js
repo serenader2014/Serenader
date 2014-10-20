@@ -7,22 +7,16 @@ var validator = require('validator'),
 
 module.exports = function (router) {
     router.get(url.indexPost, function (req, res, next) {
-        Post.getAllPosts(function (err, p) {
-            if (err) {
-                errorHandling(req, res, {error: err, type: 500});
-                return;
-            }
+        Post.getAllPosts().then(function (p) {
             res.render('postlist', {posts: p});
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 500 });
         });
     });
 
     router.get(url.indexPost + '/:id', function (req, res, next) {
         var id = validator.trim(xss(req.params.id));
-        Post.getOnePostById(id, function (err, p) {
-            if (err) {
-                errorHandling(req, res, { error: err, type: 500});
-                return;
-            }
+        Post.getOnePostById(id).then(function (p) {
             if (p) {
                 res.render('post', { post: p});
                 p.views = p.views + 1;
@@ -31,6 +25,8 @@ module.exports = function (router) {
                 errorHandling(req, res, { error: '找不到该文章。', type: 404});
                 return;
             }
+        }).then(null, function (err) {
+            errorHandling(req, res, { error: err.message, type: 500 });
         });
     });
 };

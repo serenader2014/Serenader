@@ -72,7 +72,7 @@ block inner
                 .post-info 
                     a.post-author(href='#{url.indexUser}/#{post.author}'): img(src='/static/#{post.author}/avatar.jpg') 
                     a.post-category(href='#{url.indexCategory}#{post.category}') #{post.category}
-                    span.post-date #{post.date[0].month}/#{post.date[0].date}
+                    span.post-date #{post.createDate.month}/#{post.createDate.day}
                     span.post-views Views: #{post.views}
                 .post-content
                     span.post-excerpt  #{post.excerpt} ... 

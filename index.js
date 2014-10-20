@@ -42,7 +42,7 @@ ConnectDB().then(function () {
         settings = setting;
     }
 }).then(function () {
-    Category.getAll().then(function (category) {
+    return Category.getAll().then(function (category) {
         if (!category.length) {
             // create default category if the database haven't store any record
             log.info('Creating default category');

@@ -46,10 +46,7 @@ module.exports = function (router) {
             cover: '/img/default_album.png',
             private: private
         }).then(function () {
-            res.json({
-                status: 1,
-                error: ''
-            });
+            res.json({ status: 1, error: '' });
         }).then(null, function (err) {
             res.json({
                 status: 0,
@@ -90,9 +87,7 @@ module.exports = function (router) {
             dir = root + type + '/' + userName + '/gallery/' + album;
 
         if (type !== 'public' && type !== 'private') {
-            res.json({
-                error: 'type error'
-            });
+            res.json({ error: 'type error' });
             return false;
         }
 
@@ -102,10 +97,7 @@ module.exports = function (router) {
             typeReg: /\.(gif|jpe?g|png)$/i
         }, function (err, files, field) {
             if (err) {
-                res.json({
-                    status: 0,
-                    error: err
-                });
+                res.json({ status: 0, error: err });
                 return false;
             }
             files.reduce(function (p, file) {
@@ -120,11 +112,48 @@ module.exports = function (router) {
                 res.json(files);
             }).then(null, function (err) {
                 log.error(err.stack);
-                res.json({
-                    status: 0,
-                    error: err.message
-                });
+                res.json({ status: 0, error: err.message });
             });
+        });
+    });
+
+    router.post(url.adminGalleryEdit + '/:album', auth_user, function (req, res, next) {
+        var album = validator.trim(xss(decodeURIComponent(req.params.album))),
+            name = validator.trim(xss(req.body.name)),
+            description = validator.trim(xss(req.body.desc)),
+            cover = validator.trim(xss(req.body.cover)),
+            private = req.body.private;
+
+        if (!name) {
+            res.json({ status: 0, error: 'album name not valid' });
+            return false;
+        }
+
+        if (typeof private !== 'boolean') {
+            res.json({ status: 0, error: 'private field must be a boolean value' });
+            return false;
+        }
+
+        Album.getOneAlbum(album).then(function (a) {
+            if (a) {
+                return Album.updateAlbum({
+                    name: name,
+                    desc: description,
+                    cover: cover,
+                    private: private
+                });
+            } else {
+                return false;
+            }
+        }).then(function (a) {
+            if (a) {
+                res.json({ status: 1, error: '' });
+            } else {
+                res.json({ status: 0, error: 'album not found'});
+            }
+        }).then(null, function (err) {
+            log.error(err.stack);
+            res.json({ status: 0, error: err.message });
         });
     });
 
@@ -174,5 +203,10 @@ module.exports = function (router) {
                 error: err.message
             });
         });
+    });
+
+
+    router.delete(url.adminGallery, auth_user, function (req, res, next) {
+
     });
 };

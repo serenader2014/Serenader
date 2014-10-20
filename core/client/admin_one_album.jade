@@ -12,7 +12,7 @@ block album
                     a.upload-btn(href='javascript:;', data-toggle='modal', data-target='#upload-image')
                         i.fa.fa-cloud-upload.upload-icon
                         | 上传相片
-                    a.edit-btn(href='javascript:;')
+                    a.edit-btn(href='javascript:;', data-toggle='modal', data-target='#edit-album')
                         i.fa.fa-edit.edit-icon
                         | 编辑相册
                     a.delete-btn(href='javascript:;')
@@ -48,6 +48,18 @@ block album
                     a.close
                     a.play-pause
                     ol.indicator
+            .modal#edit-album
+                .modal-wrapper
+                    .modal-header
+                        button.close.fa.fa-times(type='button', data-dismiss='modal')
+                        h4.modal-title 修改相册信息
+                    .modal-body
+                        input(type='file')
+                        input(type='text')
+                        input(type='checkbox')
+                    .modal-footer
+                        button.btn(href='javascript:;') 取消
+                        button.btn.btn-primary.confirm-edit(href='javascript:;') 确定
             .modal#upload-image
                 .modal-wrapper
                     .modal-header
