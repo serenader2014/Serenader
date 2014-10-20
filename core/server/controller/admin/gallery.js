@@ -2,6 +2,7 @@ var Promise = require('bluebird'),
     validator = require('validator'),
     xss = require('xss'),
     fs = Promise.promisifyAll(require('fs')),
+    fsx = Promise.promisifyAll(require('fs-extra')),
 
     auth_user = require('../../utils/auth_user'),
     log = require('../../utils/log')(),
@@ -207,6 +208,36 @@ module.exports = function (router) {
 
 
     router.delete(url.adminGallery, auth_user, function (req, res, next) {
+        var id = validator.trim(xss(decodeURIComponent(req.body.id))),
+            userName = req.session.user.uid,
+            albumName,
+            type;
 
+        Album.getAlbumById(id).then(function (album) {
+            albumName = album.name;
+            type = album.private ? 'private' : 'public';
+            return Image.findOneAlbumImage(albumName);
+        }).then(function (images) {
+            return images.reduce(function (p, img) {
+                return p.then(function () {
+                    return Image.deleteImage(img.id);
+                });
+            }, Promise.resolve());
+        }).then(function () {
+            return Album.deleteAlbum(id);
+        }).then(function () {
+            return fsx.removeAsync(root + type + '/' + userName + '/gallery/' + albumName);
+        }).then(function () {
+            res.json({
+                status: 1,
+                error: ''
+            });
+        }).then(null, function (err) {
+            log.error(err.stack);
+            res.json({
+                status: 0,
+                error: err.message
+            });
+        });
     });
 };

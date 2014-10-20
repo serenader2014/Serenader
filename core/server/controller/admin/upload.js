@@ -3,7 +3,7 @@ var im = require('imagemagick'),
     path = require('path'),
     Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs')),
-    mkdir = Promise.promisifyAll(require('mkdirp')),
+    fsx = Promise.promisifyAll(require('fs-extra')),
     auth_user = require('../../utils/auth_user'),
     log = require('../../utils/log')(),
     config = require('../../../../config').config,
@@ -159,12 +159,12 @@ var fileUpload = module.exports.fileUpload = function (req, res, opt, callback) 
             return false;
         }
         if (! fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir);
+            fsx.mkdirsSync(uploadDir);
         }
         p = fs.renameAsync(file.path, uploadDir + '/' + fileinfo.name).then(function () {
             if (options.imageTypes.test(fileinfo.name)) {
                 return Object.keys(options.imageVersions).reduce(function (p, version) {
-                    return mkdir.mkdirpAsync(uploadDir + '/' + version).then(function () {
+                    return fsx.mkdirsAsync(uploadDir + '/' + version).then(function () {
                         var opt = options.imageVersions[version];
                         return new Promise(function (resolve, reject) {
                             im.resize({

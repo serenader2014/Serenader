@@ -1,6 +1,6 @@
 var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs')),
-    mkdir = Promise.promisifyAll(require('mkdirp')),
+    fsx = Promise.promisifyAll(require('fs-extra')),
     path = require('path'),
     parse = require('url').parse,
     xss = require('xss'),
@@ -71,7 +71,7 @@ module.exports = function (router) {
                 });
             });
         } else if (type === 'folder') {
-            fs.mkdirAsync(finalPath + fileName).then(function () {
+            fsx.mkdirsAsync(finalPath + fileName).then(function () {
                 res.json({
                     status: 1,
                     error: ''
@@ -150,9 +150,7 @@ module.exports = function (router) {
             d = new Date(),
             time = (d.toDateString()).replace(/ /ig, '-');
         
-        mkdir.mkdirpAsync(trashPath).then(function () {
-            return fs.renameAsync(pathname, trashPath + '/' +filePath + time + '-' +fileName);
-        }).then(function () {
+        fsx.moveAsync(pathname, trashPath + '/' +filePath + time + '-' +fileName).then(function () {
             res.json({
                 status: 1,
                 error: ''

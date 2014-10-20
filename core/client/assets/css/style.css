@@ -194,6 +194,7 @@
       display: block;
       clear: both; }
     .db-gallery .db-gallery-list li {
+      position: relative;
       display: inline-block;
       float: left;
       width: 22rem;
@@ -203,6 +204,18 @@
       border-radius: 0.3rem;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
       background: #FFFFFF; }
+      .db-gallery .db-gallery-list li .delete-album {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.8rem 1rem;
+        background: #EEEEEE; }
+        .db-gallery .db-gallery-list li .delete-album .fa {
+          margin-right: 0; }
+        .db-gallery .db-gallery-list li .delete-album:hover {
+          background: #D9095C; }
+          .db-gallery .db-gallery-list li .delete-album:hover .fa {
+            color: #FFFFFF; }
       .db-gallery .db-gallery-list li a {
         display: block; }
       .db-gallery .db-gallery-list li i {

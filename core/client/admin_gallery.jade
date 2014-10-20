@@ -15,7 +15,9 @@ block gallery
                                 | 私密相册
                         button.album-btn(type='submit') submit
                 - albums.forEach(function (item, index) {
-                    li.single-album
+                    li.single-album(data-id='#{item.id}')
+                        a.delete-album(href='javascript:;', data-toggle='modal', data-target='#delete')
+                            i.fa.fa-times
                         a(href='#{url.admin}#{url.adminGallery}/#{item.name}') 
                             - if (item.cover)
                                 span.db-album-cover(style='background-image: url(#{item.cover})')
@@ -27,6 +29,19 @@ block gallery
                                 | #{item.name} (#{item.count})
                             span.db-album-desc #{item.desc}
                 - })
+
+        .modal#delete
+            .modal-wrapper
+                .modal-header
+                    button.close(type='button', data-dismiss='modal')
+                        i.fa.fa-times
+                    h4.modal-title 删除相册
+                .modal-body
+                    div 确定删除以下相册？删除该相册将会删除该相册目录下的所有相片。请谨慎操作！
+                    span.album-holder
+                .modal-footer
+                    button.btn(type='button', data-dismiss='modal') 取消
+                    button.btn.btn-primary.confirm-delete(type='button') 确定
 
 
 block admin_script
@@ -70,6 +85,42 @@ block admin_script
                     error: function (err) {
                         progress.hide(function () {
                             msg('error', err);
+                        });
+                    }
+                });
+            });
+        });
+
+        $('.delete-album').on('click', function () {
+            var albumName = $(this).parents('.single-album').find('.db-album-name').text().split(' (')[0],
+                id = $(this).parents('.single-album').data('id');
+            $('.album-holder').html(albumName).data('id', id);
+        });
+
+        $('.confirm-delete').on('click', function () {
+            var id = $('.album-holder').data('id');
+
+            $(this).prev().trigger('click');
+            progress.show('删除相册中...', function () {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '#{url.admin}#{url.adminGallery}',
+                    data: {
+                        id: id
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '删除成功！');
+                            } else {
+                                msg('error', '删除失败：' + result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', '删除失败！' + err);
                         });
                     }
                 });

@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     crypto = require('crypto'),
     fs = Promise.promisifyAll(require('fs')),
-    mkdir = Promise.promisifyAll(require('mkdirp')),
+    fsx = Promise.promisifyAll(require('fs-extra')),
     xss = require('xss'),
     validator = require('validator'),
     User = require('../../models').User,
@@ -162,7 +162,7 @@ module.exports = function (router) {
                     return dir.reduce(function (p, d) {
                         return p.then(function () {
                             log.success('create user folders:' + d);
-                            return mkdir.mkdirpAsync(root + d);
+                            return fsx.mkdirsAsync(root + d);
                         });
                     }, Promise.resolve()).then(function () {
                         res.json({

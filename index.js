@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     mongoose = require('mongoose'),
     fs = Promise.promisifyAll(require('fs')),
-    mkdir = Promise.promisifyAll(require('mkdirp')),
+    fsx = Promise.promisifyAll(require('fs-extra')),
     models = require('./core/server/models'),
     Post = models.Post,
     Setting = models.Setting,
@@ -63,7 +63,7 @@ ConnectDB().then(function () {
     return dir.reduce(function (sequence, dirPath) {
         return sequence.then(function () {
             log.success('Making folder:' + dirPath);
-            return mkdir.mkdirpAsync(root + dirPath);
+            return fsx.mkdirsAsync(root + dirPath);
         });
     }, Promise.resolve());
 }).then(function (){

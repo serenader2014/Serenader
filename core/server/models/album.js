@@ -52,6 +52,10 @@ AlbumSchema.statics.getOneAlbum = function (name) {
     return this.findOne({name: name}).exec();
 };
 
+AlbumSchema.statics.getAlbumById = function (id) {
+    return this.findById(id).exec();
+};
+
 AlbumSchema.statics.getPublicAlbum = function () {
     return this.find({}).nor([{private: true}]).exec();
 };

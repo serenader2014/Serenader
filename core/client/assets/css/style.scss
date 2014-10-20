@@ -250,6 +250,7 @@
     }
 
     li {
+      position: relative;
       display: inline-block;
       float: left;
       width: 22rem;
@@ -259,6 +260,25 @@
       border-radius: 0.3rem;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
       background: #FFFFFF;
+
+      .delete-album {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.8rem 1rem;
+        background: #EEEEEE;
+
+        .fa {
+          margin-right: 0;
+        }
+
+        &:hover {
+          .fa {
+            color: #FFFFFF;
+          }
+          background: #D9095C;
+        }
+      }
 
       a {
         display: block;
