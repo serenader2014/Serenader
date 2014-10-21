@@ -123,7 +123,9 @@ module.exports = function (router) {
             name = validator.trim(xss(req.body.name)),
             description = validator.trim(xss(req.body.desc)),
             cover = validator.trim(xss(req.body.cover)),
-            private = req.body.private;
+            private = req.body.private ;
+
+        private = private === 'true' ? true : (private === 'false' ? false : private);
 
         if (!name) {
             res.json({ status: 0, error: 'album name not valid' });
@@ -141,13 +143,20 @@ module.exports = function (router) {
                     name: name,
                     desc: description,
                     cover: cover,
-                    private: private
+                    private: private,
+                    id: a.id
                 });
             } else {
                 return false;
             }
         }).then(function (a) {
             if (a) {
+                return Image.adjustAlbum(album, name);
+            } else {
+                return false;
+            }
+        }).then(function (result) {
+            if (result) {
                 res.json({ status: 1, error: '' });
             } else {
                 res.json({ status: 0, error: 'album not found'});

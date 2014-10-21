@@ -1,7 +1,3 @@
-// $("input:checkbox, input:radio").iCheck({
-//     checkboxClass: "icheckbox_flat-blue"
-// });
-
 var progress = {
     show: function (str, callback) {
         var psContainer = $('<div>').addClass('progress'),
@@ -56,7 +52,6 @@ $('button').on('click', function (e) {
 });
 
 $('.checkbox').on('click', function () {
-    console.log('clik');
     if ($(this).find('input[type="checkbox"]').prop('checked')) {
         $(this).find('input[type="checkbox"]').prop('checked', false);
         $(this).find('i').removeClass('fa-check-square-o').addClass('fa-square-o');

@@ -54,11 +54,33 @@ block album
                         button.close.fa.fa-times(type='button', data-dismiss='modal')
                         h4.modal-title 修改相册信息
                     .modal-body
-                        input(type='file')
-                        input(type='text')
-                        input(type='checkbox')
+                        .left-container
+                            .cover-container#new-cover
+                                a(href='javascript:;')
+                                    img.album-cover(src='#{album.cover}')
+                                    span.upload-status
+                                        | 正在上传...
+                                        span.cover-percentage
+                                        span.cover-progress-outer
+                                            span.cover-progress-inner
+                                    span.new-cover-title Select new cover
+                                input.fileinput(type='file')
+                                input.new-cover-text(type='text', name='cover', value='#{album.cover}')
+                        .right-container
+                            label Album name:
+                                input.new-album-name(type='text', name='name', value='#{album.name}')
+                            label Album description:
+                                textarea.new-album-desc(name='desc', value='#{album.desc}') #{album.desc}
+                            label Private:
+                                span.checkbox
+                                    - if (album.private)
+                                        i.fa.fa-check-square-o
+                                        input.new-album-private(type='checkbox', checked='checked', name='private')
+                                    - else
+                                        i.fa.fa-square-o
+                                        input.new-album-private(type='checkbox', name='private')
                     .modal-footer
-                        button.btn(href='javascript:;') 取消
+                        button.btn(href='javascript:;', data-dismiss='modal') 取消
                         button.btn.btn-primary.confirm-edit(href='javascript:;') 确定
             .modal#upload-image
                 .modal-wrapper
@@ -83,7 +105,7 @@ block album
                                         th Action
                                 tbody.upload-list
                     .modal-footer
-                        button.btn(href='javascript:;') 取消
+                        button.btn(href='javascript:;', data-dismiss='modal') 取消
                         button.btn.btn-primary.upload-all(href='javascript:;') 完成
 
 
@@ -95,11 +117,6 @@ block admin_script
     - var type = album.private ? 'private' : 'public';
     script.
         var uploadedImage = [];
-
-        $('.upload-picker').on('click', function (event) {
-            event.preventDefault();
-            $('.fileinput').trigger('click');
-        });
 
         $('.upload-all').on('click', function () {
             $('.start-upload').eq(0).trigger('click');
@@ -156,7 +173,72 @@ block admin_script
             }
         }
 
+        $('.confirm-edit').on('click', function () {
+            var cover = $('.new-cover-text').val(),
+                name = $('.new-album-name').val(),
+                desc = $('.new-album-desc').val(),
+                private = $('.new-album-private').prop('checked');
+            $(this).prev().trigger('click');
+            progress.show('修改相册信息...', function () {
+                $.ajax({
+                    url: '#{url.admin}#{url.adminGalleryEdit}/#{album.name}',
+                    data: {
+                        name: name,
+                        desc: desc,
+                        private: private,
+                        cover: cover
+                    },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '修改成功！', function () {
+                                    $('.db-album-cover .cover').css({
+                                        backgroundImage: cover
+                                    });
+                                    $('.db-album-name p').html(name);
+                                    $('.db-album-desc').html(desc);
+                                });
+                            } else {
+                                msg('error', '修改失败：' + result.error);
+                            }
+                        });                        
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', '修改失败！');
+                        });
+                    }
+                });
+            });
+        });
 
+        $('#new-cover').fileupload({
+            dropZone: $('#new-cover'),
+            url: '#{url.admin}#{url.adminGalleryUpload}/#{type}/#{album.name}',            
+            singleFileUploads: true,
+            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            autoUpload: true,
+            dataType: 'json',
+            add: function (e, data) {
+                $('.upload-status').show();
+                data.submit();
+            },
+            progress: function (e, data) {
+                var percentage = parseInt((data.loaded/data.total) * 100, 10) + '%';
+                $('.cover-percentage').html(percentage);                
+            },
+            done: function (e, data) {
+                var result = data.result[0];
+                $('.album-cover').attr('src', result.url);
+                $('.new-cover-text').val(result.url);
+                $('.upload-status').hide();
+            },
+            fail: function (e, data) {
+                alert('upload faild');
+            }
+        });
 
         $('#uploader').fileupload({
             dropZone: $('#uploader'),
