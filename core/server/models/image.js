@@ -49,7 +49,7 @@ ImageSchema.statics.adjustAlbum = function (oldAlbum, newAlbum) {
                         if (err) {
                             reject(err);
                         } else {
-                            resolve();
+                            resolve(true);
                         }
                     });
                 });
