@@ -161,10 +161,10 @@ block admin_script
                 var tag = $("<a class='db-single-tag' href='javascript:;'></a>");
                 var tagInput = $("<input name='tags' class='db-tag-input' />");
                 tag.html($(".db-tag").val());
+                tag.prepend($("<i class='fa fa-tag'></i>"));
                 tagInput.val(tag.text());
                 $(".db-tag").before(tag);
                 tag.append(tagInput);
-                tag.append($("<i class='fa fa-times'></i>"));
             }
 
             $('.db-tags').on('click','.db-single-tag', function () {
@@ -192,12 +192,6 @@ block admin_script
             function insertImage () {
                 $('.db-editor-insertimg').trigger('click');
             }            
-
-            $('.db-tags').on('click','.db-single-tag', function () {
-                $(this).remove();
-            }).on('click', function () {
-                $('.db-tag').focus();
-            });
 
             $('.upload-picker').on('click', function (event) {
                 event.preventDefault();
@@ -309,8 +303,8 @@ block new_post
                 .db-tags
                     - each val in post.tags
                         a.db-single-tag(href='javascript:;')
+                            i.fa.fa-tag
                             | #{val}
-                            i.fa.fa-times
                             input.db-tag-input(name='tags', value='#{val}')
                     input.form-control.db-tag(type='text', placeholder='文章标签。多个标签请用“，”号隔开。')
                     button.btn.btn-primary.db-publish(form='new-post')

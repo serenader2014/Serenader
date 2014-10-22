@@ -40,7 +40,7 @@ block admin_css
             font-size: 1.4rem;
             z-index: 9999;
             box-shadow: 0 0 0;
-            background: none;
+            background: rgba(0,0,0,0.2);
         }
         .db-title-wrapper {
             padding: 1rem;
@@ -84,13 +84,6 @@ block admin_css
         .draft-setting {
             margin-top: 1rem;
         }
-        .draft-setting input {
-            display: inline-block;
-            width: 2rem;
-            height: 2rem;
-            margin-right: 1rem;
-            vertical-align: middle;
-        }
 
         .db-new-header input {
             margin-bottom: 1rem;
@@ -129,7 +122,7 @@ block admin_script
                     tmp = $('.db-tag').val().split(' ');
                     for (; i < tmp.length; i++ ) {
                         if (tmp[i] !== '') {
-                            tags.push(tags[i]);
+                            tags.push(tmp[i]);
                         }
                     }
                     $.ajax({
@@ -182,8 +175,10 @@ block new_post
                                     - each item in categories
                                         option(value='#{item.name}') #{item.name}
                         .draft-setting
-                            input(type='checkbox', name='publish')
                             label(for='publish') 立即发表
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox', name='publish')
                                         
                 .db-new-editor
                     .db-editor-helper

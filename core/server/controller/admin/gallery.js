@@ -139,18 +139,34 @@ module.exports = function (router) {
 
         Album.getOneAlbum(album).then(function (a) {
             if (a) {
+                if (name !== album) {
+                    cover = cover.replace(album, name);
+                }
                 return Album.updateAlbum({
                     name: name,
                     desc: description,
                     cover: cover,
                     private: private,
                     id: a.id
+                }).then(function (newAlbum) {
+                    var type = a.private ? 'private' : 'public',
+                        newType = newAlbum.private ? 'private' : 'public';
+                    if (type === newType && album === newAlbum.name) {
+                        return true;
+                    } else {
+                        return fsx.moveAsync(
+                            root + type + '/' + a.user + '/gallery/' + album, 
+                            root + newType + '/' + a.user + '/gallery/' + newAlbum.name
+                            ).then(function () {
+                                return true;
+                            });
+                    }
                 });
             } else {
                 return false;
             }
-        }).then(function (a) {
-            if (a) {
+        }).then(function (result) {
+            if (result) {
                 return Image.adjustAlbum(album, name);
             } else {
                 return false;

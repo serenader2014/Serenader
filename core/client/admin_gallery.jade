@@ -25,9 +25,11 @@ block gallery
                                 span.db-album-cover
                             span.db-album-name
                                 - if (item.private)
-                                    i.glyphicon.glyphicon-lock
+                                    i.fa.fa-lock
                                 | #{item.name} (#{item.count})
-                            span.db-album-desc #{item.desc}
+                            span.db-album-desc
+                                i.fa.fa-quote-left
+                                | #{item.desc}
                 - })
 
         .modal#delete
@@ -67,13 +69,16 @@ block admin_script
                                 msg('success', '创建相册成功！', function () {
                                     var wrapper = $('<li>').addClass('single-album'),
                                         link = $('<a>').attr('href', '#{url.admin}#{url.adminGallery}/' + name),
+                                        deleteBtn = $('<a data-target="#delete" data-toggle="modal"></a>')
+                                            .addClass('delete-album')
+                                            .append('<i>').addClass('fa fa-times'),
                                         cover = $('<span>').addClass('db-album-cover').css({
                                                 'background-image': 'url(/img/default_album.png)'
                                             }),
                                         n = $('<span>').addClass('db-album-name').html(name + ' (0)'),
                                         d = $('<span>').addClass('db-album-desc').html(desc);
 
-                                    wrapper.append(link.append(cover).append(n).append(d));
+                                    wrapper.append(deleteBtn).append(link.append(cover).append(n).append(d));
                                     $('.db-gallery-list ul').append(wrapper);
 
                                 });
@@ -94,7 +99,7 @@ block admin_script
         $('.delete-album').on('click', function () {
             var albumName = $(this).parents('.single-album').find('.db-album-name').text().split(' (')[0],
                 id = $(this).parents('.single-album').data('id');
-            $('.album-holder').html(albumName).data('id', id);
+            $('.album-holder').html(albumName).data('id', id).data('target', $(this));
         });
 
         $('.confirm-delete').on('click', function () {
@@ -112,7 +117,10 @@ block admin_script
                     success: function (result) {
                         progress.hide(function () {
                             if (result.status === 1) {
-                                msg('success', '删除成功！');
+                                msg('success', '删除成功！', function () {
+                                    console.log($('.album-holder').data('target'));
+                                    $('.album-holder').data('target').parents('.single-album').remove();
+                                });
                             } else {
                                 msg('error', '删除失败：' + result.error);
                             }

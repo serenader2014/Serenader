@@ -2,12 +2,15 @@ extends admin
 block album
     .db-album-detail
         .db-album-wrapper
+            a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
             .db-album-info
                 .db-album-cover
                     .cover(style='background-image: url(#{album.cover})')
                 h2.db-album-name
                     p #{album.name}
-                .db-album-desc #{album.desc}
+                .db-album-desc
+                    i.fa.fa-quote-left
+                    | #{album.desc}
                 .db-album-menu
                     a.upload-btn(href='javascript:;', data-toggle='modal', data-target='#upload-image')
                         i.fa.fa-cloud-upload.upload-icon
@@ -21,10 +24,10 @@ block album
             .images#links
                 .img-delete-menu
                     ul
-                        li: a(href='javascript:;')
+                        li: a.select-all(href='javascript:;')
                             i.fa.fa-check-square
                             | Select all
-                        li: a(href='javascript:;')
+                        li: a.select-none(href='javascript:;')
                             i.fa.fa-check-square-o
                             | Select none
                         li: a.delete(href='javascript:;')
@@ -33,10 +36,10 @@ block album
                         li: a.cancel-btn(href='javascript:;')
                             i.fa.fa-times
                             | Cancel
-                .images-container
+                .images-container#links
                     - if (images.length === 0)
                         p.no-image This album doesn't have any image yet!
-                    - if (images && Object.prototype.toString.call(images) === '[object Array]')
+                    - if (images && Array.isArray(images))
                         - each img in images
                             a.db-img-container(href='#{img.path}', data-id='#{img.id}')
                                 img.db-img(src='#{img.thumb}')
@@ -126,11 +129,19 @@ block admin_script
             var menu = $('.img-delete-menu');
             if (menu.is(':visible')) {
                 menu.slideUp();
-                $('.db-img-container').off('click', selectImg).removeClass('selected');
+                $('.db-img-container').off('click', selectImg).on('click', lightbox).removeClass('selected');
             } else {
                 menu.slideDown();
-                $('.db-img-container').on('click', selectImg);
+                $('.db-img-container').off('click', lightbox).on('click', selectImg);
             }
+        });
+
+        $('.select-all').on('click', function () {
+            $('.db-img-container').addClass('selected');
+        });
+
+        $('.select-none').on('click', function () {
+            $('.db-img-container').removeClass('selected');
         });
 
         $('.delete').on('click', function () {
@@ -164,15 +175,6 @@ block admin_script
             });
         });
 
-        function selectImg (event) {
-            event.preventDefault();
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            } else {
-                $(this).addClass('selected');
-            }
-        }
-
         $('.confirm-edit').on('click', function () {
             var cover = $('.new-cover-text').val(),
                 name = $('.new-album-name').val(),
@@ -194,11 +196,7 @@ block admin_script
                         progress.hide(function () {
                             if (result.status === 1) {
                                 msg('success', '修改成功！', function () {
-                                    $('.db-album-cover .cover').css({
-                                        backgroundImage: cover
-                                    });
-                                    $('.db-album-name p').html(name);
-                                    $('.db-album-desc').html(desc);
+                                    window.location = '#{url.admin}#{url.adminGallery}/' + name;
                                 });
                             } else {
                                 msg('error', '修改失败：' + result.error);
@@ -324,5 +322,27 @@ block admin_script
                 alert('upload faild');
             }
         });
+
+        $('.header-btn').on('click', function () {
+            $('.db-album-info').toggle();
+        });
+
+        $('.db-img-container').on('click', lightbox);
+
+        function selectImg (event) {
+            event.preventDefault();
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                $(this).addClass('selected');
+            }
+        }
+        function lightbox (event) {
+            event.preventDefault();
+            var index = $('.db-img-container').index($(this));
+            blueimp.Gallery($('.db-img-container'), {
+                index: index
+            });
+        }
 block admin_css
     link(rel='stylesheet', href='/css/blueimp-gallery.min.css')

@@ -195,10 +195,10 @@ block admin_script
                 var tag = $("<a class='db-single-tag' href='javascript:;'></a>");
                 var tagInput = $("<input name='tags' class='db-tag-input' />");
                 tag.html($(".db-tag").val());
+                tag.prepend($("<i class='fa fa-tag'></i>"));
                 tagInput.val(tag.text());
                 $(".db-tag").before(tag);
                 tag.append(tagInput);
-                tag.append($("<i class='glyphicon glyphicon-remove'></i>"));
             }
 
             function mdPreview () {

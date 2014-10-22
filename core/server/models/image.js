@@ -45,6 +45,8 @@ ImageSchema.statics.adjustAlbum = function (oldAlbum, newAlbum) {
             return p.then(function () {
                 return new Promise(function (resolve, reject) {
                     img.album = newAlbum;
+                    img.path = img.path.replace(oldAlbum, newAlbum);
+                    img.thumb = img.thumb.replace(oldAlbum, newAlbum);
                     img.save(function (err) {
                         if (err) {
                             reject(err);
