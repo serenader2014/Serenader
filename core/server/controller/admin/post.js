@@ -235,6 +235,14 @@ module.exports = function (router) {
                     content: post, 
                     published: published,
                     category: category
+                }).then(function (p) {
+                    if (published) {
+                        return Category.increaseCount(category).then(function () {
+                            return p;
+                        });
+                    } else {
+                        return p;
+                    }
                 });
             } else {
                 return null;

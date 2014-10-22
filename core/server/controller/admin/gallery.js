@@ -40,6 +40,23 @@ module.exports = function (router) {
             userName = req.session.user.uid,
             private = validator.trim(xss(req.body.private));
 
+        private = private === 'true' ? true : (private === 'false' ? false : private);
+        if (! name) {
+            res.json({
+                status: 0,
+                error: 'Album name not valid'
+            });
+            return false;
+        }
+
+        if (typeof private !== 'boolean') {
+            res.json({
+                status: 0,
+                error: 'private must be a boolean value'
+            });
+            return false;
+        }
+
         Album.addAlbum({
             name: name,
             desc: desc,

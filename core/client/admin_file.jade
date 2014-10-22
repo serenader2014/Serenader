@@ -2,6 +2,7 @@ extends admin
 block files
     .db-file
         .db-file-wrapper
+            a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
             .file-nav
                 ol
                     - var i = '';
@@ -157,6 +158,10 @@ block admin_script
     script(type='text/javascript', src='/js/jquery.iframe-transport.js')
     - var link = baseLink.split('/').slice(2).join('/')
     script(type='text/javascript').
+        $('.header-btn').on('click', function () {
+            $('.file-nav').toggle();
+        });
+
         $('.delete').on('click', function (event) {
             event.preventDefault();
             var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');

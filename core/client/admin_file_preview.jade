@@ -51,9 +51,15 @@ block admin_script
             });
         });
 
+        $('.header-btn').on('click', function () {
+            $('.file-nav').toggle();
+            console.log('click');
+        });
+
 block preview
     .db-file
         .db-file-wrapper
+            a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
             .file-nav
                 ol
                     - var i = '';
