@@ -1227,6 +1227,40 @@ input.new-cate-name {
     padding-top: 8.4rem;
     box-shadow: 0 0 10px rgba(8, 8, 8, 0.1);
     background: #FFFFFF; }
+  .db-file .folder-list {
+    border: 1px solid #CCCCCC;
+    overflow: auto; }
+    .db-file .folder-list a {
+      color: #555555; }
+    .db-file .folder-list .opened > a {
+      padding-right: 0.5rem;
+      color: #FFFFFF;
+      border-radius: 0.3rem;
+      background: #7EBFFC; }
+    .db-file .folder-list i {
+      margin: 0 0.5rem; }
+    .db-file .folder-list li {
+      padding: 0.2rem 0.5rem;
+      margin: 0.3rem 0; }
+    .db-file .folder-list ul {
+      margin-left: 1rem; }
+  .db-file .selected-item li {
+    display: inline-block;
+    margin: 0 1rem 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #CCCCCC; }
+  .db-file .selected-item i {
+    margin-right: 0.5rem;
+    color: #777777; }
+  .db-file .selected-item a {
+    color: #777777; }
+  .db-file .move-title {
+    margin: 2rem 0 1rem;
+    font-weight: 800;
+    font-size: 1.7rem; }
+  .db-file .target-dir {
+    height: 3rem;
+    border: 1px solid #CCCCCC; }
   .db-file .file-nav {
     position: fixed;
     top: 6.4rem;
@@ -1290,7 +1324,8 @@ input.new-cate-name {
     .db-file .file-list-wrapper .db-filename {
       margin-left: 0.8rem;
       text-shadow: 0 2px 2px #CECECE;
-      color: #333333; }
+      color: #333333;
+      word-break: break-all; }
       .db-file .file-list-wrapper .db-filename:hover {
         text-decoration: underline; }
     .db-file .file-list-wrapper th {
@@ -1316,16 +1351,17 @@ input.new-cate-name {
       background: #3BAFDA; }
       .db-file .file-list-wrapper .db-action button:hover, .db-file .file-list-wrapper .db-action a:hover {
         background: #50b8de; }
+  .db-file .download-btn {
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.3rem;
+    color: #FFFFFF; }
   .db-file .file-preview {
     height: 100%;
     padding: 0 1rem; }
   .db-file #preview-file {
     height: 100%; }
-  .db-file #delete-file .modal-body li {
-    display: inline-block;
-    padding: 0.5rem 0;
-    margin: 1rem;
-    border-bottom: 1px solid #CCCCCC; }
+  .db-file #delete-file .selected-item {
+    margin-top: 2rem; }
   .db-file #rename-file .modal-body li {
     margin: 1rem; }
     .db-file #rename-file .modal-body li span {
@@ -1420,7 +1456,8 @@ input.new-cate-name {
     display: none;
     position: absolute;
     left: 1rem;
-    z-index: 9; } }
+    z-index: 9;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); } }
 @media screen and (max-width: 980px) {
   body {
     overflow: hidden; }

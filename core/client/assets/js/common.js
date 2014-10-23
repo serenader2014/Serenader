@@ -51,7 +51,7 @@ $('button').on('click', function (e) {
     }
 });
 
-$('.checkbox').on('click', function () {
+$('body').on('click', '.checkbox', function () {
     if ($(this).find('input[type="checkbox"]').prop('checked')) {
         $(this).find('input[type="checkbox"]').prop('checked', false);
         $(this).find('i').removeClass('fa-check-square-o').addClass('fa-square-o');

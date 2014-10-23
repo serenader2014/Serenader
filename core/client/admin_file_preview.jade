@@ -53,7 +53,10 @@ block admin_script
 
         $('.header-btn').on('click', function () {
             $('.file-nav').toggle();
-            console.log('click');
+        });
+
+        $('.raw').on('click', function () {
+            window.location = $(this).find('span').data('url');
         });
 
 block preview
@@ -68,6 +71,8 @@ block preview
                         li
                             a(href='#{url.admin}#{i}')  #{item} 
                             span /
+                - var l = link.split('/').slice(2).join('/');
+                - var raw = link.split('/').slice(3).join('/');
                 .file-tools
                     ul
                         li.btn.db-edit-btn
@@ -75,10 +80,9 @@ block preview
                             span Edit
                         li.btn.db-edit-save
                             i.fa.fa-save
-                            span Save             
+                            span Save
+                        li.btn.raw
+                            i.fa.fa-code
+                            span(data-url='/static/#{currentUser.uid}/upload/#{raw}') Raw
             .file-preview
-                - var l = link.split('/');
-                - l.shift();
-                - l.shift();
-                - l = l.join('/');
                 #preview-file(data-url='#{url.admin}/files/edit/#{l}') #{file}

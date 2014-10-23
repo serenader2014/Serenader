@@ -1631,6 +1631,60 @@ input.new-cate-name {
     background: #FFFFFF;
   }
 
+  .folder-list {
+    border: 1px solid #CCCCCC;
+    overflow: auto;
+    a {
+      color: #555555;
+    }
+    .opened > a {
+      padding-right: 0.5rem;
+      color: #FFFFFF;
+      border-radius: 0.3rem;
+      background: #7EBFFC;
+    }
+
+    i {
+      margin: 0 0.5rem;
+    }
+    li {
+      padding: 0.2rem 0.5rem;
+      margin: 0.3rem 0;
+    }
+    ul {
+      margin-left: 1rem;
+    }
+  }
+
+  .selected-item {
+    li {
+      display: inline-block;
+      margin: 0 1rem 1rem 0;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #CCCCCC;
+    }
+
+    i {
+      margin-right: 0.5rem;
+      color: #777777;
+    }
+
+    a {
+      color: #777777;
+    }
+  }
+
+  .move-title {
+    margin: 2rem 0 1rem;
+    font-weight: 800;
+    font-size: 1.7rem;
+  }
+
+  .target-dir {
+    height: 3rem;
+    border: 1px solid #CCCCCC;
+  }
+
   .file-nav {
     position: fixed;
     top: 6.4rem;
@@ -1721,6 +1775,7 @@ input.new-cate-name {
       margin-left: 0.8rem;
       text-shadow: 0 2px 2px #CECECE;
       color: #333333;
+      word-break: break-all;
 
       &:hover {
         text-decoration: underline;
@@ -1762,6 +1817,12 @@ input.new-cate-name {
     }
   }
 
+  .download-btn {
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.3rem;
+    color: #FFFFFF;
+  }
+
   .file-preview {
     height: 100%;
     padding: 0 1rem;
@@ -1772,13 +1833,8 @@ input.new-cate-name {
   }
 
   #delete-file {
-    .modal-body {
-      li {
-        display: inline-block;
-        padding: 0.5rem 0;
-        margin: 1rem;
-        border-bottom: 1px solid #CCCCCC;
-      }
+    .selected-item {
+      margin-top: 2rem;
     }
   }
 
@@ -1926,6 +1982,7 @@ input.new-cate-name {
       position: absolute;
       left: 1rem;
       z-index: 9;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     }
   }
 

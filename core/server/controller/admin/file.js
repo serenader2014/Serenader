@@ -164,6 +164,187 @@ module.exports = function (router) {
         });          
     });
 
+    router.post(URL.adminFileList, auth_user, function (req, res, next) {
+        if (!req.body.dir) {
+            res.json({
+                status: 0,
+                error: 'dir not valid'
+            });
+            return false;
+        }
+        var dir = validator.trim(xss(req.body.dir)),
+            dirArr = dir.split('/'),
+            type = dirArr.shift(),
+            baseDir = dirArr.join('/'),
+            userName = req.session.user.uid,
+            dstDir = root + type + '/' + userName + '/upload/' + baseDir; 
+        readDir(dstDir).then(function (obj) {
+            res.json({
+                status: 1,
+                files: obj.files,
+                folders: obj.folders
+            });
+        }).catch(function (err) {
+            log.error(err.stack);
+            res.json({
+                status: 0,
+                error: err.message
+            });
+        });
+    });
+
+    router.post(URL.adminFileMove, auth_user, function (req, res, next) {
+        if (!req.body.files) {
+            res.json({
+                status: 0,
+                error: 'no files to move'
+            });
+            return false;
+        }
+        if (!req.body.target) {
+            res.json({
+                status: 0,
+                error: 'target empty'
+            });
+            return false;
+        }
+        if (!Array.isArray(req.body.files) || typeof req.body.target !== 'string') {
+            res.json({
+                status: 0,
+                error: 'type error'
+            });
+            return false;
+        }
+        var files = [],
+            target = validator.trim(xss(req.body.target)),
+            tmpArr = target.split('/'),
+            type = tmpArr.shift(),
+            userName = req.session.user.uid,
+            previousFile = '',
+            failedFile = [];
+
+        if (type !== 'public' && type !== 'private') {
+            res.json({
+                status: 0,
+                error: 'type not valid'
+            });
+            return false;
+        }
+
+        target = root + type + '/' + userName + '/upload/' + tmpArr.join('/');
+        req.body.files.forEach(function (file) {
+            if (file !== '') {
+                var name = validator.trim(xss(file)),
+                    arr = name.split('/'),
+                    t = arr.shift();
+
+                name = root + t + '/' + userName + '/upload/' + arr.join('/');
+                files.push(name);
+            }
+        });
+
+
+        files.reduce(function (p, file) {
+            return p.then(function () {
+                previousFile = file;
+                return fsx.moveAsync(file, target + '/' + path.basename(file));
+            }).catch(function (err) {
+                log.error(err.stack);
+                failedFile.push({
+                    name: path.basename(previousFile),
+                    error: err.message
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            if (! failedFile.length) {
+                res.json({
+                    status: 1,
+                });
+            } else {
+                res.json({
+                    status: -1,
+                    files: failedFile
+                });
+            }
+        });
+    });
+
+    router.post(URL.adminFileCopy, auth_user, function (req, res, next) {
+        if (!req.body.files) {
+            res.json({
+                status: 0,
+                error: 'no files to copy'
+            });
+            return false;
+        }
+        if (!req.body.target) {
+            res.json({
+                status: 0,
+                error: 'target empty'
+            });
+            return false;
+        }
+        if (!Array.isArray(req.body.files) || typeof req.body.target !== 'string') {
+            res.json({
+                status: 0,
+                error: 'type error'
+            });
+            return false;
+        }
+        var files = [],
+            target = validator.trim(xss(req.body.target)),
+            tmpArr = target.split('/'),
+            type = tmpArr.shift(),
+            userName = req.session.user.uid,
+            previousFile = '',
+            failedFile = [];
+
+        if (type !== 'public' && type !== 'private') {
+            res.json({
+                status: 0,
+                error: 'type not valid'
+            });
+            return false;
+        }
+
+        target = root + type + '/' + userName + '/upload/' + tmpArr.join('/');
+        req.body.files.forEach(function (file) {
+            if (file !== '') {
+                var name = validator.trim(xss(file)),
+                    arr = name.split('/'),
+                    t = arr.shift();
+
+                name = root + t + '/' + userName + '/upload/' + arr.join('/');
+                files.push(name);
+            }
+        });
+
+
+        files.reduce(function (p, file) {
+            return p.then(function () {
+                previousFile = file;
+                return fsx.copyAsync(file, target + '/' + path.basename(file));
+            }).catch(function (err) {
+                log.error(err.stack);
+                failedFile.push({
+                    name: path.basename(previousFile),
+                    error: err.message
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            if (! failedFile.length) {
+                res.json({
+                    status: 1,
+                });
+            } else {
+                res.json({
+                    status: -1,
+                    files: failedFile
+                });
+            }
+        });
+    });
+
     router.get(URL.adminFile + '/:type/*', auth_user, function (req, res, next) {
         var url = parse(req.url),
             userName  =req.session.user.uid,

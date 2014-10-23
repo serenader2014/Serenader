@@ -35,9 +35,6 @@ block files
                         li.btn.upload(data-toggle='modal', data-target='#upload-file')
                             i.fa.fa-cloud-upload
                             | Upload files
-                        li.btn.download
-                            i.fa.fa-download
-                            | Download
                         li.btn.delete(data-toggle='modal', data-target='#delete-file')
                             i.fa.fa-trash-o
                             | Delete
@@ -46,9 +43,10 @@ block files
                     thead
                         tr
                             th Name
-                            th Created Time
-                            th Last Modified Time
+                            th Created
+                            th Last Modified
                             th Size
+                            th Download
                     tbody
                         - var p = baseLink.split('/files')[1];
                         - each item, index in folders
@@ -62,6 +60,7 @@ block files
                                 td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
                                 td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
                                 td 0
+                                td 
 
                         - each item,index in files
                             tr
@@ -79,6 +78,8 @@ block files
                                 td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}/， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
                                 td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
                                 td #{Math.ceil(item.size/1024)} kb 
+                                td
+                                    a.btn.btn-primary.download-btn(href='#{url.admin}#{baseLink}/#{item.name}?download=direct') Download
             .modal#delete-file
                 .modal-wrapper
                     .modal-header
@@ -87,7 +88,7 @@ block files
                         h4.modal-title 删除文件
                     .modal-body
                         p 即将删除以下文件/文件夹，删除前请做好备份！
-                        ul
+                        ul.selected-item
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 确定
@@ -137,7 +138,26 @@ block files
                             i.fa.fa-times
                         h4.modal-title 复制文件/文件夹
                     .modal-body
-
+                        h3.move-title 请选择目的路径：
+                        ul.folder-list
+                            li
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox', name='select')
+                                a.file-item(href='public') 
+                                    i.fa.fa-folder
+                                    span.name Public
+                            li
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox', name='select')
+                                a.file-item(href='private') 
+                                    i.fa.fa-folder
+                                    span.name Private
+                        h3.move-title 已选择的文件、文件夹：
+                        ul.selected-item
+                        h3.move-title 已选择的目的路径：
+                        input.target-dir(type='text', value='/', disabled='disabled')
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 确定
@@ -148,7 +168,26 @@ block files
                             i.fa.fa-times
                         h4.modal-title 移动文件/文件夹
                     .modal-body
-
+                        h3.move-title 请选择目的路径：
+                        ul.folder-list
+                            li
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox', name='select')
+                                a.file-item(href='public') 
+                                    i.fa.fa-folder
+                                    span.name Public
+                            li
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox', name='select')
+                                a.file-item(href='private') 
+                                    i.fa.fa-folder
+                                    span.name Private
+                        h3.move-title 已选择的文件、文件夹：
+                        ul.selected-item
+                        h3.move-title 已选择的目的路径：
+                        input.target-dir(type='text', value='/', disabled='disabled')
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 确定
@@ -162,12 +201,176 @@ block admin_script
             $('.file-nav').toggle();
         });
 
-        $('.delete').on('click', function (event) {
+        $('.folder-list').on('click', '.checkbox', function () {
+            var targetDir = $(this).next().attr('href');
+            $('.folder-list .checkbox').find('input[type="checkbox"]').prop('checked', false);
+            $('.folder-list .checkbox').find('i').removeClass('fa-check-square-o').addClass('fa-square-o');
+            $(this).parents('.modal').find('.target-dir').val(targetDir);
+        });
+
+        $('.modal').on('click', '.file-item', function (event) {
             event.preventDefault();
-            var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
-            $('#delete-file .modal-body ul li').remove();
+            var self = this,
+                dir = $(self).attr('href');
+
+            $(self).find('.fa-folder').removeClass('fa-folder').addClass('fa-folder-open');
+            if ($(self).parent().hasClass('opened')) {
+                $(self).parent().removeClass('opened').find('ul').remove();
+                $(self).find('.fa-folder-open').removeClass('fa-folder-open').addClass('fa-folder');
+            } else {
+                $(self).parent().append($('<i>').addClass('fa fa-spin fa-spinner'));
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        dir: dir
+                    },
+                    dataType: 'json',
+                    url: '#{url.admin}#{url.adminFileList}',
+                    success: function (result) {
+                        $(self).parent().find('.fa-spin').remove()
+                        if (result.status === 1) {
+                            var $ul = $('<ul>');
+                            result.folders.forEach(function (folder) {
+                                var $li = $('<li>'),
+                                    $a = $('<a>').attr('href', dir + '/' + folder.name).addClass('file-item'),
+                                    $span = $('<span>').html(folder.name),
+                                    $checkbox = $('<span>').addClass('checkbox')
+                                                    .append($('<i>').addClass('fa fa-square-o'))
+                                                    .append($('<input type="checkbox" name="select">')),
+                                    $i = $('<i>').addClass('fa fa-folder');
+                                $ul.append($li.append($checkbox).append($a.append($i).append($span)));
+                            });
+
+                            result.files.forEach(function (file) {
+                                var $li = $('<li>'),
+                                    $span = $('<span>').html(file.name),
+                                    $i = $('<i>').addClass('fa fa-file-o');
+                                $ul.append($li.append($span.prepend($i)));
+                            });
+                            $(self).parent().addClass('opened').append($ul);
+                        } else {
+                            msg('error', 'can not list the folder:' + result.error);
+                        }
+                    },
+                    error: function (err) {
+                        $(self).parent().find('.fa-spin').remove()
+                        msg('error', 'can not list the folder:' + err);
+                    }
+                });
+            }
+        });
+
+        $('.move, .copy, .delete').on('click', function () {
+            var target = $('tbody input[type="checkbox"]:checked').parents('td').clone();
+            target.find('.checkbox').remove();
+            $('.selected-item').find('li').remove();
             target.each(function (index, item) {
-                $('#delete-file .modal-body ul').append($('<li>').html($(item).html()));
+                var $li = $('<li>');
+                $li.append($(item).find('i')).append($(item).find('a'));
+                $('.selected-item').append($li);
+            });
+        });
+
+        $('#move .btn-primary').on('click', function () {
+            var targetDir = $('#move .target-dir').val(),
+                item = [],
+                self = this;
+            $('#move .selected-item li a').each(function (index, a) {
+                item.push($(a).attr('href').split('#{url.admin}#{url.adminFile}/')[1]);
+            });
+
+            if (! item.length) {
+                msg('error', '请选择需要移动的文件或文件夹！');
+                return false;
+            }
+
+            if (targetDir === '/') {
+                msg('error', '请选择目的路径！');
+            }
+
+            progress.show('正在移动...', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '#{url.admin}#{url.adminFileMove}',
+                    data: {
+                        files: item,
+                        target: targetDir
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        $(self).prev().trigger('click');
+                        progress.hide(function () {
+                           if (result.status === 1) {
+                                msg('success', '移动成功！');
+                            } else if (result.status === -1) {
+                                var failedFile = '';
+                                result.files.forEach(function (item, index) {
+                                    failedFile = failedFile + item.name + ', ';
+                                    console.error(item.error);
+                                });
+                                msg('warning', '部分文件移动成功！'+ failedFile + ' 移动失败！', null, 3000);
+                            } else {
+                                msg('error', '移动失败！'+ result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', '移动失败！' + err);
+                        });
+                    }
+                });
+            });
+        });
+        $('#copy .btn-primary').on('click', function () {
+            var targetDir = $('#copy .target-dir').val(),
+                item = [],
+                self = this;
+            $('#copy .selected-item li a').each(function (index, a) {
+                item.push($(a).attr('href').split('#{url.admin}#{url.adminFile}/')[1]);
+            });
+
+            if (! item.length) {
+                msg('error', '请选择需要复制的文件或文件夹！');
+                return false;
+            }
+
+            if (targetDir === '/') {
+                msg('error', '请选择目的路径！');
+            }
+
+            progress.show('正在复制...', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '#{url.admin}#{url.adminFileCopy}',
+                    data: {
+                        files: item,
+                        target: targetDir
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            $(self).prev().trigger('click');
+                            if (result.status === 1) {
+                                msg('success', '复制成功！');
+                            } else if (result.status === -1) {
+                                var failedFile = '';
+                                result.files.forEach(function (item, index) {
+                                    failedFile = failedFile + item.name + ', ';
+                                    console.error(item.error);
+                                });
+                                msg('warning', '部分文件复制成功！'+ failedFile + ' 复制失败！', null, 3000);
+                            } else {
+                                msg('error', '复制失败！'+ result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', '复制失败！' + err);
+                        });
+                    }
+                });
             });
         });
 

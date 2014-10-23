@@ -285,6 +285,11 @@ textarea:focus {
     background: #F56E6E;
 }
 
+.msg-warning .msg-wrapper {
+    color: #FFFFFF;
+    background: #FFA640;
+}
+
 
 /*    Progress style   */
 
