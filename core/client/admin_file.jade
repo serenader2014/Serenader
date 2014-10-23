@@ -4,14 +4,10 @@ block files
         .db-file-wrapper
             a.header-btn(href='javascript:;'): i.fa.fa-angle-double-down
             .file-nav
-                ol
-                    - var i = '';
-                    - baseLink.substring(baseLink.indexOf('/')+1).split('/').forEach(function (item, index) {
-                        - i = i + '/' + item;
-                        li
-                            a(href='#{url.admin}#{i}')  #{item} 
-                            span /
-                    - })
+                ol.nav-list
+                    li
+                        a(href='javascript:;' data-url='/') Files
+                        span /
                 .file-tools
                     ul
                         li.btn.select-all
@@ -48,38 +44,28 @@ block files
                             th Size
                             th Download
                     tbody
-                        - var p = baseLink.split('/files')[1];
-                        - each item, index in folders
-                            tr
-                                td
-                                    span.checkbox
-                                        i.fa.fa-square-o
-                                        input(type='checkbox')
-                                    i.fa.fa-folder-open
-                                    a.db-filename(href='#{url.admin}#{baseLink}/#{item.name}') #{item.name}
-                                td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
-                                td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
-                                td 0
-                                td 
-
-                        - each item,index in files
-                            tr
-                                td
-                                    span.checkbox
-                                        i.fa.fa-square-o
-                                        input(type='checkbox')
-                                    i.fa.fa-file
-                                    - var type = (item.name.substring(item.name.lastIndexOf('.')+1) === 'zip') ? 'zip':'';
-                                    - if (type === 'zip') {
-                                        a.db-filename(href='#{url.admin}#{url.adminFilePreview}#{p}/#{item.name}') #{item.name}
-                                    - } else {
-                                        a.db-filename(href='#{url.admin}#{baseLink}/#{item.name}') #{item.name}
-                                    - }
-                                td #{item.createTime.getFullYear()}/#{item.createTime.getMonth()+1}/#{item.createTime.getDate()}/， #{item.createTime.getHours()} : #{item.createTime.getMinutes()}
-                                td #{item.lastModifiedTime.getFullYear()}/#{item.lastModifiedTime.getMonth()+1}/#{item.lastModifiedTime.getDate()}/， #{item.lastModifiedTime.getHours()} : #{item.lastModifiedTime.getMinutes()}
-                                td #{Math.ceil(item.size/1024)} kb 
-                                td
-                                    a.btn.btn-primary.download-btn(href='#{url.admin}#{baseLink}/#{item.name}?download=direct') Download
+                        tr.list-item
+                            td
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox')
+                                i.fa.fa-folder-open
+                                a.db-filename(href='javascript:;' data-url='/public') Public
+                            td.create-time 
+                            td.last-modified 
+                            td.size 0
+                            td
+                        tr.list-item
+                            td
+                                span.checkbox
+                                    i.fa.fa-square-o
+                                    input(type='checkbox')
+                                i.fa.fa-folder-open
+                                a.db-filename(href='javascript:;', data-url='/private') Private
+                            td.create-time 
+                            td.last-modified 
+                            td.size 0
+                            td
             .modal#delete-file
                 .modal-wrapper
                     .modal-header
@@ -174,14 +160,14 @@ block files
                                 span.checkbox
                                     i.fa.fa-square-o
                                     input(type='checkbox', name='select')
-                                a.file-item(href='public') 
+                                a.file-item(href='/public') 
                                     i.fa.fa-folder
                                     span.name Public
                             li
                                 span.checkbox
                                     i.fa.fa-square-o
                                     input(type='checkbox', name='select')
-                                a.file-item(href='private') 
+                                a.file-item(href='/private') 
                                     i.fa.fa-folder
                                     span.name Private
                         h3.move-title 已选择的文件、文件夹：
@@ -195,8 +181,132 @@ block admin_script
     script(type='text/javascript', src='/js/jquery.ui.widget.js')
     script(type='text/javascript', src='/js/jquery.fileupload.js')
     script(type='text/javascript', src='/js/jquery.iframe-transport.js')
-    - var link = baseLink.split('/').slice(2).join('/')
+    script.file-template(type='text/template').
+        <tr class='list-item'>
+            <td>
+                <span class='checkbox'>
+                    <i class='fa fa-square-o'></i>
+                    <input type='checkbox' />
+                </span>
+                <i class='fa fa-file'></i>
+                <a href='' class='db-filename'></a>
+            </td>
+            <td class='create-time'></td>
+            <td class='last-modified'></td>
+            <td class='size'></td>
+            <td>
+                <a href='' class='btn btn-primary download-btn'>Download</a>
+            </td>
+        </tr>
+    script.folder-template(type='text/template').
+        <tr class='list-item'>
+            <td>
+                <span class='checkbox'>
+                    <i class='fa fa-square-o'></i>
+                    <input type='checkbox' />
+                </span>
+                <i class='fa fa-folder-open'></i>
+                <a href='javascript:;' class='db-filename'></a>
+            </td>
+            <td class='create-time'></td>
+            <td class='last-modified'></td>
+            <td class='size'></td>
+            <td></td>
+        </tr>
     script(type='text/javascript').
+        var currentLocation = '/';
+        $('.file-list-wrapper').on('click', '.db-filename', function (event) {
+            event.preventDefault();
+            var targetUrl = $(this).data('url');
+            $(this).parent().append($('<i>').addClass('fa fa-spin fa-spinner'));
+            updateFileList(targetUrl);
+        });
+
+        $('.nav-list').on('click', 'a', function (event) {
+            event.preventDefault();
+            var targetUrl = $(this).data('url');
+            if (targetUrl === '/') {
+                defaultList();
+            } else {
+                updateFileList(targetUrl);
+            }
+        });
+
+        function defaultList () {
+            var folderTmpl = $($('.folder-template').html()),
+               $li = $('<li>'),
+               $a = $('<a href="javascript:;">'),
+               $span = $('<span>/</span>');
+            $('.file-list-wrapper .list-item').remove();
+            $('.nav-list li').remove();
+            folderTmpl.find('.db-filename').html('Public').data('url', '/public');
+            $('.file-list-wrapper').append(folderTmpl);
+            folderTmpl = $($('.folder-template').html());
+            folderTmpl.find('.db-filename').html('Private').data('url', '/private');
+            $('.file-list-wrapper').append(folderTmpl);
+            $('.nav-list').append($li.append($a.html('File').data('url', '/')).append($span));
+        }
+
+        function updateFileList (url) {
+            $.ajax({
+                url: '#{url.admin}#{url.adminFileList}',
+                data: {
+                    dir: url
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status === 1) {
+                        var tmp = '';
+                        currentLocation = url;
+                        $('.file-list-wrapper .list-item').remove();
+                        $('.nav-list li').remove();
+                        currentLocation.split('/').forEach(function (item) {
+                            var $li = $('<li>'),
+                                $a = $('<a href="javascript:;">'),
+                                $span = $('<span>/</span>');
+                            if (item === '') {
+                                $a.html('File').data('url', '/');
+                            } else {
+                                tmp = tmp + '/' + item;
+                                $a.html(item).data('url', tmp);
+                            }
+                            $('.nav-list').append($li.append($a).append($span));
+                        });
+                        result.folders.forEach(function (folder) {
+                            var folderTmpl = $($('.folder-template').html());
+                            folderTmpl.find('.db-filename')
+                                .html(folder.name)
+                                .data('url', currentLocation + '/' + folder.name);
+                            folderTmpl.find('.create-time').html(folder.createTime);
+                            folderTmpl.find('.last-modified').html(folder.lastModifiedTime);
+                            $('.file-list-wrapper').append(folderTmpl);
+                        });
+                        result.files.forEach(function (file) {
+                            var fileTmpl = $($('.file-template').html()),
+                                baseLink = '/static/#{currentUser.uid}/upload/',
+                                link = currentLocation.split('/')[1] === '' ? 
+                                    '' : currentLocation.split('/').slice(2).join('/');
+                            fileTmpl.find('.db-filename')
+                                .html(file.name)
+                                .attr('href', baseLink + link + file.name)
+                                .data('url', currentLocation + '/' + file.name);
+                            fileTmpl.find('.download-btn').attr('href', baseLink + link + file.name).attr('target', '_blank');
+                            fileTmpl.find('.create-time').html(file.createTime);
+                            fileTmpl.find('.last-modified').html(file.lastModifiedTime);
+                            fileTmpl.find('.size').html(file.size);
+                            $('.file-list-wrapper').append(fileTmpl);
+                        });
+                    } else {
+                        msg('error', '读取文件夹失败！'+result.error);
+                    }
+                },
+                error: function (err) {
+                    msg('error', '读取文件夹失败！'+err);
+                }
+            });
+        }
+
         $('.header-btn').on('click', function () {
             $('.file-nav').toggle();
         });
@@ -261,12 +371,15 @@ block admin_script
         });
 
         $('.move, .copy, .delete').on('click', function () {
-            var target = $('tbody input[type="checkbox"]:checked').parents('td').clone();
+            var origin = $('tbody input[type="checkbox"]:checked').parents('td'),
+                target = origin.clone(true);
             target.find('.checkbox').remove();
             $('.selected-item').find('li').remove();
             target.each(function (index, item) {
-                var $li = $('<li>');
+                var $li = $('<li>'),
+                    url = origin.eq(index).find('.db-filename').data('url');
                 $li.append($(item).find('i')).append($(item).find('a'));
+                $(item).find('.db-filename').data('url', url);
                 $('.selected-item').append($li);
             });
         });
@@ -275,9 +388,10 @@ block admin_script
             var targetDir = $('#move .target-dir').val(),
                 item = [],
                 self = this;
-            $('#move .selected-item li a').each(function (index, a) {
-                item.push($(a).attr('href').split('#{url.admin}#{url.adminFile}/')[1]);
+            $('#move').find('.db-filename').each(function (index, a) {
+                item.push($(a).data('url'));
             });
+
 
             if (! item.length) {
                 msg('error', '请选择需要移动的文件或文件夹！');
@@ -301,14 +415,24 @@ block admin_script
                         $(self).prev().trigger('click');
                         progress.hide(function () {
                            if (result.status === 1) {
-                                msg('success', '移动成功！');
+                                msg('success', '移动成功！', function () {
+                                    $('.file-list-wrapper input[type="checkbox"]:checked').parents('tr').remove();
+                                });
                             } else if (result.status === -1) {
                                 var failedFile = '';
                                 result.files.forEach(function (item, index) {
                                     failedFile = failedFile + item.name + ', ';
                                     console.error(item.error);
                                 });
-                                msg('warning', '部分文件移动成功！'+ failedFile + ' 移动失败！', null, 3000);
+                                msg('warning', '部分文件移动成功！'+ failedFile + ' 移动失败！', function () {
+                                   $('.file-list-wrapper input[type="checkbox"]:checked')
+                                        .parents('td').find('.db-filename').each(function (index, a) {
+                                        var re = new RegExp($(a).html(), 'ig');
+                                        if (! re.test(failedFile)) {
+                                            $(a).parents('tr').remove();
+                                        }
+                                    }); 
+                                }, 3000);
                             } else {
                                 msg('error', '移动失败！'+ result.error);
                             }
@@ -326,8 +450,8 @@ block admin_script
             var targetDir = $('#copy .target-dir').val(),
                 item = [],
                 self = this;
-            $('#copy .selected-item li a').each(function (index, a) {
-                item.push($(a).attr('href').split('#{url.admin}#{url.adminFile}/')[1]);
+            $('#copy').find('.db-filename').each(function (index, a) {
+                item.push($(a).data('url'));
             });
 
             if (! item.length) {
@@ -378,37 +502,58 @@ block admin_script
             event.preventDefault();
             $(this).prev().click();
             progress.show('Deleting files...', function () {
-                var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+                var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a'),
+                    files = [];
                 if (target.length === 0) {
                     progress.hide(function () {
                         msg('error', '没有选中需要删除的文件。');
                     });
                     return false;
                 }
-                target.each(function (index, item) {
-                    var url = '#{url.admin}#{url.adminFileDelete}' + $(item).attr('href').split('#{url.admin}#{url.adminFile}')[1];
-                    $.ajax({
-                        type: 'POST',
-                        url: url,
-                        dataType: 'json',
-                        success: function (result) {
-                            progress.hide();
-                            if (result.status === 1) {
-                                msg('success', 'Delete file success.');
-                                $(item).parents('tr').fadeOut(200, function () {
-                                    $(this).remove();
-                                });
-                            } else { 
-                                msg('error', 'Delete file error: ' + result.error, null, 10000);
-                            }
-                        },
-                        error: function (err) {
-                            progress.hide();
-                            msg('error', err, null, 10000);
-                        }
-                    });
+                target.each(function (index, a) {
+                    files.push($(a).data('url'));
                 });
-            });
+
+                $.ajax({
+                    url: '#{url.admin}#{url.adminFileDelete}',
+                    type: 'POST',
+                    data: {
+                        files: files
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            if (result.status === 1) {
+                                msg('success', '删除成功！', function () {
+                                   target.parents('tr').remove();
+                                });
+                            } else if (result.status === -1) {
+                                var failedFile = '';
+                                result.files.forEach(function (item, index) {
+                                    failedFile = failedFile + item.name + ', ';
+                                    console.error(item.error);
+                                });
+                                msg('warning', '部分文件删除成功！'+ failedFile + ' 删除失败！', function () {
+                                   $('.file-list-wrapper input[type="checkbox"]:checked')
+                                        .parents('td').find('.db-filename').each(function (index, a) {
+                                        var re = new RegExp($(a).html(), 'ig');
+                                        if (! re.test(failedFile)) {
+                                            $(a).parents('tr').remove();
+                                        }
+                                    }); 
+                                }, 3000);
+                            } else {
+                                msg('error', result.error);
+                            }
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            msg('error', err);
+                        });
+                    }
+                });
+            })
         });
 
         $('#new .btn-primary').on('click', function (event) {
@@ -422,7 +567,8 @@ block admin_script
                     type: 'POST',
                     data: {
                         name: name,
-                        type: type
+                        type: type,
+                        dir: currentLocation
                     },
                     url: url,
                     dataType: 'json',
@@ -431,6 +577,14 @@ block admin_script
                             if (result.status === 1) {
                                 msg('success', 'Creating new file/folder success!', function () {
                                     $(self).siblings().trigger('click');
+                                    if (type === 'folder') {
+                                        var folderTmpl = $($('.folder-template').html());
+                                        folderTmpl.find('.db-filename').html(name);
+                                        $('.file-list-wrapper').append(folderTmpl);
+                                    } else {
+                                        var fileTmpl = $($('.file-template').html());
+                                        fileTmpl.find('.db-filename').html(name);
+                                    }
                                 });
                             } else {
                                 msg('error', 'Creating new file/folder error:' + result.error);

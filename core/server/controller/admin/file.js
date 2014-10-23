@@ -16,7 +16,7 @@ var Promise = require('bluebird'),
 module.exports = function (router) {
 
     router.get(URL.adminFile, auth_user, function (req, res, next) {
-        res.render('admin_file_root');
+        res.render('admin_file');
     });
 
     router.get(URL.adminFile + '/:type', auth_user, function (req, res, next) {
@@ -46,20 +46,16 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminNewFile + '/*', auth_user, function (req, res, next) {
-        var fileName = xss(validator.trim(req.body.name)),
-            type = xss(validator.trim(req.body.type)),
+    router.post(URL.adminNewFile, auth_user, function (req, res, next) {
+        var fileName = validator(xss(req.body.name)),
+            type = validator.trim(xss(req.body.type)),
+            dir = validator.trim(xss(req.body.dir)),
+            decodedPath = decodeURL(dir),
             userName = req.session.user.uid,
-            url = parse(req.url),
-            acturalPath = decodeURIComponent(url.pathname),
-            acturalUrl = acturalPath.split(URL.adminNewFile + '/')[1],
-            tmpArr = acturalUrl.split('/'),
-            t = tmpArr.shift(),
-            sortPath = tmpArr.join('/'),
-            finalPath = root + t + '/' + userName + '/upload/' + sortPath + '/';
+            targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath);
 
         if (type === 'file') {
-            fs.writeFileAsync(finalPath + fileName, '').then(function () {
+            fs.writeFileAsync(targetPath + '/' + fileName, '').then(function () {
                 res.json({
                     status: 1,
                     error: ''
@@ -71,7 +67,7 @@ module.exports = function (router) {
                 });
             });
         } else if (type === 'folder') {
-            fsx.mkdirsAsync(finalPath + fileName).then(function () {
+            fsx.mkdirsAsync(targetPath + '/' + fileName).then(function () {
                 res.json({
                     status: 1,
                     error: ''
@@ -91,41 +87,75 @@ module.exports = function (router) {
         }
     });
 
-    router.post(URL.adminFileRename + '/*', auth_user, function (req, res, next) {
-        var url = parse(req.url),
-            userName = req.session.user.uid,
-            acturalPath = decodeURIComponent(url.pathname),
-            fileName = decodeURL(acturalPath, 'rename').fileName,
-            filePath = decodeURL(acturalPath, 'rename').filePath,
-            t = decodeURL(acturalPath, 'rename').type,
-            newName = req.body.name,
-            oldPath = root + t + '/' + userName + '/upload/' + filePath + fileName,
-            targetPath = root + t + '/' +userName + '/upload/' + filePath + newName,
-            type;
+    router.post(URL.adminFileRename, auth_user, function (req, res, next) {
+        // req.body.files format:
+        // [{
+        //     path: '/public/some/path',
+        //     oldName: 'name.name',
+        //     newName: 'new.name'
+        // },
+        // {
+        //    
+        // }]
+        var userName = req.session.user.uid,
+            files = req.body.files,
+            previousFile = '',
+            failedFile = [];
 
-        fs.renameAsync(oldPath, targetPath).then(function () {
-            res.json({
-                status: 1,
-                error: ''
-            });
-        }).catch(function (err) {
+        if (!Array.isArray(files) || files.length === 0) {
             res.json({
                 status: 0,
-                error: err.message
+                error: 'files not valid'
             });
+            return false;
+        }
+
+        files.reduce(function (p, file) {
+            return p.then(function () {
+                if (file.path !== '' && file.oldName !== '' && file.newName !== '') {
+                    var decodedPath = decodeURL(validator.trim(xss(file.path))),
+                        targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath),
+                        oldName = validator.trim(xss(file.oldName)),
+                        newName = validator.trim(xss(file.newName));
+                    if (type === 'public' || type === 'private') {
+                        previousFile = oldName;
+                        return fs.renameAsync(targetPath + '/' + oldName, targetPath + '/' + newName);
+                    }
+                }
+            }).catch(function (err) {
+                log.error(err.stack);
+                failedFile.push({
+                    name: previousFile,
+                    error: err.message
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            if (failedFile.length) {
+                res.json({
+                    status: -1,
+                    files: failedFile
+                });
+            } else {
+                res.json({
+                    status: 1,
+                });
+            }
         });
     });
 
-    router.post(URL.adminFileEdit + '/*', auth_user, function (req, res, next) {
-        var url = parse(req.url),
-            userName = req.session.user.uid,
-            acturalPath = decodeURIComponent(url.pathname),
+    router.post(URL.adminFileEdit, auth_user, function (req, res, next) {
+        if (!req.body.dir) {
+            res.json({
+                status: 0,
+                error: 'dir not valid'
+            });
+            return false;
+        }
+        var userName = req.session.user.uid,
             newContent = req.body.file,
-            filePath = decodeURL(acturalPath, 'edit').filePath,
-            fileName = decodeURL(acturalPath, 'edit').fileName,
-            t = decodeURL(acturalPath, 'edit').type,
-            pathname = root + t + '/' + userName + '/upload/' + filePath + fileName;
-        fs.writeFileAsync(pathname, newContent, { encoding: 'utf8'}).then(function () {
+            decodedPath = realDir(validator.trim(xss(req.body.dir))),
+            targetPath = acturalPath(decodedPath.type, userName, decodedPath.fullPath);
+        fs.writeFileAsync(targetPath, newContent, { encoding: 'utf8'}).then(function () {
             res.json({
                 status: 1,
                 error: ''
@@ -138,30 +168,53 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminFileDelete + '/*', auth_user, function (req, res, next) {
-        var url = parse(req.url),
-            userName = req.session.user.uid,
-            acturalPath = decodeURIComponent(url.pathname),
-            fileName = decodeURL(acturalPath,'delete').fileName,
-            filePath = decodeURL(acturalPath, 'delete').filePath,
-            t = decodeURL(acturalPath, 'delete').type,
-            pathname = root + t + '/' + userName + '/upload/' + filePath + fileName,
+    router.post(URL.adminFileDelete, auth_user, function (req, res, next) {
+        var userName = req.session.user.uid,
             trashPath = root + 'trash/' + userName,
+            files = req.body.files,
             d = new Date(),
-            time = (d.toDateString()).replace(/ /ig, '-');
-        
-        fsx.moveAsync(pathname, trashPath + '/' +filePath + time + '-' +fileName).then(function () {
-            res.json({
-                status: 1,
-                error: ''
-            });
-        }).catch(function (err) {
-            log.error(err.message);
+            time = (d.toDateString()).replace(/ /ig, '-'),
+            previousFile = '',
+            failedFile = [];
+
+        if (!Array.isArray(files) || files.length === 0) {
             res.json({
                 status: 0,
-                error: err.message
+                error: 'files not valid'
             });
-        });          
+            return false;
+        }
+
+        files.reduce(function (p, file) {
+            if (file) {
+                return p.then(function () {
+                    var decodedPath = decodeURL(validator.trim(xss(file))),
+                        targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath);
+                    previousFile = decodedPath.basePath;
+                    return fsx.moveAsync(
+                        targetPath, 
+                        trashPath + '/' + decodedPath.middlePath + '/' + time + '-' + decodedPath.basePath
+                    ); 
+                }).catch(function (err) {
+                    log.error(err.stack);
+                    failedFile.push({
+                        name: previousFile,
+                        error: err.message
+                    });
+                });
+            }
+        }, Promise.resolve()).then(function () {
+            if (failedFile.length) {
+                res.json({
+                    status: -1,
+                    files: failedFile
+                });
+            } else {
+                res.json({
+                    status: 1
+                });
+            }
+        });      
     });
 
     router.post(URL.adminFileList, auth_user, function (req, res, next) {
@@ -172,12 +225,9 @@ module.exports = function (router) {
             });
             return false;
         }
-        var dir = validator.trim(xss(req.body.dir)),
-            dirArr = dir.split('/'),
-            type = dirArr.shift(),
-            baseDir = dirArr.join('/'),
+        var decodedPath = decodeURL(validator.trim(xss(req.body.dir))),
             userName = req.session.user.uid,
-            dstDir = root + type + '/' + userName + '/upload/' + baseDir; 
+            dstDir = realDir(decodedPath.type, userName, decodedPath.fullPath);
         readDir(dstDir).then(function (obj) {
             res.json({
                 status: 1,
@@ -216,14 +266,13 @@ module.exports = function (router) {
             return false;
         }
         var files = [],
-            target = validator.trim(xss(req.body.target)),
-            tmpArr = target.split('/'),
-            type = tmpArr.shift(),
+            decodedPath = decodeURL(validator.trim(xss(req.body.target))),
             userName = req.session.user.uid,
+            targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath),
             previousFile = '',
             failedFile = [];
 
-        if (type !== 'public' && type !== 'private') {
+        if (decodedPath.type !== 'public' && decodedPath.type !== 'private') {
             res.json({
                 status: 0,
                 error: 'type not valid'
@@ -231,23 +280,18 @@ module.exports = function (router) {
             return false;
         }
 
-        target = root + type + '/' + userName + '/upload/' + tmpArr.join('/');
         req.body.files.forEach(function (file) {
             if (file !== '') {
-                var name = validator.trim(xss(file)),
-                    arr = name.split('/'),
-                    t = arr.shift();
-
-                name = root + t + '/' + userName + '/upload/' + arr.join('/');
+                var decoded = decodeURL(validator.trim(xss(file))),
+                    name = realDir(decoded.type, userName, decoded.fullPath);
                 files.push(name);
             }
         });
 
-
         files.reduce(function (p, file) {
             return p.then(function () {
                 previousFile = file;
-                return fsx.moveAsync(file, target + '/' + path.basename(file));
+                return fsx.moveAsync(file, targetPath + '/' + path.basename(file));
             }).catch(function (err) {
                 log.error(err.stack);
                 failedFile.push({
@@ -292,10 +336,9 @@ module.exports = function (router) {
             return false;
         }
         var files = [],
-            target = validator.trim(xss(req.body.target)),
-            tmpArr = target.split('/'),
-            type = tmpArr.shift(),
+            decodedPath = decodeURL(validator.trim(xss(req.body.target))),
             userName = req.session.user.uid,
+            targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath),
             previousFile = '',
             failedFile = [];
 
@@ -307,23 +350,18 @@ module.exports = function (router) {
             return false;
         }
 
-        target = root + type + '/' + userName + '/upload/' + tmpArr.join('/');
         req.body.files.forEach(function (file) {
             if (file !== '') {
-                var name = validator.trim(xss(file)),
-                    arr = name.split('/'),
-                    t = arr.shift();
-
-                name = root + t + '/' + userName + '/upload/' + arr.join('/');
+                var decoded = decodeURL(validator.trim(xss(file))),
+                    name = realDir(decoded.type, userName, decoded.fullPath);
                 files.push(name);
             }
         });
 
-
         files.reduce(function (p, file) {
             return p.then(function () {
                 previousFile = file;
-                return fsx.copyAsync(file, target + '/' + path.basename(file));
+                return fsx.copyAsync(file, targetPath + '/' + path.basename(file));
             }).catch(function (err) {
                 log.error(err.stack);
                 failedFile.push({
@@ -401,6 +439,9 @@ module.exports = function (router) {
     });
 };
 
+function realDir (type, username, lastPath) {
+    return root + type + '/' + username + '/upload/' + lastPath;
+}
 
 function readDir (dir) {
     var files, folders;
@@ -474,20 +515,23 @@ function handleCodePreview (fileName, callback) {
     }
 }
 
-function decodeURL (url, mode) {
-    var filePath = mode ? 
-            (url.split('/files/'+mode+'/')[1]).substring(url.split('/files/'+mode+'/')[1].indexOf('/')+1 ,url.split('/files/'+mode+'/')[1].lastIndexOf('/')+1) :
-            (url.split('/files/')[1]).substring(url.split('/files/')[1].indexOf('/')+1 ,url.split('/files/')[1].lastIndexOf('/')+1),
+function decodeURL (url) {
+    // the url format: 
+    // /public/some/path/somefile.js
+    // /private/some/path/somefile.js
+    // output:
+    // {middlePath: "some/path", basePath: "somefile.js", type: "private", fullPath: "some/path/somefile.js"}
 
-        fileName = url.substring(url.lastIndexOf('/')+1),
-
-        type = mode ?
-            (url.split('/files/'+mode+'/')[1]).substring(0,url.split('/files/'+mode+'/')[1].indexOf('/')) :
-            (url.split('/files/')[1]).substring(0, url.split('/files/')[1].indexOf('/'));
+    var tmpArr = url.split('/').slice(1),
+        type = tmpArr.shift(),
+        fullPath = tmpArr.join('/'),
+        basePath = tmpArr.pop(),
+        middlePath = tmpArr.join('/');
 
     return {
-        filePath: filePath,
-        fileName: fileName,
-        type: type
+        middlePath: middlePath,
+        basePath: basePath,
+        type: type,
+        fullPath: fullPath
     };
 }
