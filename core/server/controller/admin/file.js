@@ -19,35 +19,8 @@ module.exports = function (router) {
         res.render('admin_file');
     });
 
-    router.get(URL.adminFile + '/:type', auth_user, function (req, res, next) {
-        var url = parse(req.url),
-            files = [],
-            folders = [],
-            userName = req.session.user.uid,
-            type = req.params.type;
-
-        if (type !== 'public' && type !== 'private') {
-            next();
-            return false;
-        }
-        if (url.pathname.substring(url.pathname.length-1) === '/') {
-            res.redirect(URL.admin+url.pathname.substring(0, url.pathname.length-1));
-            return false;
-        }
-
-        readDir(root + type + '/' + userName + '/upload').then(function (obj) {
-            res.render('admin_file', {
-                files: obj.files,
-                folders: obj.folders,
-                baseLink: url.pathname
-            });          
-        }).catch(function (err) {
-            errorHandling(req, res, { error: err.message, type: 500});
-        });
-    });
-
     router.post(URL.adminNewFile, auth_user, function (req, res, next) {
-        var fileName = validator(xss(req.body.name)),
+        var fileName = validator.trim(xss(req.body.name)),
             type = validator.trim(xss(req.body.type)),
             dir = validator.trim(xss(req.body.dir)),
             decodedPath = decodeURL(dir),
@@ -117,7 +90,7 @@ module.exports = function (router) {
                         targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath),
                         oldName = validator.trim(xss(file.oldName)),
                         newName = validator.trim(xss(file.newName));
-                    if (type === 'public' || type === 'private') {
+                    if (decodedPath.type === 'public' || decodedPath.type === 'private') {
                         previousFile = oldName;
                         return fs.renameAsync(targetPath + '/' + oldName, targetPath + '/' + newName);
                     }
@@ -153,8 +126,8 @@ module.exports = function (router) {
         }
         var userName = req.session.user.uid,
             newContent = req.body.file,
-            decodedPath = realDir(validator.trim(xss(req.body.dir))),
-            targetPath = acturalPath(decodedPath.type, userName, decodedPath.fullPath);
+            decodedPath = decodeURL(validator.trim(xss(req.body.dir))),
+            targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath);
         fs.writeFileAsync(targetPath, newContent, { encoding: 'utf8'}).then(function () {
             res.json({
                 status: 1,
@@ -342,7 +315,7 @@ module.exports = function (router) {
             previousFile = '',
             failedFile = [];
 
-        if (type !== 'public' && type !== 'private') {
+        if (decodedPath.type !== 'public' && decodedPath.type !== 'private') {
             res.json({
                 status: 0,
                 error: 'type not valid'
@@ -383,59 +356,39 @@ module.exports = function (router) {
         });
     });
 
-    router.get(URL.adminFile + '/:type/*', auth_user, function (req, res, next) {
-        var url = parse(req.url),
-            userName  =req.session.user.uid,
-            acturalPath = decodeURIComponent(url.pathname),
-            file_path = decodeURL(acturalPath).filePath,
-            file_name = decodeURL(acturalPath).fileName,
-            t = decodeURL(acturalPath).type,
-            pathname = root + t + '/' + userName + '/upload/' + file_path + file_name,
-            files = [],
-            folders = [];
+    router.get(URL.adminFilePreview, auth_user, function (req, res, next) {
+        if (!req.query.path) {
+            errorHandling(req, res, { error: 'path not valid', type: 404});
+            return false;
+        }
+        var decodedPath = decodeURL(validator.trim(xss(req.query.path))),
+            userName = req.session.user.uid,
+            targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath);
 
-        if (acturalPath.substring(acturalPath.length-1) === '/') {
-            res.redirect(adminPath+acturalPath.substring(0, req.url.length-1));
-            return false;
-        }
-        if (req.params.type !== 'public' && req.params.type !== 'private') {
-            next();
-            return false;
-        }
-        fs.statAsync(pathname).then(function (stat) {
-            if (stat.isDirectory()) {
-                readDir(pathname).then(function (obj) {
-                    res.render('admin_file', {
-                        files: obj.files,
-                        folders: obj.folders,
-                        baseLink: acturalPath,
-                        type: t
-                    });
-                });
-            } else if (stat.isFile()) {
-                if (req.query.download === 'direct') {
-                    res.download(pathname.split('?download=direct')[0]);
-                    return;
-                }                
-                handleCodePreview(file_name, function (type) {
+        fs.statAsync(targetPath).then(function (stat) {
+            if (stat.isFile()) {
+                handleCodePreview(decodedPath.basePath, function (type) {
                     if (type) {
-                        fs.readFileAsync(pathname, { encoding: 'utf8'}).then(function (data) {
+                        fs.readFileAsync(targetPath, { encoding: 'utf8'}).then(function (data) {
                             res.render('admin_file_preview', {
                                 file: data,
-                                link: acturalPath,
+                                link: validator.trim(xss(req.query.path)),
                                 mode: type
                             });
+                        }).catch(function (err) {
+                            errorHandling(req, res, { error: err.message, type: 500});
                         });
                     } else {
-                        res.sendfile(pathname);
+                        res.sendfile(targetPath);
                     }
                 });
             } else {
-                res.sendfile(pathname);
+                errorHandling(req, res, { error: 'not a valid file', type: 404});
             }
         }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500});
         });
+
     });
 };
 

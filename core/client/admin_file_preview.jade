@@ -28,9 +28,10 @@ block admin_script
             progress.show('Saving change...', function () {
                 $.ajax({
                     type: 'POST',
-                    url: $('#preview-file').data('url'),
+                    url: '#{url.admin}#{url.adminFileEdit}',
                     data: {
-                        file: editor.getValue()
+                        file: editor.getValue(),
+                        dir: '#{link}'
                     },
                     dataType: 'json',
                     success: function (result) {
@@ -66,13 +67,16 @@ block preview
             .file-nav
                 ol
                     - var i = '';
-                    - each item in link.substring(link.indexOf('/') + 1).split('/')
-                        - i = i + '/' + item;
+                    - each item in link.split('/')
                         li
-                            a(href='#{url.admin}#{i}')  #{item} 
-                            span /
-                - var l = link.split('/').slice(2).join('/');
-                - var raw = link.split('/').slice(3).join('/');
+                            - if (item === '')
+                                a(href='#{url.admin}#{url.adminFile}##{i}', data-url='#{i}')  File 
+                                span /
+                            - else
+                                - i = i + '/' + item;
+                                a(href='#{url.admin}#{url.adminFile}##{i}', data-url='#{i}') #{item}
+                                span /
+                - var raw = link.split('/').slice(2).join('/');
                 .file-tools
                     ul
                         li.btn.db-edit-btn
@@ -85,4 +89,4 @@ block preview
                             i.fa.fa-code
                             span(data-url='/static/#{currentUser.uid}/upload/#{raw}') Raw
             .file-preview
-                #preview-file(data-url='#{url.admin}/files/edit/#{l}') #{file}
+                #preview-file #{file}

@@ -130,14 +130,14 @@ block files
                                 span.checkbox
                                     i.fa.fa-square-o
                                     input(type='checkbox', name='select')
-                                a.file-item(href='public') 
+                                a.file-item(href='/public') 
                                     i.fa.fa-folder
                                     span.name Public
                             li
                                 span.checkbox
                                     i.fa.fa-square-o
                                     input(type='checkbox', name='select')
-                                a.file-item(href='private') 
+                                a.file-item(href='/private') 
                                     i.fa.fa-folder
                                     span.name Private
                         h3.move-title 已选择的文件、文件夹：
@@ -215,11 +215,19 @@ block admin_script
         </tr>
     script(type='text/javascript').
         var currentLocation = '/';
+        if (window.location.hash) {
+            currentLocation = window.location.hash.split('#')[1];
+            updateFileList(currentLocation);
+        }
         $('.file-list-wrapper').on('click', '.db-filename', function (event) {
             event.preventDefault();
             var targetUrl = $(this).data('url');
-            $(this).parent().append($('<i>').addClass('fa fa-spin fa-spinner'));
-            updateFileList(targetUrl);
+            if ($(this).prev().hasClass('fa-folder-open')) {
+                $(this).parent().append($('<i>').addClass('fa fa-spin fa-spinner'));
+                updateFileList(targetUrl);
+            } else {
+                window.location = '#{url.admin}#{url.adminFilePreview}?path=' + targetUrl;
+            }
         });
 
         $('.nav-list').on('click', 'a', function (event) {
@@ -231,81 +239,6 @@ block admin_script
                 updateFileList(targetUrl);
             }
         });
-
-        function defaultList () {
-            var folderTmpl = $($('.folder-template').html()),
-               $li = $('<li>'),
-               $a = $('<a href="javascript:;">'),
-               $span = $('<span>/</span>');
-            $('.file-list-wrapper .list-item').remove();
-            $('.nav-list li').remove();
-            folderTmpl.find('.db-filename').html('Public').data('url', '/public');
-            $('.file-list-wrapper').append(folderTmpl);
-            folderTmpl = $($('.folder-template').html());
-            folderTmpl.find('.db-filename').html('Private').data('url', '/private');
-            $('.file-list-wrapper').append(folderTmpl);
-            $('.nav-list').append($li.append($a.html('File').data('url', '/')).append($span));
-        }
-
-        function updateFileList (url) {
-            $.ajax({
-                url: '#{url.admin}#{url.adminFileList}',
-                data: {
-                    dir: url
-                },
-                type: 'POST',
-                dataType: 'json',
-                success: function (result) {
-                    if (result.status === 1) {
-                        var tmp = '';
-                        currentLocation = url;
-                        $('.file-list-wrapper .list-item').remove();
-                        $('.nav-list li').remove();
-                        currentLocation.split('/').forEach(function (item) {
-                            var $li = $('<li>'),
-                                $a = $('<a href="javascript:;">'),
-                                $span = $('<span>/</span>');
-                            if (item === '') {
-                                $a.html('File').data('url', '/');
-                            } else {
-                                tmp = tmp + '/' + item;
-                                $a.html(item).data('url', tmp);
-                            }
-                            $('.nav-list').append($li.append($a).append($span));
-                        });
-                        result.folders.forEach(function (folder) {
-                            var folderTmpl = $($('.folder-template').html());
-                            folderTmpl.find('.db-filename')
-                                .html(folder.name)
-                                .data('url', currentLocation + '/' + folder.name);
-                            folderTmpl.find('.create-time').html(folder.createTime);
-                            folderTmpl.find('.last-modified').html(folder.lastModifiedTime);
-                            $('.file-list-wrapper').append(folderTmpl);
-                        });
-                        result.files.forEach(function (file) {
-                            var fileTmpl = $($('.file-template').html()),
-                                baseLink = '/static/#{currentUser.uid}/upload/',
-                                link = currentLocation.split('/')[1] === '' ? 
-                                    '' : currentLocation.split('/').slice(2).join('/');
-                            fileTmpl.find('.db-filename')
-                                .html(file.name)
-                                .attr('href', baseLink + link + file.name)
-                                .data('url', currentLocation + '/' + file.name);
-                            fileTmpl.find('.download-btn').attr('href', baseLink + link + file.name).attr('target', '_blank');
-                            fileTmpl.find('.create-time').html(file.createTime);
-                            fileTmpl.find('.last-modified').html(file.lastModifiedTime);
-                            fileTmpl.find('.size').html(file.size);
-                            $('.file-list-wrapper').append(fileTmpl);
-                        });
-                    } else {
-                        msg('error', '读取文件夹失败！'+result.error);
-                    }
-                },
-                error: function (err) {
-                    msg('error', '读取文件夹失败！'+err);
-                }
-            });
-        }
 
         $('.header-btn').on('click', function () {
             $('.file-nav').toggle();
@@ -369,6 +302,7 @@ block admin_script
                 });
             }
         });
+        
 
         $('.move, .copy, .delete').on('click', function () {
             var origin = $('tbody input[type="checkbox"]:checked').parents('td'),
@@ -383,228 +317,17 @@ block admin_script
                 $('.selected-item').append($li);
             });
         });
-
-        $('#move .btn-primary').on('click', function () {
-            var targetDir = $('#move .target-dir').val(),
-                item = [],
-                self = this;
-            $('#move').find('.db-filename').each(function (index, a) {
-                item.push($(a).data('url'));
-            });
-
-
-            if (! item.length) {
-                msg('error', '请选择需要移动的文件或文件夹！');
-                return false;
-            }
-
-            if (targetDir === '/') {
-                msg('error', '请选择目的路径！');
-            }
-
-            progress.show('正在移动...', function () {
-                $.ajax({
-                    type: 'POST',
-                    url: '#{url.admin}#{url.adminFileMove}',
-                    data: {
-                        files: item,
-                        target: targetDir
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        $(self).prev().trigger('click');
-                        progress.hide(function () {
-                           if (result.status === 1) {
-                                msg('success', '移动成功！', function () {
-                                    $('.file-list-wrapper input[type="checkbox"]:checked').parents('tr').remove();
-                                });
-                            } else if (result.status === -1) {
-                                var failedFile = '';
-                                result.files.forEach(function (item, index) {
-                                    failedFile = failedFile + item.name + ', ';
-                                    console.error(item.error);
-                                });
-                                msg('warning', '部分文件移动成功！'+ failedFile + ' 移动失败！', function () {
-                                   $('.file-list-wrapper input[type="checkbox"]:checked')
-                                        .parents('td').find('.db-filename').each(function (index, a) {
-                                        var re = new RegExp($(a).html(), 'ig');
-                                        if (! re.test(failedFile)) {
-                                            $(a).parents('tr').remove();
-                                        }
-                                    }); 
-                                }, 3000);
-                            } else {
-                                msg('error', '移动失败！'+ result.error);
-                            }
-                        });
-                    },
-                    error: function (err) {
-                        progress.hide(function () {
-                            msg('error', '移动失败！' + err);
-                        });
-                    }
-                });
-            });
-        });
-        $('#copy .btn-primary').on('click', function () {
-            var targetDir = $('#copy .target-dir').val(),
-                item = [],
-                self = this;
-            $('#copy').find('.db-filename').each(function (index, a) {
-                item.push($(a).data('url'));
-            });
-
-            if (! item.length) {
-                msg('error', '请选择需要复制的文件或文件夹！');
-                return false;
-            }
-
-            if (targetDir === '/') {
-                msg('error', '请选择目的路径！');
-            }
-
-            progress.show('正在复制...', function () {
-                $.ajax({
-                    type: 'POST',
-                    url: '#{url.admin}#{url.adminFileCopy}',
-                    data: {
-                        files: item,
-                        target: targetDir
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        progress.hide(function () {
-                            $(self).prev().trigger('click');
-                            if (result.status === 1) {
-                                msg('success', '复制成功！');
-                            } else if (result.status === -1) {
-                                var failedFile = '';
-                                result.files.forEach(function (item, index) {
-                                    failedFile = failedFile + item.name + ', ';
-                                    console.error(item.error);
-                                });
-                                msg('warning', '部分文件复制成功！'+ failedFile + ' 复制失败！', null, 3000);
-                            } else {
-                                msg('error', '复制失败！'+ result.error);
-                            }
-                        });
-                    },
-                    error: function (err) {
-                        progress.hide(function () {
-                            msg('error', '复制失败！' + err);
-                        });
-                    }
-                });
+        $('.rename').on('click', function () {
+            var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
+            $('#rename-file .modal-body li').remove();
+            target.each(function (index, item) {
+                $('#rename-file .modal-body ul')
+                    .append($('<li>')
+                        .append($('<span>').html($(item).html()))
+                        .append($('<input type="text">').val($(item).html())));
             });
         });
 
-        $('#delete-file .btn-primary').on('click', function () {
-            event.preventDefault();
-            $(this).prev().click();
-            progress.show('Deleting files...', function () {
-                var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a'),
-                    files = [];
-                if (target.length === 0) {
-                    progress.hide(function () {
-                        msg('error', '没有选中需要删除的文件。');
-                    });
-                    return false;
-                }
-                target.each(function (index, a) {
-                    files.push($(a).data('url'));
-                });
-
-                $.ajax({
-                    url: '#{url.admin}#{url.adminFileDelete}',
-                    type: 'POST',
-                    data: {
-                        files: files
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        progress.hide(function () {
-                            if (result.status === 1) {
-                                msg('success', '删除成功！', function () {
-                                   target.parents('tr').remove();
-                                });
-                            } else if (result.status === -1) {
-                                var failedFile = '';
-                                result.files.forEach(function (item, index) {
-                                    failedFile = failedFile + item.name + ', ';
-                                    console.error(item.error);
-                                });
-                                msg('warning', '部分文件删除成功！'+ failedFile + ' 删除失败！', function () {
-                                   $('.file-list-wrapper input[type="checkbox"]:checked')
-                                        .parents('td').find('.db-filename').each(function (index, a) {
-                                        var re = new RegExp($(a).html(), 'ig');
-                                        if (! re.test(failedFile)) {
-                                            $(a).parents('tr').remove();
-                                        }
-                                    }); 
-                                }, 3000);
-                            } else {
-                                msg('error', result.error);
-                            }
-                        });
-                    },
-                    error: function (err) {
-                        progress.hide(function () {
-                            msg('error', err);
-                        });
-                    }
-                });
-            })
-        });
-
-        $('#new .btn-primary').on('click', function (event) {
-            var name = $('#new input[type="text"]').val(),
-                type = $('input[type="radio"]:checked').val(),
-                url = '#{url.admin}#{url.adminNewFile}/#{link}',
-                self = this;
-
-            progress.show(function () {
-                $.ajax({
-                    type: 'POST',
-                    data: {
-                        name: name,
-                        type: type,
-                        dir: currentLocation
-                    },
-                    url: url,
-                    dataType: 'json',
-                    success: function (result) {
-                        progress.hide(function () {
-                            if (result.status === 1) {
-                                msg('success', 'Creating new file/folder success!', function () {
-                                    $(self).siblings().trigger('click');
-                                    if (type === 'folder') {
-                                        var folderTmpl = $($('.folder-template').html());
-                                        folderTmpl.find('.db-filename').html(name);
-                                        $('.file-list-wrapper').append(folderTmpl);
-                                    } else {
-                                        var fileTmpl = $($('.file-template').html());
-                                        fileTmpl.find('.db-filename').html(name);
-                                    }
-                                });
-                            } else {
-                                msg('error', 'Creating new file/folder error:' + result.error);
-                            }
-                        });
-                    },
-                    error: function (err) {
-                        progress.hide(function () {
-                            msg('error', 'Creating new file/folder error:' + err);
-                        });
-                    }
-                });
-            });
-        });
-        $('#rename-file .btn-primary').on('click', function (event) {
-            event.preventDefault();
-            progress.show('Renaming file...', function () {
-                
-            });
-        });
         $('.select-all').on('click', function (event) {
             event.preventDefault();
             var target = $('tbody input[type="checkbox"]');
@@ -621,16 +344,6 @@ block admin_script
                 if ($(item).is(':checked')) {
                     $(item).parents('.checkbox').click();
                 }
-            });
-        });
-        $('.rename').on('click', function () {
-            var target = $('tbody input[type="checkbox"]:checked').parent().siblings('a');
-            $('#rename-file .modal-body li').remove();
-            target.each(function (index, item) {
-                $('#rename-file .modal-body ul')
-                    .append($('<li>')
-                        .append($('<span>').html($(item).html()))
-                        .append($('<input type="text">')));
             });
         });
 
@@ -665,3 +378,370 @@ block admin_script
             $('.upload-error-text').html(data.textStatus);
             $('.upload-error-detail').html(data.errorThrown);
         });
+
+        $('#rename-file .btn-primary').on('click', function (event) {
+            var file = [];
+            $(this).prev().trigger('click');
+            $('#rename-file li').each(function (index, li) {
+                if ($(li).find('span').html() !== $(li).find('input').val()) {
+                    file.push({
+                        path: currentLocation,
+                        oldName: $(li).find('span').html(),
+                        newName: $(li).find('input').val()
+                    });
+                }
+            });
+            if (!file.length) {
+                msg('error', '请选择需要重命名的文件！');
+                return false;
+            }
+            handle({
+                progressInfo: '正在重命名...',
+                method: 'POST',
+                url: '#{url.admin}#{url.adminFileRename}',
+                data: {
+                    files: file
+                },
+                success: function (result) {
+                    if (result.status === 1) {
+                        msg('success', '重命名成功！', function () {
+                            updateFileList(currentLocation);
+                        });
+                    } else if (result.status === -1) {
+                        var failedFile = '';
+                        result.files.forEach(function (item, index) {
+                            failedFile = failedFile + item.name + ', ';
+                            console.error(item.error);
+                        });
+                        msg('warning', '部分文件重命名成功！'+ failedFile +'重命名失败！', function () {
+                            updateFileList(currentLocation);
+                        });
+                    }
+                },
+                error: function (err) {
+                    msg('error', err);
+                }
+            });
+        });
+
+        $('#move .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            $(this).prev().trigger('click');
+            var target = $('#move .target-dir').val(),
+                file = [];
+            $('#move .db-filename').each(function (index, a) {
+                file.push($(a).data('url'));
+            });
+            if (! file.length) {
+                msg('error', '请选择需要移动的文件或文件夹！');
+                return false;
+            }
+            if (target === '/') {
+                msg('error', '请选择目的路径！');
+                return false;
+            }
+
+            handle({
+                progressInfo: '正在移动...',
+                method: 'POST',
+                url: '#{url.admin}#{url.adminFileMove}',
+                data: {
+                    files: file,
+                    target: target
+                },
+                success: function (result) {
+                    if (result.status === 1) {
+                        msg('success', '移动成功！', function () {
+                            updateFileList(currentLocation);
+                        });
+                    } else if (result.status === -1) {
+                        var failedFile = '';
+                        result.files.forEach(function (item, index) {
+                            failedFile = failedFile + item.name + ', ';
+                            console.error(item.error);
+                        });
+                        msg('warning', '部分文件移动成功！'+ failedFile + ' 移动失败！', function () {
+                            updateFileList(currentLocation);
+                        }, 3000);
+                    } else {
+                        msg('error', '移动失败！'+ result.error);
+                    }
+                }, 
+                faild: function (err) {
+                    msg('error', '移动失败！' + err);
+                }
+            });
+        });
+
+        $('#copy .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            $(this).prev().trigger('click');
+            var target = $('#copy .target-dir').val(),
+                file = [];
+            $('#copy .db-filename').each(function (index, a) {
+                file.push($(a).data('url'));
+            });
+            if (! file.length) {
+                msg('error', '请选择需要复制的文件或文件夹！');
+                return false;
+            }
+            if (target === '/') {
+                msg('error', '请选择目的路径！');
+                return false;
+            }
+
+            handle({
+                progressInfo: '正在复制...',
+                method: 'POST',
+                url: '#{url.admin}#{url.adminFileCopy}',
+                data: {
+                    files: file,
+                    target: target
+                },
+                success: function (result) {
+                    if (result.status === 1) {
+                        msg('success', '复制成功！', function () {
+                            updateFileList(currentLocation);
+                        });
+                    } else if (result.status === -1) {
+                        var failedFile = '';
+                        result.files.forEach(function (item, index) {
+                            failedFile = failedFile + item.name + ', ';
+                            console.error(item.error);
+                        });
+                        msg('warning', '部分文件复制成功！'+ failedFile + ' 复制失败！', function () {
+                            updateFileList(currentLocation);
+                        }, 3000);
+                    } else {
+                        msg('error', '复制失败！'+ result.error);
+                    }
+                }, 
+                faild: function (err) {
+                    msg('error', '复制失败！' + err);
+                }
+            });
+        });
+
+        $('#delete-file .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            $(this).prev().trigger('click');
+            var target = $('.file-list-wrapper input[type="checkbox"]:checked').parent().siblings('a'),
+                files = [];
+            if (target.length === 0) {
+                msg('error', '没有选中需要删除的文件。');
+                return false;
+            }
+            target.each(function (index, a) {
+                files.push($(a).data('url'));
+            });
+            
+            handle({
+                progressInfo: '正在删除文件....',
+                url: '#{url.admin}#{url.adminFileDelete}',
+                method: 'POST',
+                data: {
+                    files: deleteFile
+                },
+                success: function (result) {
+                    if (result.status === 1) {
+                        msg('success', '删除成功！', function () {
+                            updateFileList(currentLocation);
+                        });
+                    } else if (result.status === -1) {
+                        var failedFile = '';
+                        result.files.forEach(function (item, index) {
+                            failedFile = failedFile + item.name + ', ';
+                            console.error(item.error);
+                        });
+                        msg('warning', '部分文件删除成功！'+ failedFile + ' 删除失败！', function () {
+                            updateFileList(currentLocation);
+                        }, 3000);
+                    } else {
+                        msg('error', result.error);
+                    }
+                }, 
+                faild: function (err) {
+                    msg('error', err);
+                }
+            });
+        });
+        $('#new .btn-primary').on('click', function (event) {
+            event.preventDefault();
+            $(this).prev().trigger('click');
+            var name = $('#new input[type="text"]').val(),
+                type = $('input[type="radio"]:checked').val();
+            handle({
+                progressInfo: '创建新文件、文件夹中...',
+                method: 'POST',
+                url: '#{url.admin}#{url.adminNewFile}',
+                data: {
+                    name: name,
+                    type: type,
+                    dir: currentLocation
+                },
+                success: function (result) {
+                    if (result.status === 1) {
+                        msg('success', 'Creating new file/folder success!', function () {
+                            updateFileList(currentLocation);
+                        });
+                    } else {
+                        msg('error', 'Creating new file/folder error:' + result.error);
+                    }
+                }, 
+                faild: function (err) {
+                    msg('error', 'Creating new file/folder error:' + err);
+                }
+            });
+        });
+
+        function newItem (option) {
+            if (option.type === 'folder') {
+                var folderTmpl = $($('.folder-template').html());
+                folderTmpl.find('.db-filename')
+                    .html(option.name)
+                    .data('url', currentLocation + '/' + option.name);
+                folderTmpl.find('.create-time').html(option.createTime);
+                folderTmpl.find('.last-modified').html(option.lastModifiedTime);
+                $('.file-list-wrapper').append(folderTmpl);
+            } else if (option.type === 'file') {
+                var fileTmpl = $($('.file-template').html()),
+                    baseLink = '/static/#{currentUser.uid}/upload/',
+                    link = currentLocation.split('/')[1] === '' ? 
+                        '' : currentLocation.split('/').slice(2).join('/');
+                fileTmpl.find('.db-filename')
+                    .html(option.name)
+                    .attr('href', baseLink + link + option.name)
+                    .data('url', currentLocation + '/' + option.name);
+                fileTmpl.find('.download-btn').attr('href', baseLink + link + option.name).attr('target', '_blank');
+                fileTmpl.find('.create-time').html(option.createTime);
+                fileTmpl.find('.last-modified').html(option.lastModifiedTime);
+                fileTmpl.find('.size').html(option.size);
+                $('.file-list-wrapper').append(fileTmpl);
+            }
+        }
+
+        function formatSize (num) {
+            if (+num > 1024) {
+                return Math.floor(num/1024) + ' K';
+            } else if (+num > (1024*1024)) {
+                return Math.floor(num/(1024*1024)) + ' M';
+            } else if (+num < 1024) {
+                return num + ' B';
+            }
+        }
+
+        function formatTime (str) {
+            if (str === 'now') {
+                var now = new Date(),
+                    year = now.getFullYear(),
+                    month = now.getMonth() + 1 >= 10 ? now.getMonth() + 1 : '0' + now.getMonth() + 1,
+                    day = now.getDate() >= 10 ? now.getDate() : '0' + now.getDate(),
+                    hour = now.getHours() >= 10 ? now.getHours() : '0' + now.getHours(),
+                    minute = now.getMinutes() >= 10 ? now.getMinutes() : '0' + now.getMinutes(),
+                    second = now.getSeconds() >= 10 ? now.getSeconds() : '0' + now.getSeconds();
+                return year + '/' + month + '/' + day + ', ' + hour + ':' + minute + ':' + second;
+            } else {
+                var d = str.split('T')[0],
+                    t = str.split('T')[1];
+                d = d.replace(/-/ig, '/');
+                t = t.split('.')[0];
+                return d + ', ' + t;
+            }
+        }
+
+        function handle (option) {
+            //- option = {
+            //-     progressInfo: 'str',
+            //-     url: 'str',
+            //-     method: 'str',
+            //-     data: 'object',
+            //-     success: 'function',
+            //-     faild: 'function'
+            //- }
+            progress.show(option.progressInfo, function () {
+                $.ajax({
+                    url: option.url,
+                    type: option.method,
+                    data: option.data,
+                    dataType: 'json',
+                    success: function (result) {
+                        progress.hide(function () {
+                            option.success(result);
+                        });
+                    },
+                    error: function (err) {
+                        progress.hide(function () {
+                            option.faild(err);
+                        });
+                    }
+                });
+            });
+        }
+
+        function defaultList () {
+            var folderTmpl = $($('.folder-template').html()),
+               $li = $('<li>'),
+               $a = $('<a href="javascript:;">'),
+               $span = $('<span>/</span>');
+            $('.file-list-wrapper .list-item').remove();
+            $('.nav-list li').remove();
+            folderTmpl.find('.db-filename').html('Public').data('url', '/public');
+            $('.file-list-wrapper').append(folderTmpl);
+            folderTmpl = $($('.folder-template').html());
+            folderTmpl.find('.db-filename').html('Private').data('url', '/private');
+            $('.file-list-wrapper').append(folderTmpl);
+            $('.nav-list').append($li.append($a.html('File').data('url', '/')).append($span));
+        }
+
+        function updateFileList (url) {
+            handle({
+                progressInfo: '正在列出' + url +'路径下的文件...',
+                url: '#{url.admin}#{url.adminFileList}',
+                data: {
+                    dir: url,
+                },
+                method: 'POST',
+                success: function (result) {
+                    if (result.status === 1) {
+                        var tmp = '';
+                        currentLocation = url;
+                        $('.file-list-wrapper .list-item').remove();
+                        $('.nav-list li').remove();
+                        currentLocation.split('/').forEach(function (item) {
+                            var $li = $('<li>'),
+                                $a = $('<a href="javascript:;">'),
+                                $span = $('<span>/</span>');
+                            if (item === '') {
+                                $a.html('File').data('url', '/');
+                            } else {
+                                tmp = tmp + '/' + item;
+                                $a.html(item).data('url', tmp);
+                            }
+                            $('.nav-list').append($li.append($a).append($span));
+                        });
+                        result.folders.forEach(function (folder) {
+                            newItem({
+                                type: 'folder',
+                                name: folder.name,
+                                createTime: formatTime(folder.createTime),
+                                lastModifiedTime: formatTime(folder.lastModifiedTime)
+                            });
+                        });
+                        result.files.forEach(function (file) {
+                            newItem({
+                                type: 'file',
+                                name: file.name,
+                                createTime: formatTime(file.createTime),
+                                lastModifiedTime: formatTime(file.lastModifiedTime),
+                                size: formatSize(file.size)
+                            });
+                        });
+                    } else {
+                        msg('error', '读取文件夹失败！'+result.error);
+                    }
+                },
+                faild: function (err) {
+                    msg('error', '读取文件夹失败！'+err);
+                }
+            });
+        }
