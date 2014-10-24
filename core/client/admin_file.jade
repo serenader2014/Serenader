@@ -349,34 +349,87 @@ block admin_script
 
         $('#uploader').fileupload({
             dropZone: $('#uploader'),
-            autoUpload: true,
+            url: '#{url.admin}#{url.adminGalleryUpload}/#{type}/#{album.name}',
+            autoUpload: false,
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-            url: '#{url.admin}/upload/content',
+            singleFileUploads: true,
+            dataType: 'json',
+            add: function (e, data) {
+                $('.imgupload').hide();
+                $('.img-list').show();
+                $('.modal-footer .btn-primary').html('开始上传').addClass('upload-all');
+                var file = data.files[0],
+                    size = file.size/(1024*1024) > 1 ? 
+                        Math.ceil(file.size/(1024*1024)) + ' M' : Math.ceil(file.size/1024) + ' K',
+                    singleFile = $('<tr>'),
+                    name = $('<td>').html(file.name).addClass('file-name'),
+                    size = $('<td>').html(size).addClass('file-size'),
+                    progress = $('<td>')
+                        .append($('<span class="file-progress"><span class="file-progress-inner"></span></span>')),
+                    action = $('<td>')
+                        .append($('<button>').html('上传').addClass('start-upload'))
+                        .append($('<button>').html('移除').addClass('remove-file btn btn-danger'))
+                        .append($('<span>').html('0%').addClass('file-upload-percentage'));
 
-        }).on('fileuploadadd', function (e, data) {
-            $('.upload-picker').hide();
+                singleFile.append(name).append(size).append(progress).append(action);
+                action.find('.start-upload').on('click', function () {
+                    data.submit();
+                });
+                $('.upload-list').append(singleFile);
+                data.context = singleFile;
+            },
+            progress: function (e, data) {
+                var percentage = parseInt((data.loaded/data.total) * 100, 10) + '%';
+                data.context.find('.file-progress-inner').css({
+                    width: percentage
+                });
+                data.context.find('.file-upload-percentage').html(percentage);
+            },
+            done: function (e, data) {
+                uploadedImage.push(data.result[0]);
+                data.context.find('.remove-file').off('click').on('click', function () {
+                    $.ajax({
+                        url: data.result[0].deleteUrl,
+                        type: data.result[0].deleteType,
+                        dataType: 'json',
+                        success: function (result) {
+                            if (result.status === 1) {
+                                data.context.fadeOut(function () {
+                                    this.remove();
+                                });
+                            } else {
+                                msg('error', '删除图片失败！');
+                            }
+                        },
+                        error: function (err) {
+                            msg('error', err);
+                        }
+                    });
+                });
+                if (data.context.next().length) {
+                    data.context.next().find('.start-upload').trigger('click');
+                } else {
+                    $('.upload-all').html('上传完成').off('click').on('click', function () {
+                        $(this).parents('.modal').fadeOut(function () {
+                            $('.upload-list tr').remove();
+                            $('.img-list').hide();
+                            $('.imgupload').show();
+                            if (! $('.db-img-container').length) {
+                                $('.no-image').remove();
+                            }
+                            uploadedImage.forEach(function (img, index) {
+                                var aLink = $('<a href="' + img.url + '">').addClass('db-img-container'),
+                                    i = $('<img>').attr('src', img.thumbnailUrl).addClass('db-img');
 
-        }).on('fileuploadstart', function (e, data) {
-            $('.upload-progress').show();
-
-        }).on('fileuploadprogress', function (e, data) {
-            var percentage = parseInt(data.loaded/data.total * 100, 10);
-            $('.progress-inner').animate({
-                width: percentage + '%'
-            });
-
-        }).on('fileuploaddone', function (e, data) {
-            $('.upload-progress').hide();
-            $('.preview-container').show();
-            //- var imgUrl = '/static/#{locals.current_user.uid}/post/' + data.result.files[0].name
-            $('.preview-container img').remove();
-            $('.preview-container').append($('<img class="img-preview"/>').attr('src', imgUrl));
-            $('.imgurl input').val(imgUrl).focus();
-        }).on('fileuploadfail', function (e, data) {
-            $('.upload-progress').hide();
-            $('.upload-fail').show();
-            $('.upload-error-text').html(data.textStatus);
-            $('.upload-error-detail').html(data.errorThrown);
+                                $('.images-container').append(aLink.append(i));
+                            });
+                        });
+                    });
+                }
+            },
+            fail: function (e, data) {
+                alert('upload faild');
+            }
         });
 
         $('#rename-file .btn-primary').on('click', function (event) {
@@ -540,7 +593,7 @@ block admin_script
                 url: '#{url.admin}#{url.adminFileDelete}',
                 method: 'POST',
                 data: {
-                    files: deleteFile
+                    files: files
                 },
                 success: function (result) {
                     if (result.status === 1) {
@@ -621,11 +674,11 @@ block admin_script
         }
 
         function formatSize (num) {
-            if (+num > 1024) {
-                return Math.floor(num/1024) + ' K';
-            } else if (+num > (1024*1024)) {
+            if (+num > (1024*1024)) {
                 return Math.floor(num/(1024*1024)) + ' M';
-            } else if (+num < 1024) {
+            } else if (+num > 1024) {
+                return Math.floor(num/1024) + ' K';
+            } else {
                 return num + ' B';
             }
         }
