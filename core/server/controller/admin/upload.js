@@ -1,5 +1,6 @@
 var path = require('path'),
     Promise = require('bluebird'),
+    fs = Promise.promisifyAll(require('fs')),
     validator = require('validator'),
     xss = require('xss'),
     auth_user = require('../../utils/auth_user'),
@@ -34,7 +35,7 @@ module.exports = function (router) {
         upload(req, res, {
             uploadDir: targetDir,
             baseUrl: '/static/' + userName + '/upload/' + dstDir,
-            deleteUrl: url.admin + '/' + url.adminUpload + '/' + type + '/' + userName + '/upload/' + dstDir
+            deleteUrl: url.admin + url.adminUpload + '/' + type + '/' + userName + '/upload/' + dstDir
         }).then(function (files, field) {
             res.json(files);
         }).catch(function (err) {
@@ -46,27 +47,41 @@ module.exports = function (router) {
     });
 
     router.delete(url.adminUpload + '/*', auth_user, function (req, res, next) {
-        var dir = root + '/content/data/' + validator.trim(xss(req.ur)).split(url.adminUpload)[1],
-            fileName = path.basename(dir);
+        var tmpArr = validator.trim(xss(req.url)).split('/').slice(2),
+            fileName = tmpArr.pop(),
+            baseDir = root + '/content/data/' + tmpArr.join('/'),
+            imageVersions = req.body.imageVersions;
 
-        if (file) {
-            fs.unlinkAsync(dir + '/' + file).then(function () {
-                return Object.keys(options.imageVersions).reduce(function (p, version) {
-                    return p.then(function () {
-                        return fs.unlinkAsync(dir + '/' + version + '/' + file);
-                    });
-                }, Promise.resolve());
-            }).then(function () {
-                res.json({
-                    status: 1
-                });
-            }).catch(function (err) {
-                log.error(err.stack);
-                res.json({
-                    status: 0,
-                    error: err.message
-                });
+                
+        if (imageVersions && !Array.isArray(imageVersions)) {
+            res.json({
+                status: 0,
+                error: 'imageVersions must be an array'
             });
+            return false;
         }
+
+        fs.unlinkAsync(baseDir + '/' + fileName).then(function () {
+            if (/\.(gif|jpe?g|png)$/i.test(fileName) && imageVersions.length > 0) {
+                return imageVersions.reduce(function (p, version) {
+                    if (version) {
+                        version = validator.trim(xss(version));
+                        return p.then(function () {
+                            return fs.unlinkAsync(baseDir + '/' + version + '/' + fileName);
+                        });
+                    }
+                }, Promise.resolve());
+            }
+        }).then(function () {
+            res.json({
+                status: 1
+            });
+        }).catch(function (err) {
+            log.error(err.stack);
+            res.json({
+                status: 0,
+                error: err.message
+            });
+        });
     });
 };

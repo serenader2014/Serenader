@@ -193,11 +193,6 @@ block admin_script
                 $('.db-editor-insertimg').trigger('click');
             }            
 
-            $('.upload-picker').on('click', function (event) {
-                event.preventDefault();
-                $('.fileinput').trigger('click');
-            });
-
             $('.insert-img').on('click', function (event) {
                 event.preventDefault();
                 var imgUrl = $('.imgurl input').val();
@@ -219,9 +214,29 @@ block admin_script
 
             $('.remove-img').on('click', function (event) {
                 event.preventDefault();
-                $('.preview-container').hide();
-                $('.upload-picker').show();
-                $('.imgurl input').val('');
+                var url = $(this).data('url'),
+                    imageVersions = $(this).data('imageVersions');
+                $.ajax({
+                    type: 'DELETE',
+                    url: url,
+                    data: {
+                        imageVersions: Object.keys(imageVersions)
+                    },
+                    dataType: 'json', 
+                    success: function (result) {
+                        if (result.status === 1) {
+                            $('.preview-container').hide();
+                            $('.upload-picker').show();
+                            $('.imgurl input').val('').show();
+                            $('.fileinput').show();
+                        } else {
+                            msg('error', '删除原来的图片失败！');
+                        }
+                    },
+                    error: function (err) {
+                        msg('error', err.statusText);
+                    }
+                });
             });
 
             $('body').on('click', function () {
@@ -235,10 +250,11 @@ block admin_script
                 dropZone: $('#uploader'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                url: '#{url.admin}#{url.adminUpload}',
+                url: '#{url.admin}#{url.adminUpload}/public/post_attachment',
             }).on('fileuploadadd', function (e, data) {
                 $('.upload-picker').hide();
                 $('.imgurl input').hide();
+                $('.fileinput').hide();
             }).on('fileuploadstart', function (e, data) {
                 $('.upload-progress').show();
             }).on('fileuploadprogress', function (e, data) {
@@ -252,16 +268,16 @@ block admin_script
                 $('.preview-container')
                     .find('img').remove().end()
                     .append($('<img class="img-preview"/>')
-                    .attr('src', img.thumbnailUrl))
+                    .attr('src', img.imageVersions.thumbnail))
                     .show();
-                $('.remove-img').data('url', img.url);
+                $('.remove-img').data('url', img.deleteUrl).data('imageVersions', img.imageVersions);
                 $('.imgurl input').val(img.url).hide();
             }).on('fileuploadfail', function (e, data) {
                 $('.upload-progress').hide();
                 $('.upload-fail').show();
                 $('.upload-error-text').html(data.textStatus);
                 $('.upload-error-detail').html(data.errorThrown);
-            });            
+            });         
         })();
 
 block new_post

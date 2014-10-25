@@ -52,7 +52,6 @@ module.exports = function (req, res, opt) {
 
     _.extend(options, defaultOptions, opt);
 
-    console.log(options);
 
     FileInfo.prototype.validate = function () {
         if (options.minFileSize && options.minFileSize > this.size) {
@@ -78,10 +77,11 @@ module.exports = function (req, res, opt) {
             var self = this;
             this.url = options.baseUrl + '/' + encodeURIComponent(this.name);
             this.deleteUrl = options.deleteUrl + '/' + encodeURIComponent(this.name);
+            this.imageVersions = {};
             Object.keys(options.imageVersions).forEach(function (version) {
 
                 if (options.imageTypes.test(self.name)) {
-                    self[version + 'Url'] = options.baseUrl + '/' + version + '/' + encodeURIComponent(self.name);
+                    self.imageVersions[version] = options.baseUrl + '/' + version + '/' + encodeURIComponent(self.name);
                 }
             });
         }
