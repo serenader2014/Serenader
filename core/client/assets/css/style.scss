@@ -1853,6 +1853,18 @@ input.new-cate-name {
       }
     }
   }
+
+  #uploader {
+    .btn {
+      position: relative;
+      padding: 1rem 1.5rem;
+      margin-right: 1rem;
+    }
+
+    i {
+      margin-right: 0.5rem;
+    }
+  }
 }
 
 // Admin setting

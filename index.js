@@ -52,7 +52,7 @@ ConnectDB().then(function () {
 }).catch(function (err) {
     // If it can't pass the initialize checking, it will 
     // force exiting the process.
-    log.error('Initialize the system faild, please check your environment.');
+    log.error('Initialize the system failed, please check your environment.');
     log.error(err.message);
     process.exit(1);
     return false;

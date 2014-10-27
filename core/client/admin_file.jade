@@ -98,7 +98,16 @@ block files
                         h4.modal-title 上传文件
                     .modal-body
                         #uploader
-                            input.file(type='file')
+                            button.btn.add-btn(type='button')
+                                i.fa.fa-plus-square
+                                | Add file
+                                input.fileinput(type='file', name='image', accept='image/*',multiple)
+                            button.btn.btn-primary(type='button')
+                                i.fa.fa-upload
+                                | Start upload
+                            button.btn.btn-danger(type='button')
+                                i.fa.fa-trash
+                                | Cancel upload
                     .modal-footer
                         button.btn(type='button', data-dismiss='modal') 取消
                         button.btn.btn-primary(type='submit') 上传

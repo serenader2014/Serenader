@@ -8,7 +8,6 @@ module.exports = function (setting) {
         MongoStore = require('connect-mongo')(session),
 
         route = require('./routes'),
-        Setting = require('./models').Setting,
         config = require('../../config').config,
         errorHandling = require('./utils/error'),
         log = require('./utils/log')(),
@@ -29,9 +28,9 @@ module.exports = function (setting) {
             url: config.db
         }),
         resave: true,
-        saveUninitialized: true,
+        saveUninitialized: true
     }));
-    // validate wheather the visitor has logged in or not
+    // validate whether the visitor has logged in or not
     app.use(function (req, res, next) {
         if (req.session.user) {
             app.locals.currentUser = req.session.user;

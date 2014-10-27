@@ -4,7 +4,7 @@ var path = require('path'),
         version: pkg.version,
         db: 'mongodb://127.0.0.1/serenader',
         session_secret: 'cute cat',
-        port: 80,
+        port: 10086,
         root_dir: __dirname,
         url: {
             avatar: '/avatar/u',
@@ -59,7 +59,7 @@ var path = require('path'),
             '/content/data/private',
             '/content/data/public/background',
             '/content/data/tmp',
-            '/content/data/trash',
+            '/content/data/trash'
         ]
     };
 
