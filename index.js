@@ -59,6 +59,7 @@ ConnectDB().then(function () {
 }).then(function () {
     var dir = config.dir,
         root = config.root_dir;
+    console.log(aaaa);
     // make some folders if they don't exist
     return dir.reduce(function (sequence, dirPath) {
         return sequence.then(function () {
