@@ -13,4 +13,6 @@ node_modules
 .sass-cache
 .idea
 
-content/data
+content
+
+core/build
