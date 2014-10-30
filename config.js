@@ -46,6 +46,11 @@ var path = require('path'),
             indexAbout: '/about',
             indexUser: '/u',
         },
+        assetsUrl: {
+            clientSideAssets: '/client',
+            serverSideAssets: '/server',
+            staticFile: '/static'
+        },
         blogConfig: {
             name: 'Serenader',
             desc: 'A blog created by serenader, with some interesting features',

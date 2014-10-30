@@ -54,5 +54,8 @@ block content
         block preview
         block album
 block extra_script
+    - var urlString = JSON.stringify(url)
+    script.
+        var url = JSON.parse('#{urlString}');
     block admin_script
  

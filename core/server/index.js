@@ -46,19 +46,20 @@ module.exports = function (setting) {
 
     // cache the global system url, will be used in the jade file
     app.locals.url = config.url;
+    app.locals.assetsUrl = config.assetsUrl;
 
     module.exports.setting = app.locals.setting = setting;
 
     module.exports.locals = app.locals;
     theme = setting.theme;
 
-    app.use(function (req, res, next) {
+    app.use(config.assetsUrl.clientSideAssets, function (req, res, next) {
         dir = config.root_dir + '/content/themes/' + theme + '/assets';
         express.static(dir)(req, res, next);
     });
-    app.use(express.static(config.root_dir + '/core/client/assets'));
-    app.use('/static', express.static(config.root_dir + '/content/data/public'));
-    app.use('/static/:user/*', function (req, res, next) {
+    app.use(config.assetsUrl.serverSideAssets, express.static(config.root_dir + '/core/build'));
+    app.use(config.assetsUrl.staticFile, express.static(config.root_dir + '/content/data/public'));
+    app.use(config.assetsUrl.staticFile + '/:user/*', function (req, res, next) {
         var user = req.params.user;
         if (req.session.user && req.session.user.uid === user) {
             next();
@@ -66,7 +67,7 @@ module.exports = function (setting) {
             errorHandling(req, res, {type: 404, error: 'Not found'});
         }
     });
-    app.use('/static', express.static(config.root_dir + '/content/data/private'));
+    app.use(config.assetsUrl.staticFile, express.static(config.root_dir + '/content/data/private'));
 
 
     route(app);

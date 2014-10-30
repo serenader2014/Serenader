@@ -9,6 +9,7 @@ lib-cov
 .grunt
 
 node_modules
+bower_components
 
 .sass-cache
 .idea
