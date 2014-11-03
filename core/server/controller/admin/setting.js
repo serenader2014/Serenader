@@ -1,39 +1,47 @@
 var validator = require('validator'),
     xss = require('xss'),
     Promise = require('bluebird'),
-    fs = Promise.promisifyAll(require('fs')),
+    fs = Promise.promisifyAll(require('fs-extra')),
     auth_user = require('../../utils/auth_user'),
+    log = require('../../utils/log')(),
     errorHandling = require('../../utils/error'),
     Setting = require('../../models').Setting,
     config = require('../../../../config').config,
     locals = require('../../index').locals;
 
 module.exports = function (router) {
-    router.get(config.url.adminSetting, auth_user, function (req, res, next) {
+    router.get(config.url.adminSetting, auth_user, function (req, res) {
         if (req.session.user.role !== 'admin') {
             res.redirect(config.url.admin);
             return false;
         }
         fs.readdirAsync(config.root_dir + '/content/themes').then(function (files) {
             var themes = [];
-            files.reduce(function (p, item) {
+            return files.reduce(function (p, item) {
                 return p.then(function () {
                     return fs.statAsync(config.root_dir + '/content/themes/' + item).then(function (stat) {
                         if (stat.isDirectory()) {
-                            themes.push(item);
+                            var pkg = config.root_dir + '/content/themes/' + item + '/package.json';
+                            return fs.readJsonAsync(pkg).then(function (theme) {
+                                if (theme.name && theme.version) {
+                                    return themes.push(theme);
+                                }
+                            });
                         }
                     });
+                }).catch(function (err) {
+                    log.error(err.stack);
                 });
-            }, Promise.resolve()).then(function () {
-                res.render('admin_setting', { themes: themes });
+            }, Promise.resolve()).then(function (theme) {
+                res.render('admin_setting', { themes: theme });
             });
         }).then(null, function (err) {
             errorHandling(req, res, { error: err.message, type: 500 });
         });
     });
 
-    router.post(config.url.adminSetting, auth_user, function (req, res, next) {
-        var name, desc, logo, favicon, signup, theme, obj;
+    router.post(config.url.adminSetting, auth_user, function (req, res) {
+        var name, desc, logo, favicon, signup, theme, obj, num;
 
         if (req.session.user.role !== 'admin') {
             res.redirect(config.url.admin);

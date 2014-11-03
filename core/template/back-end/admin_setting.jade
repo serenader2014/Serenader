@@ -72,7 +72,7 @@ block settings
                         label(for='theme') Theme
                         select(name='theme')
                             - each t in themes
-                                option(value=t, selected= setting.theme === t ? true : false) #{t}
+                                option(value=t.name, selected= setting.theme === t.name ? true : false) #{t.name} #{t.version} - #{t.author}
                     .row
                         label(for='signup') Allow Sign Up
                         span.checkbox
