@@ -3,7 +3,7 @@ var express = require('express'),
     auth_user = require('../../utils/auth_user');
 
 
-adminHomePage.get('/', auth_user, function (req, res, next) {
+adminHomePage.get('/', auth_user, function (req, res) {
     res.render('admin_index');
 });
 

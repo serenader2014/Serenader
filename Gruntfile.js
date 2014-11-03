@@ -17,8 +17,10 @@ module.exports = function (grunt) {
                 files: [
                     'core/build/css/*.css',
                     'core/build/assets/js/*.js',
+                    'core/template/back-end/*.jade',
                     'content/themes/serenader/css/*.css',
-                    'content/themes/serenader/js/*.js'
+                    'content/themes/serenader/js/*.js',
+                    'content/themes/serenader/*.jade'
                 ],
                 options: {
                     livereload: true
@@ -31,6 +33,12 @@ module.exports = function (grunt) {
                 ],
                 tasks: ['sass']
             },
+            clientSide: {
+                files: [
+                    'core/template/front-end/**'
+                ],
+                tasks: ['copy:client']
+            }
         },
 
         jshint: {
@@ -64,7 +72,7 @@ module.exports = function (grunt) {
                         src: 'core/template/back-end/assets/css/style.scss'
                     },
                     {
-                        dest: 'content/themes/serenader/css/style.min.css',
+                        dest: 'core/template/front-end/assets/css/style.min.css',
                         src: 'core/template/front-end/assets/css/*.scss'
                     }
                 ]
@@ -76,13 +84,13 @@ module.exports = function (grunt) {
                 dest: 'core/build/js/vendor.js',
                 src: [
                     'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
                     'bower_components/lodash/dist/lodash.js',
                     'bower_components/marked/lib/marked.js',
                     'bower_components/codemirror/lib/codemirror.js',
                     'bower_components/backbone/backbone.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/highlight-js/src/highlight.js',
-                    'bower_components/blueimp-gallery/js/blueimp-gallery.js'
+                    'bower_components/blueimp-gallery/js/blueimp-gallery.min.js'
                 ]
             }
         },
@@ -124,14 +132,16 @@ module.exports = function (grunt) {
                         expand: true,
                     },
                     {
-                        flatten: true,
-                        src: 'bower_components/jquery/dist/jquery.js',
-                        dest: 'core/build/js/'
+                        cwd: 'bower_components/jquery/dist/',
+                        src: 'jquery.js',
+                        dest: 'core/build/js/',
+                        expand: true,
                     },
                     {
-                        flatten: true,
-                        src: 'bower_components/jquery/dist/jquery.js',
-                        dest: 'content/themes/serenader/js/'
+                        cwd: 'bower_components/jquery/dist/',
+                        src: 'jquery.js',
+                        dest: 'content/themes/serenader/js/',
+                        expand: true
                     }
                 ]
             },
@@ -140,6 +150,10 @@ module.exports = function (grunt) {
                     {
                         src: 'core/template/back-end/assets/css/common.css',
                         dest: 'core/build/css/common.css'
+                    },
+                    {
+                        src: 'bower_components/fontawesome/css/font-awesome.min.css',
+                        dest: 'core/build/css/font-awesome.min.css'
                     }
                 ]
             },
@@ -158,6 +172,12 @@ module.exports = function (grunt) {
                         dest: 'content/themes/serenader/'
                     }
                 ]
+            },
+            image: {
+                src: ['**'],
+                cwd: 'core/template/back-end/assets/img/',
+                dest: 'core/build/img/',
+                expand: true
             }
         },
 
@@ -167,7 +187,10 @@ module.exports = function (grunt) {
                 output: 'Serenader is running'
             },
             dev: {
-                options: {}
+                options: {
+                    output: 'Running in dev',
+                    delay: 1000
+                }
             }
         }
     };
@@ -181,9 +204,12 @@ module.exports = function (grunt) {
     grunt.registerTask('init', 'Initialize the project', 
         ['shell:bower']);
 
+    grunt.registerTask('prepare', 'Prepare the project', 
+        ['concat:libraries', 'copy', 'sass:compress']);
+
     grunt.registerTask('build', 'Build the project for production', 
-        ['concat:libraries', 'uglify:script','sass:compressed', 'copy']);
+        ['prepare', 'uglify:script']);
 
     grunt.registerTask('dev', 'Running project in dev env', 
-        ['concat:libraries', 'sass:compress', 'copy', 'express', 'watch']);
+        ['express', 'watch']);
 };

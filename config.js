@@ -1,5 +1,4 @@
-var path = require('path'),
-    pkg = require('./package.json'),
+var pkg = require('./package.json'),
     config = {
         version: pkg.version,
         db: 'mongodb://127.0.0.1/serenader',

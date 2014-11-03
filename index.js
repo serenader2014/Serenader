@@ -1,9 +1,7 @@
 var Promise = require('bluebird'),
     mongoose = require('mongoose'),
-    fs = Promise.promisifyAll(require('fs')),
-    fsx = Promise.promisifyAll(require('fs-extra')),
+    fs = Promise.promisifyAll(require('fs-extra')),
     models = require('./core/server/models'),
-    Post = models.Post,
     Setting = models.Setting,
     Category = models.Category,
     log = require('./core/server/utils/log')(),
@@ -12,7 +10,7 @@ var Promise = require('bluebird'),
     settings;
 
 
-function ConnectDB () {
+function connectDB () {
     log.info('Initialize system...');
     return new Promise(function (resolve, reject) {
         mongoose.connect(config.db, function (err) {
@@ -30,7 +28,7 @@ function ConnectDB () {
 // and folders, then run the core server.
 
 // connect to mongodb
-ConnectDB().then(function () {
+connectDB().then(function () {
     return Setting.getSetting();
 }).then(function (setting) {
     if (!setting) {
@@ -59,12 +57,11 @@ ConnectDB().then(function () {
 }).then(function () {
     var dir = config.dir,
         root = config.root_dir;
-    console.log(aaaa);
     // make some folders if they don't exist
     return dir.reduce(function (sequence, dirPath) {
         return sequence.then(function () {
             log.success('Making folder:' + dirPath);
-            return fsx.mkdirsAsync(root + dirPath);
+            return fs.mkdirsAsync(root + dirPath);
         });
     }, Promise.resolve());
 }).then(function (){

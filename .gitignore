@@ -17,3 +17,7 @@ bower_components
 content
 
 core/build
+
+core/template/front-end/assets/css/*.css
+core/template/front-end/assets/css/*.map
+

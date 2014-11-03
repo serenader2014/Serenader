@@ -1,6 +1,4 @@
-var mongoose = require('mongoose'),
-    User = require('../models').User,
-    config = require('../../../config').config,
+var config = require('../../../config').config,
     root = config.root_dir,
     errorHandling = require('../utils/error');
 
@@ -8,7 +6,7 @@ var mongoose = require('mongoose'),
 function route (app) {
 
     app.use(config.url.admin, function (req, res, next) {
-        app.set('views', root + '/core/client');
+        app.set('views', root + '/core/template/back-end/');
         next();
     });
     app.use(config.url.admin, require('../controller/admin'));
@@ -20,7 +18,7 @@ function route (app) {
     });
     app.use('/', require('../controller/index'));
 
-    app.use('*', function (req, res, next) {
+    app.use('*', function (req, res) {
         errorHandling(req, res, {
             error: '你请求的页面不存在。',
             type: 404

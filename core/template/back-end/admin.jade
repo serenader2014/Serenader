@@ -1,7 +1,7 @@
 extends layout
 
 block extra_css
-    link(rel='stylesheet', href='/css/style.css')
+    link(rel='stylesheet', href='#{assetsUrl.serverSideAssets}/css/style.min.css')
     block admin_css
 
 
@@ -56,6 +56,6 @@ block content
 block extra_script
     - var urlString = JSON.stringify(url)
     script.
-        var url = JSON.parse('#{urlString}');
+        var url = JSON.parse('!{urlString}');
     block admin_script
  

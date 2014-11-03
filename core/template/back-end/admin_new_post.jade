@@ -2,16 +2,11 @@ extends admin
 
 block admin_css
     link(rel='stylesheet', href='/css/jquery.light-selector.css')
-    link(rel='stylesheet', href='/css/codemirror.css')
+    link(rel='stylesheet', href='#{assetsUrl.serverSideAssets}/css/codemirror.css')
 
 block admin_script
-    script(tpye='text/javascript', src='/js/codemirror.js')
-    script(type='text/javascript', src='/js/marked.js')
-    script(tpye='text/javascript', src='/js/jquery.light-selector.js')
-    script(type='text/javascript', src='/js/jquery.ui.widget.js')
-    script(type='text/javascript', src='/js/jquery.fileupload.js')
-    script(type='text/javascript', src='/js/jquery.iframe-transport.js')
-    script(type='text/javascript').
+    script(tpye='text/javascript', src='#{assetsUrl.serverSideAssets}/js/vendor.js')
+    script(type='text/javascript', src='#{assetsUrl.serverSideAssets}/js/post.js')
 
 
 block new_post

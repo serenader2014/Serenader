@@ -4,7 +4,6 @@ module.exports = function (setting) {
         cookieParser = require('cookie-parser'),
         bodyParser = require('body-parser'),
         session = require('express-session'),
-        mongoose = require('mongoose'),
         MongoStore = require('connect-mongo')(session),
 
         route = require('./routes'),
@@ -36,10 +35,6 @@ module.exports = function (setting) {
             app.locals.currentUser = req.session.user;
             req.session.cookie.expires = new Date(Date.now()+1000*60*30);
             req.session.cookie.maxAge = 1000*60*30;
-            res.cookie('serenader','0.1',{
-                maxAge: 1000*60*30,
-                expires: new Date(Date.now()+1000*60*30)
-            });
         }
         next();
     });

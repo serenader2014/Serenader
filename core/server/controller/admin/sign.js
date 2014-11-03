@@ -5,10 +5,11 @@ var Promise = require('bluebird'),
     xss = require('xss'),
     validator = require('validator'),
     User = require('../../models').User,
-    errorHandling = require('../../utils/error'),
     log = require('../../utils/log')(),
-    root = require('../../../../config').config.root_dir,
-    url = require('../../../../config').config.url,
+    config = require('../../../../config').config,
+    root = config.root_dir,
+    url = config.url,
+    assets = config.assetsUrl,
     locals = require('../../index').locals;
 
 module.exports = function (router) {
@@ -18,7 +19,7 @@ module.exports = function (router) {
     readBgFolder().then(function (list) {
         var bg;
         if (list.length === 0) {
-            bg = '/img/default_background.jpg';
+            bg = assets.serverSideAssets + '/img/default_background.jpg';
         } else {
             bg = list[Math.floor(Math.random()*list.length)];
         }
@@ -27,7 +28,7 @@ module.exports = function (router) {
 
         // router handler
 
-        router.get(url.adminSignIn, function (req, res, next) { 
+        router.get(url.adminSignIn, function (req, res) { 
             if (req.session.user) {
                 res.redirect(url.admin);
             } else {
@@ -38,7 +39,7 @@ module.exports = function (router) {
             }
         });
 
-        router.post(url.adminSignIn, function (req, res, next) {
+        router.post(url.adminSignIn, function (req, res) {
             var username = xss(validator.trim(req.body.username)),
                 password = xss(validator.trim(req.body.password));
 
