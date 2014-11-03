@@ -114,24 +114,24 @@ module.exports = function (grunt) {
                 dest: 'core/build/ace/',
                 cwd: 'bower_components/ace/',
                 expand: true,
-                flatten: true
-            },
-            scripts: {
-                src: ['**'],
-                dest: 'core/build/js',
-                cwd: 'core/template/back-end/assets/js/',
-                expand: true,
-                flatten: true
             },
             js: {
                 files: [
                     {
-                        src: 'bower_components/jquery/dist/jquery.js',
-                        dest: 'core/build/js'
+                        src: ['**'],
+                        dest: 'core/build/js/',
+                        cwd: 'core/template/back-end/assets/js/',
+                        expand: true,
                     },
                     {
+                        flatten: true,
                         src: 'bower_components/jquery/dist/jquery.js',
-                        dest: 'content/themes/serenader/js'
+                        dest: 'core/build/js/'
+                    },
+                    {
+                        flatten: true,
+                        src: 'bower_components/jquery/dist/jquery.js',
+                        dest: 'content/themes/serenader/js/'
                     }
                 ]
             },
@@ -148,12 +148,13 @@ module.exports = function (grunt) {
                 src: '**',
                 dest: 'core/build/fonts/',
                 expand: true,
-                flatten: true
             },
             client: {
                 files: [
                     {
-                        src: 'core/template/front-end/*',
+                        expand: true,
+                        cwd: 'core/template/front-end',
+                        src: '**',
                         dest: 'content/themes/serenader/'
                     }
                 ]
@@ -164,6 +165,9 @@ module.exports = function (grunt) {
             options: {
                 script: 'index.js',
                 output: 'Serenader is running'
+            },
+            dev: {
+                options: {}
             }
         }
     };
@@ -177,11 +181,9 @@ module.exports = function (grunt) {
     grunt.registerTask('init', 'Initialize the project', 
         ['shell:bower']);
 
-    grunt.registerTask('build', 'Build the project', 
+    grunt.registerTask('build', 'Build the project for production', 
         ['concat:libraries', 'uglify:script','sass:compressed', 'copy']);
 
     grunt.registerTask('dev', 'Running project in dev env', 
-        ['concat:libraries', 'sass:compress', 'copy:js', 'watch', 'express']);
-
-    grunt.registerTask('t', 'test', ['copy:ace']);
+        ['concat:libraries', 'sass:compress', 'copy', 'express', 'watch']);
 };
