@@ -1,7 +1,8 @@
 extends layout
 block extra_css
-    link(rel='stylesheet', href='/css/sign.css')
-    - var bg = background === '/img/default_background.jpg' ? '/img/default_background.jpg' : '/static/background/' + background;
+    link(rel='stylesheet', href='#{assetsUrl.serverSideAssets}/css/sign.min.css')
+    - var bg = background === assetsUrl.serverSideAssets + '/img/default_background.jpg' ? assetsUrl.serverSideAssets + '/img/default_background.jpg' : '/static/background/' + background;
+
     style.
         .db-sign {
         background: url(#{bg});

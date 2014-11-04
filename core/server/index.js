@@ -32,7 +32,12 @@ module.exports = function (setting) {
     // validate whether the visitor has logged in or not
     app.use(function (req, res, next) {
         if (req.session.user) {
-            app.locals.currentUser = req.session.user;
+            app.locals.currentUser ={
+                uid: req.session.user.uid,
+                avatar: req.session.user.avatar,
+                role: req.session.user.role,
+                email: req.session.user.email
+            };
             req.session.cookie.expires = new Date(Date.now()+1000*60*30);
             req.session.cookie.maxAge = 1000*60*30;
         }

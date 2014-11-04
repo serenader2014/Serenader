@@ -1,7 +1,6 @@
 var Promise = require('bluebird'),
     crypto = require('crypto'),
-    fs = Promise.promisifyAll(require('fs')),
-    fsx = Promise.promisifyAll(require('fs-extra')),
+    fs = Promise.promisifyAll(require('fs-extra')),
     xss = require('xss'),
     validator = require('validator'),
     User = require('../../models').User,
@@ -11,6 +10,31 @@ var Promise = require('bluebird'),
     url = config.url,
     assets = config.assetsUrl,
     locals = require('../../index').locals;
+
+function readBgFolder () {
+    return fs.readdirAsync(root + '/content/data/public/background').then(function (files) {
+        var list = [];
+        files.reduce(function (p, file) {
+            return p.then(function () {
+                return fs.statAsync(root + '/content/data/public/background/' + file).then(function (stat) {
+                    if (stat.isFile()) {
+                        list.push(file);
+                    }
+                });
+            });
+        }, Promise.resolve());
+
+        return list;
+    });
+}
+
+
+function md5 (password) {
+    var salt = 'interesting',
+        raw = crypto.createHash('md5').update(password+salt),
+        result = raw.digest('hex');
+    return result;
+}
 
 module.exports = function (router) {
 
@@ -63,7 +87,7 @@ module.exports = function (router) {
             });
         });
         
-        router.get(url.adminSignUp, function (req, res, next) {
+        router.get(url.adminSignUp, function (req, res) {
             if (req.session.user) {
                 res.redirect(url.admin);
             } else {
@@ -71,7 +95,7 @@ module.exports = function (router) {
             }
         });
 
-        router.post(url.adminSignUp, function (req, res, next) {
+        router.post(url.adminSignUp, function (req, res) {
             var uid, email, password, hashedPwd, hashedEmail;
             
             if (! locals.setting.allow_sign_up) {
@@ -163,7 +187,7 @@ module.exports = function (router) {
                     return dir.reduce(function (p, d) {
                         return p.then(function () {
                             log.success('create user folders:' + d);
-                            return fsx.mkdirsAsync(root + d);
+                            return fs.mkdirsAsync(root + d);
                         });
                     }, Promise.resolve()).then(function () {
                         res.json({
@@ -182,34 +206,10 @@ module.exports = function (router) {
             });
         });
 
-        router.get(url.adminSignOut, function (req, res, next) {
+        router.get(url.adminSignOut, function (req, res) {
             req.session.destroy();
             res.redirect(url.admin);
         });
     });
 };
 
-function readBgFolder () {
-    return fs.readdirAsync(root + '/content/data/public/background').then(function (files) {
-        var list = [];
-        files.reduce(function (p, file) {
-            return p.then(function () {
-                return fs.statAsync(root + '/content/data/public/background/' + file).then(function (stat) {
-                    if (stat.isFile()) {
-                        list.push(file);
-                    }
-                });
-            });
-        }, Promise.resolve());
-
-        return list;
-    });
-}
-
-
-function md5 (password) {
-    var salt = 'interesting',
-        raw = crypto.createHash('md5').update(password+salt),
-        result = raw.digest('hex');
-    return result;
-}

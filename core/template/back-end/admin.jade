@@ -54,8 +54,10 @@ block content
         block preview
         block album
 block extra_script
-    - var urlString = JSON.stringify(url)
+    - var urlString = JSON.stringify(url);
+    - var userString = JSON.stringify(currentUser);
     script.
-        var url = JSON.parse('!{urlString}');
+        var url = JSON.parse('!{urlString}'),
+            currentUser = JSON.parse('!{userString}');
     block admin_script
  

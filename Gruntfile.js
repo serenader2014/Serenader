@@ -11,7 +11,7 @@ module.exports = function (grunt) {
                 files: [
                     'core/template/back-end/assets/js/*.js'
                 ],
-                tasks: ['concat']
+                tasks: ['copy:js']
             },
             livereload: {
                 files: [
@@ -90,6 +90,7 @@ module.exports = function (grunt) {
                     'bower_components/codemirror/lib/codemirror.js',
                     'bower_components/backbone/backbone.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'bower_components/jquery-file-upload/js/jquery.iframe-transport.js',
                     'bower_components/blueimp-gallery/js/blueimp-gallery.min.js'
                 ]
             }
