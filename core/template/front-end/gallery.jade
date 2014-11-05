@@ -1,8 +1,0 @@
-extends layout
-
-block content
-    - albums.forEach(function (item, index) {
-        div
-            a(href='/gallery/#{item.name}') #{item.name}
-            span item.desc
-    - })

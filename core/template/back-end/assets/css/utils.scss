@@ -1,0 +1,194 @@
+
+/* Ripple Click Effect CSS */
+.ripple {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    .ink {
+        position: absolute;
+        display: inline-block;
+        border-radius: 100%;
+        transform: scale(0);
+        background: $ripple-default;
+        z-index: 1;
+    }
+    .animate {
+        animation: ripple 0.5s linear;
+    }
+}
+.ripple.ripple-blue .ink {
+    background: $ripple-blue;
+}
+
+.ripple.ripple-yellow .ink {
+    background: $ripple-yellow;
+}
+
+.ripple.ripple-pink .ink {
+    background: $ripple-pink;
+}
+
+.ripple.ripple-red .ink {
+    background: $ripple-red;
+}
+
+.ripple.ripple-white .ink {
+    background: $ripple-white;
+}
+
+.ripple.ripple-black .ink {
+    background: $ripple-black;
+}
+
+@-webkit-keyframes ripple {
+    100% {
+        opacity: 0;
+        transform: scale(5);
+    }
+}
+
+/* Button set */
+.btn {
+    display: inline-block;
+    padding: 7px 40px;
+    border: none;
+    border-radius: 0.3rem;
+    outline: none;
+    font-size: 1.4rem;
+    color: $button-default-color;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: $button-default-background;
+
+    &:hover {
+        background: $button-background;
+    }
+}
+
+.btn.btn-primary {
+    color: $button-primary-color;
+}
+
+.btn.btn-danger {
+    color: $button-danger-color;
+}
+
+.btn.btn-warning {
+    color: $button-warning-color;
+}
+
+.btn.btn-disabled {
+    cursor: not-allowed;
+    color: $button-disabled-color;
+    background: $button-background;
+}
+
+.btn.btn-raised {
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+    background: $button-raised-background;
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    &:active {
+        box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
+        transition-delay: 0s;        
+    }
+}
+
+.btn.btn-blue {
+    color: $white;
+    background: $button-blue;
+}
+
+.btn.btn-red {
+    color: $white;
+    background: $button-red;
+}
+
+.btn.btn-green {
+    color: $white;
+    background: $button-green;
+}
+
+.btn.btn-yellow {
+    color: $white;
+    background: $button-yellow;
+}
+
+.btn.btn-grey {
+    color: $button-default-color;
+    background: $button-background;
+}
+
+
+/* Whiteframe set */
+.whiteframe {
+    display: block;
+    width: 95%;
+    padding: 0.8rem;
+    margin: 0 2.5%;
+    box-shadow: $shadow-1;
+    background: $white;
+}
+
+/* Dialog set */
+.dialog {
+    display: flex;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(map-get($color-grey, '1000'), 0.3);
+
+    .dialog-container {
+        position: relative;
+        margin: auto;
+        max-width: 70rem;
+        min-width: 30rem;
+        width: 80%;
+        min-height: 20rem;
+        border-bottom-left-radius: 0.3rem;
+        border-bottom-right-radius: 0.3rem;
+        box-shadow: $shadow-5;
+        background: $white;
+    }
+
+    .dialog-header {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        padding: 1rem 2.4rem;
+        font-size: 1.6rem;
+        color: $white;
+        background: map-get($color-light-blue, 'A100');
+    }
+
+    .dialog-footer {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        padding: 0.3rem 2.4rem;
+        border-top: 1px solid map-get($color-grey, '300');
+        text-align: right;
+        background: $white;
+        .btn {
+            padding: 0.8rem 0.5rem;
+            margin-left: 2rem;
+        }
+    }
+
+    .dialog-body {
+        padding: 4.6rem 2.4rem 6rem;
+        font-size: $normal-font-size;
+        color: $content-color;
+        max-height: 40rem;
+        overflow: auto;
+    }
+}

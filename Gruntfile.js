@@ -59,21 +59,39 @@ module.exports = function (grunt) {
         sass: {
             compress: {
                 options: {
-                    style: 'compressed',
-                    sourcemap: true
+                    style: 'compressed'
                 },
                 files: [
                     {
-                        dest: 'core/build/css/sign.min.css',
+                        dest: 'core/build/css/sign.css',
                         src: 'core/template/back-end/assets/css/sign.scss'
                     },
                     {
-                        dest: 'core/build/css/style.min.css',
+                        dest: 'core/build/css/style.css',
                         src: 'core/template/back-end/assets/css/style.scss'
                     },
                     {
-                        dest: 'core/template/front-end/assets/css/style.min.css',
-                        src: 'core/template/front-end/assets/css/*.scss'
+                        dest: 'core/template/front-end/assets/css/style.css',
+                        src: 'core/template/front-end/assets/css/style.scss'
+                    }
+                ]
+            },
+            compile: {
+                options: {
+                    outputStyle: 'nestend'
+                },
+                files: [
+                    {
+                        dest: 'core/build/css/sign.css',
+                        src: 'core/template/back-end/assets/css/sign.scss'
+                    },
+                    {
+                        dest: 'core/build/css/style.css',
+                        src: 'core/template/back-end/assets/css/style.scss'
+                    },
+                    {
+                        dest: 'core/template/front-end/assets/css/style.css',
+                        src: 'core/template/front-end/assets/css/style.scss'
                     }
                 ]
             }
@@ -134,14 +152,14 @@ module.exports = function (grunt) {
                     },
                     {
                         cwd: 'bower_components/jquery/dist/',
-                        src: 'jquery.js',
+                        src: 'jquery.min.js',
                         dest: 'core/build/js/',
                         expand: true,
                     },
                     {
                         cwd: 'bower_components/jquery/dist/',
-                        src: 'jquery.js',
-                        dest: 'content/themes/serenader/js/',
+                        src: 'jquery.min.js',
+                        dest: 'content/themes/serenader/assets/js/',
                         expand: true
                     }
                 ]
