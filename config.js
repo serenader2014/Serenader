@@ -56,7 +56,7 @@ var pkg = require('./package.json'),
             logo: '/static/logo.png',
             favicon: '/static/favicon.ico',
             allow_sign_up: true,
-            theme: 'serenader',
+            theme: 'blue',
             posts_per_page: 10
         },
         dir: [

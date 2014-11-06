@@ -6,141 +6,83 @@ module.exports = function (grunt) {
 
     config = {
         pkg: grunt.file.readJSON('package.json'),
+
         watch: {
-            script: {
-                files: [
-                    'core/template/back-end/assets/js/*.js'
-                ],
-                tasks: ['copy:js']
-            },
             livereload: {
-                files: [
-                    'core/build/css/*',
-                    'core/build/assets/js/*',
-                    'core/template/back-end/*.jade',
-                    'content/themes/serenader/css/*.css',
-                    'content/themes/serenader/js/*.js',
-                    'content/themes/serenader/*.jade'
-                ],
                 options: {
                     livereload: true
-                }
+                },
+                files: [
+                    'core/view/*',
+                    'core/view/assets/js/serenader.js',
+                    'core/view/assets/css/style.css',
+                    'core/view/assets/css/sign.css'
+                ]
+            },
+            script: {
+                files: [
+                    'core/view/assets/js/*.js',
+                    '!core/view/assets/js/vendor.js',
+                    '!core/view/assets/js/serenader.js'
+                ],
+                tasks: ['concat:serenader']
             },
             sass: {
-                files: [
-                    'core/template/back-end/assets/css/*.scss',
-                    'core/template/front-end/assets/css/*.scss'
-                ],
-                tasks: ['sass:compile', 'autoprefixer']
+                files: ['core/view/assets/css/*.scss'],
+                tasks: ['css']
+            }
+        },
+
+        copy: {
+            ace: {
+                cwd: 'bower_components/ace/',
+                src: ['**'],
+                dest: 'core/view/assets/ace/',
+                expand: true
             },
-            clientSide: {
+            js: {
                 files: [
-                    'core/template/front-end/**'
-                ],
-                tasks: ['copy:client']
-            }
-        },
-
-        jshint: {
-            backEnd: {
-                options: {
-                    jshintrc: '.jshintrc'
-                },
-                files: {
-                    src: [
-                        '*.js',
-                        'core/*.js',
-
-                    ]
-                }
-            }
-        },
-
-        sass: {
-            compress: {
-                options: {
-                    style: 'compressed'
-                },
+                    {'core/view/assets/js/jquery.min.js': 'bower_components/jquery/dist/jquery.min.js'},
+                    {'core/view/assets/js/jquery.min.map': 'bower_components/jquery/dist/jquery.min.map'}
+                ]
+            },
+            font: {
                 files: [
                     {
-                        dest: 'core/build/css/sign.css',
-                        src: 'core/template/back-end/assets/css/sign.scss'
+                        cwd: 'bower_components/fontawesome/fonts/',
+                        src: ['**'],
+                        dest: 'core/view/assets/fonts/',
+                        expand: true
                     },
                     {
-                        dest: 'core/build/css/style.css',
-                        src: 'core/template/back-end/assets/css/style.scss'
-                    },
-                    {
-                        dest: 'core/template/front-end/assets/css/style.css',
-                        src: 'core/template/front-end/assets/css/style.scss'
+                        cwd: 'bower_components/fontawesome/css/',
+                        src: 'font-awesome.min.css',
+                        dest: 'core/view/assets/css/',
+                        expand: true
                     }
                 ]
             },
-            compile: {
-                options: {
-                    style: 'nested'
-                },
-                files: [
-                    {
-                        dest: 'core/build/css/sign.css',
-                        src: 'core/template/back-end/assets/css/sign.scss'
-                    },
-                    {
-                        dest: 'core/build/css/style.css',
-                        src: 'core/template/back-end/assets/css/style.scss'
-                    },
-                    {
-                        dest: 'core/template/front-end/assets/css/style.css',
-                        src: 'core/template/front-end/assets/css/style.scss'
-                    }
-                ]
-            }
-        },
-
-        autoprefixer: {
             css: {
                 files: [
                     {
-                        src: 'core/build/css/style.css',
-                        dest: 'core/build/css/style.css'
+                        cwd: 'bower_components/blueimp-gallery/css/',
+                        src: 'blueimp-gallery.min.css',
+                        dest: 'core/view/assets/css/',
+                        expand: true
                     },
                     {
-                        src: 'content/themes/serenader/assets/css/style.css',
-                        dest: 'content/themes/serenader/assets/css/style.css'
+                        cwd: 'bower_components/blueimp-gallery/img/',
+                        src: ['**'],
+                        dest: 'core/view/assets/img/',
+                        expand: true
                     },
                     {
-                        src: 'core/build/css/sign.css',
-                        dest: 'core/build/css/sign.css'
+                        cwd: 'bower_components/codemirror/lib/',
+                        src: 'codemirror.css',
+                        dest: 'core/view/assets/css/',
+                        expand: true
                     }
                 ]
-            }
-        },
-
-        concat: {
-            libraries: {
-                dest: 'core/build/js/vendor.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/lodash/dist/lodash.js',
-                    'bower_components/marked/lib/marked.js',
-                    'bower_components/codemirror/lib/codemirror.js',
-                    'bower_components/backbone/backbone.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/jquery-file-upload/js/jquery.iframe-transport.js',
-                    'bower_components/blueimp-gallery/js/blueimp-gallery.min.js'
-                ]
-            }
-        },
-
-        uglify: {
-            script: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'core/build/js/vendor.min.js': 'core/build/js/vendor.js'
-                }
             }
         },
 
@@ -154,100 +96,129 @@ module.exports = function (grunt) {
             }
         },
 
-        copy: {
-            ace: {
-                src: ['**'],
-                dest: 'core/build/ace/',
-                cwd: 'bower_components/ace/',
-                expand: true,
-            },
-            js: {
+        uglify: {
+            default: {
+                files: {
+                    'core/view/assets/js/vendor.js': 'core/view/assets/js/vendor.js',
+                    'core/view/assets/js/serenader.js': 'core/view/assets/js/serenader.js'
+                }
+            }
+        },
+
+        sass: {
+            compile: {
+                options: {
+                    style: 'nested'
+                },
                 files: [
                     {
-                        src: ['**'],
-                        dest: 'core/build/js/',
-                        cwd: 'core/template/back-end/assets/js/',
-                        expand: true,
+                        src: 'core/view/assets/css/style.scss',
+                        dest: 'core/view/assets/css/style.css'
                     },
                     {
-                        cwd: 'bower_components/jquery/dist/',
-                        src: 'jquery.min.js',
-                        dest: 'core/build/js/',
-                        expand: true,
-                    },
-                    {
-                        cwd: 'bower_components/jquery/dist/',
-                        src: 'jquery.min.js',
-                        dest: 'content/themes/serenader/assets/js/',
-                        expand: true
+                        src: 'core/view/assets/css/sign.scss',
+                        dest: 'core/view/assets/css/sign.css'
                     }
+
                 ]
             },
-            css: {
+            compress: {
+                options: {
+                    style: 'compressed'
+                },
                 files: [
                     {
-                        src: 'core/template/back-end/assets/css/common.css',
-                        dest: 'core/build/css/common.css'
+                        src: 'core/view/assets/css/style.scss',
+                        dest: 'core/view/assets/css/style.css'
                     },
                     {
-                        src: 'bower_components/fontawesome/css/font-awesome.min.css',
-                        dest: 'core/build/css/font-awesome.min.css'
-                    }
+                        src: 'core/view/assets/css/sign.scss',
+                        dest: 'core/view/assets/css/sign.css'
+                    }                    
                 ]
-            },
-            font: {
-                cwd: 'bower_components/fontawesome/fonts/',
-                src: '**',
-                dest: 'core/build/fonts/',
-                expand: true,
-            },
-            client: {
+            }
+        },
+
+        autoprefixer: {
+            default: {
                 files: [
                     {
-                        expand: true,
-                        cwd: 'core/template/front-end',
-                        src: '**',
-                        dest: 'content/themes/serenader/'
+                        src: 'core/view/assets/css/style.css',
+                        dest: 'core/view/assets/css/style.css'
+                    },
+                    {
+                        src: 'core/view/assets/css/sign.css',
+                        dest: 'core/view/assets/css/sign.css'
                     }
                 ]
+            }
+        },
+
+        concat: {
+            libraries: {
+                dest: 'core/view/assets/js/vendor.js',
+                src: [
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
+                    'bower_components/lodash/dist/lodash.js',
+                    'bower_components/backbone/backbone.js',
+                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'bower_components/blueimp-gallery/js/blueimp-gallery.js',
+                    'bower_components/codemirror/lib/codemirror.js',
+                    'bower_components/marked/lib/marked.js'
+                ]
             },
-            image: {
-                src: ['**'],
-                cwd: 'core/template/back-end/assets/img/',
-                dest: 'core/build/img/',
-                expand: true
+            serenader: {
+                dest: 'core/view/assets/js/serenader.js',
+                src: [
+                    'core/view/assets/js/script.js',
+                    'core/view/assets/js/post.js',
+                    'core/view/assets/js/gallery.js',
+                    'core/view/assets/js/file.js'
+                ]
+            }
+        },
+
+        update_submodules: {
+            default: {
+                options: {}
             }
         },
 
         express: {
             options: {
                 script: 'index.js',
-                output: 'Serenader is running'
+                output: 'Project is running'
             },
             dev: {
                 options: {
-                    output: 'Running in dev',
-                    delay: 1000
+                    delay: 1
                 }
             }
+        },
+
+        clean: {
+
         }
     };
 
-
     grunt.initConfig(config);
 
-    grunt.registerTask('test', 'Run tests and lint code', 
-        ['jshint']);
+    grunt.registerTask('init', 'Download and copy the dependencies.', 
+        ['shell:bower', 'update_submodules', 'copy']);
 
-    grunt.registerTask('init', 'Initialize the project', 
-        ['shell:bower']);
+    grunt.registerTask('default', 'Compile the css and the js file.', 
+        ['css', 'concat']);
 
-    grunt.registerTask('prepare', 'Prepare the project', 
-        ['concat:libraries', 'copy', 'sass:compress', 'autoprefixer']);
+    grunt.registerTask('dev', 'Running project in the dev env.', 
+        ['default', 'express', 'watch']);
 
-    grunt.registerTask('build', 'Build the project for production', 
-        ['prepare', 'uglify:script']);
+    grunt.registerTask('css', 'Building css file.', 
+        ['sass:compile', 'autoprefixer']);
 
-    grunt.registerTask('dev', 'Running project in dev env', 
-        ['express', 'watch']);
+    grunt.registerTask('prod-css', 'Building production env css.', 
+        ['sass:compress', 'autoprefixer']);
+
+    grunt.registerTask('prod', 'Building the production env', 
+        ['prod-css', 'concat', 'uglify', 'clean']);
 };

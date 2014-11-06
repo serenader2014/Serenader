@@ -57,11 +57,11 @@ module.exports = function (setting) {
     theme = setting.theme;
 
     app.use(config.assetsUrl.clientSideAssets, function (req, res, next) {
-        dir = config.root_dir + '/content/themes/' + theme + '/assets';
+        dir = config.root_dir + '/content/themes/' + theme + '/assets/';
         express.static(dir)(req, res, next);
     });
-    app.use(config.assetsUrl.serverSideAssets, express.static(config.root_dir + '/core/build'));
-    app.use(config.assetsUrl.staticFile, express.static(config.root_dir + '/content/data/public'));
+    app.use(config.assetsUrl.serverSideAssets, express.static(config.root_dir + '/core/view/assets/'));
+    app.use(config.assetsUrl.staticFile, express.static(config.root_dir + '/content/data/public/'));
     app.use(config.assetsUrl.staticFile + '/:user/*', function (req, res, next) {
         var user = req.params.user;
         if (req.session.user && req.session.user.uid === user) {

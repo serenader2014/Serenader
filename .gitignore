@@ -16,8 +16,11 @@ bower_components
 
 content
 
-core/build
-
-core/template/front-end/assets/css/*.css
-core/template/front-end/assets/css/*.map
-
+core/view/assets/img/
+core/view/assets/fonts/
+core/view/assets/ace/
+core/view/assets/css/*.css
+core/view/assets/js/jquery.min.js
+core/view/assets/js/jquery.min.map
+core/view/assets/js/vendor.js
+core/view/assets/js/serenader.js

@@ -6,7 +6,7 @@ var config = require('../../../config').config,
 function route (app) {
 
     app.use(config.url.admin, function (req, res, next) {
-        app.set('views', root + '/core/template/back-end/');
+        app.set('views', root + '/core/view/');
         next();
     });
     app.use(config.url.admin, require('../controller/admin'));

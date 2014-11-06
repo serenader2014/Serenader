@@ -2,7 +2,7 @@
 
 var Serenader = {
         events: {},
-        modal: {}
+        modules: {}
     };
 (function ($, window, callback, undefined) {
     Serenader.extend = function (obj) {
@@ -36,29 +36,73 @@ var Serenader = {
         }
     };
 
-    Serenader.modal.Dialog = function (obj) {
-        if (!obj || typeof obj !== 'object') {
-            return obj;
+    Serenader.modules.Dialog = function (options) {
+        if (!options || typeof options !== 'object') {
+            return options;
         }
         this.dialog = $('<div>').addClass('dialog');
         this.container = $('<div>').addClass('dialog-container');
-        this.header = $('<div>').addClass('dialog-header').html(obj.title);
-        this.body = $('<div>').addClass('dialog-body').append(obj.content);
+        this.header = $('<div>').addClass('dialog-header').html(options.title);
+        this.body = $('<div>').addClass('dialog-body').append(options.content);
         this.footer = $('<div>').addClass('dialog-footer');
-        this.cancel = $('<button>').addClass('btn ripple ripple-black');
-        this.confirm = $('<button>').addClass('btn btn-primary btn-grey ripple ripple-black');
+        this.cancel = $('<button>').addClass('btn ripple ripple-black').html('Cancel');
+        this.confirm = $('<button>').addClass('btn btn-primary btn-grey ripple ripple-black').html('confirm');
+        this.remove = options.remove;
         this.init();
     };
 
-    Serenader.modal.Dialog.prototype.init = function () {
+    Serenader.modules.Dialog.prototype.init = function () {
+        var self = this;
+        self.show();
+        self.dialog.on('click', function (event) {
+            if (event.target === self.dialog[0]) {
+                if (self.remove) {
+                    self.dialog.remove();
+                } else {
+                    self.hide();
+                }
+            }
+        });
+
+        self.cancel.on('click', function () {
+            if (self.remove) {
+                self.dialog.remove();
+            } else {
+                self.hide();
+            }
+        });
+    };
+
+    Serenader.modules.Dialog.prototype.show = function () {
+        var self = this;        
         $('body').append(
-            this.dialog.append(
-                this.container
-                    .append(this.header)
-                    .append(this.body)
-                    .append(this.footer.append(this.cancel).append(this.confirm))
+            self.dialog.append(
+                self.container
+                    .append(self.header)
+                    .append(self.body)
+                    .append(self.footer.append(self.cancel).append(self.confirm))
             )
         );
+    };
+
+    Serenader.modules.Dialog.prototype.hide = function () {
+        this.dialog.addClass('dialog-hide');
+    };
+
+    Serenader.openDialog = function (options) {
+        if (options && typeof options === 'object') {
+                var dialog = new this.modules.Dialog({
+                    title: options.title || 'No title',
+                    content: options.content || '',
+                    remove: options.remove || false
+                });
+
+                if (options.task && typeof options.task === 'function') {
+                    dialog.confirm.on('click', options.task);
+                }
+        } else {
+            return options;
+        }
     };
     if (callback && typeof callback === 'function') {
         callback.call(Serenader);
@@ -69,7 +113,8 @@ var Serenader = {
     self.extend({
         events: {
             'click .ripple': 'ripple',
-            'click [data-toggle="dialog"]': 'openDialog'
+            'click .test': 'test',
+            'click .hi': 'yes'
         },
         ripple: function (event) {
             event.preventDefault();
@@ -89,14 +134,24 @@ var Serenader = {
             
             ink.css({top: y + 'px', left: x + 'px'}).addClass('animate');
         },
-        openDialog: function (event) {
+        test: function (event) {
             event.preventDefault();
-            var title = $(this).data('title'),
-                content = $($(this).data('content')).html(),
-                dialog = new self.modal.Dialog({
-                    title: title,
-                    content: content
-                });
+            self.openDialog({
+                title: 'HELLO',
+                content: 'This is the content',
+                task: function () {
+                    console.log('this is the task');
+                },
+                remove: true
+            });
+        },
+        yes: function (event) {
+            event.preventDefault();
+            self.openDialog({
+                task: function () {
+                    alert('yes');
+                }
+            });
         }
     });
 
