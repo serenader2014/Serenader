@@ -1,0 +1,3 @@
+[submodule "content/themes/blue"]
+    path = content/themes/blue
+    url = git@github.com:serenader2014/blue.git

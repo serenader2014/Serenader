@@ -1,10 +1,10 @@
 /* global $ */
 
+var Serenader = {
+        events: {},
+        modal: {}
+    };
 (function ($, window, callback, undefined) {
-    var Serenader = {
-            events: {},
-            modal: {}
-        };
     Serenader.extend = function (obj) {
         if (typeof obj !== 'object') {
             return false;
@@ -36,26 +36,37 @@
         }
     };
 
-    Serenader.modal.Dialog = function () {
-        var $dialog = $('<div>').addClass('dialog'),
-            $container = $('<div>').addClass('dialog-container'),
-            $header = $('<div>').addClass('dialog-header'),
-            $body = $('<div>').addClass('dialog-body'),
-            $footer = $('<div>').addClass('dialog-footer'),
-            $cancel = $('<button>').addClass('btn ripple ripple-black'),
-            $confirm = $('<button>').addClass('btn btn-primary btn-grey ripple ripple-black');
-        
-
-
+    Serenader.modal.Dialog = function (obj) {
+        if (!obj || typeof obj !== 'object') {
+            return obj;
+        }
+        this.dialog = $('<div>').addClass('dialog');
+        this.container = $('<div>').addClass('dialog-container');
+        this.header = $('<div>').addClass('dialog-header').html(obj.title);
+        this.body = $('<div>').addClass('dialog-body').append(obj.content);
+        this.footer = $('<div>').addClass('dialog-footer');
+        this.cancel = $('<button>').addClass('btn ripple ripple-black');
+        this.confirm = $('<button>').addClass('btn btn-primary btn-grey ripple ripple-black');
+        this.init();
     };
 
+    Serenader.modal.Dialog.prototype.init = function () {
+        $('body').append(
+            this.dialog.append(
+                this.container
+                    .append(this.header)
+                    .append(this.body)
+                    .append(this.footer.append(this.cancel).append(this.confirm))
+            )
+        );
+    };
     if (callback && typeof callback === 'function') {
         callback.call(Serenader);
     }
-
     Serenader.init();
 })($, this, function () {
-    this.extend({
+    var self = this;
+    self.extend({
         events: {
             'click .ripple': 'ripple',
             'click [data-toggle="dialog"]': 'openDialog'
@@ -77,6 +88,15 @@
             var y = event.pageY - $(this).offset().top - ink.height() / 2;
             
             ink.css({top: y + 'px', left: x + 'px'}).addClass('animate');
+        },
+        openDialog: function (event) {
+            event.preventDefault();
+            var title = $(this).data('title'),
+                content = $($(this).data('content')).html(),
+                dialog = new self.modal.Dialog({
+                    title: title,
+                    content: content
+                });
         }
     });
 

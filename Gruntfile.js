@@ -15,8 +15,8 @@ module.exports = function (grunt) {
             },
             livereload: {
                 files: [
-                    'core/build/css/*.css',
-                    'core/build/assets/js/*.js',
+                    'core/build/css/*',
+                    'core/build/assets/js/*',
                     'core/template/back-end/*.jade',
                     'content/themes/serenader/css/*.css',
                     'content/themes/serenader/js/*.js',
@@ -31,7 +31,7 @@ module.exports = function (grunt) {
                     'core/template/back-end/assets/css/*.scss',
                     'core/template/front-end/assets/css/*.scss'
                 ],
-                tasks: ['sass']
+                tasks: ['sass:compile', 'autoprefixer']
             },
             clientSide: {
                 files: [
@@ -78,7 +78,7 @@ module.exports = function (grunt) {
             },
             compile: {
                 options: {
-                    outputStyle: 'nestend'
+                    style: 'nested'
                 },
                 files: [
                     {
@@ -92,6 +92,25 @@ module.exports = function (grunt) {
                     {
                         dest: 'core/template/front-end/assets/css/style.css',
                         src: 'core/template/front-end/assets/css/style.scss'
+                    }
+                ]
+            }
+        },
+
+        autoprefixer: {
+            css: {
+                files: [
+                    {
+                        src: 'core/build/css/style.css',
+                        dest: 'core/build/css/style.css'
+                    },
+                    {
+                        src: 'content/themes/serenader/assets/css/style.css',
+                        dest: 'content/themes/serenader/assets/css/style.css'
+                    },
+                    {
+                        src: 'core/build/css/sign.css',
+                        dest: 'core/build/css/sign.css'
                     }
                 ]
             }
@@ -224,7 +243,7 @@ module.exports = function (grunt) {
         ['shell:bower']);
 
     grunt.registerTask('prepare', 'Prepare the project', 
-        ['concat:libraries', 'copy', 'sass:compress']);
+        ['concat:libraries', 'copy', 'sass:compress', 'autoprefixer']);
 
     grunt.registerTask('build', 'Build the project for production', 
         ['prepare', 'uglify:script']);

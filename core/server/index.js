@@ -46,7 +46,10 @@ module.exports = function (setting) {
 
     // cache the global system url, will be used in the jade file
     app.locals.url = config.url;
-    app.locals.assetsUrl = config.assetsUrl;
+    app.locals.assets = {
+        client: config.assetsUrl.clientSideAssets,
+        server: config.assetsUrl.serverSideAssets
+    };
 
     module.exports.setting = app.locals.setting = setting;
 
