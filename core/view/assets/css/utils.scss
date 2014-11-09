@@ -54,13 +54,14 @@
     display: inline-block;
     padding: 7px 40px;
     border: none;
-    border-radius: 0.3rem;
+    border-radius: 0.2rem;
     outline: none;
     font-size: 1.4rem;
     color: $button-default-color;
     text-decoration: none;
     text-transform: uppercase;
     cursor: pointer;
+    transition: all 0.2s ease-out;
     background: $button-default-background;
 
     &:hover {
@@ -143,7 +144,9 @@
     bottom: 0;
     left: 0;
     right: 0;
+    transition: all 0.2s ease-out;
     background: rgba(map-get($color-grey, '1000'), 0.3);
+
 
     .dialog-container {
         position: relative;
@@ -190,5 +193,69 @@
         color: $content-color;
         max-height: 40rem;
         overflow: auto;
+    }
+}
+
+.dialog.dialog-hide {
+    transform: translate3d(0, 100%, 0) scale(0.5);
+    opacity: 0;
+}
+
+.dialog-container.dialog-active {
+    transform: translate3d(0,0,0) scale(1.0);
+    opacity: 1;
+}
+
+
+/* Input set */
+.input {
+    margin: 3rem;
+    position: relative;
+
+    label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        transition: all 0.2s ease-out;
+        font-size: 1.4rem;
+        color: map-get($color-grey, '400');
+    }
+
+    input {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid map-get($color-grey, '400');
+        outline: none;
+        color: map-get($color-grey, '600');
+        line-height: 2.2rem;
+        width: 18rem;
+        font-size: 1.6rem;
+        background: none;
+    }
+}
+
+.input.has-value, .input.is-focus {
+    label {
+        transform: translate3d(0, -1rem, 0);
+        font-size: 1.2rem;
+    }
+}
+
+.input.is-focus {
+    label {
+        color: map-get($color-light-blue, '400');
+    }
+    input {
+        border-bottom: 2px solid map-get($color-light-blue, '400');
+    }
+}
+
+.input.input-disabled {
+    input {
+        color: map-get($color-grey, '400');
+        cursor: normal;
+        border-bottom: 1px dotted map-get($color-grey, '300');
     }
 }

@@ -4,11 +4,11 @@
         "jquery-file-upload": "9.8.0",
         "jquery": "2.1.1",
         "ace": "latest",
-        "fontawesome": "4.2.0",
         "marked": "0.3.2",
         "blueimp-gallery": "2.15.1",
         "codemirror": "latest",
         "lodash": "2.4.1",
-        "backbone": "1.1.2"
+        "backbone": "1.1.2",
+        "bootstrap-material-design": "0.1.5"
     }
 }

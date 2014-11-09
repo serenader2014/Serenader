@@ -27,11 +27,18 @@ var Serenader = {
     Serenader.init = function () {
         for (var i in this.events) {
             if (this.events[i]) {
-                var type = i.split(' ')[0],
-                    target = i.split(' ')[1],
+                var tmpArr = i.split('|'),
+                    type = tmpArr[0],
+                    target = tmpArr[1],
+                    realTarget,
                     handler = this[this.events[i]];
 
-                $('body').on(type, target, handler);
+                if (tmpArr.length === 2) {
+                    $(target).on(type, handler);
+                } else if (tmpArr.length === 3) {
+                    realTarget = tmpArr[2];
+                    $(target).on(type, realTarget, handler);
+                }
             }
         }
     };
@@ -46,8 +53,7 @@ var Serenader = {
         this.body = $('<div>').addClass('dialog-body').append(options.content);
         this.footer = $('<div>').addClass('dialog-footer');
         this.cancel = $('<button>').addClass('btn ripple ripple-black').html('Cancel');
-        this.confirm = $('<button>').addClass('btn btn-primary btn-grey ripple ripple-black').html('confirm');
-        this.remove = options.remove;
+        this.confirm = $('<button>').addClass('btn btn-grey ripple').html('confirm');
         this.init();
     };
 
@@ -65,11 +71,7 @@ var Serenader = {
         });
 
         self.cancel.on('click', function () {
-            if (self.remove) {
-                self.dialog.remove();
-            } else {
-                self.hide();
-            }
+            self.hide();
         });
     };
 
@@ -83,18 +85,23 @@ var Serenader = {
                     .append(self.footer.append(self.cancel).append(self.confirm))
             )
         );
+
+        self.container.addClass('dialog-active');
     };
 
     Serenader.modules.Dialog.prototype.hide = function () {
-        this.dialog.addClass('dialog-hide');
+        var self = this;
+        self.dialog.addClass('dialog-hide');
+        setTimeout(function () {
+            self.dialog.remove();
+        }, 200);
     };
 
     Serenader.openDialog = function (options) {
         if (options && typeof options === 'object') {
                 var dialog = new this.modules.Dialog({
                     title: options.title || 'No title',
-                    content: options.content || '',
-                    remove: options.remove || false
+                    content: options.content || ''
                 });
 
                 if (options.task && typeof options.task === 'function') {
@@ -112,9 +119,10 @@ var Serenader = {
     var self = this;
     self.extend({
         events: {
-            'click .ripple': 'ripple',
-            'click .test': 'test',
-            'click .hi': 'yes'
+            'click|.ripple': 'ripple',
+            'focus|.input input': 'focusInput',
+            'blur|.input input': 'blurInput',
+            'change|.input input': 'changeInput'
         },
         ripple: function (event) {
             event.preventDefault();
@@ -134,24 +142,20 @@ var Serenader = {
             
             ink.css({top: y + 'px', left: x + 'px'}).addClass('animate');
         },
-        test: function (event) {
-            event.preventDefault();
-            self.openDialog({
-                title: 'HELLO',
-                content: 'This is the content',
-                task: function () {
-                    console.log('this is the task');
-                },
-                remove: true
-            });
+        focusInput: function () {
+            if (! $(this).parents('.input').hasClass('input-disabled')) {
+                $(this).parents('.input').addClass('is-focus');
+            }
         },
-        yes: function (event) {
-            event.preventDefault();
-            self.openDialog({
-                task: function () {
-                    alert('yes');
-                }
-            });
+        blurInput: function () {
+            $(this).parents('.input').removeClass('is-focus');
+        },
+        changeInput: function () {
+            if ($(this).val()) {
+                $(this).parents('.input').addClass('has-value');
+            } else {
+                $(this).parents('.input').removeClass('has-value');
+            }
         }
     });
 

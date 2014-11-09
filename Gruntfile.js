@@ -108,7 +108,7 @@ module.exports = function (grunt) {
         sass: {
             compile: {
                 options: {
-                    style: 'nested'
+                    outputStyle: 'nested'
                 },
                 files: [
                     {
@@ -124,7 +124,7 @@ module.exports = function (grunt) {
             },
             compress: {
                 options: {
-                    style: 'compressed'
+                    outputStyle: 'compressed'
                 },
                 files: [
                     {
