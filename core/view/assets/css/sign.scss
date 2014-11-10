@@ -5,4 +5,50 @@
 
 html {
     font-size: 10px;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+
+.sign {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+    background: map-get($color-grey, '200');
+}
+
+.signin, .signup {
+    margin: auto;
+    padding: 4rem;
+    width: $input-width;
+    background: $white;
+    box-shadow: $shadow-1;
+    border-top: 3px solid map-get($color-light-blue, '400');
+
+    .input {
+        margin: 3rem 0;
+    }
+
+    .account-icon {
+        font-size: 10rem;
+        text-align: center;
+        color: map-get($color-grey, '400');
+    }
+
+    .sign-btn {
+        width: 100%;
+    }
+
+    .sign-helper {
+        padding-top: 1rem;
+        text-align: right;
+    }
+
+    a {
+        color: map-get($color-blue, '400');
+    }
 }

@@ -49,14 +49,14 @@ module.exports = function (grunt) {
             font: {
                 files: [
                     {
-                        cwd: 'bower_components/fontawesome/fonts/',
+                        cwd: 'bower_components/material-design-icon/fonts/',
                         src: ['**'],
                         dest: 'core/view/assets/fonts/',
                         expand: true
                     },
                     {
-                        cwd: 'bower_components/fontawesome/css/',
-                        src: 'font-awesome.min.css',
+                        cwd: 'bower_components/material-design-icon/css/',
+                        src: 'md-icon.min.css',
                         dest: 'core/view/assets/css/',
                         expand: true
                     }
@@ -165,13 +165,14 @@ module.exports = function (grunt) {
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
                     'bower_components/blueimp-gallery/js/blueimp-gallery.js',
                     'bower_components/codemirror/lib/codemirror.js',
-                    'bower_components/marked/lib/marked.js'
+                    'bower_components/marked/lib/marked.js',
                 ]
             },
             serenader: {
                 dest: 'core/view/assets/js/serenader.js',
                 src: [
                     'core/view/assets/js/script.js',
+                    'core/view/assets/js/sign.js',
                     'core/view/assets/js/post.js',
                     'core/view/assets/js/gallery.js',
                     'core/view/assets/js/file.js'

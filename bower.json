@@ -9,6 +9,6 @@
         "codemirror": "latest",
         "lodash": "2.4.1",
         "backbone": "1.1.2",
-        "bootstrap-material-design": "0.1.5"
+        "material-design-icon": "0.1.1"
     }
 }

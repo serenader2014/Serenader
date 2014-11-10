@@ -4,6 +4,6 @@ module.exports = function (req, res, next) {
     if (req.session.user) {
         return next();
     } else {
-        res.redirect(url.admin + url.adminSignIn);
+        res.redirect(url.admin + url.adminSign);
     }
 };

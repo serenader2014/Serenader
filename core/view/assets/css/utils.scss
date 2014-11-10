@@ -209,14 +209,12 @@
 
 /* Input set */
 .input {
-    margin: 3rem;
     position: relative;
 
     label {
         position: absolute;
-        top: 0;
+        top: 25%;
         left: 0;
-        z-index: -1;
         transition: all 0.2s ease-out;
         font-size: 1.4rem;
         color: map-get($color-grey, '400');
@@ -230,26 +228,61 @@
         outline: none;
         color: map-get($color-grey, '600');
         line-height: 2.2rem;
-        width: 18rem;
+        width: $input-width;
         font-size: 1.6rem;
         background: none;
+    }
+    .input-bar {
+        position: relative;
+        display: block;
+        width: $input-width;
+        &:after, &:before {
+            content: '';
+            height: 2px;
+            top: -2px;
+            width: 0;
+            position: absolute;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+        }
+        &:after {
+            right: 50%;
+        }
+
+        &:before {
+            left: 50%;
+        }
+    }
+
+    .input-description {
+        display: none;
     }
 }
 
 .input.has-value, .input.is-focus {
     label {
-        transform: translate3d(0, -1rem, 0);
+        transform: translate3d(0, -1.5rem, 0);
         font-size: 1.2rem;
     }
 }
 
 .input.is-focus {
     label {
-        color: map-get($color-light-blue, '400');
+        color: $input-focus-color;
     }
+
     input {
-        border-bottom: 2px solid map-get($color-light-blue, '400');
+        border-bottom: none;
     }
+    .input-description {
+        display: inline-block;
+    }
+    .input-bar {
+        &:before, &:after {
+            width: $input-width / 2;
+            background: $input-focus-color;
+        }
+    }
+
 }
 
 .input.input-disabled {

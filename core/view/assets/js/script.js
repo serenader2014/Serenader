@@ -33,6 +33,7 @@ var Serenader = {
                     realTarget,
                     handler = this[this.events[i]];
 
+
                 if (tmpArr.length === 2) {
                     $(target).on(type, handler);
                 } else if (tmpArr.length === 3) {
@@ -120,9 +121,9 @@ var Serenader = {
     self.extend({
         events: {
             'click|.ripple': 'ripple',
-            'focus|.input input': 'focusInput',
-            'blur|.input input': 'blurInput',
-            'change|.input input': 'changeInput'
+            'focus|body|.input input': 'focusInput',
+            'blur|body|.input input': 'blurInput',
+            'change|body|.input input': 'changeInput'
         },
         ripple: function (event) {
             event.preventDefault();
