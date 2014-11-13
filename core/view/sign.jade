@@ -14,22 +14,21 @@ block script
                 <i class='md-account-circle'></i>
             </div>
             <div class='input'>
-                <label for='signin-name'>Username</label>
-                <input type='text' name='username' id='signin-name' required minlength='4' maxlength='16'/>
+                <label for='signin-name'>用户名</label>
+                <input type='text' name='username' id='signin-name' data-validate='{"maxLength": 20, "minLength": 4, "type": "alphanumeric"}'/>
                 <span class='input-bar'></span>
             </div>
             <div class='input'>
-                <label for='signin-pwd'>Password</label>
-                <input type='password' name='password' id='signin-pwd'/>
+                <label for='signin-pwd'>密码</label>
+                <input type='password' name='password' id='signin-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
                 <span class='input-bar'></span>
-                <span class='input-description'>Password must be 6-18 cha</span>
             </div>
             <div>
-                <button class='btn btn-primary btn-blue ripple sign-btn' type='submit'>Sign In</button>
+                <button class='btn btn-primary btn-blue ripple sign-btn' type='button'>登录</button>
             </div>
             <div class='sign-helper'>
-                <p><a href='javascript:;' class='signup-btn'>Sign Up</a></p>
-                <p><a href='javascript:;' class='forget-btn'>Forget password</a></p>
+                <p><a href='javascript:;' class='signup-btn'>注册</a></p>
+                <p><a href='javascript:;' class='forget-btn'>忘记密码</a></p>
             </div>
         </form>
     script(type='text/template', id='signup').
@@ -38,26 +37,32 @@ block script
                 <i class='md-account-circle'></i>
             </div>
             <div class='input'>
-                <label for='signup-name'>Username</label>
-                <input type='text' name='username' id='signup-name'/>
+                <label for='signup-name'>用户名</label>
+                <input type='text' name='username' id='signup-name' data-validate='{"maxLength": 20, "minLength": 4, "type": "alphanumeric"}'/>
+                <span class='input-bar'></span>
+                <span class='input-description'>用户名为4个字符以上的字母和数字组合。</span>
             </div>
             <div class='input'>
-                <label for='signup-email'>Email</label>
-                <input type='text' name='email' id='signup-email'/>
+                <label for='signup-email'>邮箱</label>
+                <input type='text' name='email' id='signup-email' data-validate='{"type": "email"}'/>
+                <span class='input-bar'></span>
             </div>
             <div class='input'>
-                <label for='signup-pwd'>Password</label>
-                <input type='password' name='password' id='signup-pwd'/>
+                <label for='signup-pwd'>密码</label>
+                <input type='password' name='password' id='signup-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
+                <span class='input-bar'></span>
+                <span class='input-description'>密码为6到18个字符。</span>
             </div>
             <div class='input'>
-                <label for='signup-re-pwd'>Repeat password</label>
-                <input type='password' name='signup-re-pwd' />
+                <label for='signup-re-pwd'>再次输入密码</label>
+                <input type='password' name='re-password' id='signup-re-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
+                <span class='input-bar'></span>
             </div>
             <div>
-                <button class='btn btn-primary btn-blue ripple sign-btn' type='submit'>Sign Up</button>
+                <button class='btn btn-primary btn-blue ripple sign-btn' type='submit'>注册</button>
             </div>
             <div class='sign-helper'>
-                <p><a href='javascript:;' class='signin-btn'>Sign In</a></p>
+                <p><a href='javascript:;' class='signin-btn'>登录</a></p>
             </div>
         </form>
     script(type='text/javascript', src='#{assets.server}/js/vendor.js')

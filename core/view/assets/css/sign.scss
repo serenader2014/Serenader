@@ -23,15 +23,11 @@ body {
 
 .signin, .signup {
     margin: auto;
-    padding: 4rem;
+    padding: 3rem 5rem;
     width: $input-width;
     background: $white;
     box-shadow: $shadow-1;
     border-top: 3px solid map-get($color-light-blue, '400');
-
-    .input {
-        margin: 3rem 0;
-    }
 
     .account-icon {
         font-size: 10rem;
@@ -49,6 +45,11 @@ body {
     }
 
     a {
-        color: map-get($color-blue, '400');
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    button {
+        font-size: 1.6rem;
     }
 }

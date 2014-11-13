@@ -1,4 +1,4 @@
-/* global Backbone, $ */
+/* global Backbone, $, url */
 
 var SignInView, SignUpView, signIn, signUp;
 
@@ -24,12 +24,34 @@ SignInView = Backbone.View.extend({
             } else {
                 view.fadeIn();
             }
+            $('title').html('注册');
         });
     },
     signIn: function () {
-        var userName = $('input[]').val(),
-            password = $('input[]').val();
+        var userName = $('.signin input[name="username"]').val(),
+            password = $('.signin input[name="password"]').val();
 
+        if (!userName || !password || $('.signin').find('.input-error').length > 0) {
+            return false;
+        }
+
+        $.ajax({
+            url: url.admin + url.adminSignIn,
+            data: {
+                username: userName,
+                password: password
+            },
+            type: 'POST',
+            dataType: 'json',
+            success: function (result) {
+                if (result.status === 1) {
+                } else {
+                }
+            },
+            error: function () {
+
+            }
+        });
     }
 });
 
@@ -50,6 +72,7 @@ SignUpView = Backbone.View.extend({
         self.$el.find('.signup').fadeOut(function () {
             self.$el.find('.signin').fadeIn();
         });
+        $('title').html('登录');
     }
 });
 

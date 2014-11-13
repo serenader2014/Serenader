@@ -11,4 +11,7 @@ html(lang='zh-cmn-Hans')
         block css
     body
         block content
+        - var urlString = JSON.stringify(url);
+        script.
+            var url = JSON.parse('!{urlString}');
         block script

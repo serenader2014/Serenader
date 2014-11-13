@@ -112,6 +112,7 @@ var Serenader = {
             return options;
         }
     };
+
     if (callback && typeof callback === 'function') {
         callback.call(Serenader);
     }
@@ -120,13 +121,13 @@ var Serenader = {
     var self = this;
     self.extend({
         events: {
-            'click|.ripple': 'ripple',
+            'click|body|.ripple': 'ripple',
             'focus|body|.input input': 'focusInput',
             'blur|body|.input input': 'blurInput',
-            'change|body|.input input': 'changeInput'
+            'change|body|.input input': 'changeInput',
+            'change|body|[data-validate]': 'validator'
         },
         ripple: function (event) {
-            event.preventDefault();
             if ($(this).find('.ink').length === 0) {
                 $(this).append($('<span>').addClass('ink'));
             }
@@ -157,7 +158,95 @@ var Serenader = {
             } else {
                 $(this).parents('.input').removeClass('has-value');
             }
+        },
+        validator: function () {
+            var self = this,
+                options = $(self).attr('data-validate'),
+                value = $(self).val(),
+                length = value.length,
+                tmp = true,
+                msg = {
+                    lengthTooShort: '输入的长度太短。',
+                    lengthTooLong: '输入的长度太长。',
+                    notEmail: '不是有效的邮箱。',
+                    notAlphanumeric: '输入的内容不是数字字母组合。',
+                    notAlphaOrNumeric: '输入的内容不是数字或字母。',
+                    notAlpha: '输入的内容不是字母。',
+                    notNumeric: '输入的内容不是数字。'
+                },
+                regExp = {
+                    email: /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i,
+                    alphanumeric: /^[a-zA-Z0-9]+$/,
+                    alpha: /^[a-zA-Z]+$/,
+                    numeric: /^-?[0-9]+$/
+                },
+                handleError = function (errorMsg) {
+                    $(self).parent()
+                        .addClass('input-error')
+                        .find('.input-errmsg').remove().end()
+                        .append($('<span>').addClass('input-errmsg').html(errorMsg));
+                },
+                handleSuccess = function () {
+                    $(self).parents('.input')
+                        .removeClass('input-error')
+                        .find('.input-errmsg').remove();
+                };
+
+            try {
+                options = JSON.parse(options);
+            } catch (err) {
+                console.error('can not parse input options');
+                return false;
+            }
+
+            if (options.maxLength && length > options.maxLength) {
+                handleError(msg.lengthTooLong);
+                return false;
+            }
+
+            if (options.minLength && length < options.minLength) {
+                handleError(msg.lengthTooShort);
+                return false;
+            }
+
+            if (options.type) {
+                switch (options.type) {
+                    case 'alphanumeric': 
+                        if (! regExp.alphanumeric.test(value)) {
+                            handleError(msg.notAlphanumeric);
+                            tmp = false;
+                        }
+                        break;
+                    case 'alpha': 
+                        if (! regExp.alpha.test(value)) {
+                            handleError(msg.notAlpha);
+                            tmp = false;
+                        }
+                        break;
+                    case 'numeric': 
+                        if (! regExp.numeric.test(value)) {
+                            handleError(msg.notNumeric);
+                            tmp = false;
+                        }
+                        break;
+                    case 'alphaOrNumeric':
+                        if (!regExp.alpha.test(value) &&
+                            !regExp.numeric.test(value)) {
+                            handleSuccess(msg.notAlphaOrNumeric);
+                            tmp = false;
+                        }
+                        break;
+                    case 'email':
+                        if (!regExp.email.test(value)) {
+                            handleError(msg.notEmail);
+                            tmp = false;
+                        }
+                }
+            }
+
+            if (tmp) {
+                handleSuccess();
+            }
         }
     });
-
 });
