@@ -45,10 +45,8 @@ var Serenader = {
     };
 
     Serenader.modules.Dialog = function (options) {
-        if (!options || typeof options !== 'object') {
-            return options;
-        }
         this.dialog = $('<div>').addClass('dialog');
+        this.wrapper = $('<div>').addClass('dialog-wrapper');
         this.container = $('<div>').addClass('dialog-container');
         this.header = $('<div>').addClass('dialog-header').html(options.title);
         this.body = $('<div>').addClass('dialog-body').append(options.content);
@@ -62,7 +60,7 @@ var Serenader = {
         var self = this;
         self.show();
         self.dialog.on('click', function (event) {
-            if (event.target === self.dialog[0]) {
+            if (event.target === self.wrapper[0]) {
                 if (self.remove) {
                     self.dialog.remove();
                 } else {
@@ -80,10 +78,12 @@ var Serenader = {
         var self = this;        
         $('body').append(
             self.dialog.append(
-                self.container
-                    .append(self.header)
-                    .append(self.body)
-                    .append(self.footer.append(self.cancel).append(self.confirm))
+                self.wrapper.append(
+                    self.container
+                        .append(self.header)
+                        .append(self.body)
+                        .append(self.footer.append(self.cancel).append(self.confirm))
+                )
             )
         );
 
@@ -111,6 +111,88 @@ var Serenader = {
         } else {
             return options;
         }
+    };
+
+    Serenader.modules.Progress = function (content) {
+        this.progress = $('<div>').addClass('progress');
+        this.container = $('<span>').addClass('progress-container').html(content);
+        this.closeBtn = $('<span>').addClass('md-close progress-btn');
+        this.init();
+    };
+
+    Serenader.modules.Progress.prototype.init = function () {
+        var self = this;
+        self.closeBtn.on('click', function () {
+            self.hide();
+        });
+    };
+
+    Serenader.modules.Progress.prototype.show = function () {
+        $('body').append(this.progress.append(this.container).append(this.closeBtn));
+    };
+
+    Serenader.modules.Progress.prototype.hide = function () {
+        this.progress.remove();
+    };
+
+    Serenader.progress = function (content, callback) {
+        var p;
+        if (!content || typeof content !== 'string') {
+            return content;
+        }
+        p = new Serenader.modules.Progress(content);
+        p.show();
+        callback(function (end) {
+            p.hide();
+            end();
+        });
+    };
+
+    Serenader.modules.MsgBox = function (content) {
+        this.msgBox = $('<div>').addClass('msg-box');
+        this.wrapper = $('<div>').addClass('msg-box-wrapper');
+        this.container = $('<div>').addClass('msg-box-container');
+        this.content = $('<div>').addClass('msg-box-content').html(content);
+        this.closeBtn = $('<button>').addClass('msg-box-close btn btn-blue').html('确定');
+        this.init();
+    };
+
+    Serenader.modules.MsgBox.prototype.init = function () {
+        var self = this;
+        self.closeBtn.on('click', function () {
+            self.close();
+        });
+
+        self.msgBox.on('click', function (event) {
+            if (event.target === self.wrapper[0]) {
+                self.close();
+            }   
+        });
+    };
+
+    Serenader.modules.MsgBox.prototype.show = function () {
+        $('body').append(this.msgBox.append(this.wrapper.append(this.container).append(this.closeBtn)));
+        $('body').append(
+            this.msgBox.append(
+                this.wrapper.append(
+                    this.container.append(this.content).append(this.closeBtn)
+                )
+            )
+        );
+    };
+
+    Serenader.modules.MsgBox.prototype.close = function () {
+        this.msgBox.remove();
+    };
+
+
+    Serenader.msgBox = function (content) {
+        var msg;
+        if (!content || typeof content !== 'string') {
+            return content;
+        }
+        msg = new Serenader.modules.MsgBox(content);
+        msg.show();
     };
 
     if (callback && typeof callback === 'function') {

@@ -4,7 +4,7 @@ var express = require('express'),
 
 
 adminHomePage.get('/', auth_user, function (req, res) {
-    res.render('admin_index');
+    res.render('admin_panel');
 });
 
 require('./file')(adminHomePage);

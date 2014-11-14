@@ -175,7 +175,8 @@ module.exports = function (grunt) {
                     'core/view/assets/js/sign.js',
                     'core/view/assets/js/post.js',
                     'core/view/assets/js/gallery.js',
-                    'core/view/assets/js/file.js'
+                    'core/view/assets/js/file.js',
+                    'core/view/assets/js/panel.js'
                 ]
             }
         },

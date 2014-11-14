@@ -62,7 +62,7 @@ a {
 /* Button set */
 .btn {
     display: inline-block;
-    padding: 7px 40px;
+    padding: 0.7rem 4rem;
     border: none;
     border-radius: 0.2rem;
     outline: none;
@@ -110,6 +110,14 @@ a {
     }
 }
 
+.btn.btn-round {
+    width: 5rem;
+    height: 5rem;
+    padding: 1rem;
+    font-size: 2.5rem;
+    border-radius: 100%;
+}
+
 .btn.btn-blue {
     color: $white;
     background: $button-blue;
@@ -148,16 +156,21 @@ a {
 
 /* Dialog set */
 .dialog {
-    display: flex;
+    display: table;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    height: 100%;
     transition: all 0.2s ease-out;
     background: rgba(map-get($color-grey, '1000'), 0.3);
 
-
+    .dialog-wrapper {
+        display: table-cell;
+        vertical-align: middle;
+    }
     .dialog-container {
         position: relative;
         margin: auto;
@@ -329,5 +342,69 @@ a {
         padding: 0.5rem 0;
         font-size: 1.3rem;
         color: $input-error-color;
+    }
+}
+
+
+/* Progress set */
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 80rem;
+    padding: 1.5rem;
+    margin: auto;
+    font-size: 1.4rem;
+    border: 1px solid map-get($color-orange, '100');
+    background: map-get($color-orange, '50');
+    box-shadow: $shadow-2;
+
+    .progress-btn {
+        position: absolute;
+        right: 3rem;
+        top: 0;
+        display: inline-block;
+        padding: 1.5rem;
+        color: map-get($color-red, '400');
+    }
+
+    .progress-container {
+        color: $content-color;
+    }
+}
+
+
+/* MsgBox set */
+.msg-box {
+    display: table;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+
+    .msg-box-wrapper {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .msg-box-container {
+        max-width: 30rem;
+        padding: 2rem;
+        margin: auto;
+        text-align: center;
+        border: 1px solid map-get($color-grey, '300');
+        background: $white;
+        box-shadow: $shadow-3;
+    }
+
+    .msg-box-content {
+        margin-bottom: 2rem;
+        font-size: 1.4rem;
+        color: $content-color;
     }
 }

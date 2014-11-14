@@ -53,7 +53,7 @@ module.exports = function (router) {
     });
 
     router.post(url.adminSignUp, function (req, res) {
-        var uid, email, password, hashedPwd, hashedEmail;
+        var uid, email, password, rePwd, hashedPwd, hashedEmail;
         
         if (! locals.setting.allow_sign_up) {
             res.json({
@@ -62,11 +62,12 @@ module.exports = function (router) {
             });
             return false;
         }
-        uid = xss(validator.trim(req.body.id));
-        email = xss(validator.trim(req.body.email));
-        password = xss(validator.trim(req.body.password));
+        uid = validator.trim(req.body.id);
+        email = validator.trim(req.body.email);
+        password = validator.trim(req.body.password);
+        rePwd = validator.trim(req.body.rePwd);
 
-        if (! uid || ! email || ! password) {
+        if (! uid || ! email || ! password || ! rePwd) {
             res.json({
                 status: 0,
                 error: '请填写完整注册信息。'
@@ -94,6 +95,14 @@ module.exports = function (router) {
             res.json({
                 status: 0,
                 error: '密码长度应该大于6位小于16位。'
+            });
+            return false;
+        }
+
+        if (password !== rePwd) {
+            res.json({
+                status: 0,
+                error: '两次输入的密码不一致！'
             });
             return false;
         }

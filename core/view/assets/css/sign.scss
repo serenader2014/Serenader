@@ -17,6 +17,7 @@ body {
 .sign {
     display: table-cell;
     height: 100%;
+    width: 100%;
     vertical-align: middle;
     background: map-get($color-grey, '200');
 }

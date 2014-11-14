@@ -1,0 +1,54 @@
+extends layout
+
+block title
+    title 控制台
+block css
+    link(rel='stylesheet', href='#{assets.server}/css/style.css')/
+    link(rel='stylesheet', href='#{assets.server}/css/md-icon.min.css')/
+block content
+    .panel
+        .content
+            nav.navbar
+                ul
+                    li
+                        button.side-menu-btn(type='button')
+                            i.md-menu
+                    li
+                        a.logo(href='#{url.admin}') Serenader
+                    li.user-avatar
+                        a(href='javascript:;')
+                            img(src='#{currentUser.avatar}')
+                        .sub-menu
+                            .wrapper
+                                .user-info
+                                    .image
+                                        a(href='#{url.admin}#{url.adminUser}/#{currentUser.uid}')
+                                            img(src='#{currentUser.avatar}')
+                                    .details
+                                        p.user-uid #{currentUser.uid}
+                                        p.user-email #{currentUser.email}
+                                ul
+                                    - if (currentUser.role === 'admin')
+                                        li.adduser-btn: a.ripple(href='javascript:;') 添加用户
+                                    li.signout-btn: a.ripple(href='javascript:;') 退出登录
+            .side-menu
+                ul
+                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        i.md-dashboard
+                        | 控制台
+                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        i.md-description
+                        | 文章
+                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        i.md-photo-library
+                        | 相册
+                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        i.md-attach-file
+                        | 附件
+        .global-btn
+            button.btn.btn-round.btn-red.btn-raised.ripple(type='button')
+                i.md-add
+
+block script
+    script(type='text/javascript', src='#{assets.server}/js/vendor.js')
+    script(type='text/javascript', src='#{assets.server}/js/serenader.js')
