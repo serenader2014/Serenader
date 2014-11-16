@@ -3,6 +3,7 @@ extends layout
 block css
     link(rel='stylesheet', href='#{assets.server}/css/style.css')/
     link(rel='stylesheet', href='#{assets.server}/css/md-icon.min.css')/
+    block extra_css
 block content
     .panel
         .content
@@ -50,7 +51,7 @@ block content
                 .wrapper
                     block main
         .global-btn
-            button.btn.btn-round.btn-red.btn-raised.ripple(type='button')
+            a.btn.btn-round.btn-red.btn-raised.ripple(href='#{url.admin}#{url.adminNewPost}')
                 i.md-add
 
 block script

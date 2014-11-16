@@ -1,5 +1,5 @@
 var validator = require('validator'),
-    markdown = require('markd'),
+    markdown = require('marked'),
     auth_user = require('../../utils/auth_user'),
     Post = require('../../models').Post,
     Category = require('../../models').Category,

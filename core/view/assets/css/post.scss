@@ -1,0 +1,49 @@
+.post-area {
+    position: relative;
+    height: 100%;
+}
+
+.post-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    input {
+        height: 4rem;
+        width: 100%;
+        padding: 0 1rem;
+        outline: none;
+        border: 2px solid map-get($color-grey, '200');
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: $content-color;
+    }
+
+    select {
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 4rem;
+        width: 10rem;
+        padding: 0 1rem;
+        outline: none;
+        border: 2px solid map-get($color-grey, '300');
+    }
+
+    option {
+        height: 3rem;
+        width: 10rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+.post-editor {
+    height: 100%;
+    padding-top: 5rem;
+
+    .CodeMirror {
+        height: 100%;
+        font-size: 1.4rem;
+        border: 2px solid map-get($color-grey, '300');
+    }
+}
