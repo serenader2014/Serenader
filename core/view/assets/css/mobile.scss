@@ -1,0 +1,22 @@
+@media screen and (max-width: 720px) {
+    .main {
+        padding: 6rem 1rem 1rem 1rem;
+    }
+
+    .side-menu {
+        left: -100%;
+        transition: all 0.2s;
+
+        .menu-text {
+            display: inline-block;
+        }
+
+        i {
+            margin-right: 2rem;
+        }
+    }
+
+    .side-menu.show {
+        left: 0;
+    }
+}

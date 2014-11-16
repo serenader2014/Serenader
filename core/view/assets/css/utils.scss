@@ -1,13 +1,3 @@
-a {
-    display: inline-block;
-    font-size: 1.4rem;
-    text-decoration: none;
-    color: map-get($color-light-blue, '500');
-    &:hover {
-        color: map-get($color-light-blue, '300');
-    }
-}
-
 
 /* Ripple Click Effect CSS */
 .ripple {

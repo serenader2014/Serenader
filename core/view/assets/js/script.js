@@ -207,7 +207,8 @@ var Serenader = {
             'focus|body|.input input': 'focusInput',
             'blur|body|.input input': 'blurInput',
             'change|body|.input input': 'changeInput',
-            'change|body|[data-validate]': 'validator'
+            'change|body|[data-validate]': 'validator',
+            'click|.user-avatar a': 'showProfile',
         },
         ripple: function (event) {
             if ($(this).find('.ink').length === 0) {
@@ -329,6 +330,22 @@ var Serenader = {
             if (tmp) {
                 handleSuccess();
             }
+        },
+        showProfile: function () {
+            $('.sub-menu').toggle();
+        },
+        showSideMenu: function () {
+            $('.side-menu').toggle();
         }
     });
+});
+
+$('.side-menu-btn').click(function () {
+    if ($('body').width() > 720) {
+        return false;
+    }
+
+    $('.side-menu').toggleClass('show');
+
+    // alert($('.side-menu').hasClass('show'));
 });

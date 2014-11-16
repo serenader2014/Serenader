@@ -1,0 +1,14 @@
+extends admin_layout
+
+block title
+    title 文章
+block area
+    span 文章列表
+
+block main
+    ul.post-list
+        - each draft in drafts
+            li
+                a(href='') #{draft.title}
+                a(href='') #{draft.author}
+                

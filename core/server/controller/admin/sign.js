@@ -53,7 +53,7 @@ module.exports = function (router) {
     });
 
     router.post(url.adminSignUp, function (req, res) {
-        var uid, email, password, rePwd, hashedPwd, hashedEmail;
+        var uid, email, password, rePwd, hashedPwd;
         
         if (! locals.setting.allow_sign_up) {
             res.json({
@@ -108,7 +108,6 @@ module.exports = function (router) {
         }
 
         hashedPwd = md5(password);
-        hashedEmail = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
         User.getAllUser().then(function (users) {
             if (users.length <= 0) {
@@ -116,7 +115,7 @@ module.exports = function (router) {
                     uid: uid,
                     email: email,
                     pwd: hashedPwd,
-                    avatar: 'http://www.gravatar.com/avatar/' + hashedEmail,
+                    avatar: config.assetsUrl.serverSideAssets + '/default_avatar.jpg',
                     role: 'admin'
                 });
             } else {
@@ -128,7 +127,7 @@ module.exports = function (router) {
                             uid: uid,
                             pwd: hashedPwd,
                             email: email,
-                            avatar: 'http://www.gravatar.com/avatar/' + hashedEmail,
+                            avatar: config.assetsUrl.serverSideAssets + '/default_avatar.jpg',
                             role: 'user'
                         });
                     }

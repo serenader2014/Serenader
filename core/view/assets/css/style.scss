@@ -4,8 +4,24 @@
 @import "utils";
 
 html {
+    height: 100%;
     font-size: 10px;
 }
+
+body, .content {
+    height: 100%;
+}
+
+a {
+    display: inline-block;
+    font-size: 1.4rem;
+    text-decoration: none;
+    color: map-get($color-light-blue, '500');
+    &:hover {
+        color: map-get($color-light-blue, '300');
+    }
+}
+
 
 * {
     box-sizing: border-box;
@@ -19,7 +35,7 @@ html {
 }
 
 .panel {
-    padding-bottom: 3rem;
+    height: 100%;
     background: lighten(map-get($color-grey, '400'), 15%);
 }
 
@@ -30,7 +46,7 @@ html {
     right: 0;
     padding: 1rem 2rem;
     z-index: $navbar-index;
-    background: map-get($color-blue, '500');
+    background: $white;
     box-shadow: $shadow-1;
 
     li {
@@ -45,7 +61,7 @@ html {
         outline: none;
         border: none;
         font-size: 2rem;
-        color: map-get($color-grey, '100');
+        color: map-get($color-light-blue, '500');
         cursor: pointer;
         background: none;
     }
@@ -68,18 +84,17 @@ html {
         float: right;
     }
 
-    .logo {
-        width: auto;
-        height: auto;
-        font-size: 2rem;
-        color: $white;
+    .area {
+        font-size: 1.6rem;
+        color: map-get($color-light-blue, '500');
     }
 }
 .sub-menu {
+    display: none;
     position: absolute;
     top: 100%;
     right: 0;
-    padding-top: 1rem;
+    padding-top: 2rem;
 
     .wrapper {
         position: relative;
@@ -101,7 +116,7 @@ html {
     }
 
     .user-info {
-        width: 30rem;
+        width: 27rem;
         padding: 2rem;
         img {
             width: 7rem;
@@ -120,7 +135,7 @@ html {
     }
 
     .details {
-        width: 19rem;
+        width: 16rem;
         padding: 1rem;
     }
 
@@ -163,13 +178,16 @@ html {
     left: 0;
     padding-top: 6rem;
     box-shadow: $shadow-1;
-    background: $white;
+    background: map-get($color-light-blue, '800');
     z-index: $side-index;
 
-    a {
-        width: 15rem;
+    .btn {
         padding: 0.8rem 2rem;
-        color: $content-color !important;
+        color: $white;
+
+        &:hover {
+            background: rgba($white, 0.2);
+        }
     }
 
     li {
@@ -177,10 +195,36 @@ html {
     }
 
     i {
-        margin-right: 2rem;
         font-size: 2rem;
         vertical-align: middle;
     }
 
+    .menu-text {
+        display: none;
+        width: 10rem;
+    }
+    &:hover {
+        .menu-text {
+            display: inline-block;
+        }
+
+        i {
+            margin-right: 2rem;
+        }
+    }
 
 }
+
+.main {
+    height: 100%;
+    padding: 6rem 1rem 1rem 7rem;
+
+    .wrapper {
+        height: 100%;
+        padding: 2.4rem;
+        background: $white;
+        box-shadow: $shadow-1;
+    }
+}
+
+@import "mobile";

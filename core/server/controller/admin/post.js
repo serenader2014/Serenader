@@ -1,6 +1,5 @@
-var Promise = require('bluebird'),
-    xss = require('xss'),
-    validator = require('validator'),
+var validator = require('validator'),
+    markdown = require('markd'),
     auth_user = require('../../utils/auth_user'),
     Post = require('../../models').Post,
     Category = require('../../models').Category,
@@ -11,8 +10,16 @@ var Promise = require('bluebird'),
 
 module.exports = function (router) {
 
-    router.get(url.adminPost, auth_user, function (req, res, next) {
-        Post.getUserPosts(req.session.user.uid).then(function (posts) {
+    router.get(url.adminPost, auth_user, function (req, res) {
+        function isAdmin () {
+            if (req.session.user.role === 'admin') {
+                return Post.getAllPosts();
+            } else {
+                return  Post.getUserPosts(req.session.user.uid);
+            }
+        }
+
+        isAdmin().then(function (posts) {
             Category.getAll().then(function (categories) {
                 var drafts = [];
                 posts.forEach(function (p, i) {
@@ -21,7 +28,7 @@ module.exports = function (router) {
                         posts[i] = '';
                     }
                 });
-                res.render('admin_post_content', {
+                res.render('post', {
                     posts: posts,
                     drafts: drafts,
                     categories: categories
@@ -36,21 +43,17 @@ module.exports = function (router) {
         });      
     });
 
-    router.get(url.adminNewPost, auth_user, function (req, res, next) {
+    router.get(url.adminNewPost, auth_user, function (req, res) {
         Category.getAll().then(function (c) {
-            if (isMobile(req)) {
-                res.render('admin_new_post_mobile', {categories: c});
-            } else {
-                res.render('admin_new_post', {categories: c});
-            }
+            res.render('new_post', {categories: c});
         }).then(null, function (err) {
             log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404 });
         });
     });
 
-    router.get(url.adminEditPost + '/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req.params.id));
+    router.get(url.adminEditPost + '/:id', auth_user, function (req, res) {
+        var id = validator.trim(req.params.id);
 
         Post.getOnePostById(id).then(function (p) {
             if (req.session.user.role !== 'admin' && p.author !== req.session.user.uid) {
@@ -58,17 +61,10 @@ module.exports = function (router) {
                 return false;
             }
             Category.getAll().then(function (c) {
-                if (isMobile(req)) {
-                    res.render('admin_edit_post_mobile', {
-                        categories: c, 
-                        post: p
-                    });
-                } else {
-                    res.render('admin_edit_post', {
-                        categories: c, 
-                        post: p
-                    });
-                }
+                res.render('edit_post', {
+                    categories: c, 
+                    post: p
+                });
             }).then(null, function (err) {
                 log.error(err.stack);
                 errorHandling(req, res, { error: err.message, type: 404 });
@@ -79,9 +75,9 @@ module.exports = function (router) {
         }); 
     });
 
-    router.post(url.adminEditPost + '/:id', auth_user, function (req, res, next) {
-        var now, title, author, avatar, date, post, category, id, published, tags;
-        if (! req.body.post || ! req.body.title || ! req.body.categories) {
+    router.post(url.adminEditPost + '/:id', auth_user, function (req, res) {
+        var now, title, author, date, md, html, category, id, published, tags;
+        if (! req.body.content || ! req.body.title || ! req.body.category) {
             res.json({
                 status: 0,
                 error: '请完善文章信息。'
@@ -97,26 +93,26 @@ module.exports = function (router) {
             minute: now.getMinutes(),
             second: now.getSeconds()
         };
-        title = validator.trim(xss(req.body.title));
+        title = validator.trim(req.body.title);
         author = req.session.user.uid;
-        avatar = req.session.user.avatar;
-        post = validator.trim(xss(req.body.post));
-        category = validator.trim(xss(req.body.categories));
-        id = validator.trim(xss(req.params.id));
-        published = validator.trim(xss(req.body.publish));
+        md = validator.trim(req.body.content);
+        category = validator.trim(req.body.category);
+        id = validator.trim(req.params.id);
+        published = validator.trim(req.body.publish);
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
             res.json({
                 status: 0,
                 id: 0
             });
-            return;
+            return false;
         }        
         if (Array.isArray(req.body.tags)) {
-            tags  =[];
+            tags = [];
             req.body.tags.forEach(function (tag) {
-                tags.push(validator.trim(xss(tag)));
+                tags.push(validator.trim(tag));
             });
+            return false;
         } else if (! req.body.tags) {
             tags = [];
         } else {
@@ -124,6 +120,17 @@ module.exports = function (router) {
                 status: 0,
                 error: 'tags must be an array'
             });
+            return false;
+        }
+
+        try {
+            html = markdown(md);
+        } catch (err) {
+            res.json({
+                status: 0,
+                error: 'Compile markdown error.'
+            });
+            return false;
         }
 
         Category.getOneByName(category).then(function (c) {
@@ -132,7 +139,8 @@ module.exports = function (router) {
                     id: id,
                     title: title,
                     author: author,
-                    content: post,
+                    markdown: md,
+                    html: html,
                     lastModifiedDate: date,
                     tags: tags,
                     published: published,
@@ -162,8 +170,8 @@ module.exports = function (router) {
     });
 
 
-    router.post(url.adminDeletePost + '/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req.params.id));
+    router.post(url.adminDeletePost + '/:id', auth_user, function (req, res) {
+        var id = validator.trim(req.params.id);
         Post.deletePost(id).then(function () {
             res.json({
                 status: 1
@@ -178,9 +186,9 @@ module.exports = function (router) {
     });
 
 
-    router.post(url.adminNewPost, auth_user, function (req, res, next) {
-        var now, title, author, avatar, date, post, published, tags, category;
-        if (! req.body.post || ! req.body.title || ! req.body.categories) {
+    router.post(url.adminNewPost, auth_user, function (req, res) {
+        var now, title, author, date, md, html, published, tags, category;
+        if (! req.body.content || ! req.body.title || ! req.body.category) {
             res.json({
                 status: 0,
                 error: '请完善文章信息。'
@@ -188,7 +196,7 @@ module.exports = function (router) {
             return false;
         }
         now = new Date();
-        title = validator.trim(xss(req.body.title));
+        title = validator.trim(req.body.title);
         author = req.session.user.uid;
         date = {
             year: now.getFullYear(), 
@@ -198,20 +206,20 @@ module.exports = function (router) {
             minute: now.getMinutes(),
             second: now.getSeconds()
         };
-        post = req.body.post;
-        published = validator.trim(xss(req.body.publish));
+        md = validator.trim(req.body.post);
+        published = validator.trim(req.body.publish);
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
             res.json({
                 status: 0,
                 id: 0
             });
-            return;
+            return false;
         }
         if (Array.isArray(req.body.tags)) {
             tags = [];
             req.body.tags.forEach(function (tag) {
-                tags.push(validator.trim(xss(tag)));
+                tags.push(validator.trim(tag));
             });
         } else if (!req.body.tags) {
             tags = [];
@@ -222,7 +230,18 @@ module.exports = function (router) {
             });
             return false;
         }
-        category = validator.trim(xss(req.body.categories));
+
+        try {
+            html = markdown(md);
+        } catch (err) {
+            res.json({
+                status: 0,
+                error: 'Compile markdown error'
+            });
+            return false;
+        }
+
+        category = validator.trim(req.body.category);
 
         Category.getOneByName(category).then(function (c) {
             if (c) {
@@ -232,7 +251,8 @@ module.exports = function (router) {
                     createDate: date, 
                     lastModifiedDate: date,
                     tags:tags, 
-                    content: post, 
+                    markdown: md,
+                    html: html, 
                     published: published,
                     category: category
                 }).then(function (p) {
@@ -268,7 +288,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminNewCategory, auth_user, function (req, res, next) {
+    router.post(url.adminNewCategory, auth_user, function (req, res) {
         var name;
         if (req.session.user.role !== 'admin') {
             res.json({
@@ -284,7 +304,7 @@ module.exports = function (router) {
             });
             return false;
         }
-        name = validator.trim(xss(req.body.name));
+        name = validator.trim(req.body.name);
 
         Category.getOneByName(name).then(function (c) {
             if (! c) {
@@ -312,7 +332,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminEditCategory + '/:id', auth_user, function (req, res, next) {
+    router.post(url.adminEditCategory + '/:id', auth_user, function (req, res) {
         var id, name;
         if (req.session.user.role !== 'admin') {
             res.json({
@@ -328,12 +348,12 @@ module.exports = function (router) {
             });
             return false;
         }
-        id = validator.trim(xss(req.params.id));
-        name = validator.trim(xss(req.body.name));
+        id = validator.trim(req.params.id);
+        name = validator.trim(req.body.name);
 
         Category.getOneById(id).then(function (c) {
             if (c) {
-                return Category.update(id, name).then(function (category) {
+                return Category.update(id, name).then(function () {
                     return c.name;
                 });
             } else {
@@ -366,8 +386,8 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminDeleteCategory + '/:id', auth_user, function (req, res, next) {
-        var id = validator.trim(xss(req.params.id));
+    router.post(url.adminDeleteCategory + '/:id', auth_user, function (req, res) {
+        var id = validator.trim(req.params.id);
         if (req.session.user.role !== 'admin') {
             res.json({
                 status: 0,
@@ -404,16 +424,3 @@ module.exports = function (router) {
         });
     });
 };
-
-function isMobile (req) {
-    var mobileUA = ['Android','iPhone','iPad','Windows Phone'];
-    var UAheader = req.headers['user-agent'];
-    var result = false;
-    mobileUA.forEach(function (u, index) {
-        var reg = new RegExp(u, 'gi');
-        if (reg.test(UAheader)) {
-            result = true;
-        }
-    });
-    return result;
-}

@@ -1,7 +1,5 @@
 extends layout
 
-block title
-    title 控制台
 block css
     link(rel='stylesheet', href='#{assets.server}/css/style.css')/
     link(rel='stylesheet', href='#{assets.server}/css/md-icon.min.css')/
@@ -13,8 +11,8 @@ block content
                     li
                         button.side-menu-btn(type='button')
                             i.md-menu
-                    li
-                        a.logo(href='#{url.admin}') Serenader
+                    li.area
+                        block area
                     li.user-avatar
                         a(href='javascript:;')
                             img(src='#{currentUser.avatar}')
@@ -30,21 +28,27 @@ block content
                                 ul
                                     - if (currentUser.role === 'admin')
                                         li.adduser-btn: a.ripple(href='javascript:;') 添加用户
-                                    li.signout-btn: a.ripple(href='javascript:;') 退出登录
+                                    li.signout-btn: a.ripple(href='#{url.admin}#{url.adminSignOut}') 退出登录
             .side-menu
                 ul
-                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                    li: a.btn.ripple(href='/')
+                        i.md-home
+                        span.menu-text 主页
+                    li: a.btn.ripple(href='#{url.admin}')
                         i.md-dashboard
-                        | 控制台
-                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        span.menu-text 控制台
+                    li: a.btn.ripple(href='#{url.admin}#{url.adminPost}')
                         i.md-description
-                        | 文章
-                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        span.menu-text 文章
+                    li: a.btn.ripple(href='#{url.admin}#{url.adminGallery}')
                         i.md-photo-library
-                        | 相册
-                    li: a.btn.btn-primary.ripple.ripple-black(href='javascript:;')
+                        span.menu-text 相册
+                    li: a.btn.ripple(href='#{url.admin}#{url.adminFile}')
                         i.md-attach-file
-                        | 附件
+                        span.menu-text 附件
+            .main
+                .wrapper
+                    block main
         .global-btn
             button.btn.btn-round.btn-red.btn-raised.ripple(type='button')
                 i.md-add

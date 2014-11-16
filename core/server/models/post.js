@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     _ = require('underscore'),
+    htmlToText = require('html-to-text'),
     Category = require('./category'),
     Promise = require('bluebird'),
 
@@ -9,8 +10,9 @@ var mongoose = require('mongoose'),
         author: String,
         createDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
         lastModifiedDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
+        markdown: String,
+        html: String,
         tags: Array,
-        content: String,
         excerpt: String,
         published: Boolean,
         category: String,
@@ -21,15 +23,8 @@ PostSchema.statics.createNewPost = function (options) {
     var self = this;
     return new Promise(function (resolve, reject) {
         var p = new self();
-        p.title = options.title;
-        p.author = options.author;
-        p.createDate = options.createDate;
-        p.lastModifiedDate = options.lastModifiedDate;
-        p.tags = options.tags;
-        p.content = options.content;
-        p.excerpt = options.content.substring(0, 350+Math.random()*100);
-        p.category = options.category;
-        p.published = options.published;
+        _.extend(p, options);
+        p.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
         p.save(function (err) {
             if (err) {
                 reject(err);
@@ -45,26 +40,22 @@ PostSchema.statics.updatePost = function (options) {
     return self.findById(options.id).exec().then(function (post) {
         var obj = {};
         _.extend(obj, options);
-        if (options.category) {
+        return Promise.resolve().then(function () {
             if (options.published === true && post.published === true && options.category !== post.category) {
                 return Category.increaseCount(options.category).then(function () {
                     return Category.decreaseCount(post.category);
-                }).then(function () {
-                    return self.findByIdAndUpdate(options.id, obj).exec();
                 });
             }
             if (options.published === false && post.published === true) {
-                return Category.decreaseCount(post.category).then(function () {
-                    return self.findByIdAndUpdate(options.id, obj).exec();
-                });
+                return Category.decreaseCount(post.category);
             }
             if (options.published === true && post.published === false) {
-                return Category.increaseCount(options.category).then(function () {
-                    return self.findByIdAndUpdate(options.id, obj).exec();
-                });
+                return Category.increaseCount(options.category);
             }
+        }).then(function () {
+            options.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
             return self.findByIdAndUpdate(options.id, obj).exec();
-        }
+        });
     });
 };
 
@@ -102,7 +93,7 @@ PostSchema.statics.getHomePagePublishedPosts = function () {
         ).exec();
 };
 PostSchema.statics.getAllPosts = function () {
-    return this.find({}, 'title author category date', {sort: {_id: -1}}).exec();
+    return this.find({}, null, {sort: {_id: -1}}).exec();
 };
 PostSchema.statics.deletePost = function (id) {
     var self = this;
