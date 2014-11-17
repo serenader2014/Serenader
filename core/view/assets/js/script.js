@@ -51,8 +51,8 @@
         this.header = $('<div>').addClass('dialog-header').html(options.title);
         this.body = $('<div>').addClass('dialog-body').append(options.content);
         this.footer = $('<div>').addClass('dialog-footer');
-        this.cancel = $('<button>').addClass('btn ripple ripple-black').html('Cancel');
-        this.confirm = $('<button>').addClass('btn btn-grey ripple').html('confirm');
+        this.cancel = $('<button>').addClass('btn ripple ripple-black').html('关闭');
+        this.confirm = $('<button>').addClass('btn btn-grey ripple').html('确定');
         this.init();
     };
 

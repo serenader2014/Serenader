@@ -12,7 +12,7 @@
     input {
         height: 50px;
         width: 100%;
-        padding: 0 1rem;
+        padding: 0 130px 0 1rem;
         outline: none;
         border: none;
         font-size: 2.4rem;
@@ -36,6 +36,7 @@
         border: none;
         font-size: 1.6rem;
     }
+
 
     .light-selector {
         border: none;
@@ -74,6 +75,9 @@
         height: 100%;
         box-shadow: $shadow-1;
     }
+    .preview-btn {
+        display: none;
+    }
 }
 
 .fullscreen {
@@ -102,7 +106,6 @@
         background: $white;
     }
 }
-
 .editor-tools {
     position: absolute;
     top: 0;
@@ -159,6 +162,13 @@
     }
 }
 
-.global-btn {
-    display: none;
+.insert-image {
+    .content {
+        display: none;
+    }
+    .active {
+        .content {
+            display: block;
+        }
+    }
 }

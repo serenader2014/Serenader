@@ -36,4 +36,21 @@ block main
                     button.btn.btn-blue.ripple(type='button') 发表
 
 block script
+    script#insert-template(type='text/template').
+        <div class='insert-image'>
+            <ul>
+                <li class='active'>
+                    <button class='btn ripple type'>链接</button>
+                    <div class='content'>
+                        <input type='text' />
+                    </div>
+                </li>
+                <li>
+                    <button class='btn ripple type'>上传</button>
+                    <div class='content'>
+                        <input type='file' />
+                    </div>
+                </li>
+            </ul>
+        </div>
     script(type='text/javascript', src='#{assets.server}/js/build/post.js')

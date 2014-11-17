@@ -1,4 +1,4 @@
-/* global CodeMirror, $, marked */
+/* global CodeMirror, $, marked, Serenader */
 (function () {
     var editor = CodeMirror.fromTextArea($('#editor')[0], {
         mode: null,
@@ -7,7 +7,7 @@
     });
 
     editor.on('change', function () {
-        if ($('.post-editor').hasClass('fullscreen') && $('body').width() > 720) {
+        if (($('.post-editor').hasClass('fullscreen') && $('body').width() > 720)) {
             $('.preview').html(marked(editor.getValue()));
         }
     });
@@ -24,4 +24,25 @@
         }
     });
 
+    $('.preview-btn').on('click', function () {
+        $(this).toggleClass('active');
+        $('.preview').html(marked(editor.getValue()));
+        $('.preview').toggleClass('mobile-preview');
+    });
+
+    $('.image-btn').on('click', function () {
+        Serenader.openDialog({
+            title: '插入图片',
+            content: $('#insert-template').html(),
+            task: function () {
+
+            }
+        });
+    });
+
+    $('body').on('click', '.insert-image .type', function () {
+        $(this).parents('li').addClass('active').siblings().removeClass('active');
+    });
+
+    $('.global-btn').hide();
 })();

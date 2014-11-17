@@ -19,4 +19,24 @@
     .side-menu.show {
         left: 0;
     }
+
+    .fullscreen {
+        .CodeMirror {
+            width: 100%;
+        }
+        .preview {
+            display: none;
+        }
+        .preview-btn {
+            display: inline-block;
+        }
+        .mobile-preview {
+            display: block;
+            left: 0;
+        }
+        .active {
+            color: $white;
+            background: map-get($color-red, '500');
+        }
+    }
 }

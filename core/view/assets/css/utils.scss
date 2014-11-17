@@ -156,6 +156,7 @@
     height: 100%;
     transition: all 0.2s ease-out;
     background: rgba(map-get($color-grey, '1000'), 0.3);
+    z-index: $dialog-index;
 
     .dialog-wrapper {
         display: table-cell;
