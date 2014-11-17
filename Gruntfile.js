@@ -14,18 +14,40 @@ module.exports = function (grunt) {
                 },
                 files: [
                     'core/view/*',
-                    'core/view/assets/js/serenader.js',
+                    'core/view/assets/js/build/*',
                     'core/view/assets/css/style.css',
                     'core/view/assets/css/sign.css'
                 ]
             },
-            script: {
+            baseScript: {
                 files: [
-                    'core/view/assets/js/*.js',
-                    '!core/view/assets/js/vendor.js',
-                    '!core/view/assets/js/serenader.js'
+                    'core/view/assets/js/script.js'
                 ],
-                tasks: ['concat:serenader']
+                tasks: ['concat']
+            },
+            signScript: {
+                files: [
+                    'core/view/assets/js/sign.js'
+                ],
+                tasks: ['concat:sign']
+            },
+            postScript: {
+                files: [
+                    'core/view/assets/js/post.js'
+                ],
+                tasks: ['concat:post']
+            },
+            galleryScript: {
+                files: [
+                    'core/view/assets/js/gallery.js'
+                ],
+                tasks: ['concat:gallery']
+            },
+            fileScript: {
+                files: [
+                    'core/view/assets/js/file.js'
+                ],
+                tasks: ['concat:file']
             },
             sass: {
                 files: ['core/view/assets/css/*.scss'],
@@ -42,8 +64,8 @@ module.exports = function (grunt) {
             },
             js: {
                 files: [
-                    {'core/view/assets/js/jquery.min.js': 'bower_components/jquery/dist/jquery.min.js'},
-                    {'core/view/assets/js/jquery.min.map': 'bower_components/jquery/dist/jquery.min.map'}
+                    {'core/view/assets/js/build/jquery.min.js': 'bower_components/jquery/dist/jquery.min.js'},
+                    {'core/view/assets/js/build/jquery.min.map': 'bower_components/jquery/dist/jquery.min.map'}
                 ]
             },
             font: {
@@ -99,8 +121,10 @@ module.exports = function (grunt) {
         uglify: {
             default: {
                 files: {
-                    'core/view/assets/js/vendor.js': 'core/view/assets/js/vendor.js',
-                    'core/view/assets/js/serenader.js': 'core/view/assets/js/serenader.js'
+                    'core/view/assets/js/build/sign.js': 'core/view/assets/js/build/sign.js',
+                    'core/view/assets/js/build/post.js': 'core/view/assets/js/build/post.js',
+                    'core/view/assets/js/build/gallery.js': 'core/view/assets/js/build/gallery.js',
+                    'core/view/assets/js/build/file.js': 'core/view/assets/js/build/file.js'
                 }
             }
         },
@@ -118,6 +142,10 @@ module.exports = function (grunt) {
                     {
                         src: 'core/view/assets/css/sign.scss',
                         dest: 'core/view/assets/css/sign.css'
+                    },
+                    {
+                        src: 'core/view/assets/css/markdown-html.scss',
+                        dest: 'core/view/assets/css/markdown-html.css'
                     }
 
                 ]
@@ -134,6 +162,10 @@ module.exports = function (grunt) {
                     {
                         src: 'core/view/assets/css/sign.scss',
                         dest: 'core/view/assets/css/sign.css'
+                    },
+                    {
+                        src: 'core/view/assets/css/markdown-html.scss',
+                        dest: 'core/view/assets/css/markdown-html.css'
                     }                    
                 ]
             }
@@ -155,28 +187,47 @@ module.exports = function (grunt) {
         },
 
         concat: {
-            libraries: {
-                dest: 'core/view/assets/js/vendor.js',
+            sign: {
+                dest: 'core/view/assets/js/build/sign.js',
+                src: [
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/lodash/dist/lodash.js',
+                    'bower_components/backbone/backbone.js',
+                    'core/view/assets/js/script.js',
+                    'core/view/assets/js/sign.js'
+                ]
+            },
+            post: {
+                dest: 'core/view/assets/js/build/post.js',
                 src: [
                     'bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/lodash/dist/lodash.js',
-                    'bower_components/backbone/backbone.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/blueimp-gallery/js/blueimp-gallery.js',
                     'bower_components/codemirror/lib/codemirror.js',
                     'bower_components/marked/lib/marked.js',
+                    'core/view/assets/js/script.js',
+                    'core/view/assets/js/post.js'
                 ]
             },
-            serenader: {
-                dest: 'core/view/assets/js/serenader.js',
+            gallery: {
+                dest: 'core/view/assets/js/build/gallery.js',
                 src: [
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
+                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'bower_components/blueimp-gallery/js/blueimp-gallery.js',
                     'core/view/assets/js/script.js',
-                    'core/view/assets/js/sign.js',
-                    'core/view/assets/js/post.js',
-                    'core/view/assets/js/gallery.js',
-                    'core/view/assets/js/file.js',
-                    'core/view/assets/js/panel.js'
+                    'core/view/assets/js/gallery.js'
+                ]
+            },
+            file: {
+                dest: 'core/view/assets/js/build/file.js',
+                src: [
+                    'bower_components/jquery/dist/jquery.js',
+                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
+                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'core/view/assets/js/script.js',
+                    'core/view/assets/js/file.js'
                 ]
             }
         },

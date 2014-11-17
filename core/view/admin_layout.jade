@@ -8,12 +8,12 @@ block content
     .panel
         .content
             nav.navbar
+                .area
+                    block area
                 ul
                     li
                         button.side-menu-btn(type='button')
                             i.md-menu
-                    li.area
-                        block area
                     li.user-avatar
                         a(href='javascript:;')
                             img(src='#{currentUser.avatar}')
@@ -48,12 +48,7 @@ block content
                         i.md-attach-file
                         span.menu-text 附件
             .main
-                .wrapper
-                    block main
+                block main
         .global-btn
             a.btn.btn-round.btn-red.btn-raised.ripple(href='#{url.admin}#{url.adminNewPost}')
                 i.md-add
-
-block script
-    script(type='text/javascript', src='#{assets.server}/js/vendor.js')
-    script(type='text/javascript', src='#{assets.server}/js/serenader.js')

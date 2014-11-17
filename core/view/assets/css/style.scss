@@ -85,8 +85,18 @@ a {
     }
 
     .area {
-        font-size: 1.6rem;
-        color: map-get($color-light-blue, '500');
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        font-size: 2rem;
+        color: map-get($color-grey, '400');
+        text-align: center;
+        span {
+            display: inline-block;
+            padding: 1rem;
+            line-height: 3rem;
+        }
     }
 }
 .sub-menu {
@@ -218,13 +228,6 @@ a {
 .main {
     height: 100%;
     padding: 6rem 1rem 1rem 7rem;
-
-    .wrapper {
-        height: 100%;
-        padding: 2.4rem;
-        background: $white;
-        box-shadow: $shadow-1;
-    }
 }
 
 @import "post";

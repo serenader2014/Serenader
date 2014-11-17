@@ -8,26 +8,38 @@
     top: 0;
     left: 0;
     right: 0;
+    box-shadow: $shadow-1;
     input {
-        height: 4rem;
+        height: 50px;
         width: 100%;
         padding: 0 1rem;
         outline: none;
-        border: 2px solid map-get($color-grey, '200');
+        border: none;
         font-size: 2.4rem;
         font-weight: 800;
         color: $content-color;
+
+        &:focus {
+            box-shadow: 4px 0 0 map-get($color-red, '400') inset;
+        }
     }
 
-    select {
+    .categories-selector {
+        display: inline-block;
         position: absolute;
         top: 0;
         right: 0;
         height: 4rem;
-        width: 10rem;
+        line-height: 4rem;
         padding: 0 1rem;
         outline: none;
-        border: 2px solid map-get($color-grey, '300');
+        border: none;
+        font-size: 1.6rem;
+    }
+
+    .light-selector {
+        border: none;
+        color: map-get($color-grey, '400');
     }
 
     option {
@@ -39,11 +51,114 @@
 
 .post-editor {
     height: 100%;
-    padding-top: 5rem;
+    padding-top: 60px;
 
     .CodeMirror {
         height: 100%;
-        font-size: 1.4rem;
-        border: 2px solid map-get($color-grey, '300');
+        padding: 4rem 1rem 1rem;
+        font-size: $normal-font-size;
+        color: $content-color;
+        z-index: $codemirror-index;
     }
+
+    .CodeMirror-focused {
+        box-shadow: 4px 0 0 map-get($color-red, '400') inset;
+    }
+
+    .preview {
+        display: none;
+    }
+
+    .wrapper {
+        position: relative;
+        height: 100%;
+        box-shadow: $shadow-1;
+    }
+}
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0;
+    z-index: $editor-fullscreen-index;
+
+    .CodeMirror {
+        width: 50%;
+        background: map-get($color-grey, '50');
+    }
+
+    .preview {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        right: 0;
+        padding: 50px 2rem 4rem 2rem;
+        overflow: auto;
+        background: $white;
+    }
+}
+
+.editor-tools {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 1rem;
+    z-index: $editor-tools-index;
+    background: map-get($color-grey, '200');
+    span {
+        display: inline-block;
+        line-height: 3rem;
+        font-size: 1.5rem;
+        color: map-get($color-grey, '500');
+    }
+
+    li {
+        display: inline-block;
+    }
+
+    button {
+        padding: 0.5rem;
+        height: 3rem;
+        font-size: 2rem;
+        color: map-get($color-grey, '500');
+    }
+
+    ul {
+        float: right;
+    }
+}
+
+.editor-foot {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: map-get($color-grey, '100');
+    input {
+        height: 4rem;
+        width: 100%;
+        padding: 0 10rem 0 1rem;
+        border: none;
+        font-size: 1.4rem;
+        color: $content-color;
+        outline: none;
+        background: none;
+    }
+
+    button {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+    }
+}
+
+.global-btn {
+    display: none;
 }

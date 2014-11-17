@@ -20,7 +20,5 @@ core/view/assets/img/
 core/view/assets/fonts/
 core/view/assets/ace/
 core/view/assets/css/*.css
-core/view/assets/js/jquery.min.js
-core/view/assets/js/jquery.min.map
-core/view/assets/js/vendor.js
-core/view/assets/js/serenader.js
+!core/view/assets/css/jquery.light-selector.css
+core/view/assets/js/build
