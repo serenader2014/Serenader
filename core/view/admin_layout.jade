@@ -47,8 +47,11 @@ block content
                     li: a.btn.ripple(href='#{url.admin}#{url.adminFile}')
                         i.md-attach-file
                         span.menu-text 附件
+                    li: a.btn.ripple(href='#{url.admin}#{url.adminSetting}')
+                        i.md-settings
+                        span.menu-text 设置
             .main
                 block main
         .global-btn
-            a.btn.btn-round.btn-red.btn-raised.ripple(href='#{url.admin}#{url.adminNewPost}')
+            button.btn.btn-round.btn-red.btn-raised.ripple(type='button')
                 i.md-add

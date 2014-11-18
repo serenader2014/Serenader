@@ -25,10 +25,10 @@ module.exports = function (router) {
                 posts.forEach(function (p, i) {
                     if (! p.published) {
                         drafts.push(p);
-                        posts[i] = '';
+                        posts.splice(posts.indexOf(posts[i]), 1);
                     }
                 });
-                res.render('post', {
+                res.render('post_list', {
                     posts: posts,
                     drafts: drafts,
                     categories: categories
@@ -45,7 +45,7 @@ module.exports = function (router) {
 
     router.get(url.adminNewPost, auth_user, function (req, res) {
         Category.getAll().then(function (c) {
-            res.render('new_post', {categories: c});
+            res.render('post', {categories: c});
         }).then(null, function (err) {
             log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404 });
@@ -61,7 +61,7 @@ module.exports = function (router) {
                 return false;
             }
             Category.getAll().then(function (c) {
-                res.render('edit_post', {
+                res.render('post', {
                     categories: c, 
                     post: p
                 });
@@ -112,7 +112,6 @@ module.exports = function (router) {
             req.body.tags.forEach(function (tag) {
                 tags.push(validator.trim(tag));
             });
-            return false;
         } else if (! req.body.tags) {
             tags = [];
         } else {
@@ -123,6 +122,7 @@ module.exports = function (router) {
             return false;
         }
 
+
         try {
             html = markdown(md);
         } catch (err) {
@@ -132,7 +132,6 @@ module.exports = function (router) {
             });
             return false;
         }
-
         Category.getOneByName(category).then(function (c) {
             if (c) {
                 return Post.updatePost({
@@ -206,7 +205,8 @@ module.exports = function (router) {
             minute: now.getMinutes(),
             second: now.getSeconds()
         };
-        md = validator.trim(req.body.post);
+        md = validator.trim(req.body.content);
+        category = validator.trim(req.body.category);
         published = validator.trim(req.body.publish);
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
@@ -240,8 +240,6 @@ module.exports = function (router) {
             });
             return false;
         }
-
-        category = validator.trim(req.body.category);
 
         Category.getOneByName(category).then(function (c) {
             if (c) {

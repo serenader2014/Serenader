@@ -1,5 +1,4 @@
-var path = require('path'),
-    Promise = require('bluebird'),
+var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs')),
     validator = require('validator'),
     xss = require('xss'),
@@ -12,11 +11,7 @@ var path = require('path'),
 
 
 module.exports = function (router) {
-    var uploadDir = function (req) {
-        return root + '/content/data/public/' + req.session.user.uid + '/upload';
-    };
-
-    router.post(url.adminUpload + '/*', auth_user, function (req, res, next) {
+    router.post(url.adminUpload + '/*', auth_user, function (req, res) {
         var userName = req.session.user.uid,
             dir = validator.trim(xss(req.url)).split(url.adminUpload + '/')[1],
             tmpArr = dir.split('/'),
@@ -36,7 +31,7 @@ module.exports = function (router) {
             uploadDir: targetDir,
             baseUrl: '/static/' + userName + '/upload/' + dstDir,
             deleteUrl: url.admin + url.adminUpload + '/' + type + '/' + userName + '/upload/' + dstDir
-        }).then(function (files, field) {
+        }).then(function (files) {
             res.json(files);
         }).catch(function (err) {
             res.json({
@@ -46,7 +41,7 @@ module.exports = function (router) {
         });
     });
 
-    router.delete(url.adminUpload + '/*', auth_user, function (req, res, next) {
+    router.delete(url.adminUpload + '/*', auth_user, function (req, res) {
         var tmpArr = validator.trim(xss(req.url)).split('/').slice(2),
             fileName = tmpArr.pop(),
             baseDir = root + '/content/data/' + tmpArr.join('/'),

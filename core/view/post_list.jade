@@ -1,0 +1,22 @@
+extends admin_layout
+
+block title
+    title 文章
+block area
+    span 文章列表
+
+block main
+    ul.post-list
+        - each draft in drafts
+            li
+                a(href='#{url.admin}#{url.adminEditPost}/#{draft.id}') #{draft.title}
+                a(href='') #{draft.author}
+
+        - each post in posts
+            li
+                a(href='#{url.admin}#{url.adminEditPost}/#{post.id}') #{post.title}
+                a(href='') #{post.author}                
+
+block script
+    script(type='text/javascript', src='#{assets.server}/js/build/post_list.js')
+                

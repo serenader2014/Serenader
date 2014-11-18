@@ -1,4 +1,4 @@
-/* global $, marked, Serenader, hljs, url */
+/* global $, marked, Serenader, hljs, url, window */
 (function () {
     var keyMap = {
             ctrl: 17,
@@ -14,15 +14,13 @@
             u: 85,
             f11: 122
         },
-        draftID,
-        previousTitle,
-        previousContent,
-        previousTags,
-        previousCategory,
+        draftID = window.location.pathname.split('/').pop(),
+        previousTitle = $('.post-head input').val(),
+        previousContent = $('.editor').val(),
+        previousTags = $('.tags input').val().split(','),
+        previousCategory = $('option:selected').val(),
         autoSave,
         status = $('.post-status');
-
-    previousTitle = previousTags = previousCategory = previousContent;
 
     marked.setOptions({
         highlight: function (code) {
@@ -38,7 +36,6 @@
         'click|.image-btn': 'insertImage',
         'click|body|.type': 'showInsertType',
         'click|.publish': 'publish',
-        'keyup| .editor': 'createDraft',
         'click|.draft-btn': 'saveDraft',
         'click|.help-btn': 'showHelp'
     });
@@ -214,76 +211,6 @@
             $('.content', $('.insert-image')).hide();
             $($(this).attr('data-target')).show();
         },
-        createDraft: function () {
-            var title,
-                category,
-                content,
-                tags,
-                editor = $('.editor');
-            editor.off('keyup', Serenader.createDraft);
-
-            title = $('.post-head input').val() || 'No title';
-            content = editor.val();
-            tags = $('.tags input').val().split(',');
-            category = $('option:selected').val();
-            $.ajax({
-                url: url.admin + url.adminNewPost,
-                type: 'POST',
-                data: {
-                    content: content,
-                    title: title,
-                    category: category,
-                    tags: tags,
-                    publish: false
-                },
-                dataType: 'json',
-                success: function (result) {
-                    if (result.status === 1) {
-                        Serenader.updateStatus('成功创建草稿。');
-                        draftID = result.id;
-                        setTimeout(function () {
-                            $('.post-status').html('');
-                        }, 3000);
-                        autoSave = setInterval(function () {
-                            var title,
-                                category,
-                                content,
-                                tags,
-                                editor = $('.editor');
-
-                            title = $('.post-head input').val();
-                            category = $('option:selected').val();
-                            content = editor.val();
-                            tags = $('.tags input').val().split(',');
-
-                            if ((previousTitle === title && 
-                                previousCategory === category &&
-                                previousContent === content) ||
-                                !content) {
-                                return false;
-                            }
-
-                            previousTags = tags;
-                            previousContent = content;
-                            previousCategory = category;
-                            previousTitle = title;
-                            Serenader.updatePost(false, function (err) {
-                                if (!err) {
-                                    Serenader.updateStatus('自动保存草稿成功。');
-                                } else {
-                                    Serenader.updateStatus('自动保存草稿失败！');
-                                }
-                            });
-                        }, 10000);
-                    } else {
-                        Serenader.updateStatus('创建草稿失败！');
-                    }
-                },
-                error: function () {
-                    Serenader.updateStatus('创建草稿失败！');
-                }
-            });
-        },
         updatePost: function (isPublished, callback) {
             var title,
                 category,
@@ -379,4 +306,44 @@
     $('.categories').lightSelector();
     $('.global-btn').hide();
     Serenader.fire();
+    autoSave = setInterval(function () {
+        var title,
+            category,
+            content,
+            tags,
+            editor = $('.editor');
+
+        title = $('.post-head input').val();
+        category = $('option:selected').val();
+        content = editor.val();
+        tags = $('.tags input').val().split(',');
+
+        if ((previousTitle === title && 
+            previousCategory === category &&
+            previousContent === content) ||
+            !content) {
+            return false;
+        }
+
+        console.log([
+            previousContent,
+            content,
+            previousCategory,
+            category,
+            previousTitle,
+            title
+            ]);
+
+        previousTags = tags;
+        previousContent = content;
+        previousCategory = category;
+        previousTitle = title;
+        Serenader.updatePost(false, function (err) {
+            if (!err) {
+                Serenader.updateStatus('自动保存草稿成功。');
+            } else {
+                Serenader.updateStatus('自动保存草稿失败！');
+            }
+        });
+    }, 10000);    
 })();

@@ -21,4 +21,5 @@ core/view/assets/fonts/
 core/view/assets/ace/
 core/view/assets/css/*.css
 !core/view/assets/css/jquery.light-selector.css
+!core/view/assets/css/rainbow.css
 core/view/assets/js/build

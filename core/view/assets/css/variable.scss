@@ -22,6 +22,12 @@ $ripple-white: rgba(map-get($color-grey, '0'), 0.3);
 $ripple-black: rgba(map-get($color-grey, '1000'), 0.1);
 
 $white: map-get($color-grey, '0');
+$grey: map-get($color-grey, '400');
+$blue: map-get($color-light-blue, '400');
+$light-grey: map-get($color-grey, '200');
+$dark-grey: map-get($color-grey, '600');
+
+$editor-background: map-get($color-grey, '50');
 
 
 $shadow-1: 0px 2px 5px rgba(0,0,0,0.4);

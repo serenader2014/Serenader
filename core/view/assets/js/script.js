@@ -1,30 +1,36 @@
-/* global $ */
+/* global $, window */
 
 (function ($, window, callback, undefined) {
     var Serenader = {
             events: {},
             modules: {}
-        };
-    Serenader.extend = function (obj) {
-        if (typeof obj !== 'object') {
-            return false;
-        }
-        if (obj.events && typeof obj.events === 'object') {
-            for (var i in obj.events) {
-                if (obj.events[i]) {
-                    Serenader.events[i] = obj.events[i];
+        },
+        extend = function (target, obj) {
+            if (typeof obj !== 'object') {
+                return false;
+            }
+
+            for (var i in obj) {
+                if (obj[i] && typeof target[i] === 'undefined') {
+                    target[i] = obj[i];
                 }
             }
-        }
-
-        for (var j in obj) {
-            if (obj[j]) {
-                Serenader[j] = obj[j];
-            }
-        }
+            
+        };
+    Serenader.extend = function (obj) {
+        extend(this, obj);
     };
 
     Serenader.init = function () {
+        this.fire();
+        Serenader.events = {};
+    };
+
+    Serenader.addEvents = function (obj) {
+        extend(this.events, obj);
+    };
+
+    Serenader.fire = function () {
         for (var i in this.events) {
             if (this.events[i]) {
                 var tmpArr = i.split('|'),
@@ -33,7 +39,6 @@
                     realTarget,
                     handler = this[this.events[i]];
 
-
                 if (tmpArr.length === 2) {
                     $(target).on(type, handler);
                 } else if (tmpArr.length === 3) {
@@ -41,7 +46,7 @@
                     $(target).on(type, realTarget, handler);
                 }
             }
-        }
+        }        
     };
 
     Serenader.modules.Dialog = function (options) {
@@ -61,11 +66,7 @@
         self.show();
         self.dialog.on('click', function (event) {
             if (event.target === self.wrapper[0]) {
-                if (self.remove) {
-                    self.dialog.remove();
-                } else {
-                    self.hide();
-                }
+                self.hide();
             }
         });
 
@@ -106,7 +107,9 @@
                 });
 
                 if (options.task && typeof options.task === 'function') {
-                    dialog.confirm.on('click', options.task);
+                    dialog.confirm.on('click', function () {
+                        options.task.call(dialog);
+                    });
                 }
         } else {
             return options;
@@ -202,16 +205,16 @@
     window.Serenader = Serenader;
 })($, typeof window !== 'undefined' ? window : this, function () {
     var self = this;
+    self.addEvents({
+        'click|body|.ripple': 'ripple',
+        'focus|body|.input input': 'focusInput',
+        'blur|body|.input input': 'blurInput',
+        'change|body|.input input': 'changeInput',
+        'change|body|[data-validate]': 'validator',
+        'click|.user-avatar a': 'showProfile',
+        'click|.side-menu-btn': 'showSideMenu'
+    });
     self.extend({
-        events: {
-            'click|body|.ripple': 'ripple',
-            'focus|body|.input input': 'focusInput',
-            'blur|body|.input input': 'blurInput',
-            'change|body|.input input': 'changeInput',
-            'change|body|[data-validate]': 'validator',
-            'click|.user-avatar a': 'showProfile',
-            'click|.side-menu-btn': 'showSideMenu'
-        },
         ripple: function (event) {
             if ($(this).find('.ink').length === 0) {
                 $(this).append($('<span>').addClass('ink'));

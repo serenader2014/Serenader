@@ -351,6 +351,7 @@
     border: 1px solid map-get($color-orange, '100');
     background: map-get($color-orange, '50');
     box-shadow: $shadow-2;
+    z-index: $progress-index;
 
     .progress-btn {
         position: absolute;
@@ -377,6 +378,7 @@
     bottom: 0;
     width: 100%;
     height: 100%;
+    z-index: $msg-index;
 
     .msg-box-wrapper {
         display: table-cell;

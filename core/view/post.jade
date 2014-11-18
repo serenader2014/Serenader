@@ -1,14 +1,146 @@
 extends admin_layout
 
 block title
-    title 文章
+    title 新文章
 block area
-    span 文章列表
+    - if (post)
+        span 编辑文章
+    - else
+        span 新文章
+
+block extra_css
+    link(rel='stylesheet', href='#{assets.server}/css/jquery.light-selector.css')/
+    link(rel='stylesheet', href='#{assets.server}/css/markdown-html.css')/
+    link(rel='stylesheet', href='#{assets.server}/css/rainbow.css')/
 
 block main
-    ul.post-list
-        - each draft in drafts
-            li
-                a(href='') #{draft.title}
-                a(href='') #{draft.author}
-                
+    .post-area
+        .post-head
+            - if (post)
+                input(type='text', name='title', placeholder='文章标题', value='#{post.title}')/
+            - else
+                input(type='text', name='title', placeholder='文章标题')/
+            .categories-selector
+                select.categories
+                    - if (post)
+                        - each cate in categories
+                            - if (post.category === cate.name)
+                                option(value='#{cate.name}', selected=true) #{cate.name}
+                            - else
+                                option(value='#{cate.name}') #{cate.name}
+                    - else
+                        - each cate in categories
+                            option(value='#{cate.name}') #{cate.name}
+        .post-editor
+            .wrapper
+                .editor-tools
+                    span
+                        | Markdown
+                        span.post-status
+                    ul
+                        li: button.btn.ripple.ripple-black.help-btn.md-help(type='button')
+                        li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button')
+                        li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button')
+                        li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button')
+                        li: button.btn.ripple.ripple-black.fullscreen-btn.md-fullscreen(type='button')
+                - if (post)
+                    textarea.editor(value='!{post.markdown}') !{post.markdown}
+                - else
+                    textarea.editor
+                .preview.markdown
+                .editor-foot
+                    .tags
+                        - if (post)
+                            - tags = post.tags.join(',')
+                            input(type='text', placeholder='文章标签，多个标签用 , 号分开。', value='#{tags}')
+                        - else
+                            input(type='text', placeholder='文章标签，多个标签用 , 号分开。')
+                    button.btn.btn-blue.ripple.publish(type='button') 发表
+
+block script
+    script#insert-template(type='text/template').
+        <div class='insert-image'>
+            <ul class='choose-type'>
+                <li>
+                    <button class='btn type active' data-target='#url'>链接</button>
+                </li>
+                <li>
+                    <button class='btn type' data-target='#upload'>上传</button>
+                </li>
+            </ul>
+            <div class='container'>
+                <div class='content' id='url'>
+                    <p class='description'>请输入图片的链接地址：</p>
+                    <input type='text' class='image-url'/>
+                </div>
+                <div class='content' id='upload'>
+                    <p class='description'>从本地上传图片：</p>
+                    <div class='upload-btn'>
+                        <p><button class='btn md-photo'></button></p>
+                        <p><button class='btn btn-blue'>选择图片</button></p>
+                        <input type='file' />
+                    </div>
+                    <div class='upload-progress'>
+                        <span>正在上传...<span class='percentage'></span></span>
+                        <div class='progress-bar-outer'>
+                            <div class='progress-bar-inner'></div>
+                        </div>
+                    </div>
+                    <div class='upload-finish'>
+                        <img src='' />
+                    </div>
+                </div>
+            </div>
+        </div>
+    script(type='text/template', id='help-template').
+        <p>编辑器快捷键</p>
+        <table class='help-content'>
+            <thead>
+                <tr>
+                    <th>快捷键</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>F11</td>
+                    <td>进入全屏模式</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + Alt + I</td>
+                    <td>插入图片</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + B</td>
+                    <td>加粗</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + I</td>
+                    <td>斜体</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + Q</td>
+                    <td>引用</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + L</td>
+                    <td>插入链接</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + K</td>
+                    <td>插入行内代码</td>
+                </tr>
+                <tr>
+                    <td>Ctrl + Alt + K</td>
+                    <td>插入代码块</td>
+                </tr>                
+                <tr>
+                    <td>Ctrl + U</td>
+                    <td>删除线</td>
+                </tr>
+            </tbody>
+        </table>
+    - if (post)
+        script(type='text/javascript', src='#{assets.server}/js/build/post_edit.js')
+    - else
+        script(type='text/javascript', src='#{assets.server}/js/build/post.js')
