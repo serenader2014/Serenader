@@ -6,16 +6,31 @@ block area
     span 文章列表
 
 block main
-    ul.post-list
-        - each draft in drafts
-            li
-                a(href='#{url.admin}#{url.adminEditPost}/#{draft.id}') #{draft.title}
-                a(href='') #{draft.author}
+    .post-content
+        ul.nav-menu
+            li.post: button.btn.ripple.md-list
+            li.category: button.btn.ripple.md-sort
+        ul.posts-list
+            - each draft in drafts
+                li.drafts
+                    .post-title
+                        a(href='#{url.admin}#{url.adminEditPost}/#{draft.id}') #{draft.title}
+                    .post-meta
+                        span 草稿保存于 #{draft.lastModifiedDate.year}/#{draft.lastModifiedDate.month}/#{draft.lastModifiedDate.day} | 
+                        a(href='') 作者: #{draft.author} | 
+                        span 分类： #{draft.category} | 
 
-        - each post in posts
-            li
-                a(href='#{url.admin}#{url.adminEditPost}/#{post.id}') #{post.title}
-                a(href='') #{post.author}                
+            - each post in posts
+                li
+                    .post-title
+                        a(href='#{url.admin}#{url.adminEditPost}/#{post.id}') #{post.title}
+                    .post-meta
+                        span 文章保存于 #{post.lastModifiedDate.year}/#{post.lastModifiedDate.month}/#{post.lastModifiedDate.day} | 
+                        a(href='') 作者: #{post.author} | 
+                        span 分类： #{post.category} |              
+        ul.categories-list
+            - each category in categories
+                li: a(href='javascript:;') #{category.name} (#{category.count})
 
 block script
     script(type='text/javascript', src='#{assets.server}/js/build/post_list.js')

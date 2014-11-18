@@ -39,4 +39,14 @@
             background: map-get($color-red, '500');
         }
     }
+
+    .categories-list {
+        right: -100%;
+        left: 100%;
+        width: 100%;
+    }
+
+    .posts-list {
+        padding: 3rem 0 1rem;
+    }
 }
