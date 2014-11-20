@@ -1,5 +1,6 @@
 var validator = require('validator'),
     markdown = require('marked'),
+    _ = require('underscore'),
     auth_user = require('../../utils/auth_user'),
     Post = require('../../models').Post,
     Category = require('../../models').Category,
@@ -21,15 +22,10 @@ module.exports = function (router) {
 
         isAdmin().then(function (posts) {
             Category.getAll().then(function (categories) {
-                var drafts = [];
-                posts.forEach(function (p, i) {
-                    if (! p.published) {
-                        drafts.push(p);
-                        posts.splice(i, 1);
-                    }
-                });
+                var drafts = _.filter(posts, {published: false}),
+                    p = _.filter(posts, {published: true});
                 res.render('post_list', {
-                    posts: posts,
+                    posts: p,
                     drafts: drafts,
                     categories: categories
                 });

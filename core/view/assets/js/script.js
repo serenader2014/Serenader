@@ -101,7 +101,18 @@
 
     Serenader.openDialog = function (options) {
         if (options && typeof options === 'object') {
-                var dialog = new this.modules.Dialog({
+                var dialog;
+
+                if (options.rendererData && typeof options.rendererData === 'object') {
+                    for (var i in options.rendererData) {
+                        if (options.rendererData[i]) {
+                            var regExp = new RegExp('{{' + i + '}}', 'gi');
+                            options.content = options.content.replace(regExp, options.rendererData[i]);
+                        }
+                    }
+                }
+
+                dialog = new this.modules.Dialog({
                     title: options.title || 'No title',
                     content: options.content || ''
                 });

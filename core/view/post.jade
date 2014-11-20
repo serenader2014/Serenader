@@ -141,12 +141,11 @@ block script
                 </tr>
             </tbody>
         </table>
-    - var slug = post ? post.slug : ''
     - var hasValue = post ? 'has-value' : ''
     script#post-setting-template(type='text/template').
         <div class='input #{hasValue}'>
             <label for='slug'>Slug</label>
-            <input value='#{slug}' id='slug'/>
+            <input value='{{slug}}' id='slug'/>
             <span class='input-bar'></span>
             <span class='input-description'>文章的唯一URL</span>
         </div>

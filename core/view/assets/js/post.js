@@ -281,7 +281,7 @@
                 title = $('.post-head input').val(),
                 category = $('option:selected').val();
 
-            if (! content || ! title || category || ! slug) {
+            if (!content || !title || !category || !slug) {
                 Serenader.msgBox('请先完善文章信息。');
                 return false;
             }
@@ -344,6 +344,7 @@
                 dataType: 'json',
                 success: function (result) {
                     slug = result.slug;
+                    $('.post-head input').attr('data-slug', result.slug);
                 },
                 error: function () {
                     Serenader.msgBox('生成Slug失败！');
@@ -355,7 +356,13 @@
                 title: '文章设置',
                 content: $('#post-setting-template').html(),
                 task: function () {
+                    var currentSlug = $('#slug').val();
                     this.hide();
+                    slug = currentSlug;
+                    $('.post-head input').attr('data-slug', currentSlug);
+                },
+                rendererData: {
+                    slug: $('.post-head input').attr('data-slug')
                 }
             });
         }

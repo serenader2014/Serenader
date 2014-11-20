@@ -43,12 +43,6 @@ module.exports = function (grunt) {
                 ],
                 tasks: ['concat:post']
             },
-            postEdit: {
-                files: [
-                    'core/view/assets/js/post_edit.js'
-                ],
-                tasks: ['concat:postEdit']
-            },
             galleryScript: {
                 files: [
                     'core/view/assets/js/gallery.js'
@@ -130,7 +124,6 @@ module.exports = function (grunt) {
                     'core/view/assets/js/build/sign.js': 'core/view/assets/js/build/sign.js',
                     'core/view/assets/js/build/post.js': 'core/view/assets/js/build/post.js',
                     'core/view/assets/js/build/post_list.js': 'core/view/assets/js/build/post_list.js',
-                    'core/view/assets/js/build/post_edit.js':'core/view/assets/js/build/post_edit.js',
                     'core/view/assets/js/build/gallery.js': 'core/view/assets/js/build/gallery.js',
                     'core/view/assets/js/build/file.js': 'core/view/assets/js/build/file.js'
                 }
@@ -215,18 +208,6 @@ module.exports = function (grunt) {
                     'core/view/assets/js/highlight.pack.js',
                     'core/view/assets/js/script.js',
                     'core/view/assets/js/post.js'
-                ]
-            },
-            postEdit: {
-                dest: 'core/view/assets/js/build/post_edit.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/marked/lib/marked.js',
-                    'core/view/assets/js/highlight.pack.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/post_edit.js'
                 ]
             },
             postList: {
