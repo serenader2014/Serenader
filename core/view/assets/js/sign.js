@@ -47,7 +47,9 @@
                     success: function (result) {
                         finish(function () {
                             if (result.status === 1) {
-                                window.location = url.admin;
+                                Serenader.msgBox('登录成功！', function () {
+                                    window.location = url.admin;
+                                });
                             } else {
                                 Serenader.msgBox('登录失败！' + result.error);
                             }
@@ -113,7 +115,9 @@
                     success: function (result) {
                         finish(function () {
                             if (result.status === 1) {
-                                window.location = url.admin + url.adminSign;
+                                Serenader.msgBox('注册成功！点击确定立即登录。', function () {
+                                    window.location = url.admin + url.adminSign;
+                                });
                             } else {
                                 Serenader.msgBox('注册失败！'+ result.error);
                             }

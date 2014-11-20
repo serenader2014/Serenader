@@ -7,6 +7,7 @@ var mongoose = require('mongoose'),
 
     PostSchema = new Schema({
         title: String,
+        slug: {type: String, unique: true},
         author: String,
         createDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
         lastModifiedDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
@@ -83,6 +84,9 @@ PostSchema.statics.getPostsByCate = function (name) {
 };
 PostSchema.statics.getOnePostById = function (id) {
     return this.findById(id).exec();
+};
+PostSchema.statics.getOnePostBySlug = function (slug) {
+    return this.findOne({slug: slug}).exec();
 };
 PostSchema.statics.getTenPosts = function () {
     return this.find({}, null, {limit: 10, sort: {_id: -1}}).exec();

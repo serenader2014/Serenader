@@ -17,7 +17,7 @@ block main
     .post-area
         .post-head
             - if (post)
-                input(type='text', name='title', placeholder='文章标题', value='#{post.title}')/
+                input(type='text', name='title', placeholder='文章标题', value='#{post.title}', data-slug='#{post.slug}')/
             - else
                 input(type='text', name='title', placeholder='文章标题')/
             .categories-selector
@@ -43,6 +43,7 @@ block main
                         li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button')
                         li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button')
                         li: button.btn.ripple.ripple-black.fullscreen-btn.md-fullscreen(type='button')
+                        li: button.btn.ripple.ripple-black.post-setting-btn.md-settings(type='button')
                 - if (post)
                     textarea.editor(value='!{post.markdown}') !{post.markdown}
                 - else
@@ -92,7 +93,7 @@ block script
                 </div>
             </div>
         </div>
-    script(type='text/template', id='help-template').
+    script#help-template(type='text/template').
         <p>编辑器快捷键</p>
         <table class='help-content'>
             <thead>
@@ -140,7 +141,13 @@ block script
                 </tr>
             </tbody>
         </table>
-    - if (post)
-        script(type='text/javascript', src='#{assets.server}/js/build/post_edit.js')
-    - else
-        script(type='text/javascript', src='#{assets.server}/js/build/post.js')
+    - var slug = post ? post.slug : ''
+    - var hasValue = post ? 'has-value' : ''
+    script#post-setting-template(type='text/template').
+        <div class='input #{hasValue}'>
+            <label for='slug'>Slug</label>
+            <input value='#{slug}' id='slug'/>
+            <span class='input-bar'></span>
+            <span class='input-description'>文章的唯一URL</span>
+        </div>
+    script(type='text/javascript', src='#{assets.server}/js/build/post.js')

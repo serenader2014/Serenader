@@ -151,12 +151,13 @@
         });
     };
 
-    Serenader.modules.MsgBox = function (content) {
+    Serenader.modules.MsgBox = function (content, callback) {
         this.msgBox = $('<div>').addClass('msg-box');
         this.wrapper = $('<div>').addClass('msg-box-wrapper');
         this.container = $('<div>').addClass('msg-box-container');
         this.content = $('<div>').addClass('msg-box-content').html(content);
         this.closeBtn = $('<button>').addClass('msg-box-close btn btn-blue').html('确定');
+        this.callback = callback;
         this.init();
     };
 
@@ -164,6 +165,9 @@
         var self = this;
         self.closeBtn.on('click', function () {
             self.close();
+            if (self.callback && typeof callback === 'function') {
+                self.callback();
+            }
         });
 
         self.msgBox.on('click', function (event) {
@@ -189,12 +193,12 @@
     };
 
 
-    Serenader.msgBox = function (content) {
+    Serenader.msgBox = function (content, callback) {
         var msg;
         if (!content || typeof content !== 'string') {
             return content;
         }
-        msg = new Serenader.modules.MsgBox(content);
+        msg = new Serenader.modules.MsgBox(content, callback);
         msg.show();
     };
 

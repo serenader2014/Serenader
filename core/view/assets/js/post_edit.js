@@ -20,7 +20,8 @@
         previousTags = $('.tags input').val().split(','),
         previousCategory = $('option:selected').val(),
         autoSave,
-        status = $('.post-status');
+        status = $('.post-status'),
+        slug;
 
     marked.setOptions({
         highlight: function (code) {
@@ -37,7 +38,8 @@
         'click|body|.type': 'showInsertType',
         'click|.publish': 'publish',
         'click|.draft-btn': 'saveDraft',
-        'click|.help-btn': 'showHelp'
+        'click|.help-btn': 'showHelp',
+        'change|.post-head input': 'generateSlug'
     });
 
     Serenader.extend({
@@ -228,14 +230,15 @@
             }
 
             $.ajax({
-                url: url.admin + url.adminEditPost + '/' + draftID,
-                type: 'POST',
+                url: url.admin + url.adminPost + '/' + draftID,
+                type: 'PUT',
                 data: {
                     content: content,
                     title: title || 'No title',
                     category: category,
                     tags: tags,
-                    publish: isPublished
+                    publish: isPublished,
+                    slug: slug
                 },
                 dataType: 'json',
                 success: function (result) {
@@ -300,7 +303,24 @@
                     this.hide();
                 }
             });
-        }
+        },
+        generateSlug: function () {
+            var value = $(this).val();
+            $.ajax({
+                url: url.admin + url.adminSlug,
+                type: 'POST',
+                data: {
+                    slug: value
+                },
+                dataType: 'json',
+                success: function (result) {
+                    slug = result.slug;
+                },
+                error: function () {
+                    Serenader.msgBox('生成Slug失败！');
+                }
+            });
+        }        
     });
 
     $('.categories').lightSelector();
@@ -325,24 +345,13 @@
             return false;
         }
 
-        console.log([
-            previousContent,
-            content,
-            previousCategory,
-            category,
-            previousTitle,
-            title
-            ]);
-
         previousTags = tags;
         previousContent = content;
         previousCategory = category;
         previousTitle = title;
         Serenader.updatePost(false, function (err) {
-            if (!err) {
-                Serenader.updateStatus('自动保存草稿成功。');
-            } else {
-                Serenader.updateStatus('自动保存草稿失败！');
+            if (err) {
+                Serenader.msgBox('自动保存草稿失败！');
             }
         });
     }, 10000);    

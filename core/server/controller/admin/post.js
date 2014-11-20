@@ -25,7 +25,7 @@ module.exports = function (router) {
                 posts.forEach(function (p, i) {
                     if (! p.published) {
                         drafts.push(p);
-                        posts.splice(posts.indexOf(posts[i]), 1);
+                        posts.splice(i, 1);
                     }
                 });
                 res.render('post_list', {
@@ -52,7 +52,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get(url.adminEditPost + '/:id', auth_user, function (req, res) {
+    router.get(url.adminPost + '/:id', auth_user, function (req, res) {
         var id = validator.trim(req.params.id);
 
         Post.getOnePostById(id).then(function (p) {
@@ -75,9 +75,9 @@ module.exports = function (router) {
         }); 
     });
 
-    router.post(url.adminEditPost + '/:id', auth_user, function (req, res) {
-        var now, title, author, date, md, html, category, id, published, tags;
-        if (! req.body.content || ! req.body.title || ! req.body.category) {
+    router.put(url.adminPost + '/:id', auth_user, function (req, res) {
+        var now, title, author, date, md, html, category, id, published, tags, slug;
+        if (!req.body.content || !req.body.title || !req.body.category || !req.body.slug) {
             res.json({
                 status: 0,
                 error: '请完善文章信息。'
@@ -94,6 +94,7 @@ module.exports = function (router) {
             second: now.getSeconds()
         };
         title = validator.trim(req.body.title);
+        slug = validator.trim(req.body.slug);
         author = req.session.user.uid;
         md = validator.trim(req.body.content);
         category = validator.trim(req.body.category);
@@ -137,6 +138,7 @@ module.exports = function (router) {
                 return Post.updatePost({
                     id: id,
                     title: title,
+                    slug: slug,
                     author: author,
                     markdown: md,
                     html: html,
@@ -169,7 +171,7 @@ module.exports = function (router) {
     });
 
 
-    router.post(url.adminDeletePost + '/:id', auth_user, function (req, res) {
+    router.delete(url.adminPost + '/:id', auth_user, function (req, res) {
         var id = validator.trim(req.params.id);
         Post.deletePost(id).then(function () {
             res.json({
@@ -186,8 +188,8 @@ module.exports = function (router) {
 
 
     router.post(url.adminNewPost, auth_user, function (req, res) {
-        var now, title, author, date, md, html, published, tags, category;
-        if (! req.body.content || ! req.body.title || ! req.body.category) {
+        var now, title, author, date, md, html, published, tags, category, slug;
+        if (! req.body.content || ! req.body.title || ! req.body.category || ! req.body.slug) {
             res.json({
                 status: 0,
                 error: '请完善文章信息。'
@@ -196,6 +198,7 @@ module.exports = function (router) {
         }
         now = new Date();
         title = validator.trim(req.body.title);
+        slug = validator.trim(req.body.slug);
         author = req.session.user.uid;
         date = {
             year: now.getFullYear(), 
@@ -245,6 +248,7 @@ module.exports = function (router) {
             if (c) {
                 return Post.createNewPost({
                     title: title, 
+                    slug: slug,
                     author: author, 
                     createDate: date, 
                     lastModifiedDate: date,
@@ -330,7 +334,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminEditCategory + '/:id', auth_user, function (req, res) {
+    router.put(url.adminCategory + '/:id', auth_user, function (req, res) {
         var id, name;
         if (req.session.user.role !== 'admin') {
             res.json({
@@ -384,7 +388,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminDeleteCategory + '/:id', auth_user, function (req, res) {
+    router.delete(url.adminCategory + '/:id', auth_user, function (req, res) {
         var id = validator.trim(req.params.id);
         if (req.session.user.role !== 'admin') {
             res.json({

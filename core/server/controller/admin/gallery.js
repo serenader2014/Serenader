@@ -15,12 +15,9 @@ var Promise = require('bluebird'),
     fileUpload = require('./upload').fileUpload,
     imageVersions = require('./upload').imageVersions,
 
-    errorHandling = require('../../utils/error'),
-
-    userName,album;
-
+    errorHandling = require('../../utils/error');
 module.exports = function (router) {
-    router.get(url.adminGallery, auth_user, function (req, res, next) {
+    router.get(url.adminGallery, auth_user, function (req, res) {
         var userName = req.session.user.uid;
         Album.getUserAllAlbum(userName).then(function (a) {
             if (a) {
@@ -34,7 +31,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminNewGallery, auth_user, function (req, res, next) {
+    router.post(url.adminNewGallery, auth_user, function (req, res) {
         var name = validator.trim(xss(req.body.name)),
             desc = validator.trim(xss(req.body.desc)),
             userName = req.session.user.uid,
@@ -74,7 +71,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get(url.adminGallery + '/:album', auth_user, function (req, res, next) {
+    router.get(url.adminGallery + '/:album', auth_user, function (req, res) {
         var album = validator.trim(xss(decodeURIComponent(req.params.album))),
             userName = req.session.user.uid;
         Album.getOneAlbum(album).then(function (a) {
@@ -135,7 +132,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.adminGalleryEdit + '/:album', auth_user, function (req, res, next) {
+    router.put(url.adminGallery + '/:album', auth_user, function (req, res, next) {
         var album = validator.trim(xss(decodeURIComponent(req.params.album))),
             name = validator.trim(xss(req.body.name)),
             description = validator.trim(xss(req.body.desc)),
@@ -200,7 +197,7 @@ module.exports = function (router) {
         });
     });
 
-    router.delete(url.adminGalleryDelete + '/:type/:album', auth_user, function (req, res, next) {
+    router.delete(url.adminGallery + '/:type/:album', auth_user, function (req, res, next) {
         var album = validator.trim(xss(decodeURIComponent(req.params.album))),
             type = validator.trim(xss(req.params.type)),
             ids = req.body.ids,

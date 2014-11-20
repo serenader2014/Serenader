@@ -1,4 +1,4 @@
-/* global $, marked, Serenader, hljs, url */
+/* global $, marked, Serenader, hljs, url, window */
 (function () {
     var keyMap = {
             ctrl: 17,
@@ -14,15 +14,13 @@
             u: 85,
             f11: 122
         },
-        draftID,
-        previousTitle,
-        previousContent,
-        previousTags,
-        previousCategory,
-        autoSave,
-        status = $('.post-status');
-
-    previousTitle = previousTags = previousCategory = previousContent;
+        regExp = new RegExp(url.adminNewPost, 'ig'),
+        draftID = regExp.test(window.location.pathname) ? undefined : window.location.pathname.split('/').pop() ,
+        previousTitle = $('.post-head input').val() ,
+        previousContent = $('.editor').val() ,
+        previousCategory = $('option:selected').val() ,
+        previousSlug  = $('.post-head input').attr('data-slug'),
+        slug = previousSlug;
 
     marked.setOptions({
         highlight: function (code) {
@@ -38,9 +36,10 @@
         'click|.image-btn': 'insertImage',
         'click|body|.type': 'showInsertType',
         'click|.publish': 'publish',
-        'keyup| .editor': 'createDraft',
         'click|.draft-btn': 'saveDraft',
-        'click|.help-btn': 'showHelp'
+        'click|.help-btn': 'showHelp',
+        'click|.post-setting-btn': 'showPostSetting',
+        'change|.post-head input': 'generateSlug'
     });
 
     Serenader.extend({
@@ -214,82 +213,14 @@
             $('.content', $('.insert-image')).hide();
             $($(this).attr('data-target')).show();
         },
-        createDraft: function () {
-            var title,
-                category,
-                content,
-                tags,
-                editor = $('.editor');
-            editor.off('keyup', Serenader.createDraft);
-
-            title = $('.post-head input').val() || 'No title';
-            content = editor.val();
-            tags = $('.tags input').val().split(',');
-            category = $('option:selected').val();
-            $.ajax({
-                url: url.admin + url.adminNewPost,
-                type: 'POST',
-                data: {
-                    content: content,
-                    title: title,
-                    category: category,
-                    tags: tags,
-                    publish: false
-                },
-                dataType: 'json',
-                success: function (result) {
-                    if (result.status === 1) {
-                        Serenader.updateStatus('成功创建草稿。');
-                        draftID = result.id;
-                        setTimeout(function () {
-                            $('.post-status').html('');
-                        }, 3000);
-                        autoSave = setInterval(function () {
-                            var title,
-                                category,
-                                content,
-                                tags,
-                                editor = $('.editor');
-
-                            title = $('.post-head input').val();
-                            category = $('option:selected').val();
-                            content = editor.val();
-                            tags = $('.tags input').val().split(',');
-
-                            if ((previousTitle === title && 
-                                previousCategory === category &&
-                                previousContent === content) ||
-                                !content) {
-                                return false;
-                            }
-
-                            previousTags = tags;
-                            previousContent = content;
-                            previousCategory = category;
-                            previousTitle = title;
-                            Serenader.updatePost(false, function (err) {
-                                if (!err) {
-                                    Serenader.updateStatus('自动保存草稿成功。');
-                                } else {
-                                    Serenader.updateStatus('自动保存草稿失败！');
-                                }
-                            });
-                        }, 10000);
-                    } else {
-                        Serenader.updateStatus('创建草稿失败！');
-                    }
-                },
-                error: function () {
-                    Serenader.updateStatus('创建草稿失败！');
-                }
-            });
-        },
         updatePost: function (isPublished, callback) {
             var title,
                 category,
                 content,
                 tags,
-                editor = $('.editor');
+                editor = $('.editor'),
+                targetUrl,
+                method;
 
             title = $('.post-head input').val();
             category = $('option:selected').val();
@@ -300,27 +231,43 @@
                 isPublished = false;
             }
 
+            if (! draftID) {
+                targetUrl = url.admin + url.adminNewPost;
+                method = 'POST';
+            } else {
+                targetUrl = url.admin + url.adminPost + '/' + draftID;
+                method = 'PUT';
+            }
+
             $.ajax({
-                url: url.admin + url.adminEditPost + '/' + draftID,
-                type: 'POST',
+                url: targetUrl,
+                type: method,
                 data: {
                     content: content,
                     title: title || 'No title',
                     category: category,
                     tags: tags,
-                    publish: isPublished
+                    publish: isPublished,
+                    slug: slug
                 },
                 dataType: 'json',
                 success: function (result) {
                     if (result.status === 1) {
                         if (callback && typeof callback === 'function') {
-                            callback();
+                            callback(null);
+                        }
+                        if (result.id) {
+                            draftID = result.id;
                         }
                     } else {
                         if (callback && typeof callback === 'function') {
                             callback(result.error);
                         }
                     }
+                    previousCategory = category;
+                    previousContent = content;
+                    previousTitle = title;
+                    previousSlug = slug || '';
                 },
                 error: function (err) {
                     if (callback && typeof callback === 'function') {
@@ -330,6 +277,15 @@
             });
         },
         publish: function () {
+            var content = $('.editor').val(),
+                title = $('.post-head input').val(),
+                category = $('option:selected').val();
+
+            if (! content || ! title || category || ! slug) {
+                Serenader.msgBox('请先完善文章信息。');
+                return false;
+            }
+
             Serenader.progress('正在发表文章...', function (finish) {
                 Serenader.updatePost(true, function (err) {
                     if (!err) {
@@ -344,13 +300,16 @@
                 });
             });
         },
-        updateStatus: function (str) {
-            status.html(str);
-            setTimeout(function () {
-                $('.post-status').html('');
-            }, 3000);            
-        },
         saveDraft: function () {
+            var content = $('.editor').val(),
+                title = $('.post-head input').val(),
+                category = $('option:selected').val();
+
+            if (! content || ! title || ! category || ! slug) {
+                Serenader.msgBox('请先完善文章信息。');
+                return false;
+            }
+
             Serenader.progress('正在保存草稿...', function (finish) {
                 Serenader.updatePost(false, function (err) {
                     if (!err) {
@@ -373,10 +332,50 @@
                     this.hide();
                 }
             });
+        },
+        generateSlug: function () {
+            var value = $(this).val();
+            $.ajax({
+                url: url.admin + url.adminSlug,
+                type: 'POST',
+                data: {
+                    slug: value
+                },
+                dataType: 'json',
+                success: function (result) {
+                    slug = result.slug;
+                },
+                error: function () {
+                    Serenader.msgBox('生成Slug失败！');
+                }
+            });
+        },
+        showPostSetting: function () {
+            Serenader.openDialog({
+                title: '文章设置',
+                content: $('#post-setting-template').html(),
+                task: function () {
+                    this.hide();
+                }
+            });
         }
     });
 
     $('.categories').lightSelector();
     $('.global-btn').hide();
     Serenader.fire();
+    setInterval(function () {
+        var content = $('.editor').val(),
+            title = $('.post-head input').val(),
+            category = $('option:selected').val();
+
+        if (content === previousContent &&
+            title === previousTitle &&
+            category === previousCategory &&
+            slug === previousSlug) {
+            return false;
+        }
+
+        Serenader.updatePost(false);
+    }, 10000);
 })();

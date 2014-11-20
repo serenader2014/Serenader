@@ -14,7 +14,7 @@ block main
             - each draft in drafts
                 li.drafts
                     .post-title
-                        a(href='#{url.admin}#{url.adminEditPost}/#{draft.id}') #{draft.title}
+                        a(href='#{url.admin}#{url.adminPost}/#{draft.id}') #{draft.title}
                     .post-meta
                         span 草稿保存于 #{draft.lastModifiedDate.year}/#{draft.lastModifiedDate.month}/#{draft.lastModifiedDate.day} | 
                         a(href='') 作者: #{draft.author} | 
@@ -23,7 +23,7 @@ block main
             - each post in posts
                 li
                     .post-title
-                        a(href='#{url.admin}#{url.adminEditPost}/#{post.id}') #{post.title}
+                        a(href='#{url.admin}#{url.adminPost}/#{post.id}') #{post.title}
                     .post-meta
                         span 文章保存于 #{post.lastModifiedDate.year}/#{post.lastModifiedDate.month}/#{post.lastModifiedDate.day} | 
                         a(href='') 作者: #{post.author} | 

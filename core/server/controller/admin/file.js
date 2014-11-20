@@ -157,7 +157,7 @@ module.exports = function (router) {
         }
     });
 
-    router.post(URL.adminFileRename, auth_user, function (req, res) {
+    router.post(URL.adminFile, auth_user, function (req, res) {
         // req.body.files format:
         // [{
         //     path: '/public/some/path',
@@ -213,7 +213,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminFileEdit, auth_user, function (req, res) {
+    router.put(URL.adminFileEdit, auth_user, function (req, res) {
         if (!req.body.dir) {
             res.json({
                 status: 0,
@@ -238,7 +238,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminFileDelete, auth_user, function (req, res) {
+    router.delete(URL.adminFile, auth_user, function (req, res) {
         var userName = req.session.user.uid,
             trashPath = root + 'trash/' + userName,
             files = req.body.files,
