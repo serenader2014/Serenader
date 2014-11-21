@@ -291,42 +291,48 @@
 
 .post-content {
     position: relative;
+    padding-right: 0;
     height: 100%;
-    background: $white;
-    box-shadow: $shadow-1;
     overflow: hidden;
 }
 
 .posts-list {
-    padding: 3rem $category-list-width 1rem 0;
     height: 100%;
+    padding: 4rem 29rem 0 0;
     overflow: auto;
+    background: $white;
+    box-shadow: $shadow-1;
     li {
+        position: relative;
         border-bottom: 1px solid map-get($color-grey, '300');
-        padding: 1rem;
+        padding: 2rem 3rem;
     }
 
     .drafts {
-        background: $light-grey;
+        box-shadow: 5px 0 0 $grey inset;
+        background: lighten($light-grey, 4%);
         .post-title {
             a {
-                color: lighten($content-color, 10%);
+                color: lighten($content-color, 30%);
             }
         }
 
         .post-meta {
-            color: lighten($dark-grey, 5%);
+            color: lighten($dark-grey, 10%);
             a {
-                color: lighten($dark-grey, 5%);
+                color: lighten($dark-grey, 10%);
             }
         }
     }
 
     .post-title {
-        padding-bottom: 0.5rem;
+        padding: 0 5rem 0.8rem 0;
+        line-height: 1.5;
         a {
-            font-size: $large-font-size;
-            color: $content-color;
+            display: block;
+            font-size: 2rem;
+            color: lighten($content-color, 10%);
+            font-weight: lighter;
         }
     }
 
@@ -337,19 +343,104 @@
         a {
             color: $dark-grey;
         }
+
+        span {
+            margin-right: 1rem;
+        }
     }
+
+    .post-action {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        button {
+            padding: 0;
+            height: 100%;
+            width: 8rem;
+            font-size: 3rem;
+            color: $light-grey;
+            &:hover {
+                color: $grey;
+            }
+        }
+    }
+
 }
 
-.categories-list {
+.category-content {
     position: absolute;
     top: 0;
     bottom: 0;
     right: 0;
-    left: 100% - $category-list-width;
+    padding: 4rem 0 4rem;
+    width: $category-list-width;
     box-shadow: $shadow-2;
+    transition: all 0.2s;
     z-index: $category-list-index;
+    background: $white;
     li {
-        padding: 1rem;
+        position: relative;
+        padding: 1rem 4rem;
+        &:hover {
+            background: $light-grey;
+            .category-action {
+                display: block;
+            }
+        }
+    }
+
+    li.active {
+        background: darken($light-grey, 5%);
+    }
+
+    a {
+        display: block;
+    }
+
+    p {
+        padding: 0 4rem;
+        margin: 3.5rem 0 2rem;
+        color: $grey;
+        font-size: 2rem;
+    }
+
+    .category-action {
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        button {
+            padding: 0;
+            width: 4rem;
+            height: 100%;
+            color: $grey;
+        }
+    }
+}
+
+.new-category {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    input {
+        height: 4rem;
+        width: 100%;
+        padding: 0 8.5rem 0 0.5rem;
+        border: none;
+        outline: none;
+        font-size: $normal-font-size;
+    }
+    button {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0;
+        width: 8rem;
+        height: 3rem;
     }
 }
 
@@ -360,25 +451,23 @@
     right: 0;
     background: $blue;
     z-index: $post-nav-index;
+    box-shadow: $shadow-1;
     li {
         display: inline-block;
         text-align: center;
     }
 
-    .post {
-        width: 100% - $category-list-width;
-    }
-
-    .category {
-        width: $category-list-width;
-    }
-
     button {
         font-size: 1.6rem;
-        height: 3rem;
+        height: 4rem;
+        padding: 0.5rem 2rem;
         color: $white;
         &:hover {
             background: none;
         }
+    }
+
+    .category {
+        float: right;
     }
 }

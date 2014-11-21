@@ -4,7 +4,7 @@
     }
 
     .side-menu {
-        left: -100%;
+        transform: translateX(-100%);
         transition: all 0.2s;
 
         .menu-text {
@@ -17,7 +17,7 @@
     }
 
     .side-menu.show {
-        left: 0;
+        transform: translateX(0%);
     }
 
     .fullscreen {
@@ -40,13 +40,15 @@
         }
     }
 
-    .categories-list {
-        right: -100%;
-        left: 100%;
-        width: 100%;
+    .category-content {
+        transform: translateX(30rem);
+    }
+
+    .category-content.show {
+        transform: translateX(0);
     }
 
     .posts-list {
-        padding: 3rem 0 1rem;
+        padding: 4rem 0 0 0;
     }
 }

@@ -1,3 +1,5 @@
+$side-menu-background: #121920;
+
 $button-default-color: map-get($color-grey, '800');
 $button-primary-color: map-get($color-blue, '400');
 $button-danger-color: map-get($color-red, '600');
@@ -23,6 +25,7 @@ $ripple-black: rgba(map-get($color-grey, '1000'), 0.1);
 
 $white: map-get($color-grey, '0');
 $grey: map-get($color-grey, '400');
+$red: map-get($color-red, '400');
 $blue: map-get($color-light-blue, '400');
 $light-grey: map-get($color-grey, '200');
 $dark-grey: map-get($color-grey, '600');
@@ -65,4 +68,4 @@ $progress-index: 6;
 $dialog-index: 7;
 $msg-index: 8;
 
-$category-list-width: 30%;
+$category-list-width: 30rem;

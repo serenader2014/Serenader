@@ -51,13 +51,13 @@
                                     window.location = url.admin;
                                 });
                             } else {
-                                Serenader.msgBox('登录失败！' + result.error);
+                                Serenader.msgBox('登录失败！' + result.error, 'error');
                             }
                         });
                     },
                     error: function (err) {
                         finish(function () {
-                            Serenader.msgBox('请求失败！' + err);
+                            Serenader.msgBox('请求失败！' + err, 'error');
                         });
                     }
                 });
@@ -97,7 +97,7 @@
             }
 
             if (rePwd !== password) {
-                Serenader.msgBox('两次输入的密码不一致！');
+                Serenader.msgBox('两次输入的密码不一致！', 'error');
                 return false;
             }
 
@@ -119,13 +119,13 @@
                                     window.location = url.admin + url.adminSign;
                                 });
                             } else {
-                                Serenader.msgBox('注册失败！'+ result.error);
+                                Serenader.msgBox('注册失败！'+ result.error, 'error');
                             }
                         });
                     },
                     error: function (err) {
                         finish(function () {
-                            Serenader.msgBox('请求失败！' + err);
+                            Serenader.msgBox('请求失败！' + err, 'error');
                         });
                     }
                 });

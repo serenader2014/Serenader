@@ -198,7 +198,7 @@
                     $('.image-url').val(img.url);
                 },
                 fail: function () {
-                    Serenader.msgBox('上传失败！');
+                    Serenader.msgBox('上传失败！', 'error');
                     $('.upload-finish').hide();
                     $('.upload-btn').show();
                 }
@@ -282,7 +282,7 @@
                 category = $('option:selected').val();
 
             if (!content || !title || !category || !slug) {
-                Serenader.msgBox('请先完善文章信息。');
+                Serenader.msgBox('请先完善文章信息。', 'error');
                 return false;
             }
 
@@ -294,7 +294,7 @@
                         });
                     } else {
                         finish(function () {
-                            Serenader.msgBox('文章发表失败！' + err);
+                            Serenader.msgBox('文章发表失败！' + err, 'error');
                         });
                     }
                 });
@@ -306,7 +306,7 @@
                 category = $('option:selected').val();
 
             if (! content || ! title || ! category || ! slug) {
-                Serenader.msgBox('请先完善文章信息。');
+                Serenader.msgBox('请先完善文章信息。', 'error');
                 return false;
             }
 
@@ -318,7 +318,7 @@
                         });
                     } else {
                         finish(function () {
-                            Serenader.msgBox('保存草稿失败！' + err);
+                            Serenader.msgBox('保存草稿失败！' + err, 'error');
                         });
                     }
                 });
@@ -347,7 +347,7 @@
                     $('.post-head input').attr('data-slug', result.slug);
                 },
                 error: function () {
-                    Serenader.msgBox('生成Slug失败！');
+                    Serenader.msgBox('生成Slug失败！', 'error');
                 }
             });
         },

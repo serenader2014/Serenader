@@ -6,6 +6,7 @@
 html {
     height: 100%;
     font-size: 10px;
+    font-family: "Open Sans", "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
 }
 
 body, .content {
@@ -25,6 +26,10 @@ a {
 
 * {
     box-sizing: border-box;
+}
+
+.left-icon {
+    margin-right: 0.5rem;
 }
 
 
@@ -188,7 +193,7 @@ a {
     left: 0;
     padding-top: 6rem;
     box-shadow: $shadow-1;
-    background: map-get($color-light-blue, '800');
+    background: $blue;
     z-index: $side-index;
 
     .btn {
@@ -227,7 +232,9 @@ a {
 
 .main {
     height: 100%;
+    width: 100%;
     padding: 6rem 1rem 1rem 7rem;
+    overflow: hidden;
 }
 
 @import "post";

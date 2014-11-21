@@ -313,7 +313,8 @@ module.exports = function (router) {
         }).then(function (c) {
             if (c) {
                 res.json({
-                    status: 1
+                    status: 1,
+                    id: c.id
                 });
             } else {
                 res.json({

@@ -8,30 +8,78 @@ block area
 block main
     .post-content
         ul.nav-menu
-            li.post: button.btn.ripple.md-list
-            li.category: button.btn.ripple.md-sort
+            li.post: button.btn.ripple.delete-btn
+                i.md-delete.left-icon
+                | 删除
+            li.category: button.btn.ripple.category-btn
+                i.md-sort.left-icon
+                | 分类
         ul.posts-list
             - each draft in drafts
-                li.drafts
+                li.drafts(data-id='#{draft.id}', data-category='#{draft.category}')
                     .post-title
                         a(href='#{url.admin}#{url.adminPost}/#{draft.id}') #{draft.title}
                     .post-meta
-                        span 草稿保存于 #{draft.lastModifiedDate.year}/#{draft.lastModifiedDate.month}/#{draft.lastModifiedDate.day} | 
-                        a(href='') 作者: #{draft.author} | 
-                        span 分类： #{draft.category} | 
+                        span
+                            i.md-access-time.left-icon
+                            | #{draft.lastModifiedDate.year}/#{draft.lastModifiedDate.month}/#{draft.lastModifiedDate.day}
+                        span
+                            a(href='')
+                                i.md-person.left-icon
+                                | #{draft.author}
+                        span
+                            i.md-list.left-icon
+                            | #{draft.category}
+                    .post-action
+                        button.btn.md-delete
 
             - each post in posts
-                li
+                li(data-id='#{post.id}', data-category='#{post.category}')
                     .post-title
                         a(href='#{url.admin}#{url.adminPost}/#{post.id}') #{post.title}
                     .post-meta
-                        span 文章保存于 #{post.lastModifiedDate.year}/#{post.lastModifiedDate.month}/#{post.lastModifiedDate.day} | 
-                        a(href='') 作者: #{post.author} | 
-                        span 分类： #{post.category} |              
-        ul.categories-list
-            - each category in categories
-                li: a(href='javascript:;') #{category.name} (#{category.count})
+                        span
+                            i.md-access-time.left-icon
+                            | #{post.lastModifiedDate.year}/#{post.lastModifiedDate.month}/#{post.lastModifiedDate.day}
+                        span
+                            a(href='')
+                                i.md-person.left-icon
+                                | #{post.author}
+                        span 
+                            i.md-list.left-icon
+                            |#{post.category}
+                    .post-action
+                        button.btn.md-delete
+        .category-content
+            p 文章分类
+            ul.categories-list
+                - each category in categories
+                    li(data-id='#{category.id}', data-name='#{category.name}')
+                        a(href='javascript:;')
+                            | #{category.name} 
+                            span.category-count ( #{category.count} )
+                        .category-action
+                            button.btn.md-mode-edit.edit-category-btn
+                            button.btn.md-remove-circle.delete-category-btn
+
+            .new-category
+                input(type='text', placeholder='新分类名称', name='category-name')
+                button.btn.btn-blue.ripple 添加
 
 block script
+    script#edit-category-template(type='text/template').
+        <div class='input has-value'>
+            <label for='edit-input'>分类名称</label>
+            <input id='edit-input' name='new-category-name' value='{{value}}'/>
+            <span class='input-bar'></span>
+        </div>
+    script#category-template(type='text/template').
+        <li data-id='{{id}}' data-name='{{name}}'>
+            <a href='javascript:;'>{{name}} <span class='category-count'>( 0 )</span></a>
+            <div class='category-action'>
+                <button class='btn md-mode-edit edit-category-btn'></button>
+                <button class='btn md-remove-circle delete-category-btn'></button>
+            </div>
+        </li>
     script(type='text/javascript', src='#{assets.server}/js/build/post_list.js')
                 

@@ -162,8 +162,8 @@
         });
     };
 
-    Serenader.modules.MsgBox = function (content, callback) {
-        this.msgBox = $('<div>').addClass('msg-box');
+    Serenader.modules.MsgBox = function (content, type, callback) {
+        this.msgBox = $('<div>').addClass('msg-box').addClass(type);
         this.wrapper = $('<div>').addClass('msg-box-wrapper');
         this.container = $('<div>').addClass('msg-box-container');
         this.content = $('<div>').addClass('msg-box-content').html(content);
@@ -204,12 +204,19 @@
     };
 
 
-    Serenader.msgBox = function (content, callback) {
+    Serenader.msgBox = function (content, type, callback) {
         var msg;
         if (!content || typeof content !== 'string') {
             return content;
         }
-        msg = new Serenader.modules.MsgBox(content, callback);
+        if (typeof type === 'undefined') {
+            type = '';
+        }
+        if (type && typeof type === 'function') {
+            callback = type;
+            type = '';
+        }
+        msg = new Serenader.modules.MsgBox(content, type, callback);
         msg.show();
     };
 
@@ -227,7 +234,9 @@
         'change|body|.input input': 'changeInput',
         'change|body|[data-validate]': 'validator',
         'click|.user-avatar a': 'showProfile',
-        'click|.side-menu-btn': 'showSideMenu'
+        'click|.side-menu-btn': 'showSideMenu',
+        'click|.global-btn': 'showNewPost',
+        'click|body': 'blur'
     });
     self.extend({
         ripple: function (event) {
@@ -359,6 +368,23 @@
                 return false;
             }
             $('.side-menu').toggleClass('show');
+        },
+        showNewPost: function () {
+            window.location = url.admin + url.adminNewPost;
+        },
+        blur: function (event) {
+            var target = event.target,
+                isProfileShown = $('.sub-menu').is(':visible'),
+                isSideMenuShown = $('.side-menu').hasClass('show');
+
+            if (isProfileShown && $(target).parents('.sub-menu').length === 0 && $(target).parents('.user-avatar').length === 0) {
+                self.showProfile();
+            }
+
+            if (isSideMenuShown && $(target).parents('.side-menu').length === 0 && $(target).parents('.side-menu-btn').length === 0) {
+                self.showSideMenu();
+            }
+
         }
     });
 });
