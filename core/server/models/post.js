@@ -20,7 +20,7 @@ var mongoose = require('mongoose'),
         views: { type: Number, default: 0 }
     });
 
-PostSchema.statics.createNewPost = function (options) {
+PostSchema.statics.create = function (options) {
     var self = this;
     return new Promise(function (resolve, reject) {
         var p = new self();
@@ -35,7 +35,7 @@ PostSchema.statics.createNewPost = function (options) {
         });
     });
 };
-PostSchema.statics.updatePost = function (options) {
+PostSchema.statics.update = function (options) {
     var self = this;
 
     return self.findById(options.id).exec().then(function (post) {
@@ -78,7 +78,7 @@ PostSchema.statics.adjustCategory = function (oldCategory, newCategory) {
         }, Promise.resolve());
     });
 };
-PostSchema.statics.deletePost = function (id) {
+PostSchema.statics.delete = function (id) {
     var self = this;
     return self.findById(id).exec().then(function (p) {
         if (p.published === true) {

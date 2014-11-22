@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
     Promise = require('bluebird'),
     
     AlbumSchema = new Schema({
-        name: { type: String, unique: true },
+        slug: { type: String, unique: true },
+        name: String,
         desc: String,
         cover: String,
         user: String ,
@@ -13,11 +14,12 @@ var mongoose = require('mongoose'),
     });
 
 
-AlbumSchema.statics.addAlbum = function (options) {
+AlbumSchema.statics.create = function (options) {
     var self = this;
     return new Promise(function (resolve, reject) {
         var album = new self();
         album.name = options.name;
+        album.slug = options.slug;
         album.desc = options.desc;
         album.user = options.user;
         album.private = options.private;
@@ -33,22 +35,22 @@ AlbumSchema.statics.addAlbum = function (options) {
     });
 };
 
-AlbumSchema.statics.updateAlbum = function (options) {
+AlbumSchema.statics.update = function (options) {
     var obj = {};
     _.extend(obj, options);
 
     return this.findByIdAndUpdate(options.id, obj).exec();
 };
 
-AlbumSchema.statics.deleteAlbum = function (id) {
+AlbumSchema.statics.delete = function (id) {
     return this.findByIdAndRemove(id).exec();
 };
 
-AlbumSchema.statics.getAllAlbum = function () {
-    return this.find({}).exec();
+AlbumSchema.statics.getAllAlbums = function () {
+    return this.find({}, null, {sort: {_id: -1}}).exec();
 };
 
-AlbumSchema.statics.getOneAlbum = function (name) {
+AlbumSchema.statics.getAlbumByName = function (name) {
     return this.findOne({name: name}).exec();
 };
 
@@ -56,15 +58,19 @@ AlbumSchema.statics.getAlbumById = function (id) {
     return this.findById(id).exec();
 };
 
-AlbumSchema.statics.getPublicAlbum = function () {
+AlbumSchema.statics.getAlbumBySlug = function (slug) {
+    return this.findOne({slug: slug}).exec();
+};
+
+AlbumSchema.statics.getPublicAlbums = function () {
     return this.find({}).nor([{private: true}]).exec();
 };
 
-AlbumSchema.statics.getUserAllAlbum = function (user) {
+AlbumSchema.statics.getUserAllAlbums = function (user) {
     return this.find({user: user}).exec();
 };
 
-AlbumSchema.statics.getUserPublicAlbum = function (user) {
+AlbumSchema.statics.getUserPublicAlbums = function (user) {
     return this.find({user: user}).nor([{private: true}]).exec();
 };
 

@@ -8,6 +8,11 @@ var Promise = require('bluebird'),
 
 
 module.exports = function (router) {
+    router.get(url.category, function (req, res) {
+        Category.getAll().then(function (categories) {
+            res.json(categories);
+        });
+    });
     router.post(url.newCategory, function (req, res) {
         var name;
         if (!req.session.user || req.session.user.role !== 'admin') {
@@ -41,7 +46,7 @@ module.exports = function (router) {
             });
         }
         checkExist().then(function () {
-            return Category.createNew(name).then(function (category) {
+            return Category.create(name).then(function (category) {
                 res.json({ret: 0, id: category.id});
             });
         }).then(null, function (err) {

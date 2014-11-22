@@ -165,7 +165,7 @@ module.exports = function (router) {
                     });
                 }
                 return checkCategory().then(function () {
-                    return Post.updatePost({
+                    return Post.update({
                         id: id,
                         title: result.title,
                         slug: result.slug,
@@ -212,7 +212,7 @@ module.exports = function (router) {
             });
         }
         checkAuthor().then(function () {
-            return Post.deletePost(id).then(function () {
+            return Post.delete(id).then(function () {
                 res.json({
                     ret: 0
                 });
@@ -243,7 +243,7 @@ module.exports = function (router) {
                 });
             }
             return checkCategory().then(function () {
-                return Post.createNewPost({
+                return Post.create({
                     title: post.title, 
                     slug: post.slug,
                     author: post.author, 

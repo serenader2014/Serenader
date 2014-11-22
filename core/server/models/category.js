@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
         count: { type: Number, default: 0 }
     });
 
-CategorySchema.statics.createNew = function (name) {
+CategorySchema.statics.create = function (name) {
     var self = this;
     return new Promise(function (resolve, reject) {
         var c = new self();
@@ -22,9 +22,6 @@ CategorySchema.statics.createNew = function (name) {
         });
     });
 };
-CategorySchema.statics.getAll = function () {
-    return this.find({}).exec();
-};
 CategorySchema.statics.update = function (id, name) {
     return this.findByIdAndUpdate(id, {
         name: name
@@ -33,6 +30,9 @@ CategorySchema.statics.update = function (id, name) {
 
 CategorySchema.statics.getOneByName = function (name) {
     return this.findOne({name: name}).exec();
+};
+CategorySchema.statics.getAll = function () {
+    return this.find({}).exec();
 };
 CategorySchema.statics.getOneById = function (id) {
     return this.findById(id).exec();
