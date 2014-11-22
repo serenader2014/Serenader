@@ -12,9 +12,7 @@ require('./gallery')(adminHomePage);
 require('./post')(adminHomePage);
 require('./setting')(adminHomePage);
 require('./sign')(adminHomePage);
-require('./upload')(adminHomePage);
 require('./user')(adminHomePage);
-require('./slug')(adminHomePage);
 
 
 module.exports = adminHomePage;

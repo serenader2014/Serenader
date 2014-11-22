@@ -2,7 +2,6 @@ var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs')),
     validator = require('validator'),
     xss = require('xss'),
-    auth_user = require('../../utils/auth_user'),
     log = require('../../utils/log')(),
     upload = require('../../utils/upload'),
     config = require('../../../../config').config,
@@ -11,18 +10,23 @@ var Promise = require('bluebird'),
 
 
 module.exports = function (router) {
-    router.post(url.adminUpload + '/*', auth_user, function (req, res) {
+    router.post(url.upload + '/*', function (req, res) {
+        if (!req.session.user) {
+            res.json({ret: -1, error: '权限不足。'});
+            return false;
+        }
         var userName = req.session.user.uid,
-            dir = validator.trim(xss(req.url)).split(url.adminUpload + '/')[1],
+            dir = validator.trim(xss(req.url)).split(url.upload + '/')[1],
             tmpArr = dir.split('/'),
             type = tmpArr.shift(),
             dstDir = tmpArr.join('/'),
             targetDir = root + '/content/data/' + type + '/' + userName + '/upload/' + dstDir;
 
+
         if (type !== 'public' && type !== 'private') {
             res.json({
-                status: 0,
-                error: 'type error'
+                ret: -1,
+                error: '类别错误。'
             });
             return false;
         }
@@ -30,27 +34,30 @@ module.exports = function (router) {
         upload(req, res, {
             uploadDir: targetDir,
             baseUrl: '/static/' + userName + '/upload/' + dstDir,
-            deleteUrl: url.admin + url.adminUpload + '/' + type + '/' + userName + '/upload/' + dstDir
+            deleteUrl: url.admin + url.upload + '/' + type + '/' + userName + '/upload/' + dstDir
         }).then(function (files) {
             res.json(files);
         }).catch(function (err) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: err.message
             });
         });
     });
 
-    router.delete(url.adminUpload + '/*', auth_user, function (req, res) {
+    router.delete(url.upload + '/*', function (req, res) {
+        if (!req.session.user) {
+            res.json({ret: -1, error: '权限不足。'});
+            return false;
+        }        
         var tmpArr = validator.trim(xss(req.url)).split('/').slice(2),
             fileName = tmpArr.pop(),
             baseDir = root + '/content/data/' + tmpArr.join('/'),
             imageVersions = req.body.imageVersions;
-
                 
         if (imageVersions && !Array.isArray(imageVersions)) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: 'imageVersions must be an array'
             });
             return false;
@@ -69,12 +76,12 @@ module.exports = function (router) {
             }
         }).then(function () {
             res.json({
-                status: 1
+                ret: 1
             });
         }).catch(function (err) {
             log.error(err.stack);
             res.json({
-                status: 0,
+                ret: -1,
                 error: err.message
             });
         });

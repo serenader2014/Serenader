@@ -7,7 +7,8 @@
         'click|body|.edit-category-btn': 'showEditCategory',
         'click|body|.delete-category-btn': 'deleteCategory',
         'click|body|.categories-list a': 'postFilter',
-        'click|.post-action button': 'deletePost'
+        'click|.post-action button': 'deletePost',
+        'click|.new-post-btn': 'openNewPost'
     });
 
     Serenader.extend({
@@ -24,7 +25,7 @@
 
             Serenader.progress('正在创建新的分类...', function (finish) {
                 $.ajax({
-                    url: url.admin + url.adminNewCategory,
+                    url: url.api + url.newCategory,
                     type: 'POST',
                     data: {
                         name: value
@@ -32,7 +33,7 @@
                     dataType: 'json',
                     success: function (result) {
                         finish(function () {
-                            if (result.status === 1) {
+                            if (result.ret === 0) {
                                 Serenader.msgBox('创建成功！', function () {
                                     var tmpl, regExp, rendererData;
                                     rendererData = {
@@ -77,7 +78,7 @@
                     }
                     Serenader.progress('正在修改分类名称...', function (finish) {
                         $.ajax({
-                            url: url.admin + url.adminCategory + '/' + id,
+                            url: url.api + url.category + '/' + id,
                             type: 'PUT',
                             data: {
                                 name: newValue
@@ -85,7 +86,7 @@
                             dataType: 'json',
                             success: function (result) {
                                 finish(function () {
-                                    if (result.status === 1) {
+                                    if (result.ret === 0) {
                                         Serenader.msgBox('修改成功！', function () {
                                             var linkElement = targetElement.find('a');
                                             targetElement.attr('data-name', newValue);
@@ -116,12 +117,12 @@
             Serenader.msgBox('即将删除该分类。删除前请确保该分类下已经没有文章，否则无法删除。', function () {
                 Serenader.progress('正在删除...', function (finish) {
                     $.ajax({
-                        url: url.admin + url.adminCategory + '/' + id,
+                        url: url.api + url.category + '/' + id,
                         type: 'DELETE',
                         dataType: 'json',
                         success: function (result) {
                             finish(function () {
-                                if (result.status === 1) {
+                                if (result.ret === 0) {
                                     Serenader.msgBox('删除成功！', function () {
                                         targetElement.remove();
                                     });
@@ -166,12 +167,12 @@
             Serenader.msgBox('即将删除该文章。文章删除后无法恢复，请慎重操作！', function () {
                 Serenader.progress('正在删除...', function (finish) {
                     $.ajax({
-                        url: url.admin + url.adminPost + '/' + id,
+                        url: url.api + url.post + '/' + id,
                         type: 'DELETE',
                         dataType: 'json',
                         success: function (result) {
                             finish(function () {
-                                if (result.status === 1) {
+                                if (result.ret === 0) {
                                     Serenader.msgBox('删除成功！', function () {
                                         targetElement.remove();
                                         $('.categories-list li').each(function (index, c) {
@@ -196,6 +197,9 @@
                     });
                 });
             });
+        },
+        openNewPost: function () {
+            window.location = url.admin + url.newPost;
         }
     });
 

@@ -10,7 +10,7 @@ var validator = require('validator'),
     locals = require('../../index').locals;
 
 module.exports = function (router) {
-    router.get(config.url.adminSetting, auth_user, function (req, res) {
+    router.get(config.url.setting, auth_user, function (req, res) {
         if (req.session.user.role !== 'admin') {
             res.redirect(config.url.admin);
             return false;
@@ -40,7 +40,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(config.url.adminSetting, auth_user, function (req, res) {
+    router.post(config.url.setting, auth_user, function (req, res) {
         var name, desc, logo, favicon, signup, theme, obj, num;
 
         if (req.session.user.role !== 'admin') {

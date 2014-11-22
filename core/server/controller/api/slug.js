@@ -3,7 +3,7 @@ var unidecode = require('unidecode'),
     url = require('../../../../config').config.url;
 
 module.exports = function (router) {
-    router.post(url.adminSlug, function (req, res) {
+    router.post(url.slug, function (req, res) {
         if (req.body.slug) {
             res.json({
                 slug: validator.trim(unidecode(req.body.slug)).replace(/\s/g, '-').toLowerCase()

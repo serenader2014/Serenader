@@ -5,8 +5,10 @@
             shift: 16,
             alt: 18,
             tab: 9,
-            i: 73,
+            enter: 13,
             b: 66,
+            i: 73,
+            s: 83,
             p: 80,
             q: 81,
             l: 76,
@@ -14,7 +16,7 @@
             u: 85,
             f11: 122
         },
-        regExp = new RegExp(url.adminNewPost, 'ig'),
+        regExp = new RegExp(url.newPost, 'ig'),
         draftID = regExp.test(window.location.pathname) ? undefined : window.location.pathname.split('/').pop() ,
         previousTitle = $('.post-head input').val() ,
         previousContent = $('.editor').val() ,
@@ -66,6 +68,8 @@
                                         + selection
                                         + '*'
                                         + value.substring(end));
+                            editor.selectionStart = start + 1;
+                            editor.selectionEnd = start + selection.length + 1;
                         }
                     }
                     break;
@@ -91,6 +95,8 @@
                                 + selection
                                 + '**'
                                 + value.substring(end));
+                    editor.selectionStart = start + 2;
+                    editor.selectionEnd = start + selection.length + 2;
                     break;
                 case keyMap.q:
                     if (!event.ctrlKey) {
@@ -124,7 +130,9 @@
                                     + '`'
                                     + selection
                                     + '`'
-                                    + value.substring(end));                        
+                                    + value.substring(end));
+                        editor.selectionStart = start + 1;
+                        editor.selectionEnd = start + selection.length + 1;                        
                     } else {
                         $(this).val(value.substring(0, start)
                                     + '\n```\n'
@@ -143,6 +151,22 @@
                                 + selection
                                 + '~~'
                                 + value.substring(end));
+                    editor.selectionStart = start + 2;
+                    editor.selectionEnd = start + selection.length + 2;
+                    break;
+                case keyMap.s:
+                    if (!event.ctrlKey) {
+                        return ;
+                    }
+                    event.preventDefault();
+                    Serenader.saveDraft();
+                    break;
+                case keyMap.enter:
+                    if (!event.ctrlKey || !event.altKey) {
+                        return ;
+                    }
+                    event.preventDefault();
+                    Serenader.publish();
                     break;
             }
         },
@@ -180,7 +204,7 @@
                 dropZone: $('#upload'),
                 autoUpload: true,
                 acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
-                url: url.admin + url.adminUpload + url.adminPostUpload,
+                url: url.api + url.upload + url.postUpload,
                 add: function (e, data) {
                     $('.upload-btn').hide();
                     data.submit();
@@ -232,10 +256,10 @@
             }
 
             if (! draftID) {
-                targetUrl = url.admin + url.adminNewPost;
+                targetUrl = url.api + url.newPost;
                 method = 'POST';
             } else {
-                targetUrl = url.admin + url.adminPost + '/' + draftID;
+                targetUrl = url.api + url.post + '/' + draftID;
                 method = 'PUT';
             }
 
@@ -252,7 +276,7 @@
                 },
                 dataType: 'json',
                 success: function (result) {
-                    if (result.status === 1) {
+                    if (result.ret === 0) {
                         if (callback && typeof callback === 'function') {
                             callback(null);
                         }
@@ -336,7 +360,7 @@
         generateSlug: function () {
             var value = $(this).val();
             $.ajax({
-                url: url.admin + url.adminSlug,
+                url: url.api + url.slug,
                 type: 'POST',
                 data: {
                     slug: value

@@ -37,7 +37,7 @@
 
             Serenader.progress('正在登录...', function (finish) {
                 $.ajax({
-                    url: url.admin + url.adminSignIn,
+                    url: url.admin + url.signIn,
                     data: {
                         username: userName,
                         password: password
@@ -46,7 +46,7 @@
                     dataType: 'json',
                     success: function (result) {
                         finish(function () {
-                            if (result.status === 1) {
+                            if (result.ret === 0) {
                                 Serenader.msgBox('登录成功！', function () {
                                     window.location = url.admin;
                                 });
@@ -103,7 +103,7 @@
 
             Serenader.progress('正在注册...', function (finish) {
                 $.ajax({
-                    url: url.admin + url.adminSignUp,
+                    url: url.admin + url.signUp,
                     type: 'POST',
                     data: {
                         id: userName,
@@ -114,9 +114,9 @@
                     dataType: 'json',
                     success: function (result) {
                         finish(function () {
-                            if (result.status === 1) {
+                            if (result.ret === 0) {
                                 Serenader.msgBox('注册成功！点击确定立即登录。', function () {
-                                    window.location = url.admin + url.adminSign;
+                                    window.location = url.admin + url.sign;
                                 });
                             } else {
                                 Serenader.msgBox('注册失败！'+ result.error, 'error');

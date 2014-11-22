@@ -18,6 +18,8 @@ function route (app) {
     });
     app.use('/', require('../controller/index'));
 
+    app.use(config.url.api, require('../controller/api'));
+
     app.use('*', function (req, res) {
         errorHandling(req, res, {
             error: '你请求的页面不存在。',

@@ -78,27 +78,6 @@ PostSchema.statics.adjustCategory = function (oldCategory, newCategory) {
         }, Promise.resolve());
     });
 };
-
-PostSchema.statics.getPostsByCate = function (name) {
-    return this.find({category: name}, null, {sort: {_id: -1}}).exec();
-};
-PostSchema.statics.getOnePostById = function (id) {
-    return this.findById(id).exec();
-};
-PostSchema.statics.getOnePostBySlug = function (slug) {
-    return this.findOne({slug: slug}).exec();
-};
-PostSchema.statics.getTenPosts = function () {
-    return this.find({}, null, {limit: 10, sort: {_id: -1}}).exec();
-};
-PostSchema.statics.getHomePagePublishedPosts = function () {
-    return this.find(
-        { published: true }, null, { limit: require('../index').setting.posts_per_page, sort: { _id: -1 } }
-        ).exec();
-};
-PostSchema.statics.getAllPosts = function () {
-    return this.find({}, null, {sort: {_id: -1}}).exec();
-};
 PostSchema.statics.deletePost = function (id) {
     var self = this;
     return self.findById(id).exec().then(function (p) {
@@ -112,18 +91,36 @@ PostSchema.statics.deletePost = function (id) {
     });
 };
 
-PostSchema.statics.getUserPosts = function (user) {
-    return this.find({author: user}, null, {sort: {_id: -1}}).exec();
+PostSchema.statics.getPostsByCate = function (name, amount, page) {
+    return this.find(
+        {category: name}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        ).exec();
 };
-
-PostSchema.statics.getUserTenPosts = function (user) {
-    return this.find({author: user}, null, {limit: 10, sort: {_id: -1}}).exec();
+PostSchema.statics.getPostById = function (id) {
+    return this.findById(id).exec();
 };
-PostSchema.statics.getMorePosts = function (page, num) {
-    return this.find({}, null, {limit: num, skip: page}).sort({_id: -1}).exec();
+PostSchema.statics.getPostBySlug = function (slug) {
+    return this.findOne({slug: slug}).exec();
 };
-PostSchema.statics.getUserMoreTenPosts = function (user, page) {
-    return this.find({author: user}, null, {limit: 10, skip: page,  sort: {_id: -1}}).exec();
+PostSchema.statics.getUserPublishedPosts = function (user, amount, page) {
+    return this.find(
+        {author: user, published: true}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        ).exec();
+};
+PostSchema.statics.getUserAllPosts = function (user, amount, page) {
+    return this.find(
+        {author: user}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        ).exec();
+};
+PostSchema.statics.getAllPosts = function (amount, page) {
+    return this.find(
+        {}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        ).exec();
+};
+PostSchema.statics.getPublishedPosts = function (amount, page) {
+    return this.find(
+        {published: true}, null, { limit: amount, skip: (page - 1)*amount, sort: { _id: -1}}
+        ).exec();
 };
 
 var Post = module.exports = mongoose.model('Post', PostSchema);

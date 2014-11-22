@@ -22,7 +22,7 @@ block content
                             .wrapper
                                 .user-info
                                     .image
-                                        a(href='#{url.admin}#{url.adminUser}/#{currentUser.uid}')
+                                        a(href='#{url.admin}#{url.user}/#{currentUser.uid}')
                                             img(src='#{currentUser.avatar}')
                                     .details
                                         p.user-uid #{currentUser.uid}
@@ -30,7 +30,7 @@ block content
                                 ul
                                     - if (currentUser.role === 'admin')
                                         li.adduser-btn: a.ripple(href='javascript:;') 添加用户
-                                    li.signout-btn: a.ripple(href='#{url.admin}#{url.adminSignOut}') 退出登录
+                                    li.signout-btn: a.ripple(href='#{url.admin}#{url.signOut}') 退出登录
             .side-menu
                 ul
                     li: a.btn.ripple(href='/')
@@ -39,16 +39,16 @@ block content
                     li: a.btn.ripple(href='#{url.admin}')
                         i.md-dashboard
                         span.menu-text 控制台
-                    li: a.btn.ripple(href='#{url.admin}#{url.adminPost}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.post}')
                         i.md-description
                         span.menu-text 文章
-                    li: a.btn.ripple(href='#{url.admin}#{url.adminGallery}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.gallery}')
                         i.md-photo-library
                         span.menu-text 相册
-                    li: a.btn.ripple(href='#{url.admin}#{url.adminFile}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.file}')
                         i.md-attach-file
                         span.menu-text 附件
-                    li: a.btn.ripple(href='#{url.admin}#{url.adminSetting}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.setting}')
                         i.md-settings
                         span.menu-text 设置
             .main

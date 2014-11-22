@@ -1,11 +1,9 @@
 var express = require('express'),
     rootRouter = express.Router(),
-    config = require('../../../../config').config,
-    Setting = require('../../models').Setting,
     post = require('../../models').Post,
     errorHandling = require('../../utils/error');
 
-rootRouter.get('/', function (req, res, next) {
+rootRouter.get('/', function (req, res) {
     post.getHomePagePublishedPosts().then(function (posts) {
         res.render('index', {posts: posts});
     }).then(null, function (err) {
@@ -13,7 +11,7 @@ rootRouter.get('/', function (req, res, next) {
     });
 });
 
-rootRouter.get('/loadmore', function (req, res, next) {
+rootRouter.get('/loadmore', function (req, res) {
     var page = req.query.page,
         num = req.query.num;
 
@@ -23,7 +21,7 @@ rootRouter.get('/loadmore', function (req, res, next) {
     } else {
         post.getMorePosts(page*10, num).then(function (posts) {
             var publishedPost = [];
-            posts.forEach(function (p, index) {
+            posts.forEach(function (p) {
                 if (p.published) {
                     publishedPost.push(p);
                 }

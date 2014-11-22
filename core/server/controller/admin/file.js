@@ -112,11 +112,11 @@ function decodeURL (url) {
 
 module.exports = function (router) {
 
-    router.get(URL.adminFile, auth_user, function (req, res) {
+    router.get(URL.file, auth_user, function (req, res) {
         res.render('admin_file');
     });
 
-    router.post(URL.adminNewFile, auth_user, function (req, res) {
+    router.post(URL.newFile, auth_user, function (req, res) {
         var fileName = validator.trim(xss(req.body.name)),
             type = validator.trim(xss(req.body.type)),
             dir = validator.trim(xss(req.body.dir)),
@@ -157,7 +157,7 @@ module.exports = function (router) {
         }
     });
 
-    router.post(URL.adminFile, auth_user, function (req, res) {
+    router.post(URL.file, auth_user, function (req, res) {
         // req.body.files format:
         // [{
         //     path: '/public/some/path',
@@ -213,7 +213,7 @@ module.exports = function (router) {
         });
     });
 
-    router.put(URL.adminFileEdit, auth_user, function (req, res) {
+    router.put(URL.fileEdit, auth_user, function (req, res) {
         if (!req.body.dir) {
             res.json({
                 status: 0,
@@ -238,7 +238,7 @@ module.exports = function (router) {
         });
     });
 
-    router.delete(URL.adminFile, auth_user, function (req, res) {
+    router.delete(URL.file, auth_user, function (req, res) {
         var userName = req.session.user.uid,
             trashPath = root + 'trash/' + userName,
             files = req.body.files,
@@ -287,7 +287,7 @@ module.exports = function (router) {
         });      
     });
 
-    router.post(URL.adminFileList, auth_user, function (req, res) {
+    router.post(URL.fileList, auth_user, function (req, res) {
         if (!req.body.dir) {
             res.json({
                 status: 0,
@@ -313,7 +313,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminFileMove, auth_user, function (req, res) {
+    router.post(URL.fileMove, auth_user, function (req, res) {
         if (!req.body.files) {
             res.json({
                 status: 0,
@@ -383,7 +383,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(URL.adminFileCopy, auth_user, function (req, res) {
+    router.post(URL.fileCopy, auth_user, function (req, res) {
         if (!req.body.files) {
             res.json({
                 status: 0,
@@ -453,7 +453,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get(URL.adminFilePreview, auth_user, function (req, res) {
+    router.get(URL.filePreview, auth_user, function (req, res) {
         if (!req.query.path) {
             errorHandling(req, res, { error: 'path not valid', type: 404});
             return false;

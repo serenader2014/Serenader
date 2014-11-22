@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
     Promise = require('bluebird'),
 
     CategorySchema = new Schema({
-        name: String,
+        name: { type: String, unique: true},
         count: { type: Number, default: 0 }
     });
 

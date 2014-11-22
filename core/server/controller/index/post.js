@@ -6,7 +6,7 @@ var validator = require('validator'),
 
 
 module.exports = function (router) {
-    router.get(url.indexPost, function (req, res, next) {
+    router.get(url.post, function (req, res) {
         Post.getAllPosts().then(function (p) {
             res.render('postlist', {posts: p});
         }).then(null, function (err) {
@@ -14,7 +14,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get(url.indexPost + '/:id', function (req, res, next) {
+    router.get(url.post + '/:id', function (req, res) {
         var id = validator.trim(xss(req.params.id));
         Post.getOnePostById(id).then(function (p) {
             if (p) {

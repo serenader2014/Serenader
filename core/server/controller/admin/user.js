@@ -3,12 +3,12 @@ var auth_user = require('../../utils/auth_user'),
     url = require('../../../../config').config.url;
 
 module.exports = function (router) {
-    router.get(url.adminUser + '/:user', auth_user, function (req, res, next) {
+    router.get(url.user + '/:user', auth_user, function (req, res, next) {
         var user = req.params.user;
         res.render('admin_user', {user: user});
     });
 
-    router.post(url.adminUser + '/:user', auth_user, function (req, res, next) {
+    router.post(url.user + '/:user', auth_user, function (req, res, next) {
         var user = req.params.user,
             email = req.body.email,
             pwd = req.body.pwd,

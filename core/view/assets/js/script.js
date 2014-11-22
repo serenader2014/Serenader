@@ -370,7 +370,7 @@
             $('.side-menu').toggleClass('show');
         },
         showNewPost: function () {
-            window.location = url.admin + url.adminNewPost;
+            window.location = url.admin + url.newPost;
         },
         blur: function (event) {
             var target = event.target,

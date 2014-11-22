@@ -20,7 +20,7 @@ function md5 (password) {
 module.exports = function (router) {
         // router handler
 
-    router.get(url.adminSign, function (req, res) { 
+    router.get(url.sign, function (req, res) { 
         if (req.session.user) {
             res.redirect(url.admin);
         } else {
@@ -28,7 +28,7 @@ module.exports = function (router) {
         }
     });
 
-    router.post(url.adminSignIn, function (req, res) {
+    router.post(url.signIn, function (req, res) {
         var username = xss(validator.trim(req.body.username)),
             password = xss(validator.trim(req.body.password));
 
@@ -37,27 +37,27 @@ module.exports = function (router) {
                 if (user.pwd === md5(password)) {
                     req.session.user = user;
                     res.json({
-                        status: 1, error: '', user: user.uid
+                        ret: 0, error: '', user: user.uid
                     });
                 } else {
                     res.json({
-                        status: 0, error: '密码或用户名不正确！'
+                        ret: -1, error: '密码或用户名不正确！'
                     });
                 }
             } else {
                 res.json({
-                    status: 0, error: '该用户尚未注册！'
+                    ret: -1, error: '该用户尚未注册！'
                 });
             }
         });
     });
 
-    router.post(url.adminSignUp, function (req, res) {
+    router.post(url.signUp, function (req, res) {
         var uid, email, password, rePwd, hashedPwd;
         
         if (! locals.setting.allow_sign_up) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '帐号注册功能已经被系统管理员禁用！'
             });
             return false;
@@ -69,7 +69,7 @@ module.exports = function (router) {
 
         if (! uid || ! email || ! password || ! rePwd) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '请填写完整注册信息。'
             });
             return false;
@@ -77,7 +77,7 @@ module.exports = function (router) {
 
         if (! validator.isAlphanumeric(uid)) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '用户名只能包含数字和字母。'
             });
             return false;
@@ -85,7 +85,7 @@ module.exports = function (router) {
 
         if (! validator.isEmail(email)) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '请输入有效的邮箱。'
             });
             return false;
@@ -93,7 +93,7 @@ module.exports = function (router) {
 
         if (! validator.isLength(password, 6, 16)) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '密码长度应该大于6位小于16位。'
             });
             return false;
@@ -101,7 +101,7 @@ module.exports = function (router) {
 
         if (password !== rePwd) {
             res.json({
-                status: 0,
+                ret: -1,
                 error: '两次输入的密码不一致！'
             });
             return false;
@@ -136,7 +136,7 @@ module.exports = function (router) {
         }).then(function (user) {
             if (! user) {
                 res.json({
-                    status: 0,
+                    ret: -1,
                     error: '该用户已经注册。'
                 });                    
             } else {
@@ -156,7 +156,7 @@ module.exports = function (router) {
                     });
                 }, Promise.resolve()).then(function () {
                     res.json({
-                        status: 1,
+                        ret: 0,
                         username: user.uid
                     });                    
                 });
@@ -165,13 +165,13 @@ module.exports = function (router) {
         }).then(null, function (err) {
             log.error(err.stack);
             res.json({
-                status: 0,
+                ret: -1,
                 error: err.message
             });
         });
     });
 
-    router.get(url.adminSignOut, function (req, res) {
+    router.get(url.signOut, function (req, res) {
         req.session.destroy();
         res.redirect(url.admin);
     });

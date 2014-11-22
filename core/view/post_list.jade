@@ -8,9 +8,9 @@ block area
 block main
     .post-content
         ul.nav-menu
-            li.post: button.btn.ripple.delete-btn
-                i.md-delete.left-icon
-                | 删除
+            li.post: button.btn.ripple.new-post-btn
+                i.md-add.left-icon
+                | 新文章
             li.category: button.btn.ripple.category-btn
                 i.md-sort.left-icon
                 | 分类
@@ -18,7 +18,7 @@ block main
             - each draft in drafts
                 li.drafts(data-id='#{draft.id}', data-category='#{draft.category}')
                     .post-title
-                        a(href='#{url.admin}#{url.adminPost}/#{draft.id}') #{draft.title}
+                        a(href='#{url.admin}#{url.post}/#{draft.id}') #{draft.title}
                     .post-meta
                         span
                             i.md-access-time.left-icon
@@ -36,7 +36,7 @@ block main
             - each post in posts
                 li(data-id='#{post.id}', data-category='#{post.category}')
                     .post-title
-                        a(href='#{url.admin}#{url.adminPost}/#{post.id}') #{post.title}
+                        a(href='#{url.admin}#{url.post}/#{post.id}') #{post.title}
                     .post-meta
                         span
                             i.md-access-time.left-icon
