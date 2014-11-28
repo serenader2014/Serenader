@@ -24,7 +24,9 @@ PostSchema.statics.create = function (options) {
     var p = new this();
     _.extend(p, options);
     p.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
-    return p.saveAsync();
+    return p.saveAsync().spread(function (post) {
+        return post;
+    });
 };
 PostSchema.statics.update = function (options) {
     var self = this;

@@ -23,7 +23,9 @@ SettingSchema.statics.create = function (options) {
     var setting = new this();
     _.extend(setting, options);
     setting.id = 'blog';
-    return setting.saveAsync();
+    return setting.saveAsync().spread(function (setting) {
+        return setting;
+    });
 };
 
 SettingSchema.statics.update = function (options) {

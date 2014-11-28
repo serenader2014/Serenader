@@ -11,7 +11,9 @@ CategorySchema.statics.create = function (name) {
     var c = new this();
     c.name = name;
     c.count = 0;
-    return c.saveAsync();
+    return c.saveAsync().spread(function (category) {
+        return category;
+    });
 };
 CategorySchema.statics.update = function (id, name) {
     return this.findByIdAndUpdateAsync(id, {name: name});

@@ -23,7 +23,9 @@ AlbumSchema.statics.create = function (options) {
     album.private = options.private;
     album.cover = options.cover;
     album.count = 0;
-    return album.saveAsync();
+    return album.saveAsync().spread(function (album) {
+        return album;
+    });
 };
 
 AlbumSchema.statics.update = function (options) {

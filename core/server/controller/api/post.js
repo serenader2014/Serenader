@@ -240,7 +240,7 @@ module.exports = function (router) {
                 return p;
             });
         }).then(function (post) {
-            res.json({ret: 0, id: post.id});
+            res.json({ret: 0, id: post._id});
         }).catch(function (err) {
             res.json({ret: -1, error: err.message || err});
         });

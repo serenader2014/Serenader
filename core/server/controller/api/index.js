@@ -6,5 +6,7 @@ require('./category')(apiRouter);
 require('./slug')(apiRouter);
 require('./gallery')(apiRouter);
 require('./upload')(apiRouter);
+require('./file')(apiRouter);
+require('./setting')(apiRouter);
 
 module.exports = apiRouter;

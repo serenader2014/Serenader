@@ -33,7 +33,9 @@ UserSchema.statics.create = function (options) {
     user.pwd = options.pwd;
     user.role = options.role;
     user.avatar = options.avatar;
-    return user.saveAsync();
+    return user.saveAsync().spread(function (user) {
+        return user;
+    });
 };
 UserSchema.statics.update = function (options) {
     var obj = {};

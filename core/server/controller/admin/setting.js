@@ -1,13 +1,9 @@
-var validator = require('validator'),
-    xss = require('xss'),
-    Promise = require('bluebird'),
+var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     auth_user = require('../../utils/auth_user'),
     log = require('../../utils/log')(),
     errorHandling = require('../../utils/error'),
-    Setting = require('../../models').Setting,
-    config = require('../../../../config').config,
-    locals = require('../../index').locals;
+    config = require('../../../../config').config;
 
 module.exports = function (router) {
     router.get(config.url.setting, auth_user, function (req, res) {
@@ -35,46 +31,8 @@ module.exports = function (router) {
             }, Promise.resolve()).then(function (theme) {
                 res.render('admin_setting', { themes: theme });
             });
-        }).then(null, function (err) {
+        }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500 });
-        });
-    });
-
-    router.post(config.url.setting, auth_user, function (req, res) {
-        var name, desc, logo, favicon, signup, theme, obj, num;
-
-        if (req.session.user.role !== 'admin') {
-            res.redirect(config.url.admin);
-            return false;
-        }
-        name = validator.trim(xss(req.body.name));
-        desc = validator.trim(xss(req.body.desc));
-        logo = validator.trim(xss(req.body.logo));
-        favicon = validator.trim(xss(req.body.favicon));
-        signup = validator.trim(xss(req.body.signup));
-        theme = validator.trim(xss(req.body.theme));
-        num = validator.trim(xss(req.body.num));
-        obj = {
-            name: name,
-            desc: desc,
-            logo: logo,
-            favicon: favicon,
-            allow_sign_up: signup,
-            theme: theme,
-            posts_per_page: num
-        };
-        console.log(obj);
-        Setting.updateSetting(obj).then(function (s) {
-            res.json({
-                status: 1,
-                error: ''
-            });
-            locals.setting = s;
-        }).then(null, function (err) {
-            res.json({
-                status: 0,
-                error: err.message
-            });
         });
     });
 };
