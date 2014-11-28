@@ -28,16 +28,54 @@ function getPost (id, user) {
     });
 }
 
+function checkOwner (options, user) {
+    var type = options.type,
+        value = options.value;
+    return new Promise(function (resolve, reject) {
+        Promise.resolve().then(function () {
+            if (type === 'id') {
+                return Post.getPostById(value);
+            } else if (type === 'slug') {
+                return Post.getPostBySlug(value);
+            }
+        }).then(function (post) {
+            if (post.author === user.uid || user.role === 'admin') {
+                resolve(post);
+            } else {
+                reject('权限不足。');
+            }
+        }).catch(function (err) {
+            log.error(err.stack);
+            reject(err);
+        });
+    });
+}
+
+function checkCategoryIsExist (name) {
+    return new Promise(function (resolve, reject) {
+        Category.getOneByName(name).then(function (c) {
+            if (c) {
+                resolve(c);
+            } else {
+                reject('找不到分类。');
+            }
+        }).catch(function (err) {
+            log.error(err.stack);
+            reject(err);
+        });
+    });
+}
+
 function checkRequestBody (req) {
     return new Promise(function (resolve, reject) {
         var now, title, author, date, md, html, category, published, tags, slug, user;
         user = req.session.user;
         if (!user) {
-            reject({stack: '',message:'权限不足。'});
+            reject('权限不足。');
             return false;
         }
         if (!req.body.content || !req.body.title || !req.body.category || !req.body.slug) {
-            reject({message:'请完善文章信息。', stack: ''});
+            reject('请完善文章信息。');
             return false;
         }
         now = new Date();
@@ -57,7 +95,7 @@ function checkRequestBody (req) {
         published = validator.trim(req.body.publish);
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
         if (published === undefined) {
-            reject({message: 'published键值为空。', stack: ''});
+            reject('published键值为空。');
             return false;
         }        
         if (Array.isArray(req.body.tags)) {
@@ -68,14 +106,14 @@ function checkRequestBody (req) {
         } else if (! req.body.tags) {
             tags = [];
         } else {
-            reject({message:'标签必须为数组。',stack:''});
+            reject('标签必须为数组。');
             return false;
         }
 
         try {
             html = markdown(md);
         } catch (err) {
-            reject({message: 'Markdown 解析错误。', stack: ''});
+            reject('Markdown 解析错误。');
             return false;
         }
         resolve({
@@ -101,9 +139,9 @@ module.exports = function (router) {
         page = req.query.page || 1;
         getAllPosts(amount, page, req.session.user).then(function (posts) {
             res.json(posts);
-        }).then(null, function (err) {
-            log.error(err.stack);
-            res.json({error: err.message});
+        }).catch(function (err) {
+            log.error(err.stack || err);
+            res.json({error: err.message || err});
         });
     });
 
@@ -114,9 +152,9 @@ module.exports = function (router) {
         targetUser = validator.trim(req.params.user);
         getUserPosts(amount, page, req.session.user, targetUser).then(function (posts) {
             res.json(posts);
-        }).then(null, function (err) {
-            log.error(err.stack);
-            res.json({error: err.message});
+        }).catch(function (err) {
+            log.error(err.stack || err);
+            res.json({error: err.message || err});
         });
     });
 
@@ -126,45 +164,17 @@ module.exports = function (router) {
 
         getPost(id).then(function (post) {
             res.json(post);
-        }).then(null, function (err) {
-            log.error(err.stack);
-            res.json({error: err.message});
+        }).catch(function (err) {
+            log.error(err.stack || err);
+            res.json({error: err.message || err});
         });
     });
 
     router.put(url.post + '/:id', function (req, res) {
         var id = validator.trim(req.params.id);
         checkRequestBody(req).then(function (result) {
-            function checkAuthor () {
-                return new Promise(function (resolve, reject) {
-                    Post.getPostById(id).then(function (post) {
-                        if (post.author === result.author || result.user.role === 'admin') {
-                            resolve();
-                        } else {
-                            reject({message:'权限不足。', stack: ''});
-                        }
-                    }).then(null, function (err) {
-                        log.error(err.stack);
-                        reject(err);
-                    });
-                });
-            }
-            return checkAuthor().then(function () {
-                function checkCategory () {
-                    return new Promise(function (resolve, reject) {
-                        Category.getOneByName(result.category).then(function (c) {
-                            if (c) {
-                                resolve();
-                            } else {
-                                reject({message:'找不到分类。', stack: ''});
-                            }
-                        }).then(null, function (err) {
-                            log.error(err.stack);
-                            reject(err);
-                        });
-                    });
-                }
-                return checkCategory().then(function () {
+            return checkOwner({type: 'id', value: id}, req.session.user).then(function (post) {
+                return checkCategoryIsExist(post.category).then(function () {
                     return Post.update({
                         id: id,
                         title: result.title,
@@ -177,12 +187,12 @@ module.exports = function (router) {
                         published: result.published,
                         category: result.category
                     });
-                }).then(function () {
-                    res.json({ret: 0});
                 });
             });
+        }).then(function () {
+            res.json({ret: 0});
         }).catch(function (err) {
-            res.json({ret: -1,error: err.message});
+            res.json({ret: -1,error: err.message || err});
         });
     });
 
@@ -191,58 +201,23 @@ module.exports = function (router) {
         var id = validator.trim(req.params.id),
             user = req.session.user;
         if (!user) {
-            res.json({
-                ret: -1,
-                error: '权限不足。'
-            });
+            res.json({ret: -1,error: '权限不足。'});
             return false;
         }
-        function checkAuthor () {
-            return new Promise(function (resolve, reject) {
-                Post.getPostById(id).then(function (post) {
-                    if (post.author === user.uid || user.role === 'admin') {
-                        resolve();
-                    } else {
-                        reject({message: '权限不足。', stack: ''});
-                    }
-                }).then(null, function (err) {
-                    log.error(err.stack);
-                    reject(err);
-                });
-            });
-        }
-        checkAuthor().then(function () {
-            return Post.delete(id).then(function () {
-                res.json({
-                    ret: 0
-                });
-            });
+
+        checkOwner({type: 'id', value: id}, req.session.user).then(function () {
+            return Post.delete(id);
+        }).then(function () {
+            res.json({ret: 0});
         }).catch(function (err) {
-            res.json({
-                ret: -1,
-                error: err.message
-            });
+            res.json({ret: -1, error: err.message || err});
             return false;
         });
     });
 
     router.post(url.newPost, function (req, res) {
         checkRequestBody(req).then(function (post) {
-            function checkCategory () {
-                return new Promise(function (resolve, reject) {
-                    Category.getOneByName(post.category).then(function (c) {
-                        if (c) {
-                            resolve();
-                        } else {
-                            reject({message: '找不到分类。', stack: ''});
-                        }
-                    }).then(null, function (err) {
-                        log.error(err.stack);
-                        reject(err);
-                    });
-                });
-            }
-            return checkCategory().then(function () {
+            return checkCategoryIsExist(post.category).then(function () {
                 return Post.create({
                     title: post.title, 
                     slug: post.slug,
@@ -254,20 +229,20 @@ module.exports = function (router) {
                     html: post.html, 
                     published: post.published,
                     category: post.category
-                }).then(function (p) {
-                    if (post.published) {
-                        return Category.increaseCount(post.category).then(function () {
-                            return p;
-                        });
-                    } else {
-                        return p;
-                    }
                 });
+            });
+        }).then(function (p) {
+            return Promise.resolve().then(function () {
+                if (p.published) {
+                    return Category.increaseCount(p.category);
+                }
+            }).then(function () {
+                return p;
             });
         }).then(function (post) {
             res.json({ret: 0, id: post.id});
-        }).then(null, function (err) {
-            res.json({ret: -1, error: err.message});
+        }).catch(function (err) {
+            res.json({ret: -1, error: err.message || err});
         });
     });
 };

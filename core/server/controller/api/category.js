@@ -6,6 +6,29 @@ var Promise = require('bluebird'),
     Post = require('../../models').Post,
     Category = require('../../models').Category;
 
+function checkExist (options) {
+    var type = options.type,
+        value = options.value;
+    return new Promise(function (resolve, reject) {
+        Promise.resolve().then(function () {
+            if (type === 'id') {
+                return Category.getOneById(value);
+            } else if (type === 'name') {
+                return Category.getOneByName(value);
+            }
+        }).then(function (c) {
+            if (c) {
+                resolve(c);
+            } else {
+                reject('找不到该分类。');
+            }
+        }).catch(function (err) {
+            log.error(err.stack);
+            reject(err);
+        });
+    });
+}
+
 
 module.exports = function (router) {
     router.get(url.category, function (req, res) {
@@ -13,45 +36,31 @@ module.exports = function (router) {
             res.json(categories);
         });
     });
+
     router.post(url.newCategory, function (req, res) {
         var name;
         if (!req.session.user || req.session.user.role !== 'admin') {
-            res.json({
-                ret: -1,
-                error: '无法创建新的分类，权限不足！'
-            });
+            res.json({ret: -1,error: '无法创建新的分类，权限不足！'});
             return false;
         }
         if (! req.body.name) {
-            res.json({
-                ret: -1,
-                error: '分类名为空。'
-            });
+            res.json({ret: -1,error: '分类名为空。'});
             return false;
         }
 
         name = validator.trim(req.body.name);
 
-        function checkExist () {
-            return new Promise(function (resolve, reject) {
-                Category.getOneByName(name).then(function (category) {
-                    if (category) {
-                        reject({stack: '', message: '分类名已存在。'});
-                    } else {
-                        resolve();
-                    }
-                }).then(null, function (err) {
-                    reject(err);
+        checkExist({type: 'name', value: name}).then(function () {
+            res.json({ret: -1, error: '该分类已存在。'});
+        }).catch(function (err) {
+            if (typeof err === 'string') {
+                return Category.create(name).then(function (category) {
+                    res.json({ret: 0, id: category.id});
                 });
-            });
-        }
-        checkExist().then(function () {
-            return Category.create(name).then(function (category) {
-                res.json({ret: 0, id: category.id});
-            });
-        }).then(null, function (err) {
-            log.error(err.stack);
-            res.json({ret: -1, error: err.message});
+            } else {
+                log.error(err.stack);
+                res.json({ret: -1, error: err.message});
+            }
         });
     });
 
@@ -74,29 +83,14 @@ module.exports = function (router) {
         id = validator.trim(req.params.id);
         name = validator.trim(req.body.name);
 
-        function checkExist () {
-            return new Promise(function (resolve, reject) {
-                Category.getOneById(id).then(function (c) {
-                    if (c) {
-                        resolve(c);
-                    } else {
-                        reject({stack:'', message: '找不到该分类。'});
-                    }
-                }).then(null, function (err) {
-                    log.error(err.stack);
-                    reject(err);
-                });
-            });
-        }
-
-        checkExist().then(function (category) {
+        checkExist({type: 'id', value: id}).then(function (category) {
             return Category.update(id, name).then(function () {
                 return Post.adjustCategory(category.name, name);
             });
         }).then(function () {
             res.json({ret: 0});
         }).catch(function (err) {
-            res.json({ret: -1, error: err.message});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
@@ -113,11 +107,11 @@ module.exports = function (router) {
             return new Promise(function (resolve, reject) {
                 Category.getOneById(id).then(function (category) {
                     if (category.count > 0) {
-                        reject({stack: '', message: '该分类下面仍然有文章。删除前请确保分类已经没有文章。'});
+                        reject('该分类下面仍然有文章。删除前请确保分类已经没有文章。');
                     } else {
                         resolve();
                     }
-                }).then(null, function (err) {
+                }).catch(function (err) {
                     reject(err);
                 });
             });
@@ -129,7 +123,7 @@ module.exports = function (router) {
             res.json({ret: 0});
         }).catch(function (err) {
             log.error(err.stack);
-            res.json({ret: -1, error: err.message});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 };

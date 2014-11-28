@@ -8,7 +8,8 @@ var Promise = require('bluebird'),
         path: String,
         album: String,
         thumb: String,
-        cover: Boolean
+        cover: Boolean,
+        name: String
     });
 
 ImageSchema.statics.create = function (options) {
@@ -17,6 +18,7 @@ ImageSchema.statics.create = function (options) {
     img.thumb = options.thumb;
     img.album = options.album;
     img.cover = options.cover;
+    img.name = options.name;
     return img.saveAsync().then(function () {
         return Album.increaseCount(options.album);
     });
@@ -27,6 +29,15 @@ ImageSchema.statics.delete = function (id) {
         return Album.decreaseCount(image.album);
     }).then(function () {
         return self.findByIdAndRemoveAsync(id);
+    });
+};
+
+ImageSchema.statics.deleteByName = function (name) {
+    var self = this;
+    return this.findOneAsync({name: name}).then(function (image) {
+        return Album.decreaseCount(image.album);
+    }).then(function () {
+        return self.findOneAndRemoveAsync({name: name});
     });
 };
 

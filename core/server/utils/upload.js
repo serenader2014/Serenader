@@ -6,11 +6,9 @@ module.exports = function (req, res, opt) {
         fs = Promise.promisifyAll(require('fs')),
         fsx = Promise.promisifyAll(require('fs-extra')),
         _ = require('underscore'),
-        auth_user = require('./auth_user'),
         log = require('./log')(),
         config = require('../../../config').config,
         root = config.root_dir,
-        url = config.url,
         defaultOptions = {
             tmpDir: root + '/content/data/tmp',
             uploadDir: root + '/content/data/upload',
@@ -38,11 +36,6 @@ module.exports = function (req, res, opt) {
         map = [],
         field = {},
         p,
-        setNoCacheHeaders = function () {
-            res.setHeader('Pragma', 'no-cache');
-            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
-            res.setHeader('Content-Disposition', 'inline; filename="files.json"');
-        },
         FileInfo = function (file) {
             this.name = file.name;
             this.size = file.size;

@@ -1,6 +1,5 @@
 var Promise = require('bluebird'),
     validator = require('validator'),
-    xss = require('xss'),
     fs = Promise.promisifyAll(require('fs-extra')),
 
     log = require('../../utils/log')(),
@@ -10,30 +9,45 @@ var Promise = require('bluebird'),
     config = require('../../../../config').config,
     root = config.root_dir + '/content/data/',
     url = config.url,
-    fileUpload = require('../api/upload').fileUpload,
+    fileUpload = require('../../utils/upload'),
     imageVersions = require('../api/upload').imageVersions;
+
+function getAlbum (options) {
+    var type = options.type,
+        value = options.value;
+    if (type === 'id') {
+        return Album.getAlbumById(value);
+    } else if (type === 'name') {
+        return Album.getAlbumByName(value);
+    } else if (type === 'slug') {
+        return Album.getAlbumBySlug(value);
+    }
+}
+
+function getPublicAlbums (user) {
+    Album.getPublicAlbums().then(function (albums) {
+        if (user) {
+            return Album.getUserPrivateAlbum(user.uid).then(function (a) {
+                return albums.concat(a);
+            });
+        } else {
+            return albums;
+        }
+    }); 
+}
 
 function checkExist (options) {
     var type = options.type,
         value = options.value;
 
     return new Promise(function (resolve, reject) {
-        function getAlbum () {
-            if (type === 'id') {
-                return Album.getAlbumById(value);
-            } else if (type === 'name') {
-                return Album.getAlbumByName(value);
-            } else if (type === 'slug') {
-                return Album.getAlbumBySlug(value);
-            }
-        }
-        getAlbum().then(function (album) {
+        getAlbum({type: type, value: value}).then(function (album) {
             if (album) {
                 resolve(album);
             } else {
                 reject();
             }
-        }).then(null, function (err) {
+        }).catch(function (err) {
             reject(err);
         });
     });
@@ -45,10 +59,10 @@ function checkOwner (options, user) {
             if (album.user === user.uid || user.role === 'admin') {
                 resolve(album);
             } else {
-                reject();
+                reject('权限不足。');
             }
         }).catch(function (err) {
-            reject(err || {message: '找不到该相册。', stack: ''});
+            reject(err || '找不到该相册。');
         });
     });
 }
@@ -57,32 +71,24 @@ module.exports = function (router) {
     router.get(url.gallery, function (req, res) {
         var user = req.session.user;
 
-        Album.getPublicAlbums().then(function (albums) {
-            if (user) {
-                return Album.getUserPrivateAlbum(user.uid).then(function (a) {
-                    return albums.concat(a);
-                });
-            } else {
-                return albums;
-            }
-        }).then(function (albums) {
+        getPublicAlbums(user).then(function (albums) {
             res.json(albums);
         }).catch(function (err) {
             log.error(err.stack);
-            res.json({ret: -1, error: err.message});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
-    // router.get(url.gallery + '/:id', function (req, res) {
-    //     var user = req.session.user,
-    //         id = validator.trim(req.params.id);
+    router.get(url.gallery + '/:id', function (req, res) {
+        var user = req.session.user,
+            id = validator.trim(req.params.id);
 
-    //     checkExist({type: 'id', value: id}).then(function (album) {
-
-    //     }).catch(function (err) {
-            
-    //     });
-    // });
+        checkOwner({type: 'id', value: id}, user).then(function (album) {
+            res.json(album);
+        }).catch(function (err) {
+            res.json(err.message || err);
+        });
+    });
 
     router.post(url.newGallery, function (req, res) {
         if (!req.session.user) {
@@ -121,11 +127,8 @@ module.exports = function (router) {
                     private: private
                 }).then(function () {
                     res.json({ret: 0});
-                }).then(null, function (err) {
-                    res.json({
-                        ret: -1,
-                        error: err.message
-                    });
+                }).catch(function (err) {
+                    res.json({ret: -1, error: err.message || err});
                     return false;
                 });
             }
@@ -150,26 +153,20 @@ module.exports = function (router) {
         checkOwner({type: 'slug', value: albumSlug}, req.session.user).then(function (album) {
             fileUpload(req, res, {
                 uploadDir: dir + album.id,
-                path: '/static/' + userName + '/gallery/' + album.id,
-                typeReg: /\.(gif|jpe?g|png)$/i
-            }, function (err, files) {
-                if (err) {
-                    res.json({ ret: -1, error: err });
-                    return false;
-                }
-                files.reduce(function (p, file) {
+                baseUrl: '/static/' + userName + '/gallery/' + album.id,
+                deleteUrl: url.api + url.gallery + '/' + type + '/' + albumSlug,
+                acceptFileTypes: /\.(gif|jpe?g|png)$/i
+            }).then(function (files) {
+                return files.reduce(function (p, file) {
                     return p.then(function () {
                         return Image.create({
                             path: file.url,
                             album: album.id,
-                            thumb: file.thumbnailUrl
+                            thumb: file.imageVersions.thumbnail
                         });
                     });
                 }, Promise.resolve()).then(function () {
                     res.json(files);
-                }).then(null, function (err) {
-                    log.error(err.stack);
-                    res.json({ ret: -1, error: err.message });
                 });
             });
         }).catch(function (err) {
@@ -183,7 +180,7 @@ module.exports = function (router) {
             return false;
         }
         var id = validator.trim(decodeURIComponent(req.params.id)),
-            name = validator.trim(xss(req.body.name)),
+            name = validator.trim(req.body.name),
             description = validator.trim(req.body.desc),
             cover = validator.trim(req.body.cover),
             slug = validator.trim(req.body.slug),
@@ -208,22 +205,22 @@ module.exports = function (router) {
                 cover: cover,
                 slug: slug,
                 private: private,
-            }).then(function () {
-                res.json({ret: 0});
             });
+        }).then(function () {
+            res.json({ret: 0});
         }).catch(function (err) {
             res.json({ret: -1, error: err && err.message ? err.message : '权限不足。'});
         });
     });
 
-    router.delete(url.gallery + '/:type/:slug', function (req, res) {
+    router.delete(url.gallery + '/:type/:slug/:name', function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
         }
         var albumSlug = validator.trim(decodeURIComponent(req.params.slug)),
             type = validator.trim(req.params.type),
-            ids = req.body.ids,
+            name = validator.trim(decodeURIComponent(req.params.name)),
             userName = req.session.user.uid,
             basePath = root + type + '/' + userName + '/gallery/';
 
@@ -232,26 +229,16 @@ module.exports = function (router) {
             return false;
         }
 
-        if (! Array.isArray(ids)) {
-            res.json({ret: -1,error: 'ids键值类型错误。'});
-            return false;
-        }
-
         checkOwner({type: 'slug', value: albumSlug}, req.session.user).then(function (album) {
-            return ids.reduce(function (p, item) {
-                var id = validator.trim(item.id);
-                return p.then(function () {
-                    return Image.delete(id);
-                }).then(function () {
-                    return fs.unlinkAsync(basePath + album.id + '/' + decodeURIComponent(item.path));
-                }).then(function () {
-                    return Object.keys(imageVersions).reduce(function (pms, version) {
-                        return pms.then(function () {
-                            return fs.unlinkAsync(basePath + album.id + '/' + version + '/' + decodeURIComponent(item.path));
-                        });
-                    }, Promise.resolve());
-                });
-            }, Promise.resolve());
+            return Image.deleteByName(name).then(function () {
+                return fs.unlinkAsync(basePath + album.id + '/' + decodeURIComponent(name));
+            }).then(function () {
+                return Object.keys(imageVersions).reduce(function (pms, version) {
+                    return pms.then(function () {
+                        return fs.unlinkAsync(basePath + album.id + '/' + version + '/' + decodeURIComponent(name));
+                    });
+                }, Promise.resolve());
+            });
         }).then(function () {
             res.json({ret: 0});
         }).catch(function (err) {
@@ -283,10 +270,10 @@ module.exports = function (router) {
         }).then(function () {
             return Album.deleteAlbum(id);
         }).then(function () {
-            return fs.removeAsync(root + type + '/' + userName + '/gallery/' + albumName);
+            return fs.removeAsync(root + type + '/' + userName + '/gallery/' + id);
         }).then(function () {
             res.json({ret: 0,});
-        }).then(null, function (err) {
+        }).catch(function (err) {
             res.json({
                 ret: -1,
                 error: err && err.message ? err.message : '权限不足。'
@@ -297,5 +284,7 @@ module.exports = function (router) {
 
 module.exports.utils = {
     checkExist: checkExist,
-    checkOwner: checkOwner
+    checkOwner: checkOwner,
+    getAlbum: getAlbum,
+    getPublicAlbums: getPublicAlbums
 };
