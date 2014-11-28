@@ -13,7 +13,7 @@ function getAllPosts (amount, page, user) {
 }
 
 function getUserPosts (amount, page, user, targetUser) {
-    return user && ((user.uid === targetUser) || user.role === 'admin')? 
+    return (user && (user.uid === targetUser)) || user.role === 'admin'? 
         Post.getUserAllPosts(targetUser, amount, page) :
         Post.getUserPublishedPosts(targetUser, amount, page);
 }

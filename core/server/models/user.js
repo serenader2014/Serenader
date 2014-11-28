@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
     _ = require('underscore'),
-    Promise = require('bluebird'),
 
     UserSchema = new Schema({
         uid: { type: String , unique: true },
@@ -15,42 +15,33 @@ var mongoose = require('mongoose'),
     });
 
 UserSchema.statics.getOneUserById = function (id) {
-    return this.findOne({uid: id}).exec();
+    return this.findOneAsync({uid: id});
 };
 UserSchema.statics.getOneUserByEmail = function (email) {
-    return this.findOne({email: email}).exec();
+    return this.findOneAsync({email: email});
 };
 UserSchema.statics.checkExist = function (id, email) {
     return this.find().or([{uid: id}, {email: email}]).exec();
 };
 UserSchema.statics.getAllUser = function () {
-    return this.find({}).exec();
+    return this.findAsync({});
 };
-UserSchema.statics.createNewUser = function (options) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        var user = new self();
-        user.uid = options.uid;
-        user.email = options.email;
-        user.pwd = options.pwd;
-        user.role = options.role;
-        user.avatar = options.avatar;
-        user.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(user);
-            }
-        });
-    });
+UserSchema.statics.create = function (options) {
+    var user = new this();
+    user.uid = options.uid;
+    user.email = options.email;
+    user.pwd = options.pwd;
+    user.role = options.role;
+    user.avatar = options.avatar;
+    return user.saveAsync();
 };
-UserSchema.statics.updateUserProfile = function (options) {
+UserSchema.statics.update = function (options) {
     var obj = {};
     _.extend(obj, options);
-    return this.findOneAndUpdate({uid: options.uid}, obj).exec();
+    return this.findOneAndUpdateAsync({uid: options.uid}, obj);
 };
-UserSchema.statics.deleteUserById = function (uid) {
-    return this.findOneAndRemove({uid: uid}).exec();
+UserSchema.statics.delete = function (id) {
+    return this.findOneAndRemoveAsync({id: id});
 };
 
 var User = module.exports = mongoose.model('User', UserSchema);

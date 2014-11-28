@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
     _ = require('underscore'),
-    Promise = require('bluebird'),
     
     AlbumSchema = new Schema({
         slug: { type: String, unique: true },
@@ -15,96 +15,79 @@ var mongoose = require('mongoose'),
 
 
 AlbumSchema.statics.create = function (options) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        var album = new self();
-        album.name = options.name;
-        album.slug = options.slug;
-        album.desc = options.desc;
-        album.user = options.user;
-        album.private = options.private;
-        album.cover = options.cover;
-        album.count = 0;
-        album.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(album);
-            }
-        });
-    });
+    var album = new this();
+    album.name = options.name;
+    album.slug = options.slug;
+    album.desc = options.desc;
+    album.user = options.user;
+    album.private = options.private;
+    album.cover = options.cover;
+    album.count = 0;
+    return album.saveAsync();
 };
 
 AlbumSchema.statics.update = function (options) {
     var obj = {};
     _.extend(obj, options);
 
-    return this.findByIdAndUpdate(options.id, obj).exec();
+    return this.findByIdAndUpdateAsync(options.id, obj);
 };
 
 AlbumSchema.statics.delete = function (id) {
-    return this.findByIdAndRemove(id).exec();
+    return this.findByIdAndRemoveAsync(id);
 };
 
 AlbumSchema.statics.getAllAlbums = function () {
-    return this.find({}, null, {sort: {_id: -1}}).exec();
+    return this.findAsync({}, null, {sort: {_id: -1}});
 };
 
 AlbumSchema.statics.getAlbumByName = function (name) {
-    return this.findOne({name: name}).exec();
+    return this.findOneAsync({name: name});
 };
 
 AlbumSchema.statics.getAlbumById = function (id) {
-    return this.findById(id).exec();
+    return this.findByIdAsync(id);
 };
 
 AlbumSchema.statics.getAlbumBySlug = function (slug) {
-    return this.findOne({slug: slug}).exec();
+    return this.findOneAsync({slug: slug});
 };
 
 AlbumSchema.statics.getPublicAlbums = function () {
-    return this.find({}).nor([{private: true}]).exec();
+    return this.findAsync({private: false});
 };
 
 AlbumSchema.statics.getUserAllAlbums = function (user) {
-    return this.find({user: user}).exec();
+    return this.findAsync({user: user});
 };
 
 AlbumSchema.statics.getUserPublicAlbums = function (user) {
-    return this.find({user: user}).nor([{private: true}]).exec();
+    return this.findAsync({user: user, private: false});
+};
+
+AlbumSchema.statics.getUserPrivateAlbums = function (user) {
+    return this.findAsync({user: user, private: true});
 };
 
 AlbumSchema.statics.increaseCount = function (name) {
-    var self = this;
-
-    return self.findOne({name: name}).exec().then(function (album) {
-        return new Promise(function (resolve, reject) {
+    return this.findOneAsync({name: name}).then(function (album) {
+        if (album) {
             album.count = album.count + 1;
-            album.save(function (err, a) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(album);
-                }
-            });
-        });
+            return album.saveAsync();
+        } else {
+            return ;
+        }
     });
 };
 
 AlbumSchema.statics.decreaseCount = function (name) {
-    var self = this;
-
-    return self.findOne({name: name}).exec().then(function (album) {
-        return new Promise(function (resolve, reject) {
+    return this.findOneAsync({name: name}).then(function (album) {
+        if (album) {
             album.count = album.count - 1;
-            album.save(function (err, a) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(album);
-                }
-            });
-        });
+            return album.saveAsync();
+        } else {
+            return;
+        }
     });
 };
 

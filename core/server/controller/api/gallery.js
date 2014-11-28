@@ -54,6 +54,36 @@ function checkOwner (options, user) {
 }
 
 module.exports = function (router) {
+    router.get(url.gallery, function (req, res) {
+        var user = req.session.user;
+
+        Album.getPublicAlbums().then(function (albums) {
+            if (user) {
+                return Album.getUserPrivateAlbum(user.uid).then(function (a) {
+                    return albums.concat(a);
+                });
+            } else {
+                return albums;
+            }
+        }).then(function (albums) {
+            res.json(albums);
+        }).catch(function (err) {
+            log.error(err.stack);
+            res.json({ret: -1, error: err.message});
+        });
+    });
+
+    // router.get(url.gallery + '/:id', function (req, res) {
+    //     var user = req.session.user,
+    //         id = validator.trim(req.params.id);
+
+    //     checkExist({type: 'id', value: id}).then(function (album) {
+
+    //     }).catch(function (err) {
+            
+    //     });
+    // });
+
     router.post(url.newGallery, function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});

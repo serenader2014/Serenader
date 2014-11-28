@@ -1,9 +1,9 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
     _ = require('underscore'),
     htmlToText = require('html-to-text'),
     Category = require('./category'),
-    Promise = require('bluebird'),
 
     PostSchema = new Schema({
         title: String,
@@ -21,24 +21,15 @@ var mongoose = require('mongoose'),
     });
 
 PostSchema.statics.create = function (options) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        var p = new self();
-        _.extend(p, options);
-        p.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
-        p.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(p);
-            }
-        });
-    });
+    var p = new this();
+    _.extend(p, options);
+    p.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
+    return p.saveAsync();
 };
 PostSchema.statics.update = function (options) {
     var self = this;
 
-    return self.findById(options.id).exec().then(function (post) {
+    return self.findByIdAsync(options.id).then(function (post) {
         var obj = {};
         _.extend(obj, options);
         return Promise.resolve().then(function () {
@@ -55,72 +46,62 @@ PostSchema.statics.update = function (options) {
             }
         }).then(function () {
             options.excerpt = htmlToText.fromString(options.html).substring(0, 350+Math.random()*100);
-            return self.findByIdAndUpdate(options.id, obj).exec();
+            return self.findByIdAndUpdateAsync(options.id, obj);
         });
     });
 };
 
 PostSchema.statics.adjustCategory = function (oldCategory, newCategory) {
-    return this.find({category: oldCategory}).exec().then(function (posts) {
+    return this.findAsync({category: oldCategory}).then(function (posts) {
         return posts.reduce(function (p, post) {
             return p.then(function () {
-                return new Promise(function (resolve, reject) {
-                    post.category = newCategory;
-                    post.save(function (err) {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
-                });
+                post.category = newCategory;
+                return post.saveAsync();
             });
         }, Promise.resolve());
     });
 };
 PostSchema.statics.delete = function (id) {
     var self = this;
-    return self.findById(id).exec().then(function (p) {
+    return self.findByIdAsync(id).then(function (p) {
         if (p.published === true) {
-            return Category.decreaseCount(p.category).then(function () {
-                return self.findOneAndRemove({_id: id}).exec();
-            });
+            return Category.decreaseCount(p.category);
         } 
+    }).then(function () {
         return self.findOneAndRemove({_id: id}).exec();
-        
     });
 };
 
 PostSchema.statics.getPostsByCate = function (name, amount, page) {
-    return this.find(
+    return this.findAsync(
         {category: name}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
-        ).exec();
+        );
 };
 PostSchema.statics.getPostById = function (id) {
-    return this.findById(id).exec();
+    return this.findByIdAsync(id);
 };
 PostSchema.statics.getPostBySlug = function (slug) {
-    return this.findOne({slug: slug}).exec();
+    return this.findOneAsync({slug: slug});
 };
 PostSchema.statics.getUserPublishedPosts = function (user, amount, page) {
-    return this.find(
+    return this.findAsync(
         {author: user, published: true}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
-        ).exec();
+        );
 };
 PostSchema.statics.getUserAllPosts = function (user, amount, page) {
-    return this.find(
+    return this.findAsync(
         {author: user}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
-        ).exec();
+        );
 };
 PostSchema.statics.getAllPosts = function (amount, page) {
-    return this.find(
+    return this.findAsync(
         {}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
-        ).exec();
+        );
 };
 PostSchema.statics.getPublishedPosts = function (amount, page) {
-    return this.find(
+    return this.findAsync(
         {published: true}, null, { limit: amount, skip: (page - 1)*amount, sort: { _id: -1}}
-        ).exec();
+        );
 };
 
 var Post = module.exports = mongoose.model('Post', PostSchema);

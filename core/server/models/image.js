@@ -1,6 +1,6 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
-    Promise = require('bluebird'),
 
     Album = require('./album'),
 
@@ -12,46 +12,36 @@ var mongoose = require('mongoose'),
     });
 
 ImageSchema.statics.create = function (options) {
-    var self = this;
-    return (new Promise(function (resolve, reject) {
-        var img = new self();
-        img.path = options.path;
-        img.thumb = options.thumb;
-        img.album = options.album;
-        img.cover = options.cover;
-        img.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(img);
-            }
-        });
-    })).then(function () {
+    var img = new this();
+    img.path = options.path;
+    img.thumb = options.thumb;
+    img.album = options.album;
+    img.cover = options.cover;
+    return img.saveAsync().then(function () {
         return Album.increaseCount(options.album);
     });
 };
 ImageSchema.statics.delete = function (id) {
     var self = this;
-
-    return self.findById(id).exec().then(function (image) {
-        return self.findByIdAndRemove(id).exec().then(function () {
-            return Album.decreaseCount(image.album);
-        });
+    return this.findByIdAsync(id).then(function (image) {
+        return Album.decreaseCount(image.album);
+    }).then(function () {
+        return self.findByIdAndRemoveAsync(id);
     });
 };
 
 ImageSchema.statics.getAllImages = function () {
-    return this.find({}).exec();
+    return this.findAsync({});
 };
 ImageSchema.statics.update = function (options) {
-    return this.findByIdAndUpdate(options.id, {
+    return this.findByIdAndUpdateAsync(options.id, {
         path: options.path,
         thumb: options.thumb,
         cover: options.cover
-    }).exec();
+    });
 };
 ImageSchema.statics.findOneAlbumImage = function (name) {
-    return this.find({album: name}).exec();
+    return this.findAsync({album: name});
 };
 
 var Image = module.exports = mongoose.model('Image', ImageSchema);

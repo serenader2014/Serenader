@@ -1,6 +1,6 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
-    Promise = require('bluebird'),
 
     CategorySchema = new Schema({
         name: { type: String, unique: true},
@@ -8,70 +8,47 @@ var mongoose = require('mongoose'),
     });
 
 CategorySchema.statics.create = function (name) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        var c = new self();
-        c.name = name;
-        c.count = 0;
-        c.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(c);
-            }
-        });
-    });
+    var c = new this();
+    c.name = name;
+    c.count = 0;
+    return c.saveAsync();
 };
 CategorySchema.statics.update = function (id, name) {
-    return this.findByIdAndUpdate(id, {
-        name: name
-    }).exec();
+    return this.findByIdAndUpdateAsync(id, {name: name});
 };
 
 CategorySchema.statics.getOneByName = function (name) {
-    return this.findOne({name: name}).exec();
+    return this.findOneAsync({name: name});
 };
 CategorySchema.statics.getAll = function () {
-    return this.find({}).exec();
+    return this.findAsync({});
 };
 CategorySchema.statics.getOneById = function (id) {
-    return this.findById(id).exec();
+    return this.findByIdAsync(id);
 };
 CategorySchema.statics.delete = function (id) {
-    return this.findByIdAndRemove(id).exec();
+    return this.findByIdAndRemoveAsync(id);
 };
 CategorySchema.statics.decreaseCount = function (name) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        self.findOne({name:name}, function (err, c) {
-            if (err) {
-                console.error(err);
-                reject(err);
-            }
-            if (c) {
-                c.count = c.count - 1;
-                c.save(function () {
-                    resolve();
-                });
-            }
-        });
+    return this.findOneAsync({name: name}).then(function (category) {
+        if (category) {
+            category.count = category.count - 1;
+            return category.saveAsync();
+        } else {
+            console.log('找不到该分类：' + name);
+            return;
+        }
     });
 };
 CategorySchema.statics.increaseCount = function (name) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        self.findOne({name:name}, function (err, c) {
-            if (err) {
-                console.error(err);
-                reject(err);
-            }
-            if (c) {
-                c.count = c.count + 1;
-                c.save(function () {
-                    resolve();
-                });
-            }
-        });
+    return this.findOneAsync({name: name}).then(function (category) {
+        if (category) {
+            category.count = category.count + 1;
+            return category.saveAsync();
+        } else {
+            console.log('找不到该分类：' + name);
+            return;            
+        }
     });
 };
 

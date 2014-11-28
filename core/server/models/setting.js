@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
+var Promise = require('bluebird'),
+    mongoose = Promise.promisifyAll(require('mongoose')),
     _ = require('underscore'),
     Schema = mongoose.Schema,
-    Promise = require('bluebird'),
 
     SettingSchema = new Schema({
         name: String,
@@ -16,30 +16,21 @@ var mongoose = require('mongoose'),
 
 
 SettingSchema.statics.getSetting = function () {
-    return this.findOne({id: 'blog'}).exec();
+    return this.findOneAsync({id: 'blog'});
 };
 
-SettingSchema.statics.createSetting = function (options) {
-    var self = this;
-    return new Promise(function (resolve, reject) {
-        var setting = new self();
-        _.extend(setting, options);
-        setting.id = 'blog';
-        setting.save(function (err) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(setting);
-            }
-        });
-    });
+SettingSchema.statics.create = function (options) {
+    var setting = new this();
+    _.extend(setting, options);
+    setting.id = 'blog';
+    return setting.saveAsync();
 };
 
-SettingSchema.statics.updateSetting = function (options) {
+SettingSchema.statics.update = function (options) {
     var obj = {};
     _.extend(obj, options);
 
-    return this.findOneAndUpdate({id: 'blog'}, obj).exec();
+    return this.findOneAndUpdateAsync({id: 'blog'}, obj);
 };
 
 var Setting = module.exports = mongoose.model('Setting', SettingSchema);
