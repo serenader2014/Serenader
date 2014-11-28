@@ -35,7 +35,7 @@ connectDB().then(function () {
         // create default settings if the database haven't store any record
         log.info('Creating default settings');
         settings = config.blogConfig;
-        return Setting.createSetting(config.blogConfig);
+        return Setting.create(config.blogConfig);
     } else {
         settings = setting;
     }
@@ -44,7 +44,7 @@ connectDB().then(function () {
         if (!category.length) {
             // create default category if the database haven't store any record
             log.info('Creating default category');
-            return Category.createNew('默认');
+            return Category.create('默认');
         }
     });
 }).catch(function (err) {

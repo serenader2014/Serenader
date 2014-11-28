@@ -123,7 +123,7 @@ module.exports = function (router) {
                     if (users.length) {
                         return '';
                     } else {
-                        return User.createNewUser({
+                        return User.create({
                             uid: uid,
                             pwd: hashedPwd,
                             email: email,

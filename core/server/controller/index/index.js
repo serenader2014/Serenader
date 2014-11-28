@@ -4,7 +4,7 @@ var express = require('express'),
     errorHandling = require('../../utils/error');
 
 rootRouter.get('/', function (req, res) {
-    post.getHomePagePublishedPosts().then(function (posts) {
+    post.getUserPublishedPosts().then(function (posts) {
         res.render('index', {posts: posts});
     }).then(null, function (err) {
         errorHandling(req, res, { error: err.message, type: 500 });
