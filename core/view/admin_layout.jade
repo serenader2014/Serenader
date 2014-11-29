@@ -17,13 +17,13 @@ block content
                             i.md-menu
                     li.user-avatar
                         a(href='javascript:;')
-                            img(src='#{currentUser.avatar}')
+                            img(src='#{url.api}#{url.avatar}/#{currentUser.uid}')
                         .sub-menu
                             .wrapper
                                 .user-info
                                     .image
                                         a(href='#{url.admin}#{url.user}/#{currentUser.uid}')
-                                            img(src='#{currentUser.avatar}')
+                                            img(src='#{url.api}#{url.avatar}/#{currentUser.uid}')
                                     .details
                                         p.user-uid #{currentUser.uid}
                                         p.user-email #{currentUser.email}
@@ -33,26 +33,23 @@ block content
                                     li.signout-btn: a.ripple(href='#{url.admin}#{url.signOut}') 退出登录
             .side-menu
                 ul
-                    li: a.btn.ripple(href='/')
+                    li: a.btn.ripple(href='/', title='主页')
                         i.md-home
                         span.menu-text 主页
-                    li: a.btn.ripple(href='#{url.admin}')
+                    li: a.btn.ripple(href='#{url.admin}', title='控制台')
                         i.md-dashboard
                         span.menu-text 控制台
-                    li: a.btn.ripple(href='#{url.admin}#{url.post}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.post}', title='文章')
                         i.md-description
                         span.menu-text 文章
-                    li: a.btn.ripple(href='#{url.admin}#{url.gallery}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.gallery}', title='相册')
                         i.md-photo-library
                         span.menu-text 相册
-                    li: a.btn.ripple(href='#{url.admin}#{url.file}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.file}', title='附件')
                         i.md-attach-file
                         span.menu-text 附件
-                    li: a.btn.ripple(href='#{url.admin}#{url.setting}')
+                    li: a.btn.ripple(href='#{url.admin}#{url.setting}', title='设置')
                         i.md-settings
                         span.menu-text 设置
             .main
                 block main
-        .global-btn
-            button.btn.btn-round.btn-red.btn-raised.ripple(type='button')
-                i.md-add

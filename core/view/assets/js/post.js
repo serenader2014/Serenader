@@ -1,4 +1,4 @@
-/* global $, marked, Serenader, hljs, url, window */
+/* global $, marked, Serenader, hljs, url, window, moment */
 (function () {
     var keyMap = {
             ctrl: 17,
@@ -22,7 +22,9 @@
         previousContent = $('.editor').val() ,
         previousCategory = $('option:selected').val() ,
         previousSlug  = $('.post-head input').attr('data-slug'),
-        slug = previousSlug;
+        previousDate = moment($('.post-head input').attr('data-date')).format(),
+        slug = previousSlug,
+        createDate = previousDate;
 
     marked.setOptions({
         highlight: function (code) {
@@ -41,7 +43,8 @@
         'click|.draft-btn': 'saveDraft',
         'click|.help-btn': 'showHelp',
         'click|.post-setting-btn': 'showPostSetting',
-        'change|.post-head input': 'generateSlug'
+        'change|.post-head input': 'generateSlug',
+        'click|body|.delete-post': 'deletePost'
     });
 
     Serenader.extend({
@@ -272,7 +275,8 @@
                     category: category,
                     tags: tags,
                     publish: isPublished,
-                    slug: slug
+                    slug: slug,
+                    createDate: createDate
                 },
                 dataType: 'json',
                 success: function (result) {
@@ -380,20 +384,54 @@
                 title: '文章设置',
                 content: $('#post-setting-template').html(),
                 task: function () {
-                    var currentSlug = $('#slug').val();
+                    var currentSlug = $('#slug').val(),
+                        currentDate = moment($('#date').val()).format();
                     this.hide();
                     slug = currentSlug;
+                    createDate = currentDate;
                     $('.post-head input').attr('data-slug', currentSlug);
+                    $('.post-head input').attr('data-date', currentDate);
                 },
                 rendererData: {
-                    slug: $('.post-head input').attr('data-slug') || ' '
+                    slug: $('.post-head input').attr('data-slug') || ' ',
+                    createDate: moment($('.post-head input').attr('data-date')).format('YYYY/MM/DD, HH:mm:ss')
                 }
             });
+        },
+        deletePost: function () {
+            if (!draftID) {
+                Serenader.msgBox('无法获取该文章的ID。', 'error');
+                return false;
+            }
+            Serenader.msgBox('即将删除该文章。文章删除后无法恢复，请慎重操作！', function () {
+                Serenader.progress('正在删除...', function (finish) {
+                    $.ajax({
+                        url: url.api + url.post + '/' + draftID,
+                        type: 'DELETE',
+                        dataType: 'json',
+                        success: function (result) {
+                            finish(function () {
+                                if (result.ret === 0) {
+                                    Serenader.msgBox('删除成功！', function () {
+                                        window.location = url.admin + url.post;
+                                    });
+                                } else {
+                                    Serenader.msgBox('删除失败！' + result.error, 'error');
+                                }
+                            });
+                        },
+                        error: function (err) {
+                            finish(function () {
+                                Serenader.msgBox('删除失败！' + err, 'error');
+                            });
+                        }
+                    });
+                });
+            });            
         }
     });
 
     $('.categories').lightSelector();
-    $('.global-btn').hide();
     Serenader.fire();
     setInterval(function () {
         var content = $('.editor').val(),

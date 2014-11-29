@@ -9,8 +9,8 @@ var Promise = require('bluebird'),
         title: String,
         slug: {type: String, unique: true},
         author: String,
-        createDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
-        lastModifiedDate: { year: Number, month: Number, day: Number, hour: Number, minute: Number, second: Number },
+        createDate: Date,
+        lastModifiedDate: Date,
         markdown: String,
         html: String,
         tags: Array,
@@ -76,7 +76,7 @@ PostSchema.statics.delete = function (id) {
 
 PostSchema.statics.getPostsByCate = function (name, amount, page) {
     return this.findAsync(
-        {category: name}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        {category: name}, null, {limit: amount, skip: (page - 1)*amount, sort: {_createDate: -1}}
         );
 };
 PostSchema.statics.getPostById = function (id) {
@@ -87,22 +87,22 @@ PostSchema.statics.getPostBySlug = function (slug) {
 };
 PostSchema.statics.getUserPublishedPosts = function (user, amount, page) {
     return this.findAsync(
-        {author: user, published: true}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        {author: user, published: true}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
         );
 };
 PostSchema.statics.getUserAllPosts = function (user, amount, page) {
     return this.findAsync(
-        {author: user}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        {author: user}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
         );
 };
 PostSchema.statics.getAllPosts = function (amount, page) {
     return this.findAsync(
-        {}, null, {limit: amount, skip: (page - 1)*amount, sort: {_id: -1}}
+        {}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
         );
 };
 PostSchema.statics.getPublishedPosts = function (amount, page) {
     return this.findAsync(
-        {published: true}, null, { limit: amount, skip: (page - 1)*amount, sort: { _id: -1}}
+        {published: true}, null, { limit: amount, skip: (page - 1)*amount, sort: { createDate: -1}}
         );
 };
 

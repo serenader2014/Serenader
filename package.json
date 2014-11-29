@@ -26,7 +26,8 @@
         "chalk": "0.5.1",
         "html-to-text": "1.0.0",
         "matchdep": "0.3.0",
-        "unidecode": "0.1.3"
+        "unidecode": "0.1.3",
+        "moment": "2.8.4"
     },
     "devDependencies": {
         "bower": "1.3.12",

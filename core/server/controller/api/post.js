@@ -1,6 +1,7 @@
 var Promise = require('bluebird'),
     validator = require('validator'),
     markdown = require('marked'),
+    moment = require('moment'),
     log = require('../../utils/log')(),
     config = require('../../../../config').config,
     url = config.url,
@@ -68,7 +69,7 @@ function checkCategoryIsExist (name) {
 
 function checkRequestBody (req) {
     return new Promise(function (resolve, reject) {
-        var now, title, author, date, md, html, category, published, tags, slug, user;
+        var title, author, date, md, html, category, published, tags, slug, user, createDate;
         user = req.session.user;
         if (!user) {
             reject('权限不足。');
@@ -78,19 +79,12 @@ function checkRequestBody (req) {
             reject('请完善文章信息。');
             return false;
         }
-        now = new Date();
-        date = {
-            year: now.getFullYear(),
-            month: now.getMonth() + 1,
-            day: now.getDate(),
-            hour: now.getHours(),
-            minute: now.getMinutes(),
-            second: now.getSeconds()
-        };
+        date = moment.utc().format();
         title = validator.trim(req.body.title);
         slug = validator.trim(req.body.slug);
         author = user.uid;
         md = validator.trim(req.body.content);
+        createDate = moment.utc(validator.trim(req.body.createDate)).format();
         category = validator.trim(req.body.category);
         published = validator.trim(req.body.publish);
         published = published === 'false' ? false : (published === 'true' ? true : undefined);
@@ -122,6 +116,7 @@ function checkRequestBody (req) {
             markdown: md,
             html: html,
             date: date,
+            createDate: createDate,
             tags: tags,
             published: published,
             slug: slug,
@@ -182,7 +177,8 @@ module.exports = function (router) {
                         author: result.author,
                         markdown: result.markdown,
                         html: result.html,
-                        lastModifiedDate: result.date,
+                        createDate: new Date(result.createDate),
+                        lastModifiedDate: new Date(result.date),
                         tags: result.tags,
                         published: result.published,
                         category: result.category
@@ -222,8 +218,8 @@ module.exports = function (router) {
                     title: post.title, 
                     slug: post.slug,
                     author: post.author, 
-                    createDate: post.date, 
-                    lastModifiedDate: post.date,
+                    createDate: new Date(post.createDate), 
+                    lastModifiedDate: new Date(post.createDate),
                     tags: post.tags, 
                     markdown: post.markdown,
                     html: post.html, 

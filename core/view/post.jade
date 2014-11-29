@@ -1,7 +1,10 @@
 extends admin_layout
 
 block title
-    title 新文章
+    - if (post)
+        title 编辑文章
+    - else 
+        title 新文章
 block area
     - if (post)
         span 编辑文章
@@ -17,7 +20,7 @@ block main
     .post-area
         .post-head
             - if (post)
-                input(type='text', name='title', placeholder='文章标题', value='#{post.title}', data-slug='#{post.slug}')/
+                input(type='text', name='title', placeholder='文章标题', value='#{post.title}', data-slug='#{post.slug}', data-date='#{post.createDate}')/
             - else
                 input(type='text', name='title', placeholder='文章标题')/
             .categories-selector
@@ -150,6 +153,8 @@ block script
             </tbody>
         </table>
     - var hasValue = post ? 'has-value' : ''
+    - var createDate = post ? post.createDate : undefined
+    - var modifiedDate = post ? post.lastModifiedDate : undefined
     script#post-setting-template(type='text/template').
         <div class='input #{hasValue}'>
             <label for='slug'>Slug</label>
@@ -157,4 +162,13 @@ block script
             <span class='input-bar'></span>
             <span class='input-description'>文章的唯一URL</span>
         </div>
+        <div>
+            <div class='input has-value'>
+                <label for='date'>创建时间</label>
+                <input value='{{createDate}}' id='date'/>
+                <span class='input-bar'></span>
+                <span class='input-description'>文章的创建时间。</span>
+            </div>
+        </div>
+        <button type='button' class='delete-post btn btn-danger btn-red ripple'>删除文章</button>
     script(type='text/javascript', src='#{assets.server}/js/build/post.js')

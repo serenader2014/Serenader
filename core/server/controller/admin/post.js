@@ -1,5 +1,6 @@
 var validator = require('validator'),
     _ = require('underscore'),
+    moment = require('moment'),
     auth_user = require('../../utils/auth_user'),
     Category = require('../../models').Category,
     postUtils = require('../api/post').utils,

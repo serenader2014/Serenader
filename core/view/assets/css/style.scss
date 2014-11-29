@@ -32,13 +32,6 @@ a {
     margin-right: 0.5rem;
 }
 
-
-.global-btn {
-    position: fixed;
-    bottom: 2rem;
-    right: 3rem;
-}
-
 .panel {
     height: 100%;
     background: lighten(map-get($color-grey, '400'), 15%);
@@ -51,7 +44,7 @@ a {
     right: 0;
     padding: 1rem 2rem;
     z-index: $navbar-index;
-    background: $white;
+    background: darken($blue, 10%);
     box-shadow: $shadow-1;
 
     li {
@@ -66,7 +59,7 @@ a {
         outline: none;
         border: none;
         font-size: 2rem;
-        color: map-get($color-light-blue, '500');
+        color: $white;
         cursor: pointer;
         background: none;
     }
@@ -95,7 +88,7 @@ a {
         left: 0;
         right: 0;
         font-size: 2rem;
-        color: map-get($color-grey, '400');
+        color: $white;
         text-align: center;
         span {
             display: inline-block;
@@ -193,12 +186,12 @@ a {
     left: 0;
     padding-top: 6rem;
     box-shadow: $shadow-1;
-    background: $blue;
+    background: $side-menu-background;
     z-index: $side-index;
 
     .btn {
         padding: 0.8rem 2rem;
-        color: $white;
+        color: $content-color;
 
         &:hover {
             background: rgba($white, 0.2);
@@ -218,16 +211,6 @@ a {
         display: none;
         width: 10rem;
     }
-    &:hover {
-        .menu-text {
-            display: inline-block;
-        }
-
-        i {
-            margin-right: 2rem;
-        }
-    }
-
 }
 
 .main {

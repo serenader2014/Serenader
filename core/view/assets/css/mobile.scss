@@ -1,6 +1,6 @@
 @media screen and (max-width: 720px) {
     .main {
-        padding: 6rem 1rem 0 1rem;
+        padding: 5rem 0 0;
     }
 
     .side-menu {
@@ -50,5 +50,13 @@
 
     .posts-list {
         margin-right: 0;
+
+        li {
+            padding: 1.5rem;
+        }
+    }
+
+    .user-avatar, .post-update {
+        display: none;
     }
 }

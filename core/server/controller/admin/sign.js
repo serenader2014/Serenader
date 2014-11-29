@@ -115,7 +115,6 @@ module.exports = function (router) {
                     uid: uid,
                     email: email,
                     pwd: hashedPwd,
-                    avatar: config.assetsUrl.serverSideAssets + '/default_avatar.jpg',
                     role: 'admin'
                 });
             } else {
@@ -127,7 +126,6 @@ module.exports = function (router) {
                             uid: uid,
                             pwd: hashedPwd,
                             email: email,
-                            avatar: config.assetsUrl.serverSideAssets + '/default_avatar.jpg',
                             role: 'user'
                         });
                     }

@@ -7,6 +7,7 @@ var pkg = require('./package.json'),
         root_dir: __dirname,
         url: {
             api: '/api',
+            avatar: '/avatar',
             admin: '/admin',
             slug: '/slug',
             post: '/post',

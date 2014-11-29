@@ -1,4 +1,4 @@
-/* global Serenader, $, url */
+/* global Serenader, $, url, moment */
 
 (function () {
     Serenader.addEvents({
@@ -7,8 +7,10 @@
         'click|body|.edit-category-btn': 'showEditCategory',
         'click|body|.delete-category-btn': 'deleteCategory',
         'click|body|.categories-list a': 'postFilter',
-        'click|.post-action button': 'deletePost',
-        'click|.new-post-btn': 'openNewPost'
+        'click|.new-post-btn': 'openNewPost',
+        'click|.post-title a': 'showPreview',
+        'click|.close-preview-btn': 'closePreview',
+        'click|.edit-post-btn': 'showEditPost'
     });
 
     Serenader.extend({
@@ -160,50 +162,48 @@
 
             $(othersPost).hide();
         },
-        deletePost: function () {
+        openNewPost: function () {
+            window.location = url.admin + url.newPost;
+        },
+        showPreview: function () {
             var targetElement = $(this).parents('li'),
-                id = targetElement.attr('data-id'),
-                category = targetElement.attr('data-category');
-            Serenader.msgBox('即将删除该文章。文章删除后无法恢复，请慎重操作！', function () {
-                Serenader.progress('正在删除...', function (finish) {
-                    $.ajax({
-                        url: url.api + url.post + '/' + id,
-                        type: 'DELETE',
-                        dataType: 'json',
-                        success: function (result) {
-                            finish(function () {
-                                if (result.ret === 0) {
-                                    Serenader.msgBox('删除成功！', function () {
-                                        targetElement.remove();
-                                        if (!targetElement.hasClass('drafts')) {
-                                            $('.categories-list li').each(function (index, c) {
-                                                var currentCategory = $(c).attr('data-name');
-                                                if (category === currentCategory) {
-                                                    var countElement = $(c).find('.category-count'),
-                                                        count = countElement.html().replace(/[( ][ )]/ig, '')*1 - 1;
-                                                    countElement.html('( ' + count + ' )');
-                                                }
-                                            });
-                                        }
-                                    });
-                                } else {
-                                    Serenader.msgBox('删除失败！' + result.error, 'error');
-                                }
-                            });
-                        },
-                        error: function (err) {
-                            finish(function () {
-                                Serenader.msgBox('删除失败！' + err, 'error');
-                            });
-                        }
-                    });
+                id = targetElement.attr('data-id');
+            $('.post').hide();
+            Serenader.progress('正在获取文章信息...', function (finish) {
+                $.ajax({
+                    url: url.api + url.post + '/' + id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (result) {
+                        finish(function () {
+                            $('.post-html').show().attr('data-id', id).find('.container').html(result.html);
+                        });
+                    },
+                    error: function (err) {
+                        finish(function () {
+                            Serenader.msgBox('获取文章信息失败！', 'error');
+                        });
+                    }
                 });
             });
         },
-        openNewPost: function () {
-            window.location = url.admin + url.newPost;
+        closePreview: function () {
+            $('.post').show();
+            $('.post-html').hide().find('.container').html('');
+        },
+        showEditPost: function () {
+            var id = $('.post-html').attr('data-id');
+            window.location = url.admin + url.post + '/' + id;
         }
     });
-
+    $('.post-date').each(function (index, item) {
+        var createDate = $(item).attr('data-create'),
+            updateDate = $(item).attr('data-update');
+            $(item).append(
+                $('<span>').html('Created in ' + moment(createDate).format('YYYY/MM/DD'))
+                ).append(
+                $('<span>').html(', updated in ' + moment(updateDate).fromNow()).addClass('post-update')
+                );
+    });
     Serenader.fire();
 })();

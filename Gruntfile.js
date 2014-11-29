@@ -204,6 +204,7 @@ module.exports = function (grunt) {
                     'bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'bower_components/moment/moment.js',
                     'bower_components/marked/lib/marked.js',
                     'core/view/assets/js/highlight.pack.js',
                     'core/view/assets/js/script.js',
@@ -214,6 +215,7 @@ module.exports = function (grunt) {
                 dest: 'core/view/assets/js/build/post_list.js',
                 src: [
                     'bower_components/jquery/dist/jquery.js',
+                    'bower_components/moment/moment.js',
                     'core/view/assets/js/script.js',
                     'core/view/assets/js/post_list.js'
                 ]
@@ -233,6 +235,7 @@ module.exports = function (grunt) {
                 dest: 'core/view/assets/js/build/file.js',
                 src: [
                     'bower_components/jquery/dist/jquery.js',
+                    'bower_components/moment/moment.js',
                     'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
                     'core/view/assets/js/script.js',

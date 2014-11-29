@@ -303,13 +303,14 @@
 }
 
 .posts-list {
+    position: relative;
     height: 100%;
     padding-top: 4rem;
     margin-right: 30rem;
     overflow: auto;
     background: $white;
     box-shadow: $shadow-1;
-    li {
+    .post {
         position: relative;
         border-bottom: 1px solid map-get($color-grey, '300');
         padding: 2rem 3rem;
@@ -333,13 +334,25 @@
     }
 
     .post-title {
-        padding: 0 5rem 0.8rem 0;
+        padding-bottom: 0.8rem;
         line-height: 1.5;
         a {
             display: block;
             font-size: 2rem;
             color: lighten($content-color, 10%);
-            font-weight: lighter;
+        }
+    }
+
+    .user-avatar {
+
+        img {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 100%;
+            margin-right: 0.5rem;
+            box-shadow: 0 1px 0 rgba(map-get($color-grey, '1000'), 0.2);
+            border: 2px solid $white;
+            vertical-align: middle;
         }
     }
 
@@ -356,23 +369,39 @@
         }
     }
 
-    .post-action {
+}
+.post-html {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: $preview-index;
+    background: $white;
+    .menu {
         position: absolute;
         top: 0;
-        bottom: 0;
+        left: 0;
         right: 0;
+        padding: 0.5rem;
+        background: $white;
+        box-shadow: $shadow-1;
         button {
-            padding: 0;
-            height: 100%;
-            width: 8rem;
-            font-size: 3rem;
-            color: $light-grey;
-            &:hover {
-                color: $grey;
-            }
+            height: 3rem;
+            padding: 0 2rem;
+        }
+
+        .right {
+            float: right;
         }
     }
 
+    .container {
+        height: 100%;
+        padding: 5rem 2rem 1rem;
+        overflow: auto;
+    }
 }
 
 .category-content {
@@ -383,6 +412,7 @@
     padding: 4rem 0 4rem;
     width: $category-list-width;
     box-shadow: $shadow-2;
+    border-left: 1px solid $light-grey;
     transition: all 0.2s;
     z-index: $category-list-index;
     background: $white;
@@ -467,7 +497,7 @@
     top: 0;
     left: 0;
     right: 0;
-    background: $blue;
+    background: $white;
     z-index: $post-nav-index;
     box-shadow: $shadow-1;
     li {
@@ -479,7 +509,7 @@
         font-size: 1.6rem;
         height: 4rem;
         padding: 0.5rem 2rem;
-        color: $white;
+        color: $content-color;
         &:hover {
             background: none;
         }

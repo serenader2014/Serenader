@@ -4,7 +4,8 @@ block title
     title 文章
 block area
     span 文章列表
-
+block extra_css
+    link(rel='stylesheet', href='#{assets.server}/css/markdown-html.css')
 block main
     .post-content
         ul.nav-menu
@@ -16,40 +17,40 @@ block main
                 | 分类
         ul.posts-list
             - each draft in drafts
-                li.drafts(data-id='#{draft.id}', data-category='#{draft.category}')
+                li.drafts.post(data-id='#{draft.id}', data-category='#{draft.category}')
                     .post-title
-                        a(href='#{url.admin}#{url.post}/#{draft.id}') #{draft.title}
+                        a(href='javascript:;') #{draft.title}
                     .post-meta
+                        a.user-avatar(href='#{url.admin}#{url.user}/#{draft.author}')
+                            img(src='#{url.api}#{url.avatar}/#{draft.author}', alt='#{draft.author}')
+                            span #{draft.author}
                         span
                             i.md-access-time.left-icon
-                            | #{draft.lastModifiedDate.year}/#{draft.lastModifiedDate.month}/#{draft.lastModifiedDate.day}
-                        span
-                            a(href='')
-                                i.md-person.left-icon
-                                | #{draft.author}
+                            span.post-date(data-update='#{draft.lastModifiedDate}', data-create='#{draft.createDate}')
                         span
                             i.md-list.left-icon
                             | #{draft.category}
-                    .post-action
-                        button.btn.md-delete
 
             - each post in posts
-                li(data-id='#{post.id}', data-category='#{post.category}')
+                li.post(data-id='#{post.id}', data-category='#{post.category}')
                     .post-title
-                        a(href='#{url.admin}#{url.post}/#{post.id}') #{post.title}
+                        a(href='javascript:;') #{post.title}
                     .post-meta
+                        a.user-avatar(href='#{url.admin}#{url.user}/#{post.author}')
+                            img(src='#{url.api}#{url.avatar}/#{post.author}', alt='#{post.author}', title='#{post.author}')
+                            span #{post.author}
                         span
                             i.md-access-time.left-icon
-                            | #{post.lastModifiedDate.year}/#{post.lastModifiedDate.month}/#{post.lastModifiedDate.day}
-                        span
-                            a(href='')
-                                i.md-person.left-icon
-                                | #{post.author}
+                            span.post-date(data-update='#{post.lastModifiedDate}', data-create='#{post.createDate}')
                         span 
                             i.md-list.left-icon
                             |#{post.category}
-                    .post-action
-                        button.btn.md-delete
+            .post-html
+                .menu
+                    button.btn.ripple.close-preview-btn 关闭
+                    button.btn.ripple.btn-blue.right.edit-post-btn 编辑
+                .container.markdown
+                     
         .category-content
             p 文章分类
             ul.categories-list

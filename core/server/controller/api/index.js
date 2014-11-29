@@ -8,5 +8,6 @@ require('./gallery')(apiRouter);
 require('./upload')(apiRouter);
 require('./file')(apiRouter);
 require('./setting')(apiRouter);
+require('./avatar')(apiRouter);
 
 module.exports = apiRouter;

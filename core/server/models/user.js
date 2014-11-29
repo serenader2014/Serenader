@@ -9,7 +9,7 @@ var Promise = require('bluebird'),
         pwd: String,
         website: String,
         profile_header: String,
-        avatar: String,
+        avatar: {type: String, default: '/core/view/assets/default_avatar.jpg'},
         role: String,
         signature: String
     });
