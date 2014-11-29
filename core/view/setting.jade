@@ -1,0 +1,27 @@
+extends admin_layout
+
+block title
+    title 设置
+block area
+    span 设置
+block main
+    .setting-wrapper
+        .head
+            span.setting-title 博客设置
+            button.btn.btn-blue.ripple 确定
+        .content
+            .left
+                ul
+                    li 博客设置
+                    li 用户管理
+            .right
+                .blog-setting
+                    .input.has-value
+                        label(for='name') 名称
+                        input#name(type='text' value='#{setting.name}')/
+                        span.input-bar
+                        span.input-description 博客的全局名称。
+                    textarea #{setting.desc}
+              
+block script
+    script(type='text/javascript', src='#{assets.server}/js/build/setting.js')

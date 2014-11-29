@@ -157,7 +157,7 @@ module.exports = function (router) {
         var id;
         id = validator.trim(req.params.id);
 
-        getPost(id).then(function (post) {
+        getPost(id, req.session.user).then(function (post) {
             res.json(post);
         }).catch(function (err) {
             log.error(err.stack || err);

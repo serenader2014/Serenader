@@ -55,6 +55,12 @@ module.exports = function (grunt) {
                 ],
                 tasks: ['concat:file']
             },
+            settingScript: {
+                files: [
+                    'core/view/assets/js/setting.js'
+                ],
+                tasks: ['concat:setting']
+            },
             sass: {
                 files: ['core/view/assets/css/*.scss'],
                 tasks: ['css']
@@ -236,6 +242,16 @@ module.exports = function (grunt) {
                 src: [
                     'bower_components/jquery/dist/jquery.js',
                     'bower_components/moment/moment.js',
+                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
+                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'core/view/assets/js/script.js',
+                    'core/view/assets/js/file.js'
+                ]
+            },
+            setting: {
+                dest: 'core/view/assets/js/build/setting.js',
+                src: [
+                    'bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
                     'core/view/assets/js/script.js',

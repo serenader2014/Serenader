@@ -1,0 +1,33 @@
+.setting-wrapper {
+    position: relative;
+    height: 100%;
+    box-shadow: $shadow-1;
+    background: $white;
+
+    .head {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        border-bottom: 1px solid $light-grey;
+        background: rgba($white, 0.8);
+
+        button {
+            float: right;
+            height: 3.5rem;
+            width: 7rem;
+            padding: 0;
+        }
+    }
+
+    .content {
+        padding-top: 5.5rem;
+        height: 100%;
+    }
+}
+
+.setting-title {
+    font-size: $large-font-size;
+    line-height: 3.5rem;
+}

@@ -29,7 +29,7 @@ module.exports = function (router) {
                     log.error(err.stack);
                 });
             }, Promise.resolve()).then(function (theme) {
-                res.render('admin_setting', { themes: theme });
+                res.render('setting', { themes: theme });
             });
         }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500 });
