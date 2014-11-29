@@ -427,8 +427,6 @@
 
     LightSelector.prototype = {
         constructor: LightSelector,
-        width: 120,
-        height: 50,
         init: function (opt) {
             var self = this;
 
@@ -441,12 +439,7 @@
 
             var selector = $('<div>')
                     .addClass(self.css.selector.substring(1))
-                    .addClass('s-'+(++LightSelector.count))
-                    .css({
-                       width: self.width + 'px',
-                       height: self.height + 'px',
-                       lineHeight: self.height + 'px'
-                    }),
+                    .addClass('s-'+(++LightSelector.count)),
                 
                 selectorWrapper = $('<div>')
                     .addClass(self.css.wrapper.substring(1)),
@@ -456,7 +449,11 @@
                     .html(self.options[self.current]),
                 
                 optionsList = $('<ul>')
-                    .addClass(self.css.optionsList.substring(1));
+                    .addClass(self.css.optionsList.substring(1)),
+
+                pageHeight = $(document).height(),
+                position,
+                height;
                 
             selector
                 .append(current)
@@ -470,6 +467,10 @@
             });
 
             self.selector = self.e.next();
+
+            position = self.selector.offset();
+            height = self.selector.height();
+            optionsList.css({maxHeight: pageHeight - (height + position.top) - 20});
             
             return self;
         },
@@ -502,11 +503,7 @@
         },
         updateUI: function (callback) {
             var self = this;
-            self.selector.css({
-                width: self.width + 'px',
-                height: self.height + 'px',
-                lineHeight: self.height + 'px'
-            });
+
             self.getDomElement().currentSelected.html(self.options[self.current]);
             self.getDomElement().optionsList.find('li').removeClass(self.css.optionSelected.substring(1))
                 .eq(self.current).addClass(self.css.optionSelected.substring(1));
@@ -514,14 +511,6 @@
             if (callback && typeof callback === 'function') {
                 callback();
             }
-            return self;
-        },
-        setSize: function (option) {
-            var self = this;
-            self.width = option.width || self.width;
-            self.height = option.height || self.height;
-            self.updateUI();
-
             return self;
         },
         eventBinding: function () {

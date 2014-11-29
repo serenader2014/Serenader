@@ -225,7 +225,7 @@ module.exports = function (router) {
                     createDate: post.date, 
                     lastModifiedDate: post.date,
                     tags: post.tags, 
-                    markdown: post.md,
+                    markdown: post.markdown,
                     html: post.html, 
                     published: post.published,
                     category: post.category

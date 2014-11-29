@@ -8,6 +8,6 @@
         "blueimp-gallery": "2.15.1",
         "lodash": "2.4.1",
         "backbone": "1.1.2",
-        "material-design-icon": "0.1.1"
+        "material-design-icon": "0.1.1",
     }
 }

@@ -386,7 +386,7 @@
                     $('.post-head input').attr('data-slug', currentSlug);
                 },
                 rendererData: {
-                    slug: $('.post-head input').attr('data-slug')
+                    slug: $('.post-head input').attr('data-slug') || ' '
                 }
             });
         }

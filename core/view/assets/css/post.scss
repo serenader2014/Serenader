@@ -287,6 +287,12 @@
         border-left: 1px solid $grey;
         border-bottom: 1px solid $grey;
     }
+
+    th {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: $light-grey;
+    }
 }
 
 .post-content {
@@ -298,7 +304,8 @@
 
 .posts-list {
     height: 100%;
-    padding: 4rem 29rem 0 0;
+    padding-top: 4rem;
+    margin-right: 30rem;
     overflow: auto;
     background: $white;
     box-shadow: $shadow-1;
@@ -399,10 +406,21 @@
     }
 
     p {
-        padding: 0 4rem;
-        margin: 3.5rem 0 2rem;
+        position: absolute;
+        top: 4rem;
+        left: 0;
+        right: 0;
+        padding: 3.5rem 4rem 2rem;
         color: $grey;
         font-size: 2rem;
+        background: $white;
+        z-index: $category-list-index;
+    }
+
+    ul {
+        padding-top: 7rem;
+        height: 100%;
+        overflow: auto;
     }
 
     .category-action {

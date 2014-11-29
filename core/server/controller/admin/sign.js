@@ -111,7 +111,7 @@ module.exports = function (router) {
 
         User.getAllUser().then(function (users) {
             if (users.length <= 0) {
-                return User.createNewUser({
+                return User.create({
                     uid: uid,
                     email: email,
                     pwd: hashedPwd,

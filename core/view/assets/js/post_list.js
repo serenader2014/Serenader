@@ -175,14 +175,16 @@
                                 if (result.ret === 0) {
                                     Serenader.msgBox('删除成功！', function () {
                                         targetElement.remove();
-                                        $('.categories-list li').each(function (index, c) {
-                                            var currentCategory = $(c).attr('data-name');
-                                            if (category === currentCategory) {
-                                                var countElement = $(c).find('.category-count'),
-                                                    count = countElement.html().replace(/[( ][ )]/ig, '')*1 - 1;
-                                                countElement.html('( ' + count + ' )');
-                                            }
-                                        });
+                                        if (!targetElement.hasClass('drafts')) {
+                                            $('.categories-list li').each(function (index, c) {
+                                                var currentCategory = $(c).attr('data-name');
+                                                if (category === currentCategory) {
+                                                    var countElement = $(c).find('.category-count'),
+                                                        count = countElement.html().replace(/[( ][ )]/ig, '')*1 - 1;
+                                                    countElement.html('( ' + count + ' )');
+                                                }
+                                            });
+                                        }
                                     });
                                 } else {
                                     Serenader.msgBox('删除失败！' + result.error, 'error');
