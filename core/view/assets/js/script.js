@@ -236,7 +236,7 @@
         'click|.user-avatar a': 'showProfile',
         'click|.side-menu-btn': 'showSideMenu',
         'click|.global-btn': 'showNewPost',
-        'click|body': 'blur'
+        'click|body': 'blur',
     });
     self.extend({
         ripple: function (event) {

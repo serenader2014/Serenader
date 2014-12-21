@@ -5,6 +5,18 @@ var config = require('../../../config').config,
 
 function route (app) {
 
+    app.use(function (req, res, next) {
+        var _send = res.send,
+            startTime = Date.now();
+
+        res.send = function () {
+            res.set('X-Time', String(Date.now() - startTime) +  'ms');
+            return _send.apply(res, arguments);
+        };
+
+        next();
+    });
+
     app.use(config.url.admin, function (req, res, next) {
         app.set('views', root + '/core/view/');
         next();

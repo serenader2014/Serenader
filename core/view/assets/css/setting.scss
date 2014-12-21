@@ -25,6 +25,18 @@
         padding-top: 5.5rem;
         height: 100%;
     }
+
+    .left {
+        padding: 2rem;
+        width: $side-width;
+        float: left;
+    }
+
+    .right {
+        margin-left: $side-width;
+        padding: 2rem;
+        border-left: 1px solid $light-grey;
+    }
 }
 
 .setting-title {
