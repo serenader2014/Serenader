@@ -1,5 +1,5 @@
 var express = require('express'),
-    apiRouter = express.Router();
+apiRouter   = express.Router();
 
 require('./post')(apiRouter);
 require('./category')(apiRouter);
