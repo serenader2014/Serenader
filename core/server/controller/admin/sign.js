@@ -20,7 +20,7 @@ function md5 (password) {
 module.exports = function (router) {
         // router handler
 
-    router.get(url.sign, function (req, res) { 
+    router.get(url.sign, function (req, res) {
         if (req.session.user) {
             res.redirect(url.admin);
         } else {
@@ -54,7 +54,7 @@ module.exports = function (router) {
 
     router.post(url.signUp, function (req, res) {
         var uid, email, password, rePwd, hashedPwd;
-        
+
         if (! locals.setting.allow_sign_up) {
             res.json({
                 ret: -1,
@@ -136,13 +136,13 @@ module.exports = function (router) {
                 res.json({
                     ret: -1,
                     error: '该用户已经注册。'
-                });                    
+                });
             } else {
 
                 var dir = [
-                    '/content/data/public/' + user.uid + '/upload', 
-                    '/content/data/public/' + user.uid + '/gallery', 
-                    '/content/data/private/' + user.uid + '/upload', 
+                    '/content/data/public/' + user.uid + '/upload',
+                    '/content/data/public/' + user.uid + '/gallery',
+                    '/content/data/private/' + user.uid + '/upload',
                     '/content/data/private/' + user.uid + '/gallery',
                     '/content/data/trash/' + user.uid
                 ];
@@ -156,7 +156,7 @@ module.exports = function (router) {
                     res.json({
                         ret: 0,
                         username: user.uid
-                    });                    
+                    });
                 });
 
             }

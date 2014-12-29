@@ -14,56 +14,19 @@ module.exports = function (grunt) {
                 },
                 files: [
                     'core/view/*',
-                    'core/view/assets/js/build/*',
+                    'core/view/assets/js/*',
+                    'core/view/assets/views/*.html',
                     'core/view/assets/css/style.css',
                     'core/view/assets/css/sign.css'
                 ]
             },
-            baseScript: {
-                files: [
-                    'core/view/assets/js/script.js'
-                ],
-                tasks: ['concat']
-            },
-            signScript: {
-                files: [
-                    'core/view/assets/js/sign.js'
-                ],
-                tasks: ['concat:sign']
-            },
-            postListScript: {
-                files: [
-                    'core/view/assets/js/post_list.js'
-                ],
-                tasks: ['concat:postList']
-            },
-            postScript: {
-                files: [
-                    'core/view/assets/js/post.js'
-                ],
-                tasks: ['concat:post']
-            },
-            galleryScript: {
-                files: [
-                    'core/view/assets/js/gallery.js'
-                ],
-                tasks: ['concat:gallery']
-            },
-            fileScript: {
-                files: [
-                    'core/view/assets/js/file.js'
-                ],
-                tasks: ['concat:file']
-            },
-            settingScript: {
-                files: [
-                    'core/view/assets/js/setting.js'
-                ],
-                tasks: ['concat:setting']
-            },
             sass: {
                 files: ['core/view/assets/css/*.scss'],
                 tasks: ['css']
+            },
+            jade: {
+                files: ['core/view/assets/views/*.jade'],
+                tasks: ['jade']
             }
         },
 
@@ -127,11 +90,7 @@ module.exports = function (grunt) {
         uglify: {
             default: {
                 files: {
-                    'core/view/assets/js/build/sign.js': 'core/view/assets/js/build/sign.js',
-                    'core/view/assets/js/build/post.js': 'core/view/assets/js/build/post.js',
-                    'core/view/assets/js/build/post_list.js': 'core/view/assets/js/build/post_list.js',
-                    'core/view/assets/js/build/gallery.js': 'core/view/assets/js/build/gallery.js',
-                    'core/view/assets/js/build/file.js': 'core/view/assets/js/build/file.js'
+                    'core/view/assets/js/vendor/script.js': 'core/view/assets/js/vendor/script.js',
                 }
             }
         },
@@ -173,7 +132,23 @@ module.exports = function (grunt) {
                     {
                         src: 'core/view/assets/css/markdown-html.scss',
                         dest: 'core/view/assets/css/markdown-html.css'
-                    }                    
+                    }
+                ]
+            }
+        },
+
+        jade: {
+            compile: {
+                options: {
+                    data: {
+                        debug: false
+                    }
+                },
+                files: [
+                    {
+                        src: 'core/view/assets/views/*.jade',
+                        dest: 'core/view/assets/views/'
+                    }
                 ]
             }
         },
@@ -194,68 +169,22 @@ module.exports = function (grunt) {
         },
 
         concat: {
-            sign: {
-                dest: 'core/view/assets/js/build/sign.js',
+            angular: {
+                dest: 'core/view/assets/js/vendor/script.js',
                 src: [
                     'bower_components/jquery/dist/jquery.js',
                     'bower_components/lodash/dist/lodash.js',
-                    'bower_components/backbone/backbone.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/sign.js'
-                ]
-            },
-            post: {
-                dest: 'core/view/assets/js/build/post.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
+                    'bower_components/angular/angular.js',
+                    'bower_components/angular-animate/angular-animate.js',
+                    'bower_components/angular-message/angular-message.js',
+                    'bower_components/angular-resource/angular-resource.js',
+                    'bower_components/angular-route/angular-route.js',
+                    'bower_components/angular-sanitize/angular-sanitize.js',
                     'bower_components/moment/moment.js',
                     'bower_components/marked/lib/marked.js',
-                    'core/view/assets/js/highlight.pack.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/post.js'
-                ]
-            },
-            postList: {
-                dest: 'core/view/assets/js/build/post_list.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/moment/moment.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/post_list.js'
-                ]
-            },
-            gallery: {
-                dest: 'core/view/assets/js/build/gallery.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
                     'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
                     'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/blueimp-gallery/js/blueimp-gallery.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/gallery.js'
-                ]
-            },
-            file: {
-                dest: 'core/view/assets/js/build/file.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/moment/moment.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/file.js'
-                ]
-            },
-            setting: {
-                dest: 'core/view/assets/js/build/setting.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'core/view/assets/js/script.js',
-                    'core/view/assets/js/file.js'
+                    'bower_components/blueimp-gallery/js/blueimp-gallery.js'
                 ]
             }
         },
@@ -285,21 +214,21 @@ module.exports = function (grunt) {
 
     grunt.initConfig(config);
 
-    grunt.registerTask('init', 'Download and copy the dependencies.', 
-        ['shell:bower', 'update_submodules', 'copy']);
+    grunt.registerTask('init', 'Download and copy the dependencies.',
+        ['shell:bower', 'update_submodules', 'copy', 'jade']);
 
-    grunt.registerTask('default', 'Compile the css and the js file.', 
-        ['css', 'concat']);
+    grunt.registerTask('default', 'Compile the css and the js file.',
+        ['css', 'concat', 'uglify']);
 
-    grunt.registerTask('dev', 'Running project in the dev env.', 
+    grunt.registerTask('dev', 'Running project in the dev env.',
         ['default', 'express', 'watch']);
 
-    grunt.registerTask('css', 'Building css file.', 
+    grunt.registerTask('css', 'Building css file.',
         ['sass:compile', 'autoprefixer']);
 
-    grunt.registerTask('prod-css', 'Building production env css.', 
+    grunt.registerTask('prod-css', 'Building production env css.',
         ['sass:compress', 'autoprefixer']);
 
-    grunt.registerTask('prod', 'Building the production env', 
+    grunt.registerTask('prod', 'Building the production env',
         ['prod-css', 'concat', 'uglify', 'clean']);
 };

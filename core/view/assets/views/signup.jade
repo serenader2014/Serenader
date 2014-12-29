@@ -1,0 +1,33 @@
+<form class='signup'>
+<div class='account-icon'>
+    <i class='md-account-circle'></i>
+</div>
+<div class='input'>
+    <label for='signup-name'>用户名</label>
+    <input type='text' name='username' id='signup-name' data-validate='{"maxLength": 20, "minLength": 4, "type": "alphanumeric"}'/>
+    <span class='input-bar'></span>
+    <span class='input-description'>用户名为4个字符以上的字母和数字组合。</span>
+</div>
+<div class='input'>
+    <label for='signup-email'>邮箱</label>
+    <input type='text' name='email' id='signup-email' data-validate='{"type": "email"}'/>
+    <span class='input-bar'></span>
+</div>
+<div class='input'>
+    <label for='signup-pwd'>密码</label>
+    <input type='password' name='password' id='signup-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
+    <span class='input-bar'></span>
+    <span class='input-description'>密码为6到18个字符。</span>
+</div>
+<div class='input'>
+    <label for='signup-re-pwd'>再次输入密码</label>
+    <input type='password' name='re-password' id='signup-re-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
+    <span class='input-bar'></span>
+</div>
+<div>
+    <button class='btn btn-primary btn-blue ripple sign-btn' type='button'>注册</button>
+</div>
+<div class='sign-helper'>
+    <p><a href='javascript:;' class='signin-btn'>登录</a></p>
+</div>
+</form>
