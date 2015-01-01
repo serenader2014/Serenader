@@ -12,7 +12,7 @@ module.exports = function (grunt) {
         'libs/lodash/dist/lodash.js',
         'libs/angular/angular.js',
         'libs/angular-animate/angular-animate.js',
-        'libs/angular-message/angular-message.js',
+        'libs/angular-messages/angular-messages.js',
         'libs/angular-resource/angular-resource.js',
         'libs/angular-route/angular-route.js',
         'libs/angular-sanitize/angular-sanitize.js',
@@ -201,7 +201,7 @@ module.exports = function (grunt) {
                             dependencies.forEach(function (str) {
                                 scriptString = scriptString
                                     + '\n'
-                                    + 'script(src="#{assets.server}'
+                                    + 'script(src="#{assets.server}/'
                                     + str
                                     + '", type="text/javascript")';
                             });
@@ -300,5 +300,5 @@ module.exports = function (grunt) {
 
     // 生成开发环境下的文件，并且启动服务器。
     grunt.registerTask('dev', 'Building dev env, and start the server.',
-        ['css', 'replace:dev', 'watch', 'express']);
+        ['css', 'replace:dev', 'express', 'watch']);
 };
