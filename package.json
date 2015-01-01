@@ -44,6 +44,8 @@
         "grunt-express-server": "~0.4.19",
         "grunt-autoprefixer": "~1.0.1",
         "grunt-shell": "~1.1.1",
-        "grunt-update-submodules": "~0.4.1"
+        "grunt-update-submodules": "~0.4.1",
+        "time-grunt": "1.0.0",
+        "grunt-replace": "0.8.0"
     }
 }

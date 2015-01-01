@@ -1,8 +1,53 @@
 module.exports = function (grunt) {
     var config,
-        path = require('path');
+        path = require('path'),
+        dependencies,
+        bowerDir,
+        sassFile,
+        libsFile;
 
+    // 前端依赖文件的路径
+    dependencies = [
+        'libs/jquery/dist/jquery.js',
+        'libs/lodash/dist/lodash.js',
+        'libs/angular/angular.js',
+        'libs/angular-animate/angular-animate.js',
+        'libs/angular-message/angular-message.js',
+        'libs/angular-resource/angular-resource.js',
+        'libs/angular-route/angular-route.js',
+        'libs/angular-sanitize/angular-sanitize.js',
+        'libs/moment/moment.js',
+        'libs/marked/lib/marked.js',
+        'libs/jquery-file-upload/js/vendor/jquery.ui.widget.js',
+        'libs/jquery-file-upload/js/jquery.fileupload.js',
+        'libs/blueimp-gallery/js/blueimp-gallery.js'
+    ];
+
+    // bower下载下来的文件的路径
+    bowerDir = grunt.file.readJSON('.bowerrc').directory;
+
+    // sass 文件的路径
+    sassFile = [
+        {
+            src: 'core/view/assets/css/style.scss',
+            dest: 'core/view/assets/css/style.css'
+        },
+        {
+            src: 'core/view/assets/css/sign.scss',
+            dest: 'core/view/assets/css/sign.css'
+        },
+        {
+            src: 'core/view/assets/css/markdown-html.scss',
+            dest: 'core/view/assets/css/markdown-html.css'
+        }
+    ];
+
+    // 合并和压缩后的库的文件路径
+    libsFile = 'core/view/assets/js/vendor/base.js';
+
+    // 载入各种插件
     require('matchdep').filterDev(['grunt-*', '!grunt-cli']).forEach(grunt.loadNpmTasks);
+    require('time-grunt')(grunt);
 
     config = {
         pkg: grunt.file.readJSON('package.json'),
@@ -14,6 +59,7 @@ module.exports = function (grunt) {
                 },
                 files: [
                     'core/view/*',
+                    '!' + bowerDir + '*',
                     'core/view/assets/js/*',
                     'core/view/assets/views/*.html',
                     'core/view/assets/css/style.css',
@@ -31,44 +77,41 @@ module.exports = function (grunt) {
         },
 
         copy: {
+            // ACE编辑器
             ace: {
-                cwd: 'bower_components/ace/',
+                cwd: bowerDir + 'ace/',
                 src: ['**'],
                 dest: 'core/view/assets/ace/',
                 expand: true
             },
-            js: {
-                files: [
-                    {'core/view/assets/js/build/jquery.min.js': 'bower_components/jquery/dist/jquery.min.js'},
-                    {'core/view/assets/js/build/jquery.min.map': 'bower_components/jquery/dist/jquery.min.map'}
-                ]
-            },
+            // Fonts icon文件
             font: {
                 files: [
                     {
-                        cwd: 'bower_components/material-design-icon/fonts/',
+                        cwd: bowerDir + 'material-design-icon/fonts/',
                         src: ['**'],
                         dest: 'core/view/assets/fonts/',
                         expand: true
                     },
                     {
-                        cwd: 'bower_components/material-design-icon/css/',
+                        cwd: bowerDir + 'material-design-icon/css/',
                         src: 'md-icon.min.css',
                         dest: 'core/view/assets/css/',
                         expand: true
                     }
                 ]
             },
+            // 一些库的CSS文件
             css: {
                 files: [
                     {
-                        cwd: 'bower_components/blueimp-gallery/css/',
+                        cwd: bowerDir + 'blueimp-gallery/css/',
                         src: 'blueimp-gallery.min.css',
                         dest: 'core/view/assets/css/',
                         expand: true
                     },
                     {
-                        cwd: 'bower_components/blueimp-gallery/img/',
+                        cwd: bowerDir + 'blueimp-gallery/img/',
                         src: ['**'],
                         dest: 'core/view/assets/img/',
                         expand: true
@@ -78,6 +121,7 @@ module.exports = function (grunt) {
         },
 
         shell: {
+            // 执行bower下载命令
             bower: {
                 command: path.resolve('node_modules/.bin/bower --allow-root install'),
                 options: {
@@ -88,56 +132,33 @@ module.exports = function (grunt) {
         },
 
         uglify: {
+            // 压缩库文件
             default: {
                 files: {
-                    'core/view/assets/js/vendor/script.js': 'core/view/assets/js/vendor/script.js',
+                    libsFile: libsFile,
                 }
             }
         },
 
         sass: {
             compile: {
+                // 编译sass代码。不压缩css代码
                 options: {
                     outputStyle: 'nested'
                 },
-                files: [
-                    {
-                        src: 'core/view/assets/css/style.scss',
-                        dest: 'core/view/assets/css/style.css'
-                    },
-                    {
-                        src: 'core/view/assets/css/sign.scss',
-                        dest: 'core/view/assets/css/sign.css'
-                    },
-                    {
-                        src: 'core/view/assets/css/markdown-html.scss',
-                        dest: 'core/view/assets/css/markdown-html.css'
-                    }
-
-                ]
+                files: sassFile
             },
             compress: {
+                // 编译sass代码，压缩生成的代码
                 options: {
                     outputStyle: 'compressed'
                 },
-                files: [
-                    {
-                        src: 'core/view/assets/css/style.scss',
-                        dest: 'core/view/assets/css/style.css'
-                    },
-                    {
-                        src: 'core/view/assets/css/sign.scss',
-                        dest: 'core/view/assets/css/sign.css'
-                    },
-                    {
-                        src: 'core/view/assets/css/markdown-html.scss',
-                        dest: 'core/view/assets/css/markdown-html.css'
-                    }
-                ]
+                files: sassFile
             }
         },
 
         jade: {
+            // 将前端的一些模板文件编译成html文件。（为了编码方便前端模板先使用jade写，再编译成html）
             compile: {
                 options: {
                     data: {
@@ -154,6 +175,7 @@ module.exports = function (grunt) {
         },
 
         autoprefixer: {
+            // 自动添加css前缀
             default: {
                 files: [
                     {
@@ -168,34 +190,73 @@ module.exports = function (grunt) {
             }
         },
 
-        concat: {
-            angular: {
-                dest: 'core/view/assets/js/vendor/script.js',
-                src: [
-                    'bower_components/jquery/dist/jquery.js',
-                    'bower_components/lodash/dist/lodash.js',
-                    'bower_components/angular/angular.js',
-                    'bower_components/angular-animate/angular-animate.js',
-                    'bower_components/angular-message/angular-message.js',
-                    'bower_components/angular-resource/angular-resource.js',
-                    'bower_components/angular-route/angular-route.js',
-                    'bower_components/angular-sanitize/angular-sanitize.js',
-                    'bower_components/moment/moment.js',
-                    'bower_components/marked/lib/marked.js',
-                    'bower_components/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-                    'bower_components/jquery-file-upload/js/jquery.fileupload.js',
-                    'bower_components/blueimp-gallery/js/blueimp-gallery.js'
+        replace: {
+            dev: {
+                // 生成开发模式下的脚本引入文件
+                options: {
+                    patterns: [{
+                        match: 'script',
+                        replacement: function () {
+                            var scriptString = '';
+                            dependencies.forEach(function (str) {
+                                scriptString = scriptString
+                                    + '\n'
+                                    + 'script(src="'
+                                    + str
+                                    + '", type="text/javascript")';
+                            });
+                            return scriptString;
+                        },
+                    }]
+                },
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: 'dependencies.jade',
+                        dest: 'core/view/build/',
+                        cwd: 'core/view/'
+                    }
                 ]
+            },
+            prod: {
+                // 生成生产环境下的脚本引入文件
+                options: {
+                    patterns: [{
+                        match: 'script',
+                        replacement: function () {
+                            return 'script(src="'
+                                + libsFile.split('core/view/assets/')[1]
+                                + '", type="text/javascript")';
+                        }
+                    }]
+                }
+            }
+        },
+
+        concat: {
+            // 合并所有依赖库到一个文件里面
+            libs: {
+                dest: libsFile,
+                src: (function () {
+                    var arr = [];
+                    dependencies.forEach(function (str) {
+                        arr.push('core/view/assets/' + str);
+                    });
+                    return arr;
+                })()
             }
         },
 
         update_submodules: {
+            // 下载和更新前台默认主题
             default: {
                 options: {}
             }
         },
 
         express: {
+            // 运行整个server
             options: {
                 script: 'index.js',
                 output: 'Project is running'
@@ -207,28 +268,28 @@ module.exports = function (grunt) {
             }
         },
 
-        clean: {
-
-        }
+        clean: [bowerDir]
     };
 
     grunt.initConfig(config);
 
+    // 初始化整个项目，下载bower依赖，以及前台主题，复制和编译各种必须的css和html文件
     grunt.registerTask('init', 'Download and copy the dependencies.',
         ['shell:bower', 'update_submodules', 'copy', 'jade']);
 
-    grunt.registerTask('default', 'Compile the css and the js file.',
-        ['css', 'concat', 'uglify']);
-
-    grunt.registerTask('dev', 'Running project in the dev env.',
-        ['default', 'express', 'watch']);
-
+    // 开发模式下的css任务
     grunt.registerTask('css', 'Building css file.',
         ['sass:compile', 'autoprefixer']);
 
+    // 生产模式下的css任务
     grunt.registerTask('prod-css', 'Building production env css.',
         ['sass:compress', 'autoprefixer']);
 
-    grunt.registerTask('prod', 'Building the production env',
-        ['prod-css', 'concat', 'uglify', 'clean']);
+    // 生成生产环境下的所有必须文件，并且清理不需要的文件。
+    grunt.registerTask('prod', 'Building production env',
+        ['prod-css', 'concat', 'uglify', 'replace:prod', 'clean']);
+
+    // 生成开发环境下的文件，并且启动服务器。
+    grunt.registerTask('dev', 'Building dev env, and start the server.',
+        ['css', 'replace:dev', 'watch', 'express']);
 };

@@ -9,13 +9,13 @@ lib-cov
 .grunt
 
 node_modules
-bower_components
+core/view/assets/libs
 
 .sass-cache
 .idea
 
 content
-
+core/view/build/
 core/view/assets/img/
 core/view/assets/fonts/
 core/view/assets/ace/

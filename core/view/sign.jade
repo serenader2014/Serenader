@@ -10,5 +10,5 @@ block content
     .sign(ng-controller='signController')
 
 block script
-    script(type='text/javascript', src='#{assets.server}/js/vendor/script.js')
+    include ./build/dependencies.jade
     script(type='text/javascript', src='#{assets.server}/js/sign.js')
