@@ -16,6 +16,7 @@ core/view/assets/libs
 
 content
 core/view/build/
+core/view/assets/app/template/
 core/view/assets/img/
 core/view/assets/fonts/
 core/view/assets/ace/

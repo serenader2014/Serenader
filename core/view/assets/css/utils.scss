@@ -96,7 +96,7 @@
     }
     &:active {
         box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2);
-        transition-delay: 0s;        
+        transition-delay: 0s;
     }
 }
 
@@ -226,7 +226,7 @@
 /* Input set */
 .input {
     position: relative;
-    margin: 2rem 0 4rem; 
+    margin: 2rem 0 4rem;
 
     label {
         position: absolute;
@@ -280,14 +280,14 @@
     }
 }
 
-.input.has-value, .input.is-focus {
+.input.hasValue, .input.isFocus {
     label {
         transform: translate3d(0, -1.5rem, 0);
         font-size: 1.2rem;
     }
 }
 
-.input.is-focus {
+.input.isFocus {
     label {
         color: $input-focus-color;
     }
@@ -307,7 +307,7 @@
 
 }
 
-.input.input-disabled {
+.input.inputDisabled {
     input {
         color: map-get($color-grey, '400');
         cursor: normal;
@@ -315,7 +315,7 @@
     }
 }
 
-.input.input-error {
+.input.inputError {
     input {
         border-bottom: 1px solid $input-error-color;
     }

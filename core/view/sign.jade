@@ -7,8 +7,12 @@ block css
 block title
     title 登录
 block content
-    .sign(ng-controller='signController')
+    .sign(ng-controller='signController' ng-view)
 
 block script
     include ./build/dependencies.jade
     script(type='text/javascript', src='#{assets.server}/js/sign.js')
+    script(type='text/javascript', src='#{assets.server}/app/app.js')
+    script(type='text/javascript', src='#{assets.server}/app/directive/input.js')
+    script(type='text/javascript', src='#{assets.server}/app/directive/progress.js')
+    script(type='text/javascript', src='#{assets.server}/app/directive/msg-box.js')

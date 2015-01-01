@@ -1,0 +1,5 @@
+.msg-box(ng-hide='closed')
+    .msg-box-wrapper
+        .msg-box-container
+            .msg-box-content(ng-transclude)
+            button.btn.btn-blue.msg-box-close(ng-click='callback()') 确定

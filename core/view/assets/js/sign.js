@@ -1,7 +1,77 @@
-/* global angular */
+angular.module('serenader', [
+    'ngRoute',
+    'appModule'
+])
+.controller('signController', function () {
 
+})
+.controller('signInController', ['$scope', function ($scope) {
+    $scope.redirect = function () {
+        //////////////////////////////////
+        // window.location = url.admin; //
+        //////////////////////////////////
+        ///
+        console.log('click');
+        return false;
+    };
 
-angular.module('serenader', [])
+    $scope.signInSuccess = true;
+    $scope.signIn = function () {
+        if (!$scope.username || !$scope.password) {
+            alert('请完善表单内容！');
+            return false;
+        }
+        $scope.onSignIn = true;
+        setTimeout(function () {
+
+            $.ajax({
+                url: url.admin + url.signIn,
+                data: {
+                    username: $scope.username,
+                    password: $scope.password
+                },
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                    $scope.onSignIn = false;
+                    if (result.ret === 0) {
+                        $scope.signInSuccess = true;
+                    } else {
+                        $scope.networkError = false;
+                        $scope.signInSuccess = false;
+                    }
+                    $scope.$digest();
+                },
+                error: function (err) {
+                    $scope.signInSuccess = false;
+                    $scope.onSignIn = false;
+                    $scope.networkError = err;
+                    $scope.$digest();
+
+                }
+            });
+        }, 1000);
+    };
+}])
+.controller('signUpController', ['$scope', function ($scope) {
+    $scope.signUp = function () {
+        $scope.onSignUp = true;
+    };
+}])
+.config(function ($routeProvider) {
+    $routeProvider
+    .when('/signin', {
+        templateUrl: assets.server + '/views/signin.html',
+        controller: 'signInController'
+    })
+    .when('/signup', {
+        templateUrl: assets.server + '/views/signup.html',
+        controller: 'signUpController'
+    })
+    .otherwise({
+        redirectTo: '/signin'
+    });
+});
 
 
 // (function () {
@@ -41,31 +111,6 @@ angular.module('serenader', [])
 //             }
 
 //             Serenader.progress('正在登录...', function (finish) {
-//                 $.ajax({
-//                     url: url.admin + url.signIn,
-//                     data: {
-//                         username: userName,
-//                         password: password
-//                     },
-//                     type: 'POST',
-//                     dataType: 'json',
-//                     success: function (result) {
-//                         finish(function () {
-//                             if (result.ret === 0) {
-//                                 Serenader.msgBox('登录成功！', function () {
-//                                     window.location = url.admin;
-//                                 });
-//                             } else {
-//                                 Serenader.msgBox('登录失败！' + result.error, 'error');
-//                             }
-//                         });
-//                     },
-//                     error: function (err) {
-//                         finish(function () {
-//                             Serenader.msgBox('请求失败！' + err, 'error');
-//                         });
-//                     }
-//                 });
 //             });
 
 //         }

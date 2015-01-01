@@ -4,7 +4,8 @@ module.exports = function (grunt) {
         dependencies,
         bowerDir,
         sassFile,
-        libsFile;
+        libsFile,
+        libsMinifiedFile;
 
     // 前端依赖文件的路径
     dependencies = [
@@ -44,6 +45,7 @@ module.exports = function (grunt) {
 
     // 合并和压缩后的库的文件路径
     libsFile = 'core/view/assets/js/vendor/base.js';
+    libsMinifiedFile = 'core/view/assets/js/vendor/base.min.js';
 
     // 载入各种插件
     require('matchdep').filterDev(['grunt-*', '!grunt-cli']).forEach(grunt.loadNpmTasks);
@@ -60,10 +62,12 @@ module.exports = function (grunt) {
                 files: [
                     'core/view/*',
                     '!' + bowerDir + '*',
+                    'core/view/assets/app/**/*',
                     'core/view/assets/js/*',
                     'core/view/assets/views/*.html',
                     'core/view/assets/css/style.css',
-                    'core/view/assets/css/sign.css'
+                    'core/view/assets/css/sign.css',
+                    'core/view/build/*'
                 ]
             },
             sass: {
@@ -71,8 +75,12 @@ module.exports = function (grunt) {
                 tasks: ['css']
             },
             jade: {
-                files: ['core/view/assets/views/*.jade'],
+                files: ['core/view/assets/views/*.jade', 'core/view/assets/app/**/*.jade'],
                 tasks: ['jade']
+            },
+            libs: {
+                files: ['Gruntfile.js'],
+                tasks: ['replace:dev']
             }
         },
 
@@ -135,7 +143,7 @@ module.exports = function (grunt) {
             // 压缩库文件
             default: {
                 files: {
-                    libsFile: libsFile,
+                    'core/view/assets/js/vendor/base.min.js': libsFile
                 }
             }
         },
@@ -167,8 +175,18 @@ module.exports = function (grunt) {
                 },
                 files: [
                     {
+                        expand: true,
+                        flatten: true,
                         src: 'core/view/assets/views/*.jade',
-                        dest: 'core/view/assets/views/'
+                        dest: 'core/view/assets/views/',
+                        ext: '.html'
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: 'core/view/assets/app/**/*.jade',
+                        dest: 'core/view/assets/app/template/',
+                        ext: '.html'
                     }
                 ]
             }
@@ -226,7 +244,7 @@ module.exports = function (grunt) {
                         match: 'script',
                         replacement: function () {
                             return 'script(src="#{assets.server}/'
-                                + libsFile.split('core/view/assets/')[1]
+                                + libsMinifiedFile.split('core/view/assets/')[1]
                                 + '", type="text/javascript")';
                         }
                     }]

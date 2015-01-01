@@ -12,6 +12,8 @@ html(lang='zh-cmn-Hans' ng-app='serenader')
     body
         block content
         - var urlString = JSON.stringify(url);
+        - var assetsString = JSON.stringify(assets);
         script.
             var url = JSON.parse('!{urlString}');
+            var assets = JSON.parse('!{assetsString}');
         block script

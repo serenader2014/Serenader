@@ -1,6 +1,7 @@
 {
       "node": true,
       "browser": true,
+      "jquery": true,
       "nomen": false,
       "strict": false,
       "sub": true,
@@ -22,5 +23,10 @@
       "trailing": true,
       "indent": 4,
       "onevar": true,
-      "white": true
+      "white": true,
+      "globals": {
+            "angular": true,
+            "url": true,
+            "assets": true
+      }
 }

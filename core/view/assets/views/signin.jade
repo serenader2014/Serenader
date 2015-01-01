@@ -1,22 +1,35 @@
-<form class='signin'>
-    <div class='account-icon'>
-        <i class='md-account-circle'></i>
-    </div>
-    <div class='input'>
-        <label for='signin-name'>用户名</label>
-        <input type='text' name='username' id='signin-name' data-validate='{"maxLength": 20, "minLength": 4, "type": "alphanumeric"}'/>
-        <span class='input-bar'></span>
-    </div>
-    <div class='input'>
-        <label for='signin-pwd'>密码</label>
-        <input type='password' name='password' id='signin-pwd' data-validate='{"maxLength": 16, "minLength": 6}'/>
-        <span class='input-bar'></span>
-    </div>
-    <div>
-        <button class='btn btn-primary btn-blue ripple sign-btn' type='button'>登录</button>
-    </div>
-    <div class='sign-helper'>
-        <p><a href='javascript:;' class='signup-btn'>注册</a></p>
-        <p><a href='javascript:;' class='forget-btn'>忘记密码</a></p>
-    </div>
-</form>
+form.signin(name='signin', ng-submit='signin.$valid && signIn()')
+    .account-icon: i.md-account-circle
+    md-input(
+        name='username',
+        type='text',
+        title='用户名',
+        ng-model='username',
+        min-length=4,
+        max-length=20,
+        alphanumeric
+        )
+
+        p.input-errmsg(ng-show='signin.username.$error.minLength') 用户名最小长度为4。
+        p.input-errmsg(ng-show='signin.username.$error.maxLength') 用户名最长长度为20。
+        p.input-errmsg(ng-show='signin.username.$error.alphanumeric') 用户名只允许字母和数字的组合。
+
+    md-input(
+        name='password',
+        type='password',
+        title='密码',
+        min-length=6,
+        max-length=16,
+        ng-model='password',
+        )
+
+        p.input-errmsg(ng-show='signin.password.$error.minLength') 密码最小长度为6。
+        p.input-errmsg(ng-show='signin.password.$error.maxLength') 密码最长长度为16。
+    div
+        button.btn.btn-primary.btn-blue.sign-btn(type='submit') 登录
+    .sign-helper
+        p: a.signup-btn(href='#/signup') 注册
+        p: a.forget-btn(href='#/forget-password') 忘记密码
+pgress(ng-show='onSignIn') 正在登录
+//- msg-box(type='success', ng-show='signInSuccess', callback='redirect()') 登录成功！
+msg-box(type='success') aaaa

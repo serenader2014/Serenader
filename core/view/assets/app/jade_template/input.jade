@@ -1,0 +1,8 @@
+.input(ng-class='{isFocus:isFocus, hasValue:hasValue(), inputError: isError(), noDesc: !hasDesc}')
+    label(for='{{name}}') {{title}}
+    input(type='{{type}}',
+        name='{{name}}',
+        id='{{name}}')/
+    span.input-bar
+    span.input-description {{desc}}
+    div(ng-transclude)
