@@ -201,7 +201,7 @@ module.exports = function (grunt) {
                             dependencies.forEach(function (str) {
                                 scriptString = scriptString
                                     + '\n'
-                                    + 'script(src="'
+                                    + 'script(src="#{assets.server}'
                                     + str
                                     + '", type="text/javascript")';
                             });
@@ -225,12 +225,21 @@ module.exports = function (grunt) {
                     patterns: [{
                         match: 'script',
                         replacement: function () {
-                            return 'script(src="'
+                            return 'script(src="#{assets.server}/'
                                 + libsFile.split('core/view/assets/')[1]
                                 + '", type="text/javascript")';
                         }
                     }]
-                }
+                },
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: 'dependencies.jade',
+                        dest: 'core/view/build/',
+                        cwd: 'core/view/'
+                    }
+                ]
             }
         },
 
