@@ -53,7 +53,6 @@ form.signup(name='signup', ng-submit='signup.$valid && signUp()')
         button.btn.btn-primary.btn-blue.sign-btn(type='submit') 注册
     .sign-helper
         p: a.signup-btn(href='#/signin') 登录
-        p: a.forget-btn(href='#/forget-password') 忘记密码
 pgress(ng-show='sign.onSignUp') 正在注册
 msg-box(type='success', ng-show='sign.signUp.success', callback='redirect()') 注册成功！请登录。
 msg-box(type='error', ng-show='sign.signUp.error') {{sign.signUp.message}}

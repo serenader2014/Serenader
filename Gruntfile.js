@@ -41,6 +41,7 @@ module.exports = function (grunt) {
         'app/directive/input.js',
         'app/directive/progress.js',
         'app/directive/msg-box.js',
+        'app/directive/selector.js',
         'app/service/dashboard.js'
     ];
 
@@ -149,7 +150,7 @@ module.exports = function (grunt) {
                     {
                         cwd: bowerDir + 'material-design-icon/fonts/',
                         src: ['**'],
-                        dest: 'core/view/assets/fonts/',
+                        dest: 'core/view/assets/css/fonts/',
                         expand: true
                     },
                     {
@@ -166,7 +167,7 @@ module.exports = function (grunt) {
                     {
                         cwd: bowerDir + 'blueimp-gallery/css/',
                         src: 'blueimp-gallery.min.css',
-                        dest: 'core/view/assets/css/',
+                        dest: 'core/view/assets/css/build/',
                         expand: true
                     },
                     {

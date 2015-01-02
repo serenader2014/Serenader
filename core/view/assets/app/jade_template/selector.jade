@@ -1,0 +1,4 @@
+.light-selector
+    span.ls-current(ng-click='toggleList()') {{current}}
+    .ls-wrapper(ng-show='isListShown')
+        ul.ls-list(ng-transclude)

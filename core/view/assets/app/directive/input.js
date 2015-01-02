@@ -38,7 +38,6 @@
                     $scope.$apply();
                 }).on('blur', function () {
                     $scope.isFocus = false;
-                    $scope.$apply();
                     $scope.$apply(function () {
                         ctrl.$setViewValue(input.val());
                     });

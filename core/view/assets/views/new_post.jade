@@ -1,0 +1,25 @@
+.post-area
+    .post-head
+        input(type='text', name='title', placeholder='文章标题')/
+        .categories-selector
+            selector(ng-model='c')
+                selector-list(ng-repeat='cate in categories', value='{{cate.name}}')
+    .post-editor
+        .wrapper
+            .editor-tools
+                span
+                    | Markdown
+                    span.post-status
+                ul
+                    li: button.btn.ripple.ripple-black.help-btn.md-help(type='button')
+                    li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button')
+                    li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button')
+                    li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button')
+                    li: button.btn.ripple.ripple-black.post-setting-btn.md-settings(type='button')
+                    li: button.btn.ripple.ripple-black.fullscreen-btn.md-fullscreen(type='button')
+            textarea.editor {{c}}
+            .preview.markdown
+            .editor-foot
+                .tags
+                    input(type='text', placeholder='文章标签，多个标签用 , 号分开。')
+                button.btn.btn-blue.ripple.publish(type='button') 发表

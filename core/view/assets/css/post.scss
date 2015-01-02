@@ -10,7 +10,7 @@
     right: 0;
     box-shadow: $shadow-1;
     input {
-        height: 50px;
+        height: 5rem;
         width: 100%;
         padding: 0 130px 0 1rem;
         outline: none;
@@ -52,7 +52,7 @@
 
 .post-editor {
     height: 100%;
-    padding-top: 60px;
+    padding-top: 5rem;
 
     .editor {
         display: block;
@@ -111,8 +111,10 @@
     left: 0;
     right: 0;
     padding: 0.5rem 1rem;
+    border-top: 1px solid $grey;
     z-index: $editor-tools-index;
     background: $light-grey;
+
     span {
         display: inline-block;
         line-height: 3rem;

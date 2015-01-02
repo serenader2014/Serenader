@@ -412,6 +412,86 @@
     }
 }
 
+
+
+.light-selector {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+    width: 150px;
+    height: 5rem;
+    line-height: 5rem;
+    border: 1px solid #EEEEEE;
+    color: #555555;
+    background: #FFFFFF;
+    box-sizing: border-box;
+
+    &:hover {
+        color: #222222;
+        background: #EEEEEE;
+    }
+
+    select {
+        display: none;
+    }
+    .ls-current {
+        display: block;
+        position: relative;
+        padding: 0 20px;
+        height: 100%;
+        overflow: hidden;
+        cursor: pointer;
+        box-sizing: border-box;
+        user-select: none;
+
+        &:after {
+            position: absolute;
+            top: 48%;
+            right: 10px;
+            content: '';
+            display: block;
+            width: 0;
+            height: 0;
+            border-top: 5px solid #333333;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+    }
+    .ls-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        box-sizing: border-box;
+    }
+    .ls-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        overflow-x: hidden;
+        overflow-y: auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        background: #fff;
+
+        li {
+            padding: 15px 20px;
+            line-height: 1.4;
+            cursor: pointer;
+            word-break: break-all;
+            border-bottom: 1px solid #EEEEEE;
+        }
+
+        .selected {
+            background: #239FCC;
+            color: #fff;
+        }
+    }
+
+}
+
+
+
 @keyframes show {
     0% {
         transform: scale(0.5);

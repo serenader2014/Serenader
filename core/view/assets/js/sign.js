@@ -4,6 +4,11 @@
         'ngAnimate',
         'appModule'
     ])
+    .controller('appController', [
+        function () {
+
+        }
+    ])
     .controller('signController', ['$rootScope', function ($rootScope) {
         $rootScope.sign = {};
     }])
@@ -11,6 +16,7 @@
         function ($scope, $rootScope, sign, $window) {
             var globalSignIn = $rootScope.sign.signIn = {};
 
+            $rootScope.title = '登录 - Serenader';
             $scope.redirect = function () {
                 var finalObj = {};
                 if ($window.location.search) {
@@ -55,6 +61,7 @@
         function ($scope, $rootScope, sign) {
             var globalSignUp = $rootScope.sign.signUp = {};
 
+            $rootScope.title = '注册帐号 - Serenader';
             $scope.redirect = function () {
                 window.location.hash = '#/signin';
             };
