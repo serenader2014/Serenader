@@ -155,7 +155,7 @@ module.exports = function (grunt) {
                     {
                         cwd: bowerDir + 'material-design-icon/css/',
                         src: 'md-icon.min.css',
-                        dest: 'core/view/assets/css/',
+                        dest: 'core/view/assets/css/build/',
                         expand: true
                     }
                 ]
