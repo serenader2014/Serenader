@@ -30,6 +30,6 @@ form.signin(name='signin', ng-submit='signin.$valid && signIn()')
     .sign-helper
         p: a.signup-btn(href='#/signup') 注册
         p: a.forget-btn(href='#/forget-password') 忘记密码
-pgress(ng-show='onSignIn') 正在登录
-//- msg-box(type='success', ng-show='signInSuccess', callback='redirect()') 登录成功！
-msg-box(type='success') aaaa
+pgress(ng-show='sign.onSignIn') 正在登录
+msg-box(type='success', ng-show='sign.signIn.success', callback='redirect()') 登录成功！即将转到后台页面。
+msg-box(type='error', ng-show='sign.signIn.error') {{sign.signIn.message}}

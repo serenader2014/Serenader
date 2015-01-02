@@ -1,3 +1,6 @@
-angular.module('appModule', [
+(function () {
+    angular.module('appModule', [
 
-]);
+
+    ]);
+})();

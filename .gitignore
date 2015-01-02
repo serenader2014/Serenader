@@ -9,6 +9,7 @@ lib-cov
 .grunt
 
 node_modules
+npm-debug.log
 core/view/assets/libs
 
 .sass-cache
@@ -20,8 +21,8 @@ core/view/assets/app/template/
 core/view/assets/img/
 core/view/assets/fonts/
 core/view/assets/ace/
-core/view/assets/css/*.css
-!core/view/assets/css/jquery.light-selector.css
-!core/view/assets/css/rainbow.css
-core/view/assets/js/vendor
+core/view/assets/css/build/*.css
+!core/view/assets/css/build/jquery.light-selector.css
+!core/view/assets/css/build/rainbow.css
+core/view/assets/js/vendor/
 core/view/assets/views/*.html

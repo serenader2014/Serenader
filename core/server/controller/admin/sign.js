@@ -62,7 +62,7 @@ module.exports = function (router) {
             });
             return false;
         }
-        uid = validator.trim(req.body.id);
+        uid = validator.trim(req.body.username);
         email = validator.trim(req.body.email);
         password = validator.trim(req.body.password);
         rePwd = validator.trim(req.body.rePwd);

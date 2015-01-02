@@ -1,14 +1,24 @@
 module.exports = function (grunt) {
     var config,
         path = require('path'),
-        dependencies,
+        _ = require('underscore'),
+        dashboardLibs,
+        signPageLibs,
+        dashboardScripts,
+        signPageScripts,
         bowerDir,
         sassFile,
-        libsFile,
-        libsMinifiedFile;
+        signPageLibsFile,
+        signPageLibsMinifiedFile,
+        signPageScriptsConcatedFile,
+        signPageScriptsMinifiedFile,
+        dashboardLibsFile,
+        dashboardLibsMinifiedFile,
+        dashboardScriptsFile,
+        dashboardScriptsMinifiedFile;
 
-    // 前端依赖文件的路径
-    dependencies = [
+    // 后台面板的所有依赖库
+    dashboardLibs = [
         'libs/jquery/dist/jquery.js',
         'libs/lodash/dist/lodash.js',
         'libs/angular/angular.js',
@@ -24,6 +34,35 @@ module.exports = function (grunt) {
         'libs/blueimp-gallery/js/blueimp-gallery.js'
     ];
 
+    // 后台面板的主要脚本
+    dashboardScripts = [
+        'js/dashboard.js',
+        'app/app.js',
+        'app/directive/input.js',
+        'app/directive/progress.js',
+        'app/directive/msg-box.js',
+        'app/service/dashboard.js'
+    ];
+
+    // 登录页面的所有依赖库
+    signPageLibs = [
+        'libs/jquery/dist/jquery.js',
+        'libs/angular/angular.js',
+        'libs/angular-animate/angular-animate.js',
+        'libs/angular-route/angular-route.js',
+    ];
+
+    // 登录页面的主要脚本
+    signPageScripts = [
+        'js/sign.js',
+        'app/app.js',
+        'app/directive/input.js',
+        'app/directive/progress.js',
+        'app/directive/msg-box.js',
+        'app/service/sign.js'
+    ];
+
+
     // bower下载下来的文件的路径
     bowerDir = grunt.file.readJSON('.bowerrc').directory;
 
@@ -31,21 +70,33 @@ module.exports = function (grunt) {
     sassFile = [
         {
             src: 'core/view/assets/css/style.scss',
-            dest: 'core/view/assets/css/style.css'
+            dest: 'core/view/assets/css/build/style.css'
         },
         {
             src: 'core/view/assets/css/sign.scss',
-            dest: 'core/view/assets/css/sign.css'
+            dest: 'core/view/assets/css/build/sign.css'
         },
         {
             src: 'core/view/assets/css/markdown-html.scss',
-            dest: 'core/view/assets/css/markdown-html.css'
+            dest: 'core/view/assets/css/build/markdown-html.css'
         }
     ];
 
-    // 合并和压缩后的库的文件路径
-    libsFile = 'core/view/assets/js/vendor/base.js';
-    libsMinifiedFile = 'core/view/assets/js/vendor/base.min.js';
+    // 登录页面合并和压缩后的库的文件路径
+    signPageLibsFile = 'core/view/assets/js/vendor/sign_libs.js';
+    signPageLibsMinifiedFile = 'core/view/assets/js/vendor/sign_libs.min.js';
+
+    // 登录页面主要脚本合并和压缩后的文件路径
+    signPageScriptsConcatedFile = 'core/view/assets/js/build/sign.js';
+    signPageScriptsMinifiedFile = 'core/view/assets/js/build/sign.min.js';
+
+    // 后台管理页面的所有库的合并和压缩后的路径
+    dashboardLibsFile = 'core/view/assets/js/vendor/dashboard_libs.js';
+    dashboardLibsMinifiedFile = 'core/view/assets/js/vendor/dashboard_libs.min.js';
+
+    // 后台管理页面的主要脚本合并和压缩后的路径
+    dashboardScriptsFile = 'core/view/assets/js/build/dashboard.js';
+    dashboardScriptsMinifiedFile = 'core/view/assets/js/build/dashboard.min.js';
 
     // 载入各种插件
     require('matchdep').filterDev(['grunt-*', '!grunt-cli']).forEach(grunt.loadNpmTasks);
@@ -80,7 +131,7 @@ module.exports = function (grunt) {
             },
             libs: {
                 files: ['Gruntfile.js'],
-                tasks: ['replace:dev']
+                tasks: ['replace:signDev', 'replace:dashboardDev']
             }
         },
 
@@ -140,11 +191,23 @@ module.exports = function (grunt) {
         },
 
         uglify: {
-            // 压缩库文件
-            default: {
-                files: {
-                    'core/view/assets/js/vendor/base.min.js': libsFile
-                }
+            signPage: {
+                files: [{
+                    src: signPageLibsFile,
+                    dest: signPageLibsMinifiedFile
+                },{
+                    src: signPageScriptsConcatedFile,
+                    dest: signPageScriptsMinifiedFile
+                }]
+            },
+            dashboard: {
+                files: [{
+                    src: dashboardLibsFile,
+                    dest: dashboardLibsMinifiedFile
+                },{
+                    src: dashboardScriptsFile,
+                    dest: dashboardScriptsMinifiedFile
+                }]
             }
         },
 
@@ -197,54 +260,74 @@ module.exports = function (grunt) {
             default: {
                 files: [
                     {
-                        src: 'core/view/assets/css/style.css',
-                        dest: 'core/view/assets/css/style.css'
+                        src: 'core/view/assets/css/build/style.css',
+                        dest: 'core/view/assets/css/build/style.css'
                     },
                     {
-                        src: 'core/view/assets/css/sign.css',
-                        dest: 'core/view/assets/css/sign.css'
+                        src: 'core/view/assets/css/build/sign.css',
+                        dest: 'core/view/assets/css/build/sign.css'
                     }
                 ]
             }
         },
 
         replace: {
-            dev: {
-                // 生成开发模式下的脚本引入文件
+            signDev: {
+                // 生成开发模式下的登录页面脚本引入文件
                 options: {
                     patterns: [{
-                        match: 'script',
+                        match: 'signPageDeps',
                         replacement: function () {
                             var scriptString = '';
-                            dependencies.forEach(function (str) {
+                            _.forEach(signPageLibs ,function (str) {
                                 scriptString = scriptString
-                                    + '\n'
                                     + 'script(src="#{assets.server}/'
                                     + str
-                                    + '", type="text/javascript")';
+                                    + '", type="text/javascript")'
+                                    + '\n';
                             });
                             return scriptString;
                         },
+                    },{
+                        match: 'signPageUserScripts',
+                        replacement: function () {
+                            var scriptString = '';
+                            _.forEach(signPageScripts, function (str) {
+                                scriptString = scriptString
+                                    + 'script(src="#{assets.server}/'
+                                    + str
+                                    + '", type="text/javascript")'
+                                    + '\n';
+                            });
+                            return scriptString;
+                        }
                     }]
                 },
                 files: [
                     {
                         expand: true,
                         flatten: true,
-                        src: 'dependencies.jade',
+                        src: 'sign_scripts.jade',
                         dest: 'core/view/build/',
-                        cwd: 'core/view/'
+                        cwd: 'core/view/scripts_tmpl/'
                     }
                 ]
             },
-            prod: {
-                // 生成生产环境下的脚本引入文件
+            signProd: {
+                // 生成生产环境下的登录页面脚本引入文件
                 options: {
                     patterns: [{
-                        match: 'script',
+                        match: 'signPageDeps',
                         replacement: function () {
                             return 'script(src="#{assets.server}/'
-                                + libsMinifiedFile.split('core/view/assets/')[1]
+                                + signPageLibsMinifiedFile.split('core/view/assets/')[1]
+                                + '", type="text/javascript")';
+                        }
+                    },{
+                        match: 'signPageUserScripts',
+                        replacement: function () {
+                            return 'script(src="#{assets.server}/'
+                                + signPageScriptsMinifiedFile.split('core/view/assets/')[1]
                                 + '", type="text/javascript")';
                         }
                     }]
@@ -253,9 +336,79 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: true,
-                        src: 'dependencies.jade',
+                        src: 'sign_scripts.jade',
                         dest: 'core/view/build/',
-                        cwd: 'core/view/'
+                        cwd: 'core/view/scripts_tmpl/'
+                    }
+                ]
+            },
+            dashboardDev: {
+                // 生成开发模式下的后台管理页面脚本引入文件
+                options: {
+                    patterns: [{
+                        match: 'dashboardDeps',
+                        replacement: function () {
+                            var scriptString = '';
+                            _.forEach(dashboardLibs ,function (str) {
+                                scriptString = scriptString
+                                    + 'script(src="#{assets.server}/'
+                                    + str
+                                    + '", type="text/javascript")'
+                                    + '\n';
+                            });
+                            return scriptString;
+                        },
+                    },{
+                        match: 'dashboardUserScripts',
+                        replacement: function () {
+                            var scriptString = '';
+                            _.forEach(dashboardScripts, function (str) {
+                                scriptString = scriptString
+                                    + 'script(src="#{assets.server}/'
+                                    + str
+                                    + '", type="text/javascript")'
+                                    + '\n';
+                            });
+                            return scriptString;
+                        }
+                    }]
+                },
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: 'dashboard_scripts.jade',
+                        dest: 'core/view/build/',
+                        cwd: 'core/view/scripts_tmpl/'
+                    }
+                ]
+            },
+            dashboardProd: {
+                // 生成生产环境下的后台管理页面脚本引入文件
+                options: {
+                    patterns: [{
+                        match: 'dashboardDeps',
+                        replacement: function () {
+                            return 'script(src="#{assets.server}/'
+                                + dashboardLibsMinifiedFile.split('core/view/assets/')[1]
+                                + '", type="text/javascript")';
+                        }
+                    },{
+                        match: 'dashboardUserScripts',
+                        replacement: function () {
+                            return 'script(src="#{assets.server}/'
+                                + dashboardScriptsMinifiedFile.split('core/view/assets/')[1]
+                                + '", type="text/javascript")';
+                        }
+                    }]
+                },
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: 'dashboard_scripts.jade',
+                        dest: 'core/view/build/',
+                        cwd: 'core/view/scripts_tmpl/'
                     }
                 ]
             }
@@ -263,11 +416,41 @@ module.exports = function (grunt) {
 
         concat: {
             // 合并所有依赖库到一个文件里面
-            libs: {
-                dest: libsFile,
+            signPageLibs: {
+                dest: signPageLibsFile,
                 src: (function () {
                     var arr = [];
-                    dependencies.forEach(function (str) {
+                    _.forEach(signPageLibs ,function (str) {
+                        arr.push('core/view/assets/' + str);
+                    });
+                    return arr;
+                })()
+            },
+            signPageUserScripts: {
+                dest: signPageScriptsConcatedFile,
+                src: (function () {
+                    var arr = [];
+                    _.forEach(signPageScripts, function (str) {
+                        arr.push('core/view/assets/' + str);
+                    });
+                    return arr;
+                })()
+            },
+            dashboardLibs: {
+                dest: dashboardLibsFile,
+                src: (function () {
+                    var arr = [];
+                    _.forEach(dashboardLibs, function (str) {
+                        arr.push('core/view/assets/' + str);
+                    });
+                    return arr;
+                })()
+            },
+            dashboardUserScripts: {
+                dest: dashboardScriptsFile,
+                src: (function () {
+                    var arr = [];
+                    _.forEach(dashboardScripts, function (str) {
                         arr.push('core/view/assets/' + str);
                     });
                     return arr;
@@ -295,7 +478,7 @@ module.exports = function (grunt) {
             }
         },
 
-        clean: [bowerDir]
+        clean: [bowerDir, signPageLibsFile, signPageScriptsConcatedFile, dashboardLibsFile, dashboardScriptsFile]
     };
 
     grunt.initConfig(config);
@@ -313,10 +496,13 @@ module.exports = function (grunt) {
         ['sass:compress', 'autoprefixer']);
 
     // 生成生产环境下的所有必须文件，并且清理不需要的文件。
-    grunt.registerTask('prod', 'Building production env',
-        ['prod-css', 'concat', 'uglify', 'replace:prod', 'clean']);
+    grunt.registerTask('prod-env', 'Building production env',
+        ['prod-css', 'concat', 'uglify', 'replace:signProd', 'replace:dashboardProd']);
 
     // 生成开发环境下的文件，并且启动服务器。
-    grunt.registerTask('dev', 'Building dev env, and start the server.',
-        ['css', 'replace:dev', 'express', 'watch']);
+    grunt.registerTask('dev-env', 'Building dev env, and start the server.',
+        ['css', 'replace:signDev', 'replace:dashboardDev']);
+
+    grunt.registerTask('serve', 'Run the server under dev env',
+        ['dev-env', 'express', 'watch']);
 };
