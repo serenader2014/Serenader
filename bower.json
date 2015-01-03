@@ -2,7 +2,7 @@
     "name"                : "serenader",
     "version"             : "0.0.0",
     "dependencies"        : {
-        "jquery-file-upload"  : "latest",
+        "angular-file-upload" : "1.1.5",
         "jquery"              : "latest",
         "ace"                 : "latest",
         "marked"              : "latest",

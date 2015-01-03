@@ -9,7 +9,7 @@
                 type: '@'
             },
             templateUrl: assets.server + '/app/template/msg-box.html',
-            controller: ['$scope', '$rootScope', '$attrs',
+            controller: ['$scope', '$rootScope', '$attrs', '$element',
                 function ($scope, $rootScope, $attrs) {
                     if (!$attrs.callback) {
                         $scope.callback = function () {

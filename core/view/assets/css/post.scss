@@ -58,11 +58,18 @@
         display: block;
         height: 100%;
         width: 100%;
-        padding: 5rem 1rem 4rem 1rem;
-        border: none;
-        font-size: $normal-font-size;
-        color: $content-color;
-        outline: none;
+        padding: 4rem 0rem 4rem 0rem;
+        background: $white;
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 1rem;
+            font-family: "Open Sans", "lucida grande", "lucida sans unicode", lucida, "Helvetica Neue", helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+            font-size: $normal-font-size;
+            color: $content-color;
+            outline: none;
+        }
     }
 
     .preview {
@@ -206,10 +213,6 @@
     }
 }
 
-#upload {
-    display: none;
-}
-
 .upload-btn {
     position: relative;
     margin: 1rem auto;
@@ -236,7 +239,6 @@
 }
 
 .upload-progress, .upload-finish {
-    display: none;
     margin: 1rem auto;
 }
 
@@ -272,9 +274,41 @@
     }
 }
 
-.upload-finish {
-    img {
-        width: 100%;
+.selected-item {
+    .item-info {
+        margin: 1rem 0;
+    }
+
+    .item-info-text {
+        div {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            word-break: break-all;
+        }
+
+        span {
+            font-weight: 800;
+        }
+    }
+
+    .item-preview {
+        canvas, img {
+            width: 100%;
+        }
+    }
+
+    .item-info-text, .item-preview {
+        display: inline-block;
+        text-align: left;
+        width: 50%;
+    }
+
+    .item-action {
+        text-align: left;
+
+        button {
+            margin: 0 1rem 1rem 0;
+        }
     }
 }
 

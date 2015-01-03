@@ -6,9 +6,6 @@
             templateUrl: assets.server + '/app/template/selector.html',
             transclude: true,
             require: 'ngModel',
-            scope: {
-
-            },
             controller: ['$scope', '$attrs', function ($scope, $attrs) {
                 $scope.options = [];
                 $scope.isListShown = false;
@@ -18,9 +15,9 @@
                 };
 
                 this.addOption = function (option) {
-                    // if ($scope.options.length === 0 && !$scope.current) {
-                    //     $scope.current = option.value;
-                    // }
+                    if ($scope.options.length === 0 && !$scope.$eval($attrs.ngModel)) {
+                        $scope.current = option.value;
+                    }
                     $scope.options.push(option.value);
                 };
 
@@ -34,13 +31,14 @@
                 };
             }],
             link: function ($scope, $elem, $attrs, ctrl) {
-                $scope.current = ctrl.$modelValue;
-                // $scope.$watch('current', function (value) {
-                //     if (value) {
-                //         ctrl.$setViewValue(value);
-                //     }
-                // });
-
+                $scope.$watch('current', function (value) {
+                    if (value) {
+                        ctrl.$setViewValue(value);
+                    }
+                });
+                $scope.$watch($attrs.ngModel, function (value) {
+                    $scope.current = value;
+                });
                 ctrl.$render = function () {
                     $scope.current = ctrl.$viewVlaue;
                 };

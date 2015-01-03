@@ -1,56 +1,114 @@
-.post-content
-    ul.nav-menu
-        li.post: button.btn.ripple.new-post-btn(ng-click='goToNewPost()')
-            i.md-add.left-icon
-            | 新文章
-        li.category: button.btn.ripple.category-btn
-            i.md-sort.left-icon
-            | 分类
-    ul.posts-list
-        li.drafts.post(data-id='{{draft.id}}', data-category='{{draft.category}}', ng-repeat='draft in drafts')
-            .post-title
-                a(href='javascript:;') {{draft.title}}
-            .post-meta
-                a.user-avatar(ng-href='{{url.admin}}{{url.user}}/{{draft.author}}')
-                    img(ng-src='{{url.api}}{{url.avatar}}/{{draft.author}}', alt='{{draft.author}}')
-                    span {{draft.author}}
+form.post-area(name='newpost')
+    .post-head
+        input(type='text', name='title', placeholder='文章标题', value='{{title}}', ng-model='post.title')/
+        .categories-selector
+            selector(ng-model='post.category')
+                selector-list(ng-repeat='cate in categories', value='{{cate.name}}')
+    .post-editor
+        .wrapper
+            .editor-tools
                 span
-                    i.md-access-time.left-icon
-                    span.post-date(data-update='{{draft.lastModifiedDate}}', data-create='{{draft.createDate}}')
-                span
-                    i.md-list.left-icon
-                    | {{draft.category}}
+                    | Markdown
+                    span.post-status
+                ul
+                    li: button.btn.ripple.ripple-black.help-btn.md-help(type='button', ng-click='showHelp=true')
+                    li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button')
+                    li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button', ng-click='showInsertImg=true')
+                    li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button')
+                    li: button.btn.ripple.ripple-black.post-setting-btn.md-settings(type='button')
+                    li: button.btn.ripple.ripple-black.fullscreen-btn.md-fullscreen(type='button')
+            .editor
+                textarea(ng-model='post.content') {{post.content}}
+            .preview.markdown
+            .editor-foot
+                .tags
+                    input(type='text', placeholder='文章标签，多个标签用 , 号分开。', value='{{tags}}', ng-model='post.tags')
+                button.btn.btn-blue.ripple.publish(type='button') 发表
 
-        li.post(data-id='{{post.id}}', data-category='{{post.category}}', ng-repeat='post in posts')
-            .post-title
-                a(href='javascript:;') {{post.title}}
-            .post-meta
-                a.user-avatar(ng-href='{{url.admin}}{{url.user}}/{{post.author}}')
-                    img(ng-src='{{url.api}}{{url.avatar}}/{{post.author}}', alt='{{post.author}}', title='{{post.author}}')
-                    span {{post.author}}
-                span
-                    i.md-access-time.left-icon
-                    span.post-date(data-update='{{post.lastModifiedDate}}', data-create='{{post.createDate}}')
-                span
-                    i.md-list.left-icon
-                    |{{post.category}}
-        .post-html
-            .menu
-                button.btn.ripple.close-preview-btn 关闭
-                button.btn.ripple.btn-blue.right.edit-post-btn 编辑
-            .container.markdown
-
-    .category-content
-        p 文章分类
-        ul.categories-list
-            li(data-id='{{category.id}}', data-name='{{category.name}}', ng-repeat='category in categories')
-                a(href='javascript:;')
-                    | {{category.name} }
-                    span.category-count ( {{category.count}} )
-                .category-action
-                    button.btn.md-mode-edit.edit-category-btn
-                    button.btn.md-remove-circle.delete-category-btn
-
-        .new-category
-            input(type='text', placeholder='新分类名称', name='category-name')
-            button.btn.btn-blue.ripple 添加
+dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='insert()', title='插入图片')
+    .insert-image(ng-controller='insertImgController')
+        ul.choose-type
+            li: button.btn.type(data-target='#url', ng-click='switchTab("url")', ng-class='{active:isUrlTabShown}') 链接
+            li: button.btn.type(data-target='#upload', ng-click='switchTab("upload")', ng-class='{active: isUploadTabShown}') 上传
+        .container
+            .content#url(ng-show='isUrlTabShown')
+                p.description 请输入图片的链接地址：
+                input.image-url(type='text', ng-model='imgUrl')/
+            .content#upload(ng-show='isUploadTabShown')
+                p.description 从本地上传图片：
+                .upload-btn(ng-hide='isAdded || isUploading || isFinished')
+                    p: button.btn.md-photo
+                    p: button.btn.btn-blue 选择图片
+                    input#file-input(type='file', nv-file-select, uploader='uploader')/
+                ul.selected-item(ng-show='isAdded')
+                    li(ng-repeat='item in uploader.queue')
+                        .item-info
+                            .item-info-text
+                                div
+                                    span 文件名：
+                                    | {{item.file.name}}
+                                div
+                                    span 文件大小：
+                                    | {{item.file.size/1024/1024 | number:2}} Mb
+                                div
+                                    span 文件上传进度：
+                                    | {{item.progress}} %
+                            .item-preview
+                                .thumb(img-thumb='{file: item._file, height: 300}', ng-hide='isFinished')
+                                img(ng-src='{{imgUrl}}', ng-show='isFinished')
+                        .upload-progress
+                            .progress-bar-outer
+                                .progress-bar-inner(ng-style='{width: item.progress + "%"}')
+                        .item-action
+                            button.btn.btn-yellow(
+                                ng-click='item.cancel()',
+                                ng-disabled='!item.isUploading',
+                                ng-class='{"btn-disabled": !item.isUploading}') 取消上传
+                            button.btn.btn-blue(
+                                ng-click='item.upload()',
+                                ng-disabled='item.isReady || item.isUploading || item.isSuccess',
+                                ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}'
+                                ) 开始上传
+                            button.btn.btn-red(ng-click='item.remove()') 移除图片
+                            button.btn.btn-green(ng-click='reSelect(item)') 重新选择
+dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false', title='帮助')
+    p 编辑器快捷键
+    table.help-content
+        thead
+            tr
+                th 快捷键
+                th 描述
+        tbody
+            tr
+                td F11
+                td 进入全屏模式
+            tr
+                td Ctrl + Alt + I
+                td 插入图片
+            tr
+                td Ctrl + B
+                td 加粗
+            tr
+                td Ctrl + I
+                td 斜体
+            tr
+                td Ctrl + Q
+                td 引用
+            tr
+                td Ctrl + L
+                td 插入链接
+            tr
+                td Ctrl + K
+                td 插入行内代码
+            tr
+                td Ctrl + Alt + K
+                td 插入代码块
+            tr
+                td Ctrl + U
+                td 删除线
+            tr
+                td Ctrl + S
+                td 保存草稿
+            tr
+                td Ctrl + Alt + Enter
+                td 发表文章

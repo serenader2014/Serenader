@@ -1,0 +1,8 @@
+.dialog
+    .dialog-wrapper
+        .dialog-container
+            .dialog-header {{title}}
+            .dialog-body(ng-transclude)
+            .dialog-footer
+                button.btn(ng-click='cancel()') 关闭
+                button.btn(ng-click='confirm()') 确定

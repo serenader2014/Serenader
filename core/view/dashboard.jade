@@ -21,12 +21,12 @@ block content
                     block area
                 ul
                     li
-                        button.side-menu-btn(type='button')
+                        button.side-menu-btn(type='button', ng-click='toggleSideMenu()')
                             i.md-menu
                     li.user-avatar
-                        a(href='javascript:;')
+                        a(href='javascript:;', ng-click='toggleUserProfile()')
                             img(src='#{url.api}#{url.avatar}/#{currentUser.uid}')
-                        .sub-menu
+                        .sub-menu(ng-show='isUserProfileShown')
                             .wrapper
                                 .user-info
                                     .image
@@ -39,7 +39,7 @@ block content
                                     - if (currentUser.role === 'admin')
                                         li.adduser-btn: a.ripple(href='javascript:;') 添加用户
                                     li.signout-btn: a.ripple(href='#{url.admin}#{url.signOut}') 退出登录
-            .side-menu
+            .side-menu(ng-class='{show:isSideMenuShown}')
                 ul
                     li: a.btn.ripple(href='/', title='主页')
                         i.md-home

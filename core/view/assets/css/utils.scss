@@ -83,8 +83,8 @@
 
 .btn.btn-disabled {
     cursor: not-allowed;
-    color: $button-disabled-color;
-    background: $button-background;
+    color: $button-disabled-color !important;
+    background: $button-background !important;
 }
 
 .btn.btn-raised {
@@ -169,7 +169,7 @@
         margin: auto;
         max-width: 70rem;
         min-width: 30rem;
-        width: 80%;
+        width: 90%;
         min-height: 20rem;
         border-bottom-left-radius: 0.3rem;
         border-bottom-right-radius: 0.3rem;

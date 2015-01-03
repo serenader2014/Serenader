@@ -5,7 +5,7 @@ block css
     link(rel='stylesheet', href='#{assets.server}/css/build/sign.css')/
     link(rel='stylesheet', href='#{assets.server}/css/build/md-icon.min.css')/
 block title
-    title {{title}}
+    title(ng-bind='title')
 block content
     .sign(ng-controller='signController' ng-view)
 

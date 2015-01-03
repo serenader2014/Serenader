@@ -52,7 +52,7 @@ a {
         position: relative;
         vertical-align: middle;
     }
-    
+
     .side-menu-btn {
         width: auto;
         margin-right: 3rem;
@@ -98,7 +98,6 @@ a {
     }
 }
 .sub-menu {
-    display: none;
     position: absolute;
     top: 100%;
     right: 0;
@@ -151,7 +150,7 @@ a {
         margin-bottom: 0.5rem;
         color: $content-color;
     }
-    
+
     .user-uid {
         font-size: 1.5rem;
         font-weight: 800;

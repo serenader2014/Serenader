@@ -10,26 +10,28 @@
         }
     ])
     .controller('signController', ['$rootScope', function ($rootScope) {
-        $rootScope.sign = {};
+        $rootScope.sign = {
+            signIn: {
+                error: false,
+                success: false,
+                pending: false,
+                message: ''
+            },
+            signUp: {
+                error: false,
+                success: false,
+                pending: false,
+                message: ''
+            }
+        };
     }])
     .controller('signInController', ['$scope', '$rootScope', 'postSignIn', '$window',
-        function ($scope, $rootScope, sign, $window) {
-            var globalSignIn = $rootScope.sign.signIn = {};
+        function ($scope, $rootScope, sign) {
+            var globalSignIn = $rootScope.sign.signIn;
 
             $rootScope.title = '登录 - Serenader';
             $scope.redirect = function () {
-                var finalObj = {};
-                if ($window.location.search) {
-                    var raw = $window.location.search,
-                        rawArr = raw.split('?')[1].split('&');
-
-                    angular.forEach(rawArr, function (item) {
-                        var tmpArr = item.split('=');
-                        finalObj[tmpArr[0]] = tmpArr[1];
-                    });
-
-                }
-                window.location = finalObj.url || url.admin;
+                window.location = url.admin;
             };
 
             $scope.signIn = function () {
@@ -59,7 +61,7 @@
     ])
     .controller('signUpController', ['$scope', '$rootScope', 'postSignUp',
         function ($scope, $rootScope, sign) {
-            var globalSignUp = $rootScope.sign.signUp = {};
+            var globalSignUp = $rootScope.sign.signUp;
 
             $rootScope.title = '注册帐号 - Serenader';
             $scope.redirect = function () {

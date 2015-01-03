@@ -59,4 +59,10 @@
     .user-avatar, .post-update {
         display: none;
     }
+    .selected-item {
+        .item-info-text, .item-preview {
+            display: block;
+            width: 100%;
+        }
+    }
 }

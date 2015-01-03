@@ -29,8 +29,7 @@ module.exports = function (grunt) {
         'libs/angular-sanitize/angular-sanitize.js',
         'libs/moment/moment.js',
         'libs/marked/lib/marked.js',
-        'libs/jquery-file-upload/js/vendor/jquery.ui.widget.js',
-        'libs/jquery-file-upload/js/jquery.fileupload.js',
+        'libs/angular-file-upload/angular-file-upload.js',
         'libs/blueimp-gallery/js/blueimp-gallery.js'
     ];
 
@@ -42,6 +41,8 @@ module.exports = function (grunt) {
         'app/directive/progress.js',
         'app/directive/msg-box.js',
         'app/directive/selector.js',
+        'app/directive/dialog.js',
+        'app/directive/img-thumb.js',
         'app/service/dashboard.js'
     ];
 

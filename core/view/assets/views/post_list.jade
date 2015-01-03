@@ -1,0 +1,56 @@
+.post-content
+    ul.nav-menu
+        li.post: button.btn.ripple.new-post-btn(ng-click='goToNewPost()')
+            i.md-add.left-icon
+            | 新文章
+        li.category: button.btn.ripple.category-btn
+            i.md-sort.left-icon
+            | 分类
+    ul.posts-list
+        li.drafts.post(data-id='{{draft.id}}', data-category='{{draft.category}}', ng-repeat='draft in drafts')
+            .post-title
+                a(href='javascript:;') {{draft.title}}
+            .post-meta
+                a.user-avatar(ng-href='{{url.admin}}{{url.user}}/{{draft.author}}')
+                    img(ng-src='{{url.api}}{{url.avatar}}/{{draft.author}}', alt='{{draft.author}}')
+                    span {{draft.author}}
+                span
+                    i.md-access-time.left-icon
+                    span.post-date(data-update='{{draft.lastModifiedDate}}', data-create='{{draft.createDate}}')
+                span
+                    i.md-list.left-icon
+                    | {{draft.category}}
+
+        li.post(data-id='{{post.id}}', data-category='{{post.category}}', ng-repeat='post in posts')
+            .post-title
+                a(href='javascript:;') {{post.title}}
+            .post-meta
+                a.user-avatar(ng-href='{{url.admin}}{{url.user}}/{{post.author}}')
+                    img(ng-src='{{url.api}}{{url.avatar}}/{{post.author}}', alt='{{post.author}}', title='{{post.author}}')
+                    span {{post.author}}
+                span
+                    i.md-access-time.left-icon
+                    span.post-date(data-update='{{post.lastModifiedDate}}', data-create='{{post.createDate}}')
+                span
+                    i.md-list.left-icon
+                    |{{post.category}}
+        .post-html
+            .menu
+                button.btn.ripple.close-preview-btn 关闭
+                button.btn.ripple.btn-blue.right.edit-post-btn 编辑
+            .container.markdown
+
+    .category-content
+        p 文章分类
+        ul.categories-list
+            li(data-id='{{category.id}}', data-name='{{category.name}}', ng-repeat='category in categories')
+                a(href='javascript:;')
+                    | {{category.name} }
+                    span.category-count ( {{category.count}} )
+                .category-action
+                    button.btn.md-mode-edit.edit-category-btn
+                    button.btn.md-remove-circle.delete-category-btn
+
+        .new-category
+            input(type='text', placeholder='新分类名称', name='category-name')
+            button.btn.btn-blue.ripple 添加
