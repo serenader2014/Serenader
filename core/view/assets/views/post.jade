@@ -61,7 +61,7 @@ dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='inser
                                 .progress-bar-inner(ng-style='{width: item.progress + "%"}')
                         .item-action
                             button.btn.btn-yellow(
-                                ng-click='cancelWarning=true',
+                                ng-click='warning()',
                                 ng-disabled='!item.isUploading',
                                 ng-class='{"btn-disabled": !item.isUploading}') 取消上传
                             button.btn.btn-blue(

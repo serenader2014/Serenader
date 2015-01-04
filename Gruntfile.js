@@ -487,7 +487,7 @@ module.exports = function (grunt) {
 
     // 初始化整个项目，下载bower依赖，以及前台主题，复制和编译各种必须的css和html文件
     grunt.registerTask('init', 'Download and copy the dependencies.',
-        ['shell:bower', 'update_submodules', 'copy', 'jade']);
+        ['shell:bower', 'update_submodules', 'copy']);
 
     // 开发模式下的css任务
     grunt.registerTask('css', 'Building css file.',
@@ -500,11 +500,11 @@ module.exports = function (grunt) {
 
     // 生成生产环境下的所有必须文件，并且清理不需要的文件。
     grunt.registerTask('prod-env', 'Building production env',
-        ['css', 'concat', 'uglify', 'replace:signProd', 'replace:dashboardProd']);
+        ['css', 'jade', 'concat', 'uglify', 'replace:signProd', 'replace:dashboardProd']);
 
     // 生成开发环境下的文件，并且启动服务器。
     grunt.registerTask('dev-env', 'Building dev env, and start the server.',
-        ['css', 'replace:signDev', 'replace:dashboardDev']);
+        ['css', 'jade', 'replace:signDev', 'replace:dashboardDev']);
 
     grunt.registerTask('serve', 'Run the server under dev env',
         ['dev-env', 'express', 'watch']);

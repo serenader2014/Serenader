@@ -101,6 +101,11 @@
                 $scope.isUploading = true;
             };
 
+            $scope.cancelWarning = false;
+            $scope.warning = function () {
+                $scope.cancelWarning = true;
+            };
+
             uploader.onCompleteAll = function () {
                 $scope.isFinished = true;
             };
