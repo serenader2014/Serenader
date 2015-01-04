@@ -14,7 +14,8 @@
                 type: '@',
                 title: '@',
                 desc: '@',
-                rePwd: '@'
+                rePwd: '@',
+                value: '@'
             },
             transclude: true,
             require: 'ngModel',
@@ -24,6 +25,10 @@
                 input.val($attrs.value);
                 $scope.hasDesc = $attrs.desc;
                 $scope.isFocus = false;
+
+                $attrs.$observe('value', function (v) {
+                    input.val(v);
+                });
 
                 $scope.hasValue = function () {
                     return input.val();
@@ -42,6 +47,10 @@
                         ctrl.$setViewValue(input.val());
                     });
                 }).on('keyup', function () {
+                    $scope.$apply(function () {
+                        ctrl.$setViewValue(input.val());
+                    });
+                }).on('change', function () {
                     $scope.$apply(function () {
                         ctrl.$setViewValue(input.val());
                     });

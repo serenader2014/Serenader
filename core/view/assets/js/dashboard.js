@@ -54,8 +54,8 @@
             };
         }
     ])
-    .controller('newPostController', ['$scope', '$rootScope', 'Category', 'FileUploader',
-        function ($scope, $rootScope, cate, FileUploader) {
+    .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$timeout',
+        function ($scope, $rootScope, cate, Post, Slug, FileUploader, timeout) {
             var uploader = $scope.uploader = new FileUploader({
                 url: url.api + url.upload + url.postUpload
             });
@@ -106,6 +106,11 @@
                 $scope.cancelWarning = true;
             };
 
+            $scope.cancelUpload = function (item) {
+                item.cancel();
+                $scope.cancelWarning = false;
+            };
+
             uploader.onCompleteAll = function () {
                 $scope.isFinished = true;
             };
@@ -130,6 +135,37 @@
                 uploader.clearQueue();
                 $('#file-input').val('');
                 $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
+            };
+
+            $scope.time = moment();
+
+            $('.post-title').on('change', function () {
+                Slug.generate({}, {
+                    slug: $(this).val(),
+                }, function (response) {
+                    $scope.postSlug = response.slug;
+                });
+                $scope.$digest();
+            });
+
+            $scope.newPost = function () {
+                Post.common.new({}, {
+                    content: $scope.post.content,
+                    title: $scope.post.title,
+                    tags: $scope.post.tags.split(',') || [],
+                    category: $scope.post.category,
+                    publish: true,
+                    slug: 'something',
+                    createDate: moment().format()
+                }, function (response) {
+                    if (response.ret === 0) {
+                        $scope.post.id = response.id;
+                    } else {
+                        $scope.newPostError = response.error;
+                    }
+                }, function (err) {
+
+                });
             };
         }
     ])

@@ -10,11 +10,11 @@ var Promise = require('bluebird'),
     Category = require('../../models').Category;
 
 function getAllPosts (amount, page, user) {
-    return user && user.role === 'admin' ? Post.getAllPosts(amount, page) : Post.getPublishedPosts(amount, page);    
+    return user && user.role === 'admin' ? Post.getAllPosts(amount, page) : Post.getPublishedPosts(amount, page);
 }
 
 function getUserPosts (amount, page, user, targetUser) {
-    return (user && (user.uid === targetUser)) || user.role === 'admin'? 
+    return (user && (user.uid === targetUser)) || user.role === 'admin'?
         Post.getUserAllPosts(targetUser, amount, page) :
         Post.getUserPublishedPosts(targetUser, amount, page);
 }
@@ -91,7 +91,7 @@ function checkRequestBody (req) {
         if (published === undefined) {
             reject('published键值为空。');
             return false;
-        }        
+        }
         if (Array.isArray(req.body.tags)) {
             tags = [];
             req.body.tags.forEach(function (tag) {
@@ -140,7 +140,7 @@ module.exports = function (router) {
         });
     });
 
-    router.get(url.user + '/:user/' + url.post, function (req, res) {
+    router.get(url.user + '/:user' + url.post, function (req, res) {
         var targetUser,
             page;
         page = req.query.page || 1;
@@ -211,18 +211,18 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.newPost, function (req, res) {
+    router.post(url.post, function (req, res) {
         checkRequestBody(req).then(function (post) {
             return checkCategoryIsExist(post.category).then(function () {
                 return Post.create({
-                    title: post.title, 
+                    title: post.title,
                     slug: post.slug,
-                    author: post.author, 
-                    createDate: new Date(post.createDate), 
+                    author: post.author,
+                    createDate: new Date(post.createDate),
                     lastModifiedDate: new Date(post.createDate),
-                    tags: post.tags, 
+                    tags: post.tags,
                     markdown: post.markdown,
-                    html: post.html, 
+                    html: post.html,
                     published: post.published,
                     category: post.category
                 });
