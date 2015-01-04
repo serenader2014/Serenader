@@ -105,6 +105,19 @@
                 $scope.isFinished = true;
             };
 
+            uploader.onCancelItem = function () {
+                $scope.isUploading = false;
+            };
+
+            uploader.onErrorItem = function (item, response, status) {
+                $scope.isFinished = true;
+                $scope.isError = true;
+                $scope.errorItem = {
+                    item: item,
+                    code: status
+                };
+            };
+
             $scope.reSelect = function (item) {
                 if (item.isUploading) {
                     item.cancel();

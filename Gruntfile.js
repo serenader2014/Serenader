@@ -494,12 +494,13 @@ module.exports = function (grunt) {
         ['sass:compile', 'autoprefixer']);
 
     // 生产模式下的css任务
+    // sass compress 有个bug,暂时不使用。
     grunt.registerTask('prod-css', 'Building production env css.',
         ['sass:compress', 'autoprefixer']);
 
     // 生成生产环境下的所有必须文件，并且清理不需要的文件。
     grunt.registerTask('prod-env', 'Building production env',
-        ['prod-css', 'concat', 'uglify', 'replace:signProd', 'replace:dashboardProd']);
+        ['css', 'concat', 'uglify', 'replace:signProd', 'replace:dashboardProd']);
 
     // 生成开发环境下的文件，并且启动服务器。
     grunt.registerTask('dev-env', 'Building dev env, and start the server.',

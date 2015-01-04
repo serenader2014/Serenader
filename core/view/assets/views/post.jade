@@ -61,7 +61,7 @@ dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='inser
                                 .progress-bar-inner(ng-style='{width: item.progress + "%"}')
                         .item-action
                             button.btn.btn-yellow(
-                                ng-click='item.cancel()',
+                                ng-click='cancelWarning=true',
                                 ng-disabled='!item.isUploading',
                                 ng-class='{"btn-disabled": !item.isUploading}') 取消上传
                             button.btn.btn-blue(
@@ -69,8 +69,12 @@ dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='inser
                                 ng-disabled='item.isReady || item.isUploading || item.isSuccess',
                                 ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}'
                                 ) 开始上传
-                            button.btn.btn-red(ng-click='item.remove()') 移除图片
-                            button.btn.btn-green(ng-click='reSelect(item)') 重新选择
+                            button.btn.btn-green(
+                                ng-click='reSelect(item)',
+                                ng-disabled='item.isUploading',
+                                ng-class='{"btn-disabled": item.isUploading}') 重新选择
+                msg-box(callback='item.cancel()', ng-show='cancelWarning') 确认要取消正在上传的图片？
+                msg-box(ng-show='isError', callback='isError=false') {{errorItem.item.name}} 上传失败！失败代码：{{errorItem.code}}
 dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false', title='帮助')
     p 编辑器快捷键
     table.help-content
