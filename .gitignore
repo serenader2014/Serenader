@@ -25,3 +25,4 @@ core/view/assets/css/build/*.css
 !core/view/assets/css/build/rainbow.css
 core/view/assets/js/vendor/
 core/view/assets/views/*.html
+core/view/assets/js/build/
