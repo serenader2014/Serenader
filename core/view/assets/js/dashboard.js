@@ -48,13 +48,37 @@
             $rootScope.title = '控制面板';
         }
     ])
-    .controller('postController', ['$scope', '$rootScope', '$location',
-        function ($scope, $rootScope, $location){
+    .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'User',
+        function ($scope, $rootScope, $location, Category, Post, User){
+            User.current(function (response) {
+                $rootScope.user = response;
+            });
             $rootScope.title = '文章';
+            $scope.posts = [];
+            $scope.drafts = [];
             $scope.goToNewPost = function () {
                 $location.path(url.newPost);
             };
+            $rootScope.$watch('user', function (user) {
+                if (user) {
+                    Post.user.get({name: user.uid}, function (response) {
+                        angular.forEach(response, function (post) {
+                            if (post.published) {
+                                $scope.posts.push(post);
+                            } else {
+                                $scope.drafts.push(post);
+                            }
+                        });
+                    });
+                }
+            });
 
+            Category.getAll(function (response) {
+                $scope.categories = response;
+            });
+            $scope.$watch('posts', function (posts) {
+                console.log(posts);
+            });
         }
     ])
     .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$interval', '$sce',

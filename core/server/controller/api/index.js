@@ -9,5 +9,6 @@ require('./upload')(apiRouter);
 require('./file')(apiRouter);
 require('./setting')(apiRouter);
 require('./avatar')(apiRouter);
+require('./user')(apiRouter);
 
 module.exports = apiRouter;

@@ -45,7 +45,7 @@
         ul.categories-list
             li(data-id='{{category.id}}', data-name='{{category.name}}', ng-repeat='category in categories')
                 a(href='javascript:;')
-                    | {{category.name} }
+                    | {{category.name}}
                     span.category-count ( {{category.count}} )
                 .category-action
                     button.btn.md-mode-edit.edit-category-btn

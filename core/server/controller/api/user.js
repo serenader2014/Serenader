@@ -1,0 +1,21 @@
+var config = require('../../../../config').config,
+    url = config.url;
+
+
+module.exports = function (router) {
+    router.get(url.currentUser, function (req, res) {
+        if (req.session.user) {
+            res.json({
+                uid: req.session.user.uid,
+                email: req.session.user.email,
+                website: req.session.user.website,
+                avatar: req.session.user.avatar,
+                role: req.session.user.role,
+                signature: req.session.user.signature,
+                id: req.session.user._id
+            });
+        } else {
+            res.json({});
+        }
+    });
+};
