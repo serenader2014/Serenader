@@ -30,7 +30,8 @@ module.exports = function (grunt) {
         'libs/moment/moment.js',
         'libs/marked/lib/marked.js',
         'libs/angular-file-upload/angular-file-upload.js',
-        'libs/blueimp-gallery/js/blueimp-gallery.js'
+        'libs/blueimp-gallery/js/blueimp-gallery.js',
+        'js/highlight.pack.js'
     ];
 
     // 后台面板的主要脚本

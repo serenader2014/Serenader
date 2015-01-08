@@ -15,20 +15,22 @@
                 title: '@',
                 desc: '@',
                 rePwd: '@',
-                value: '@'
+                value: '='
             },
             transclude: true,
             require: 'ngModel',
             link: function ($scope, $element, $attrs, ctrl) {
                 var input = $element.find('input');
-
                 input.val($attrs.value);
                 $scope.hasDesc = $attrs.desc;
                 $scope.isFocus = false;
 
-                $attrs.$observe('value', function (v) {
+                $scope.$watch('value', function (v) {
                     input.val(v);
+                    ctrl.$setViewValue(v);
                 });
+
+                input.val($scope.value);
 
                 $scope.hasValue = function () {
                     return input.val();
@@ -53,6 +55,8 @@
                 }).on('change', function () {
                     $scope.$apply(function () {
                         ctrl.$setViewValue(input.val());
+                        $scope.value = input.val();
+                        console.log($scope.value);
                     });
                 });
 

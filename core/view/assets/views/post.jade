@@ -1,10 +1,10 @@
 form.post-area(name='newpost')
     .post-head
-        input.post-title(type='text', name='title', placeholder='文章标题', value='{{title}}', ng-model='post.title')/
+        input(type='text', name='title', placeholder='文章标题', value='{{title}}', ng-model='post.title', ng-model-options='{updateOn: "blur"}')/
         .categories-selector
             selector(ng-model='post.category')
                 selector-list(ng-repeat='cate in categories', value='{{cate.name}}')
-    .post-editor
+    .post-editor(ng-class='{fullscreen:fullscreen}')
         .wrapper
             .editor-tools
                 span
@@ -12,18 +12,22 @@ form.post-area(name='newpost')
                     span.post-status
                 ul
                     li: button.btn.ripple.ripple-black.help-btn.md-help(type='button', ng-click='showHelp=true')
-                    li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button')
+                    li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button', ng-click='saveDraft()')
                     li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button', ng-click='showInsertImg=true')
-                    li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button')
+                    li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button', ng-click='renderMobilePreview()', ng-class='{active: mobilePreview}')
                     li: button.btn.ripple.ripple-black.post-setting-btn.md-settings(type='button', ng-click='postSetting=true')
-                    li: button.btn.ripple.ripple-black.fullscreen-btn.md-fullscreen(type='button')
+                    li: button.btn.ripple.ripple-black.fullscreen-btn(type='button', ng-click='fullscreen=!fullscreen', ng-class='{"md-fullscreen":!fullscreen,"md-fullscreen-exit":fullscreen}')
             .editor
                 textarea(ng-model='post.content') {{post.content}}
-            .preview.markdown
+            .preview.markdown(ng-bind-html='markdownPreview', ng-class='{"mobile-preview": mobilePreview}')
             .editor-foot
                 .tags
                     input(type='text', placeholder='文章标签，多个标签用 , 号分开。', value='{{tags}}', ng-model='post.tags')
                 button.btn.btn-blue.ripple.publish(type='button', ng-click='publishPost()') 发表
+            msg-box(ng-show='draftStatus===0', callback='draftStatus=undefined') {{message}}
+            msg-box(type='error', ng-show='draftStatus===-1', callback='draftStatus=undefined') {{message}}
+            msg-box(ng-show='publishStatus===0', callback='publishStatus=undefined') {{message}}
+            msg-box(type='error', ng-show='publishStatus===-1', callback='publishStatus=undefined') {{message}}
 
 dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='insert()', title='插入图片')
     .insert-image(ng-controller='insertImgController')
@@ -74,7 +78,7 @@ dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='inser
                                 ng-disabled='item.isUploading',
                                 ng-class='{"btn-disabled": item.isUploading}') 重新选择
                         msg-box(callback='cancelUpload(item)', ng-show='cancelWarning') 确认要取消正在上传的图片？
-                        msg-box(ng-show='isError', callback='isError=false') {{errorItem.item.name}} 上传失败！失败代码：{{errorItem.code}}
+                        msg-box(type='error', ng-show='isError', callback='isError=false') {{errorItem.item.name}} 上传失败！失败代码：{{errorItem.code}}
 dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false', title='帮助')
     p 编辑器快捷键
     table.help-content
@@ -86,6 +90,9 @@ dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false'
             tr
                 td F11
                 td 进入全屏模式
+            tr
+                td F1
+                td 显示帮助
             tr
                 td Ctrl + Alt + I
                 td 插入图片
@@ -117,6 +124,6 @@ dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false'
                 td Ctrl + Alt + Enter
                 td 发表文章
 dialog-box(title='文章设置', ng-show='postSetting', cancel='postSetting=false', confirm='postSetting=false')
-    md-input(name='slug', type='text', title='Slug', ng-model='slug', desc='文章的唯一URL', value='{{postSlug}}')
-    md-input(name='createTime', type='text', title='创建时间', ng-model='createTime', desc='文章的创建时间。', value='{{time.format("YYYY/MM/DD, HH:mm:ss")}}')
+    md-input(name='slug', type='text', title='Slug', ng-model='slug', desc='文章的唯一URL', value='post.slug')
+    md-input(name='createTime', type='text', title='创建时间', ng-model='createTime', desc='文章的创建时间。', value='post.createDate')
     button.delete-post.btn.btn-danger.btn-red 删除文章

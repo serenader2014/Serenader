@@ -97,9 +97,12 @@
 
     .editor {
         width: 50%;
-        background: $editor-background;
+        border-right: 1px solid $light-grey;
     }
 
+    textarea {
+        background: $editor-background;
+    }
     .preview {
         display: block;
         position: absolute;

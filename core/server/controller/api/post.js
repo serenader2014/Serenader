@@ -186,7 +186,7 @@ module.exports = function (router) {
                 });
             });
         }).then(function () {
-            res.json({ret: 0});
+            res.json({ret: 0, id: id});
         }).catch(function (err) {
             res.json({ret: -1,error: err.message || err});
         });
