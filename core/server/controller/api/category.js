@@ -37,7 +37,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.newCategory, function (req, res) {
+    router.post(url.category, function (req, res) {
         var name;
         if (!req.session.user || req.session.user.role !== 'admin') {
             res.json({ret: -1,error: '无法创建新的分类，权限不足！'});
@@ -72,7 +72,7 @@ module.exports = function (router) {
                 error: '无法修改分类名称，权限不足！'
             });
             return false;
-        }        
+        }
         if (! req.body.name) {
             res.json({
                 ret: -1,

@@ -48,8 +48,8 @@
             $rootScope.title = '控制面板';
         }
     ])
-    .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'User',
-        function ($scope, $rootScope, $location, Category, Post, User){
+    .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'User', '$sce',
+        function ($scope, $rootScope, $location, Category, Post, User, $sce){
             User.current(function (response) {
                 $rootScope.user = response;
             });
@@ -63,22 +63,101 @@
                 if (user) {
                     Post.user.get({name: user.uid}, function (response) {
                         angular.forEach(response, function (post) {
+                            post.createDate = moment(post.createDate).format('YYYY/MM/DD');
+                            post.lastModifiedDate = moment(post.lastModifiedDate).format('YYYY/MM/DD');
                             if (post.published) {
                                 $scope.posts.push(post);
                             } else {
                                 $scope.drafts.push(post);
                             }
                         });
+                    }, function () {
+                        $scope.getPostError = true;
                     });
                 }
-            });
+            }, true);
 
             Category.getAll(function (response) {
                 $scope.categories = response;
             });
-            $scope.$watch('posts', function (posts) {
-                console.log(posts);
-            });
+            $scope.postPreview = function (post) {
+                $scope.isPostPreview = true;
+                $scope.currentPost = post;
+                $scope.postHtml = $sce.trustAsHtml($(post.html).html());
+            };
+            $scope.editPost = function () {
+                $location.path(url.post + '/' + $scope.currentPost._id);
+            };
+            $scope.isCategoryShown = false;
+            $scope.toggleCategory = function () {
+                if ($(window).width() > 720) {
+                    return false;
+                }
+
+                $scope.isCategoryShown = !$scope.isCategoryShown;
+            };
+            $scope.tmp = {category: ''};
+            $scope.showEditCategory = function (c) {
+                $scope.isEditCategory = true;
+                $scope.currentCategory = c;
+                $scope.tmp.category = c.name;
+            };
+            $scope.showDeleteCategory = function (c) {
+                $scope.isDeleteCategory = true;
+                $scope.currentCategory = c;
+            };
+            $scope.editCategory = function () {
+                $scope.isEditCategory = false;
+                Category.update({id: $scope.currentCategory._id}, {name: $scope.tmp.category}, function (response) {
+                    if (response.ret === 0) {
+                        $scope.success = true;
+                        $scope.message = '修改分类名成功！';
+                        $scope.currentCategory.name = $scope.tmp.category;
+                    } else {
+                        $scope.error = true;
+                        $scope.message = response.error;
+                    }
+                }, function () {
+                    $scope.error = true;
+                    $scope.message = '请求修改分类失败！网络错误！';
+                });
+            };
+            $scope.deleteCategory = function () {
+                $scope.isDeleteCategory = false;
+                Category.delete({id: $scope.currentCategory._id}, {}, function (response) {
+                    console.log(response);
+                    if (response.ret === 0) {
+                        $scope.success = true;
+                        $scope.message = '删除分类成功！';
+                        $scope.categories.splice($scope.categories.indexOf($scope.currentCategory), 1);
+                    } else {
+                        $scope.error = true;
+                        $scope.message = response.error;
+                    }
+                }, function () {
+                    $scope.error = true;
+                    $scope.message = '请求删除分类失败！网络错误！';
+                });
+            };
+            $scope.newCategory = function () {
+                Category.new({name: $scope.newCategoryName}, function (response) {
+                    if (response.ret === 0) {
+                        $scope.success = true;
+                        $scope.message = '添加新的分类成功！';
+                        $scope.categories.push({
+                            name: $scope.newCategoryName,
+                            _id: response.id,
+                            count: 0
+                        });
+                    } else {
+                        $scope.error = true;
+                        $scope.message = response.error;
+                    }
+                }, function () {
+                    $scope.error = true;
+                    $scope.message = '添加新的分类失败！网络错误！';
+                });
+            };
         }
     ])
     .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$interval', '$sce',
