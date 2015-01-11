@@ -19,7 +19,10 @@
     .side-menu.show {
         transform: translateX(0%);
     }
-
+    .post-category {
+        display: block;
+        margin: 1rem 0;
+    }
     .fullscreen {
         .editor {
             width: 100%;

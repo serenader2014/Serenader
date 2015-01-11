@@ -7,11 +7,10 @@
             transclude: true,
             scope: {
                 cancel: '&',
-                confirm: '&'
+                confirm: '&',
+                title: '@',
+                outer: '='
             },
-            link: function ($scope, $elem, $attr) {
-                $scope.title = $attr.title;
-            }
         };
     });
 })();

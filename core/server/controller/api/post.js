@@ -21,7 +21,7 @@ function getUserPosts (amount, page, user, targetUser) {
 
 function getPost (id, user) {
     return Post.getPostById(id).then(function (post) {
-        if (post.published || (user && user.role === 'admin') || (user && user.uid === post.author)) {
+        if ((post && post.published) || (user && user.role === 'admin') || (user && user.uid === post.author)) {
             return post;
         } else {
             return {};

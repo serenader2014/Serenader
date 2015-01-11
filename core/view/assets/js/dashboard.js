@@ -198,27 +198,39 @@
             };
         }
     ])
-    .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$interval',
-        function ($scope, $rootScope, Category, Post, Slug, FileUploader, $interval) {
+    .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$interval', '$location',
+        function ($scope, $rootScope, Category, Post, Slug, FileUploader, $interval, $location) {
             $rootScope.title = '新文章';
             $scope.post = {};
             fileUploader($scope, FileUploader);
             $scope.post.createDate = moment().format('YYYY/MM/DD, HH:mm:ss');
             $scope.fullscreen = false;
-            post($scope, $interval, Slug, Category, Post);
+            post($scope, $interval, $location, Slug, Category, Post);
             editor($scope);
         }
     ])
-    .controller('editPostController', ['$scope', '$rootScope', '$routeParams', '$interval', 'Post', 'Category', 'Slug', 'FileUploader',
-        function ($scope, $rootScope, $routeParams, $interval, Post, Category, Slug, FileUploader) {
+    .controller('editPostController', ['$scope', '$rootScope', '$routeParams', '$interval', '$location', 'Post', 'Category', 'Slug', 'FileUploader',
+        function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, FileUploader) {
             $rootScope.title = '编辑文章';
             Post.common.get({id: $routeParams.id}, function (response) {
-                $scope.post = response;
-                $scope.post.id = $routeParams.id;
-                $scope.post.content = response.markdown;
-                $scope.post.tags = $scope.post.tags.join(',');
-                $scope.post.createDate = moment($scope.post.createDate).format('YYYY/MM/DD, HH:mm:ss');
-                post($scope, $interval, Slug, Category, Post);
+                if (response._id) {
+                    $scope.post = response;
+                    $scope.post.id = $routeParams.id;
+                    $scope.post.content = response.markdown;
+                    $scope.post.tags = $scope.post.tags.join(',');
+                    $scope.post.createDate = moment($scope.post.createDate).format('YYYY/MM/DD, HH:mm:ss');
+                    post($scope, $interval, $location, Slug, Category, Post);
+                } else {
+                    $scope.fetchPostError = true;
+                    $scope.redirectToList = function () {
+                        $location.path(url.post);
+                    };
+                }
+            }, function () {
+                $scope.fetchPostError = true;
+                $scope.redirectToList = function () {
+                    $location.path(url.post);
+                };
             });
             fileUploader($scope, FileUploader);
             editor($scope);
@@ -232,18 +244,18 @@
         }
     ])
     .controller('galleryController', ['$scope', '$rootScope',
-        function ($rootScope) {
-
+        function ($scope, $rootScope) {
+            $rootScope.title = '相册';
         }
     ])
     .controller('fileController', ['$scope', '$rootScope',
-        function ($rootScope) {
-
+        function ($scope, $rootScope) {
+            $rootScope.title = '文件管理';
         }
     ])
     .controller('settingController', ['$scope', '$rootScope',
-        function ($rootScope) {
-
+        function ($scope, $rootScope) {
+            $rootScope.title = '设置';
         }
     ])
     .config(['$routeProvider', function ($routeProvider) {
@@ -265,7 +277,7 @@
             controller: 'fileController',
         })
         .when(url.setting, {
-            templateUrl: assets.server + '/views/settnig.html',
+            templateUrl: assets.server + '/views/setting.html',
             controller: 'settingController',
         })
         .when(url.newPost, {
@@ -304,21 +316,22 @@
             }
         });
         $scope.insert = function () {
-            $scope.showInsertImg = false;
-            var editor = $('.editor textarea'),
-                value = $scope.post.content || '',
-                start = editor.get(0).selectionStart,
-                end = editor.get(0).selectionEnd,
-                str = '![image](' + ($scope.imgUrl || '') + ')';
-            $scope.post.content = value.substring(0, start) + str + value.substring(end);
-            editor.focus();
-            editor.get(0).selectionStart = start + 2;
-            editor.get(0).selectionEnd = start + 7;
+            if ($scope.post) {
+                $scope.showInsertImg = false;
+                var editor = $('.editor textarea'),
+                    value = $scope.post.content || '',
+                    start = editor.get(0).selectionStart,
+                    end = editor.get(0).selectionEnd,
+                    str = '![image](' + ($scope.imgUrl || '') + ')';
+                $scope.post.content = value.substring(0, start) + str + value.substring(end);
+                editor.focus();
+                editor.get(0).selectionStart = start + 2;
+                editor.get(0).selectionEnd = start + 7;
+            }
         };
         $scope.renderMarkdown = function (value) {
             $scope.markdownPreview = marked(value);
         };
-
         $scope.mobilePreview = false;
         $scope.renderMobilePreview = function () {
             $scope.mobilePreview = !$scope.mobilePreview;
@@ -528,10 +541,37 @@
             };
         };
     }
-    function post ($scope, $interval, Slug, Category, Post) {
+    function post ($scope, $interval, $location, Slug, Category, Post) {
         Category.getAll(function (data) {
             $scope.categories = data;
         });
+        $scope.showDelete = false;
+        $scope.showDeletePost = function () {
+            $scope.showDelete = true;
+        };
+        $scope.deletePost = function () {
+            if (!$scope.post.id) {
+                $scope.deleteStatus = -1;
+                $scope.message = '找不到该文章！请确保该文章已经存为草稿或者已经发表！';
+                return false;
+            } else {
+                Post.common.delete({id: $scope.post.id}, function (response) {
+                    if (response.ret === 0) {
+                        $scope.deleteStatus = 0;
+                        $scope.message = '删除成功！';
+                    } else {
+                        $scope.deleteStatus = -1;
+                        $scope.message = response.error;
+                    }
+                }, function () {
+                    $scope.deleteStatus = -1;
+                    $scope.message = '删除失败！网络错误！';
+                });
+            }
+        };
+        $scope.returnToPostList = function () {
+            $location.path(url.post);
+        };
         var newPost = function (publish, callback) {
             if ($scope.post.id) {
                 Post.common.update({
