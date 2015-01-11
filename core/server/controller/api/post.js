@@ -52,9 +52,9 @@ function checkOwner (options, user) {
     });
 }
 
-function checkCategoryIsExist (name) {
+function checkCategoryIsExist (id) {
     return new Promise(function (resolve, reject) {
-        Category.getOneByName(name).then(function (c) {
+        Category.getOneById(id).then(function (c) {
             if (c) {
                 resolve(c);
             } else {

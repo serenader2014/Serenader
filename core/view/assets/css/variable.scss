@@ -15,7 +15,7 @@ $button-default-background: rgba(map-get($color-grey, '0'), 0);
 $button-background: map-get($color-grey, '100');
 $button-raised-background: map-get($color-grey, '200');
 
-$ripple-default: rgba(map-get($color-grey, '0'), 0.3);
+$ripple-default: rgba(map-get($color-grey, '0'), 0.5);
 $ripple-blue: rgba(map-get($color-light-blue, '100'), 0.3);
 $ripple-yellow: rgba(map-get($color-yellow, '100'), 0.3);
 $ripple-pink: rgba(map-get($color-pink, '100'), 0.3);

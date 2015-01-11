@@ -3,7 +3,7 @@ form.post-area(name='newpost')
         input(type='text', name='title', placeholder='文章标题', value='{{title}}', ng-model='post.title', ng-model-options='{updateOn: "blur"}')/
         .categories-selector
             selector(ng-model='post.category')
-                selector-list(ng-repeat='cate in categories', value='{{cate.name}}')
+                selector-list(ng-repeat='cate in categories', value='{{cate._id}}', name='{{cate.name}}')
     .post-editor(ng-class='{fullscreen:fullscreen}')
         .wrapper
             .editor-tools

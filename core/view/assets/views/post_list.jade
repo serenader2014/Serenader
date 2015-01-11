@@ -1,13 +1,13 @@
 .post-content
     ul.nav-menu
-        li.post: button.btn.ripple.new-post-btn(ng-click='goToNewPost()')
+        li.post: button.btn.new-post-btn(ng-click='goToNewPost()', ripple)
             i.md-add.left-icon
             | 新文章
-        li.category: button.btn.ripple.category-btn(ng-click='toggleCategory()')
+        li.category: button.btn.category-btn(ng-click='toggleCategory()', ripple='black')
             i.md-sort.left-icon
             | 分类
     ul.posts-list
-        li.drafts.post(data-category='{{draft.category}}', ng-repeat='draft in drafts')
+        li.drafts.post(data-category='{{draft.category}}', ng-repeat='draft in drafts', ng-show='showPost(draft.category)')
             .post-title
                 a(href='javascript:;', ng-click='postPreview(draft)') {{draft.title}}
             .post-meta
@@ -16,12 +16,14 @@
                     span {{draft.author}}
                 span
                     i.md-access-time.left-icon
-                    span.post-date 创建于 {{draft.createDate}} ，最后修改于 {{draft.lastModifiedDate}}
+                    span.post-date {{draft.createDate}}
+                    i.md-mode-edit.left-icon
+                    span {{draft.lastModifiedDate}}
                 span
                     i.md-list.left-icon
-                    | {{draft.category}}
+                    | {{draft.category.name}}
 
-        li.post(data-category='{{post.category}}', ng-repeat='post in posts')
+        li.post(data-category='{{post.category}}', ng-repeat='post in posts', ng-show='showPost(post.category)')
             .post-title
                 a(href='javascript:;', ng-click='postPreview(post)') {{post.title}}
             .post-meta
@@ -30,22 +32,24 @@
                     span {{post.author}}
                 span
                     i.md-access-time.left-icon
-                    span.post-date 创建于 {{post.createDate}} ，最后修改于 {{post.lastModifiedDate}}
+                    span.post-date {{post.createDate}}
+                    i.md-mode-edit.left-icon
+                    span {{post.lastModifiedDate}}
                 span
                     i.md-list.left-icon
-                    |{{post.category}}
+                    |{{post.category.name}}
         msg-box(ng-show='getPostError', callback='getPostError=false') 获取文章失败！
     .post-html(ng-show='isPostPreview')
         .menu
-            button.btn.ripple.close-preview-btn(ng-click='isPostPreview=false') 关闭
-            button.btn.ripple.btn-blue.right.edit-post-btn(ng-click='editPost()') 编辑
-        .container.markdown {{postHtml}}
+            button.btn.close-preview-btn(ng-click='isPostPreview=false', ripple) 关闭
+            button.btn.btn-blue.right.edit-post-btn(ng-click='editPost()', ripple) 编辑
+        .container.markdown(ng-bind-html='postHtml')
 
     .category-content(ng-class='{show:isCategoryShown}')
         p 文章分类
         ul.categories-list
             li(ng-repeat='category in categories')
-                a(href='javascript:;')
+                a(href='javascript:;', ripple, ng-click='switchCategory(category)')
                     | {{category.name}}
                     span.category-count ( {{category.count}} )
                 .category-action
@@ -54,7 +58,7 @@
 
         form.new-category(name='category')
             input(type='text', placeholder='新分类名称', name='category-name', ng-model='newCategoryName')
-            button.btn.btn-blue.ripple(ng-click='newCategory()') 添加
+            button.btn.btn-blue(ng-click='newCategory()', ripple) 添加
 dialog-box(ng-show='isEditCategory', title='修改分类名', confirm='editCategory()', cancel='isEditCategory=false')
     md-input(name='categoryName', title='文章名称', desc='新的文章名称', ng-model='newCate', value='tmp.category', type='text')
 dialog-box(ng-show='isDeleteCategory', title='删除分类', confirm='deleteCategory()', cancel='isDeleteCategory=false')

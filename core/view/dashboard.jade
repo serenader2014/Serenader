@@ -38,26 +38,26 @@ block content
                                         p.user-email #{currentUser.email}
                                 ul
                                     - if (currentUser.role === 'admin')
-                                        li.adduser-btn: a.ripple(href='javascript:;') 添加用户
-                                    li.signout-btn: a.ripple(href='#{url.admin}#{url.signOut}') 退出登录
+                                        li.adduser-btn: a(href='javascript:;', ripple) 添加用户
+                                    li.signout-btn: a(href='#{url.admin}#{url.signOut}', ripple) 退出登录
             .side-menu(ng-class='{show:isSideMenuShown}')
                 ul
-                    li: a.btn.ripple(href='/', title='主页')
+                    li: a.btn(href='/', title='主页', ripple)
                         i.md-home
                         span.menu-text 主页
-                    li: a.btn.ripple(href='#/', title='控制台')
+                    li: a.btn(href='#/', title='控制台', ripple)
                         i.md-dashboard
                         span.menu-text 控制台
-                    li: a.btn.ripple(href='##{url.post}', title='文章')
+                    li: a.btn(href='##{url.post}', title='文章', ripple)
                         i.md-description
                         span.menu-text 文章
-                    li: a.btn.ripple(href='##{url.gallery}', title='相册')
+                    li: a.btn(href='##{url.gallery}', title='相册', ripple)
                         i.md-photo-library
                         span.menu-text 相册
-                    li: a.btn.ripple(href='##{url.file}', title='附件')
+                    li: a.btn(href='##{url.file}', title='附件', ripple)
                         i.md-attach-file
                         span.menu-text 附件
-                    li: a.btn.ripple(href='##{url.setting}', title='设置')
+                    li: a.btn(href='##{url.setting}', title='设置', ripple)
                         i.md-settings
                         span.menu-text 设置
             .main(ng-view)

@@ -456,7 +456,6 @@
     background: $white;
     li {
         position: relative;
-        padding: 1rem 4rem;
         &:hover {
             background: $light-grey;
             .category-action {
@@ -470,6 +469,7 @@
     }
 
     a {
+        padding: 1rem 4rem;
         display: block;
     }
 

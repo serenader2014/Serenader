@@ -11,6 +11,7 @@
         display: inline-block;
         border-radius: 100%;
         transform: scale(0);
+        // opacity: 0;
         background: $ripple-default;
         z-index: 1;
     }
@@ -43,6 +44,9 @@
 }
 
 @keyframes ripple {
+    50% {
+        opacity: 1;
+    }
     100% {
         opacity: 0;
         transform: scale(5);

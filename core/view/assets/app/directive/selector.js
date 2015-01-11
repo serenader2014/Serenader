@@ -16,31 +16,32 @@
 
                 this.addOption = function (option) {
                     if ($scope.options.length === 0 && !$scope.$eval($attrs.ngModel)) {
-                        $scope.current = option.value;
+                        $scope.current = {value: option.value, name: option.name};
                     }
-                    $scope.options.push(option.value);
+                    $scope.options.push({value: option.value, name: option.name});
                 };
 
                 this.isSelected = function (option) {
-                    return $scope.current === option.value;
+                    return $scope.current.value === option.value;
                 };
 
                 this.select = function (option) {
-                    $scope.current = option.value;
+                    $scope.current = {value: option.value, name: option.name};
                     $scope.isListShown = false;
                 };
             }],
             link: function ($scope, $elem, $attrs, ctrl) {
-                $scope.$watch('current', function (value) {
+                $scope.$watch('current.value', function (value) {
                     if (value) {
                         ctrl.$setViewValue(value);
                     }
                 });
                 $scope.$watch($attrs.ngModel, function (value) {
-                    $scope.current = value;
+                    $scope.current.value = value;
                 });
                 ctrl.$render = function () {
-                    $scope.current = ctrl.$viewVlaue;
+                    $scope.current = {value: '', name: ''};
+                    $scope.current.value = ctrl.$viewVlaue;
                 };
             }
         };
@@ -48,9 +49,10 @@
     .directive('selectorList', function () {
         return {
             require: '^selector',
-            template: '<li ng-class="{selected: isSelected()}" ng-click="select()">{{value}}</li>',
+            template: '<li ng-class="{selected: isSelected()}" ng-click="select()">{{name || value}}</li>',
             scope: {
-                value: '@'
+                value: '@',
+                name: '@'
             },
             restrict: 'AE',
             link: function ($scope, $elem, $attrs, parentCtrl) {

@@ -44,6 +44,7 @@ module.exports = function (grunt) {
         'app/directive/selector.js',
         'app/directive/dialog.js',
         'app/directive/img-thumb.js',
+        'app/directive/ripple.js',
         'app/service/dashboard.js'
     ];
 

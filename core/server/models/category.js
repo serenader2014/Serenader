@@ -31,8 +31,8 @@ CategorySchema.statics.getOneById = function (id) {
 CategorySchema.statics.delete = function (id) {
     return this.findByIdAndRemoveAsync(id);
 };
-CategorySchema.statics.decreaseCount = function (name) {
-    return this.findOneAsync({name: name}).then(function (category) {
+CategorySchema.statics.decreaseCount = function (id) {
+    return this.findByIdAsync(id).then(function (category) {
         if (category) {
             category.count = category.count - 1;
             return category.saveAsync();
@@ -42,14 +42,14 @@ CategorySchema.statics.decreaseCount = function (name) {
         }
     });
 };
-CategorySchema.statics.increaseCount = function (name) {
-    return this.findOneAsync({name: name}).then(function (category) {
+CategorySchema.statics.increaseCount = function (id) {
+    return this.findByIdAsync(id).then(function (category) {
         if (category) {
             category.count = category.count + 1;
             return category.saveAsync();
         } else {
             console.log('找不到该分类：' + name);
-            return;            
+            return;
         }
     });
 };
