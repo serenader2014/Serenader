@@ -48,7 +48,7 @@
     .category-content(ng-class='{show:isCategoryShown}')
         p 文章分类
         ul.categories-list
-            li(ng-repeat='category in categories')
+            li(ng-repeat='category in categories', ng-class='{active:category._id===currentCate}')
                 a(href='javascript:;', ripple, ng-click='switchCategory(category)')
                     | {{category.name}}
                     span.category-count ( {{category.count}} )

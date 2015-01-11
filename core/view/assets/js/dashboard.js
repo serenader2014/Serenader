@@ -112,7 +112,7 @@
                 }
             };
             $scope.switchCategory = function (category) {
-                if ($scope.currentCate) {
+                if ($scope.currentCate === category._id) {
                     $scope.currentCate = '';
                 } else {
                     $scope.currentCate = category._id;
