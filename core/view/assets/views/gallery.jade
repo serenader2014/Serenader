@@ -1,0 +1,15 @@
+.album-list
+    ul
+        li.new-album
+            form(name='new-album', ng-submit='createNewAlbum()')
+                input(type='text', name='album-name', ng-model='newAlbum.name', ng-model-options='{updateOn: "blur"}')/
+                textarea(ng-model='newAlbum.desc', name='album-desc')
+                .album-private
+                    input(type='checkbox', ng-model='newAlbum.private')
+                    label(for='') 私密相册
+                button.btn.btn-blue(type='submit', ripple) 创建
+        li(ng-repeat='album in albums')
+            a.delete-album(href='javascript:;', ng-click='delete(album)')
+                i.md-delete
+            span {{album.name}}
+            span {{album.desc}}

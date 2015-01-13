@@ -25,15 +25,15 @@ function getAlbum (options) {
 }
 
 function getPublicAlbums (user) {
-    Album.getPublicAlbums().then(function (albums) {
+    return Album.getPublicAlbums().then(function (albums) {
         if (user) {
-            return Album.getUserPrivateAlbum(user.uid).then(function (a) {
+            return Album.getUserPrivateAlbums(user.uid).then(function (a) {
                 return albums.concat(a);
             });
         } else {
             return albums;
         }
-    }); 
+    });
 }
 
 function checkExist (options) {
@@ -67,6 +67,14 @@ function checkOwner (options, user) {
     });
 }
 
+function getUserAlbums (currentUser, targetUser) {
+    if (currentUser && currentUser.uid === targetUser) {
+        return Album.getUserAllAlbums(targetUser);
+    } else {
+        return Album.getUserPublicAlbums(targetUser);
+    }
+}
+
 module.exports = function (router) {
     router.get(url.gallery, function (req, res) {
         var user = req.session.user;
@@ -90,13 +98,25 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.newGallery, function (req, res) {
+    router.get(url.user + '/:uid' + url.gallery, function (req, res) {
+        var user = req.session.user,
+            uid = validator.trim(req.params.uid);
+
+        getUserAlbums(user, uid).then(function (albums) {
+            res.json(albums);
+        }).catch(function (err) {
+            res.json(err);
+        });
+    });
+
+    router.post(url.gallery, function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
         }
         var name = validator.trim(req.body.name),
             desc = validator.trim(req.body.desc),
+            slug = validator.trim(req.body.slug),
             userName = req.session.user.uid,
             private = validator.trim(req.body.private);
 
@@ -122,11 +142,12 @@ module.exports = function (router) {
                 Album.create({
                     name: name,
                     desc: desc,
+                    slug: slug,
                     user: userName,
                     cover: '/img/default_album.png',
                     private: private
-                }).then(function () {
-                    res.json({ret: 0});
+                }).then(function (album) {
+                    res.json({ret: 0, album: album});
                 }).catch(function (err) {
                     res.json({ret: -1, error: err.message || err});
                     return false;
@@ -268,7 +289,7 @@ module.exports = function (router) {
                 });
             }, Promise.resolve());
         }).then(function () {
-            return Album.deleteAlbum(id);
+            return Album.delete(id);
         }).then(function () {
             return fs.removeAsync(root + type + '/' + userName + '/gallery/' + id);
         }).then(function () {

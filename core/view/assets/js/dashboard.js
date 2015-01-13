@@ -243,9 +243,46 @@
             });
         }
     ])
-    .controller('galleryController', ['$scope', '$rootScope',
-        function ($scope, $rootScope) {
+    .controller('galleryController', ['$scope', '$rootScope', 'Gallery', 'Slug',
+        function ($scope, $rootScope, Gallery, Slug) {
             $rootScope.title = '相册';
+            Gallery.common.getAll(function (response) {
+                $scope.albums = response;
+            });
+            $scope.createNewAlbum = function () {
+                Gallery.common.new({
+                     name: $scope.newAlbum.name,
+                     desc: $scope.newAlbum.desc,
+                     private: $scope.newAlbum.private || false,
+                     slug: $scope.newAlbum.slug || ''
+                }, function (response) {
+                    if (response.ret === 0) {
+
+                    } else {
+
+                    }
+                    console.log(response);
+                }, function (err) {
+
+                });
+            };
+            $scope.newAlbum = {};
+            $scope.$watch('newAlbum.name', function (value) {
+                if (value) {
+                    Slug.generate({}, {
+                        slug: value,
+                    }, function (response) {
+                        $scope.newAlbum.slug = response.slug;
+                    });
+                }
+            });
+            $scope.delete = function (album) {
+                Gallery.common.delete({id: album._id}, function (response) {
+                    console.log(response);
+                }, function (err) {
+                    console.log(err);
+                });
+            };
         }
     ])
     .controller('fileController', ['$scope', '$rootScope',

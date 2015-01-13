@@ -16,6 +16,20 @@
 
 
     }])
+    .factory('Gallery', ['$resource', function ($resource) {
+        return {
+            common: $resource(url.api + url.gallery + '/:id', {}, {
+                getAll: {method: 'GET', params: {id: ''}, isArray: true},
+                new: {method: 'POST', params: {id: ''}},
+                update: {method: 'PUT'},
+                delete: {method: 'DELETE'},
+                get: {method: 'GET'}
+            }),
+            user: $resource(url.api + url.user + '/:name' + url.gallery, {}, {
+                get: {method: 'GET', isArray: true}
+            })
+        };
+    }])
     .factory('User', ['$resource', function ($resource) {
         return $resource(url.api + url.currentUser, {}, {
             current: {method: 'GET'}
