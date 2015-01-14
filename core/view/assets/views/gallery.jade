@@ -2,7 +2,7 @@
     ul
         li.new-album
             form(name='new-album', ng-submit='createNewAlbum()')
-                input(type='text', name='album-name', ng-model='newAlbum.name', ng-model-options='{updateOn: "blur"}')/
+                md-input(name='album-name', ng-model='newAlbum.name', title='相册名称', desc='新的相册的名称。')
                 textarea(ng-model='newAlbum.desc', name='album-desc')
                 .album-private
                     input(type='checkbox', ng-model='newAlbum.private')
