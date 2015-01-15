@@ -1,8 +1,13 @@
 .album-list {
     li {
         display: inline-block;
-        box-shadow: $shadow-1;
+        position: relative;
+        width: 22rem;
+        height: 27rem;
         padding: 1rem;
+        margin: 0 0 1rem 1rem;
+        vertical-align: top;
+        box-shadow: $shadow-1;
         background: $white;
     }
 }
@@ -10,12 +15,48 @@
     input[type="text"] {
         display: block;
         height: 3.5rem;
-        width: 25rem;
+        width: 100%;
+        padding: 0 1rem;
+        outline: none;
+        display: block;
     }
     textarea {
         display: block;
         width: 100%;
         height: 14rem;
         margin: 1rem 0;
+        outline: none;
+        border: 1px solid $grey;
     }
+
+    .submit-btn {
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
+.delete-album {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.5rem;
+    color: $red;
+    font-size: 1.5rem;
+    background: rgba(0,0,0,0.2);
+}
+.album-cover {
+    height: 15rem;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+}
+.album-name {
+    font-size: 1.8rem;
+    margin: 1rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid $light-grey;
+    color: $dark-grey;
+}
+.album-desc {
+    font-size: 1.3rem;
+    color: $grey;
 }

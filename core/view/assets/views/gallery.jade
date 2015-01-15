@@ -2,14 +2,15 @@
     ul
         li.new-album
             form(name='new-album', ng-submit='createNewAlbum()')
-                md-input(name='album-name', ng-model='newAlbum.name', title='相册名称', desc='新的相册的名称。')
+                input(ng-model='newAlbum.name', name='album-name', type='text')
                 textarea(ng-model='newAlbum.desc', name='album-desc')
                 .album-private
-                    input(type='checkbox', ng-model='newAlbum.private')
-                    label(for='') 私密相册
-                button.btn.btn-blue(type='submit', ripple) 创建
+                    input#private(type='checkbox', ng-model='newAlbum.private')
+                    label(for='private') 私密相册
+                button.btn.btn-blue.submit-btn(type='submit', ripple) 创建
         li(ng-repeat='album in albums')
             a.delete-album(href='javascript:;', ng-click='delete(album)')
                 i.md-delete
-            span {{album.name}}
-            span {{album.desc}}
+            .album-cover(style='background-image: url({{album.cover}})')
+            h3.album-name {{album.name}}
+            p.album-desc {{album.desc}}

@@ -248,6 +248,9 @@
             $rootScope.title = '相册';
             Gallery.common.getAll(function (response) {
                 $scope.albums = response;
+                angular.forEach($scope.albums, function (album) {
+                    album.cover = assets.server + album.cover;
+                });
             });
             $scope.createNewAlbum = function () {
                 Gallery.common.new({
