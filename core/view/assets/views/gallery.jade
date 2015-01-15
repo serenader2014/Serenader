@@ -8,9 +8,15 @@
                     input#private(type='checkbox', ng-model='newAlbum.private')
                     label(for='private') 私密相册
                 button.btn.btn-blue.submit-btn(type='submit', ripple) 创建
-        li(ng-repeat='album in albums')
-            a.delete-album(href='javascript:;', ng-click='delete(album)')
-                i.md-delete
-            .album-cover(style='background-image: url({{album.cover}})')
-            h3.album-name {{album.name}}
-            p.album-desc {{album.desc}}
+        li.album(ng-repeat='album in albums')
+            a.delete-album(href='javascript:;', ng-click='delete(album)'): i.md-delete
+            span.album-private(ng-show='album.private'): i.md-lock
+            .album-cover(style='background-image: url({{assets.server + album.cover}})')
+            h3.album-name: a(href='#/gallery/{{album._id}}', title='{{album.name}}') {{album.name | ellipsis:10}} ({{album.count}})
+            p.album-desc(title='{{album.desc}}') {{album.desc | ellipsis:50}}
+dialog-box(ng-show='confirmDelete', title='确认删除相册', cancel='confirmDelete=false', confirm='deleteAlbum()')
+    | 该操作将删除该相册。一旦删除相册，相册内的相片将会一同被删除。请谨慎操作！
+msg-box(ng-show='deleteStatus===0', callback='deleteStatus=undefined') {{message}}
+msg-box(ng-show='deleteStatus===-1', callback='deleteStatus=undefined', type='error') {{message}}
+msg-box(ng-show='newAlbumStatus===0', callback='newAlbumStatus=undefined') {{message}}
+msg-box(ng-show='newAlbumStatus===-1', callback='newAlbumStatus=undefined', type='error') {{message}}

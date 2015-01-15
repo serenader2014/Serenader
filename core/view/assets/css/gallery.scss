@@ -1,11 +1,15 @@
 .album-list {
+    height: 100%;
+    overflow: auto;
+    padding: 1.5rem;
+
     li {
         display: inline-block;
         position: relative;
         width: 22rem;
         height: 27rem;
         padding: 1rem;
-        margin: 0 0 1rem 1rem;
+        margin: 0 1.5rem 1.5rem 0;
         vertical-align: top;
         box-shadow: $shadow-1;
         background: $white;
@@ -17,6 +21,7 @@
         height: 3.5rem;
         width: 100%;
         padding: 0 1rem;
+        border: 1px solid $grey;
         outline: none;
         display: block;
     }
@@ -34,29 +39,41 @@
         width: 100%;
     }
 }
-.delete-album {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0.5rem;
-    color: $red;
-    font-size: 1.5rem;
-    background: rgba(0,0,0,0.2);
-}
-.album-cover {
-    height: 15rem;
-    width: 100%;
-    background-size: cover;
-    background-position: center;
-}
-.album-name {
-    font-size: 1.8rem;
-    margin: 1rem 0;
-    padding-top: 1rem;
-    border-top: 1px solid $light-grey;
-    color: $dark-grey;
-}
-.album-desc {
-    font-size: 1.3rem;
-    color: $grey;
+.album {
+    .delete-album {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.5rem;
+        color: $red;
+        font-size: 1.5rem;
+        background: rgba(0,0,0,0.2);
+    }
+
+    .album-cover {
+        height: 15rem;
+        width: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+    .album-name a {
+        display: block;
+        margin: 1rem 0;
+        padding-top: 1rem;
+        border-top: 1px solid $light-grey;
+        font-size: 1.8rem;
+        color: $dark-grey;
+    }
+    .album-desc {
+        font-size: 1.3rem;
+        color: $grey;
+        line-height: 1.5;
+    }
+    .album-private {
+        position: absolute;
+        top: 15rem;
+        right: 1rem;
+        font-size: 2rem;
+        color: $dark-grey;
+    }
 }

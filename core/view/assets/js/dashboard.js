@@ -8,6 +8,15 @@
         'appModule',
         'angularFileUpload'
         ])
+    .filter('ellipsis', [function () {
+        return function (text, length) {
+            if (text.length < length) {
+                return text;
+            } else {
+                return text.substring(0, length) + '...';
+            }
+        };
+    }])
     .controller('appController', ['$scope',
         function ($scope) {
             $scope.url = url;
@@ -248,9 +257,6 @@
             $rootScope.title = '相册';
             Gallery.common.getAll(function (response) {
                 $scope.albums = response;
-                angular.forEach($scope.albums, function (album) {
-                    album.cover = assets.server + album.cover;
-                });
             });
             $scope.createNewAlbum = function () {
                 Gallery.common.new({
@@ -260,13 +266,16 @@
                      slug: $scope.newAlbum.slug || ''
                 }, function (response) {
                     if (response.ret === 0) {
-
+                        $scope.newAlbumStatus = 0;
+                        $scope.message = '创建相册成功！';
+                        $scope.albums.push(response.album);
                     } else {
-
+                        $scope.newAlbumStatus = -1;
+                        $scope.message = '创建相册失败！' + response.error;
                     }
-                    console.log(response);
                 }, function (err) {
-
+                    $scope.newAlbumStatus = -1;
+                    $scope.message = err;
                 });
             };
             $scope.newAlbum = {};
@@ -280,10 +289,27 @@
                 }
             });
             $scope.delete = function (album) {
-                Gallery.common.delete({id: album._id}, function (response) {
-                    console.log(response);
+                $scope.currentAlbum = album;
+                $scope.confirmDelete = true;
+            };
+            $scope.deleteAlbum = function () {
+                $scope.confirmDelete = false;
+                if (!$scope.currentAlbum) {
+                    return false;
+                }
+                Gallery.common.delete({id: $scope.currentAlbum._id}, function (response) {
+                    if (response.ret === 0) {
+                        $scope.deleteStatus = 0;
+                        $scope.message = '删除相册成功！';
+                        $scope.albums.splice($scope.albums.indexOf($scope.currentAlbum), 1);
+                    } else {
+                        $scope.deleteStatus = -1;
+                        $scope.message = '删除相册失败！' + response.error;
+                    }
+
                 }, function (err) {
-                    console.log(err);
+                    $scope.deleteStatus = -1;
+                    $scope.message = '删除相册失败！' + err;
                 });
             };
         }

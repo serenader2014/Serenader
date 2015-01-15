@@ -144,7 +144,7 @@ module.exports = function (router) {
                     desc: desc,
                     slug: slug,
                     user: userName,
-                    cover: '/img/default_album.png',
+                    cover: '/default_album.png',
                     private: private
                 }).then(function (album) {
                     res.json({ret: 0, album: album});
