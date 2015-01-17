@@ -314,6 +314,17 @@
             };
         }
     ])
+    .controller('albumController', ['$scope', '$rootScope', 'Gallery', '$routeParams',
+        function ($scope, $rootScope, Gallery, $routeParams) {
+            Gallery.common.get({id: $routeParams.id}, function (data) {
+                $scope.album = data;
+                console.log(data);
+                $rootScope.title = data.name;
+            }, function (err) {
+                console.log(err);
+            });
+        }
+    ])
     .controller('fileController', ['$scope', '$rootScope',
         function ($scope, $rootScope) {
             $rootScope.title = '文件管理';
@@ -337,6 +348,10 @@
         .when(url.gallery, {
             templateUrl: assets.server + '/views/gallery.html',
             controller: 'galleryController',
+        })
+        .when(url.gallery + '/:id', {
+            templateUrl: assets.server + '/views/album.html',
+            controller: 'albumController'
         })
         .when(url.file, {
             templateUrl: assets.server + '/views/file.html',

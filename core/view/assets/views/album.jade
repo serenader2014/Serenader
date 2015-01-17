@@ -1,0 +1,19 @@
+.album-detail
+    .header
+        button.btn(ng-click='showMenu=!showMenu')
+            i.md-menu.left-icon
+            | 菜单
+        ul.header-menu(ng-show='showMenu')
+            li: button.btn 上传
+            li: button.btn 选择全部
+            li: button.btn 取消选择
+            li: button.btn 反选
+        button.btn.right
+            i.md-info.left-icon
+            | 相册信息
+
+    .image-list
+    .side-content
+        .album-cover(style='background-image: url({{assets.server + album.cover}})')
+        p {{album.name}}
+        p {{album.desc}}

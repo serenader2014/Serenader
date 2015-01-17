@@ -58,7 +58,7 @@
 
         form.new-category(name='category')
             input(type='text', placeholder='新分类名称', name='category-name', ng-model='newCategoryName')
-            button.btn.btn-blue(ng-click='newCategory()', ripple) 添加
+            button.btn.btn-blue.btn-raised(ng-click='newCategory()', ripple) 添加
 dialog-box(ng-show='isEditCategory', title='修改分类名', confirm='editCategory()', cancel='isEditCategory=false')
     md-input(name='categoryName', title='文章名称', desc='新的文章名称', ng-model='newCate', value='tmp.category', type='text')
 dialog-box(ng-show='isDeleteCategory', title='删除分类', confirm='deleteCategory()', cancel='isDeleteCategory=false')

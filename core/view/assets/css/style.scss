@@ -28,6 +28,14 @@ a {
     box-sizing: border-box;
 }
 
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
 .left-icon {
     margin-right: 0.5rem;
 }
@@ -216,7 +224,7 @@ a {
     height: 100%;
     width: 100%;
     padding: 6rem 1rem 1rem 7rem;
-    overflow: hidden;
+    overflow: auto;
 }
 
 @import "post";
