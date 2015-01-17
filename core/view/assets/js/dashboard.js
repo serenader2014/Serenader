@@ -10,6 +10,9 @@
         ])
     .filter('ellipsis', [function () {
         return function (text, length) {
+            if (!text) {
+                return text;
+            }
             if (text.length < length) {
                 return text;
             } else {
@@ -17,11 +20,14 @@
             }
         };
     }])
-    .controller('appController', ['$scope',
-        function ($scope) {
+    .controller('appController', ['$scope', '$rootScope',
+        function ($scope, $rootScope) {
             $scope.url = url;
             $scope.assets = assets;
             $scope.isUserProfileShown = false;
+            if ($(window).width() < 720) {
+                $rootScope.isMobile = true;
+            }
 
             $scope.toggleUserProfile = function () {
                 $scope.isUserProfileShown = !$scope.isUserProfileShown;
@@ -37,7 +43,7 @@
                 $scope.isSideMenuShown = !$scope.isSideMenuShown;
             };
 
-            $(window).on('click', function (event) {
+            $(window).on('click touchstart', function (event) {
                 var target = event.target;
 
                 if ($(target).parents('.sub-menu').length === 0 &&
@@ -135,14 +141,11 @@
             $scope.editPost = function () {
                 $location.path(url.post + '/' + $scope.currentPost._id);
             };
-            $scope.isCategoryShown = false;
-            $scope.toggleCategory = function () {
-                if ($(window).width() > 720) {
-                    return false;
-                }
+            $scope.isCategoryShown = true;
 
-                $scope.isCategoryShown = !$scope.isCategoryShown;
-            };
+            if ($rootScope.isMobile) {
+                $scope.isCategoryShown = false;
+            }
             $scope.tmp = {category: ''};
             $scope.showEditCategory = function (c) {
                 $scope.isEditCategory = true;
@@ -314,12 +317,19 @@
             };
         }
     ])
-    .controller('albumController', ['$scope', '$rootScope', 'Gallery', '$routeParams',
-        function ($scope, $rootScope, Gallery, $routeParams) {
+    .controller('albumController', ['$scope', '$rootScope', 'Gallery', '$routeParams', 'FileUploader',
+        function ($scope, $rootScope, Gallery, $routeParams, FileUploader) {
+            var uploader = $scope.uploader = new FileUploader({
+                url: url.api + url.upload + url.postUpload
+            });
+            $scope.isSideShown = true;
+            if ($rootScope.isMobile) {
+                $scope.showMenu = false;
+                $scope.isSideShown = false;
+            }
             Gallery.common.get({id: $routeParams.id}, function (data) {
                 $scope.album = data;
-                console.log(data);
-                $rootScope.title = data.name;
+                $rootScope.title = '相册：' + (data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name);
             }, function (err) {
                 console.log(err);
             });

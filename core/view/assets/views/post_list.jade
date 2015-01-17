@@ -3,7 +3,7 @@
         li.post: button.btn.new-post-btn(ng-click='goToNewPost()', ripple)
             i.md-add.left-icon
             | 新文章
-        li.category: button.btn.category-btn(ng-click='toggleCategory()', ripple='black')
+        li.category: button.btn.category-btn(ng-click='isCategoryShown=!isCategoryShown', ripple='black', ng-show='isMobile')
             i.md-sort.left-icon
             | 分类
     ul.posts-list

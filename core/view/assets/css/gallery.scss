@@ -90,7 +90,7 @@
         right: 0;
         width: 30rem;
         height: 100%;
-        padding: 2rem 3rem;
+        padding: 6rem 3rem 2rem;
         overflow-y: auto;
         overflow-x: hidden;
         box-shadow: -2px 0 5px rgba(0,0,0,0.2);
@@ -99,6 +99,7 @@
         width: 23rem;
         height: 23rem;
         border-radius: 100%;
+        margin: 0 auto 2rem;
         border: 1px solid $grey;
         background-position: center;
         background-size: cover;
@@ -115,6 +116,42 @@
         z-index: $album-header-index;
         button {
             padding: 0.7rem 1rem;
+        }
+
+    }
+
+    .header-menu {
+        li {
+            display: inline-block;
+        }
+    }
+
+    .album-name {
+        font-size: 1.8rem;
+        line-height: 1.5;
+        color: $content-color;
+    }
+
+    .section {
+        margin-bottom: 1.5rem;
+    }
+
+    .section-name {
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .album-desc {
+        font-size: 1.4rem;
+        line-height: 1.4;
+        color: $grey;
+    }
+
+    .album-action {
+        button {
+            width: 100%;
+            margin-bottom: 1rem;
+            padding: 1rem;
         }
     }
 }
