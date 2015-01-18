@@ -124,7 +124,7 @@ dialog-box(ng-show='showHelp', cancel='showHelp=false', confirm='showHelp=false'
                 td Ctrl + Alt + Enter
                 td 发表文章
 dialog-box(title='文章设置', ng-show='postSetting', cancel='postSetting=false', confirm='postSetting=false', outer='test')
-    md-input(name='slug', type='text', title='Slug', ng-model='slug', desc='文章的唯一URL', value='post.slug')
+    md-input(name='slug', type='text', title='Slug', ng-model='outer.slug', desc='文章的唯一URL', value='post.slug')
     md-input(name='createTime', type='text', title='创建时间', ng-model='createTime', desc='文章的创建时间。', value='post.createDate')
     button.delete-post.btn.btn-danger.btn-red(ng-click='showDeletePost()') 删除文章
 dialog-box(title='删除文章', ng-show='showDelete', cancel='showDelete=false', confirm='deletePost()')

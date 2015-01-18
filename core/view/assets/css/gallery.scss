@@ -94,6 +94,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+        background: $white;
     }
     .album-cover {
         width: 23rem;
@@ -153,5 +154,61 @@
             margin-bottom: 1rem;
             padding: 1rem;
         }
+    }
+    .image-list {
+        padding: 5rem 0 0 0;
+        height: 100%;
+        overflow: auto;
+        margin-right: 30rem;
+    }
+    .image {
+        display: inline-block;
+        padding: 1rem;
+        margin: 0 1rem 1rem 0;
+        border: 1px solid $grey;
+        a {
+            display: block;
+            width: 20rem;
+            height: 20rem;
+            background-size: cover;
+            background-position: center;
+        }
+    }
+    .upload-progress {
+        .progress-bar-outer {
+            margin: 0;
+        }
+    }
+}
+.selected-item {
+    button {
+        padding: 1rem 2rem;
+        margin-right: 1rem;
+    }
+    .main-menu {
+        padding: 2rem;
+    }
+    .upload-item {
+        padding: 2rem;
+        margin-bottom: 1rem;
+        border: 1px solid $light-grey;
+        border-radius: 1rem;
+        line-height: 1.5;
+        p {
+            font-weight: 800;
+            color: $dark-grey;
+            > span {
+                color: $content-color;
+                font-weight: 400;
+            }
+        }
+    }
+    .img-name {
+    }
+    .img-size {
+    }
+    .img-progress {
+    }
+    .img-action {
     }
 }

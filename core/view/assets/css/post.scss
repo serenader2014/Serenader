@@ -221,6 +221,7 @@
     margin: 1rem auto;
     padding: 2rem 0;
     border: 1px dashed $grey;
+    text-align: center;
     background: $light-grey;
     input[type='file'] {
         position: absolute;
@@ -246,14 +247,19 @@
 }
 
 .upload-progress {
+    display: inline-block;
+    width: 100%;
     .progress-bar-outer {
+        display: inline-block;
         position: relative;
+        width: 100%;
         height: 0.4rem;
         margin-top: 3rem;
         background: $light-grey;
     }
 
     .progress-bar-inner {
+        display: inline-block;
         position: absolute;
         top: 0;
         left: 0;

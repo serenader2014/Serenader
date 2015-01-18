@@ -171,7 +171,7 @@
     .dialog-container {
         position: relative;
         margin: auto;
-        max-width: 70rem;
+        max-width: 100rem;
         min-width: 30rem;
         width: 90%;
         min-height: 20rem;
@@ -211,7 +211,7 @@
         padding: 4.6rem 2.4rem 6rem;
         font-size: $normal-font-size;
         color: $content-color;
-        max-height: 40rem;
+        max-height: 50rem;
         overflow: auto;
     }
 }

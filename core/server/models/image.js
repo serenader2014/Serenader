@@ -19,26 +19,14 @@ ImageSchema.statics.create = function (options) {
     img.album = options.album;
     img.cover = options.cover;
     img.name = options.name;
-    return img.saveAsync().then(function () {
-        return Album.increaseCount(options.album);
-    });
+    return img.saveAsync();
 };
 ImageSchema.statics.delete = function (id) {
-    var self = this;
-    return this.findByIdAsync(id).then(function (image) {
-        return Album.decreaseCount(image.album);
-    }).then(function () {
-        return self.findByIdAndRemoveAsync(id);
-    });
+    return this.findByIdAndRemoveAsync(id);
 };
 
 ImageSchema.statics.deleteByName = function (name) {
-    var self = this;
-    return this.findOneAsync({name: name}).then(function (image) {
-        return Album.decreaseCount(image.album);
-    }).then(function () {
-        return self.findOneAndRemoveAsync({name: name});
-    });
+    return this.findOneAndRemoveAsync({name: name});
 };
 
 ImageSchema.statics.getAllImages = function () {

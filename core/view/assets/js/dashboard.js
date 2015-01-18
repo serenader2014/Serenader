@@ -224,8 +224,12 @@
     .controller('editPostController', ['$scope', '$rootScope', '$routeParams', '$interval', '$location', 'Post', 'Category', 'Slug', 'FileUploader',
         function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, FileUploader) {
             $rootScope.title = '编辑文章';
+            $scope.test = {
+                slug: 'somet'
+            };
             Post.common.get({id: $routeParams.id}, function (response) {
                 if (response._id) {
+                    $rootScope.post =
                     $scope.post = response;
                     $scope.post.id = $routeParams.id;
                     $scope.post.content = response.markdown;
@@ -319,9 +323,7 @@
     ])
     .controller('albumController', ['$scope', '$rootScope', 'Gallery', '$routeParams', 'FileUploader',
         function ($scope, $rootScope, Gallery, $routeParams, FileUploader) {
-            var uploader = $scope.uploader = new FileUploader({
-                url: url.api + url.upload + url.postUpload
-            });
+            var uploader = $scope.uploader = new FileUploader();
             $scope.isSideShown = true;
             if ($rootScope.isMobile) {
                 $scope.showMenu = false;
@@ -330,9 +332,64 @@
             Gallery.common.get({id: $routeParams.id}, function (data) {
                 $scope.album = data;
                 $rootScope.title = '相册：' + (data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name);
+                uploader.url = url.api + url.gallery + '/' + $scope.album.slug;
             }, function (err) {
                 console.log(err);
             });
+            $scope.reSelect = function () {
+                uploader.clearQueue();
+                $('#file-input').val('');
+                $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
+            };
+
+
+            function lightbox (event) {
+                event.preventDefault();
+                var index = $('.image a').index($(this));
+                blueimp.Gallery($('.image a'), {
+                    index: index
+                });
+            }
+            $('body').on('click', '.image a', lightbox);
+
+            uploader.onAfterAddingFile = function (item) {
+                item.onComplete = function (response, status) {
+                    if (status === 200) {
+                        angular.forEach(response[0], function (img) {
+                            if (typeof img === 'object') {
+                                $scope.album.images.push(img);
+                            }
+                        });
+                    }
+                };
+                $scope.isAdded = true;
+            };
+
+            uploader.onProgressAll = function () {
+                $scope.isUploading = true;
+            };
+
+            $scope.cancelUpload = function (item) {
+                item.cancel();
+                $scope.cancelWarning = false;
+            };
+
+            uploader.onCompleteAll = function () {
+                $scope.isFinished = true;
+            };
+
+            uploader.onCancelItem = function () {
+                $scope.isUploading = false;
+            };
+
+            uploader.onErrorItem = function (item, response, status) {
+                $scope.isFinished = true;
+                $scope.isError = true;
+                $scope.errorItem = {
+                    item: item,
+                    code: status
+                };
+            };
         }
     ])
     .controller('fileController', ['$scope', '$rootScope',

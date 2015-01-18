@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     validator = require('validator'),
     fs = Promise.promisifyAll(require('fs-extra')),
-
+    _ = require('underscore'),
     log = require('../../utils/log')(),
     Album = require('../../models').Album,
     Image = require('../../models').Image,
@@ -92,7 +92,17 @@ module.exports = function (router) {
             id = validator.trim(req.params.id);
 
         checkOwner({type: 'id', value: id}, user).then(function (album) {
-            res.json(album);
+            return Image.findOneAlbumImage(id).then(function (images) {
+                res.json({
+                    _id: album._id,
+                    images: images,
+                    name: album.name,
+                    slug: album.slug,
+                    desc: album.desc,
+                    user: album.user,
+                    cover: album.cover,
+                });
+            });
         }).catch(function (err) {
             res.json(err.message || err);
         });
@@ -156,38 +166,36 @@ module.exports = function (router) {
         });
     });
 
-    router.post(url.gallery + '/:type/:slug', function (req, res) {
+    router.post(url.gallery + '/:slug', function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1,error: '权限不足。'});
             return false;
         }
         var albumSlug =  validator.trim(decodeURIComponent(req.params.slug)),
-            type = validator.trim(decodeURIComponent(req.params.type)),
-            userName = req.session.user.uid,
-            dir = root + type + '/' + userName + '/gallery/';
-
-        if (type !== 'public' && type !== 'private') {
-            res.json({ error: 'private键值类型错误。', ret: -1 });
-            return false;
-        }
+            userName = req.session.user.uid;
 
         checkOwner({type: 'slug', value: albumSlug}, req.session.user).then(function (album) {
+            var type = album.private ? 'private' : 'public',
+                dir = root + type + '/' + userName + '/gallery/';
             fileUpload(req, res, {
                 uploadDir: dir + album.id,
                 baseUrl: '/static/' + userName + '/gallery/' + album.id,
                 deleteUrl: url.api + url.gallery + '/' + type + '/' + albumSlug,
                 acceptFileTypes: /\.(gif|jpe?g|png)$/i
             }).then(function (files) {
+                var imgs = [];
                 return files.reduce(function (p, file) {
                     return p.then(function () {
                         return Image.create({
                             path: file.url,
                             album: album.id,
                             thumb: file.imageVersions.thumbnail
+                        }).then(function (img) {
+                            imgs.push(img);
                         });
                     });
                 }, Promise.resolve()).then(function () {
-                    res.json(files);
+                    res.json(imgs);
                 });
             });
         }).catch(function (err) {
