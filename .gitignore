@@ -19,10 +19,10 @@ content
 core/view/build/
 core/view/assets/app/template/
 core/view/assets/img/
-core/view/assets/css/fonts/
+core/view/assets/fonts/
 core/view/assets/ace/
-core/view/assets/css/build/*.css
-!core/view/assets/css/build/rainbow.css
+core/view/assets/css/*.css
+!core/view/assets/css/rainbow.css
 core/view/assets/js/vendor/
 core/view/assets/views/*.html
 core/view/assets/js/build/

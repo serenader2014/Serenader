@@ -73,16 +73,16 @@ module.exports = function (grunt) {
     // sass 文件的路径
     sassFile = [
         {
-            src: 'core/view/assets/css/style.scss',
-            dest: 'core/view/assets/css/build/style.css'
+            src: 'core/view/assets/scss/style.scss',
+            dest: 'core/view/assets/css/style.css'
         },
         {
-            src: 'core/view/assets/css/sign.scss',
-            dest: 'core/view/assets/css/build/sign.css'
+            src: 'core/view/assets/scss/sign.scss',
+            dest: 'core/view/assets/css/sign.css'
         },
         {
-            src: 'core/view/assets/css/markdown-html.scss',
-            dest: 'core/view/assets/css/build/markdown-html.css'
+            src: 'core/view/assets/scss/markdown-html.scss',
+            dest: 'core/view/assets/css/markdown-html.css'
         }
     ];
 
@@ -126,11 +126,11 @@ module.exports = function (grunt) {
                 ]
             },
             sass: {
-                files: ['core/view/assets/css/*.scss'],
+                files: ['core/view/assets/scss/*.scss'],
                 tasks: ['css']
             },
             jade: {
-                files: ['core/view/assets/views/*.jade', 'core/view/assets/app/**/*.jade'],
+                files: ['core/view/assets/jade/*.jade', 'core/view/assets/app/**/*.jade'],
                 tasks: ['jade']
             },
             libs: {
@@ -153,13 +153,13 @@ module.exports = function (grunt) {
                     {
                         cwd: bowerDir + 'material-design-icon/fonts/',
                         src: ['**'],
-                        dest: 'core/view/assets/css/fonts/',
+                        dest: 'core/view/assets/fonts/',
                         expand: true
                     },
                     {
                         cwd: bowerDir + 'material-design-icon/css/',
                         src: 'md-icon.min.css',
-                        dest: 'core/view/assets/css/build/',
+                        dest: 'core/view/assets/css/',
                         expand: true
                     }
                 ]
@@ -170,7 +170,7 @@ module.exports = function (grunt) {
                     {
                         cwd: bowerDir + 'blueimp-gallery/css/',
                         src: 'blueimp-gallery.min.css',
-                        dest: 'core/view/assets/css/build/',
+                        dest: 'core/view/assets/css/',
                         expand: true
                     },
                     {
@@ -244,7 +244,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: true,
-                        src: 'core/view/assets/views/*.jade',
+                        src: 'core/view/assets/jade/*.jade',
                         dest: 'core/view/assets/views/',
                         ext: '.html'
                     },
@@ -264,12 +264,12 @@ module.exports = function (grunt) {
             default: {
                 files: [
                     {
-                        src: 'core/view/assets/css/build/style.css',
-                        dest: 'core/view/assets/css/build/style.css'
+                        src: 'core/view/assets/css/style.css',
+                        dest: 'core/view/assets/css/style.css'
                     },
                     {
-                        src: 'core/view/assets/css/build/sign.css',
-                        dest: 'core/view/assets/css/build/sign.css'
+                        src: 'core/view/assets/css/sign.css',
+                        dest: 'core/view/assets/css/sign.css'
                     }
                 ]
             }
