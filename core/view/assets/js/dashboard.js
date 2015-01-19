@@ -342,15 +342,16 @@
                 $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
             };
 
-
-            function lightbox (event) {
+            $scope.lightbox = function (item, index, event) {
                 event.preventDefault();
-                var index = $('.image a').index($(this));
-                blueimp.Gallery($('.image a'), {
-                    index: index
-                });
-            }
-            $('body').on('click', '.image a', lightbox);
+                if ($scope.inSelectMode) {
+                    item.isSelected = !item.isSelected;
+                } else {
+                    blueimp.Gallery($('.image a'), {
+                        index: index + 1
+                    });
+                }
+            };
 
             uploader.onAfterAddingFile = function (item) {
                 item.onComplete = function (response, status) {
@@ -389,6 +390,16 @@
                     item: item,
                     code: status
                 };
+            };
+            $scope.selectAll = function () {
+                angular.forEach($scope.album.images, function (img) {
+                    img.isSelected = true;
+                });
+            };
+            $scope.reverseSelect = function () {
+                angular.forEach($scope.album.images, function (img) {
+                    img.isSelected = !img.isSelected;
+                });
             };
         }
     ])

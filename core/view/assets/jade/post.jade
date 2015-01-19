@@ -11,12 +11,12 @@ form.post-area(name='newpost')
                     | Markdown
                     span.post-status
                 ul
-                    li: button.btn.ripple.ripple-black.help-btn.md-help(type='button', ng-click='showHelp=true')
-                    li: button.btn.ripple.ripple-black.draft-btn.md-drafts(type='button', ng-click='saveDraft()')
-                    li: button.btn.ripple.ripple-black.image-btn.md-insert-photo(type='button', ng-click='showInsertImg=true')
-                    li: button.btn.ripple.ripple-black.preview-btn.md-pageview(type='button', ng-click='renderMobilePreview()', ng-class='{active: mobilePreview}')
-                    li: button.btn.ripple.ripple-black.post-setting-btn.md-settings(type='button', ng-click='postSetting=true')
-                    li: button.btn.ripple.ripple-black.fullscreen-btn(type='button', ng-click='fullscreen=!fullscreen', ng-class='{"md-fullscreen":!fullscreen,"md-fullscreen-exit":fullscreen}')
+                    li: button.btn.help-btn.md-help(type='button', ng-click='showHelp=true', ripple='black')
+                    li: button.btn.draft-btn.md-drafts(type='button', ng-click='saveDraft()', ripple='black')
+                    li: button.btn.image-btn.md-insert-photo(type='button', ng-click='showInsertImg=true', ripple='black')
+                    li: button.btn.preview-btn.md-pageview(type='button', ng-click='renderMobilePreview()', ng-class='{active: mobilePreview}', ripple='black')
+                    li: button.btn.post-setting-btn.md-settings(type='button', ng-click='postSetting=true', ripple='black')
+                    li: button.btn.fullscreen-btn(type='button', ng-click='fullscreen=!fullscreen', ng-class='{"md-fullscreen":!fullscreen,"md-fullscreen-exit":fullscreen}', ripple='black')
             .editor
                 textarea(ng-model='post.content') {{post.content}}
             .preview.markdown(ng-bind-html='markdownPreview', ng-class='{"mobile-preview": mobilePreview}')
@@ -64,17 +64,20 @@ dialog-box(ng-show='showInsertImg', cancel='showInsertImg=false', confirm='inser
                             .progress-bar-outer
                                 .progress-bar-inner(ng-style='{width: item.progress + "%"}')
                         .item-action
-                            button.btn.btn-yellow(
+                            button.btn.btn-yellow.btn-raised(
                                 ng-click='warning()',
+                                ripple,
                                 ng-disabled='!item.isUploading',
                                 ng-class='{"btn-disabled": !item.isUploading}') 取消上传
-                            button.btn.btn-blue(
+                            button.btn.btn-blue.btn-raised(
                                 ng-click='item.upload()',
+                                ripple,
                                 ng-disabled='item.isReady || item.isUploading || item.isSuccess',
                                 ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}'
                                 ) 开始上传
-                            button.btn.btn-green(
+                            button.btn.btn-green.btn-raised(
                                 ng-click='reSelect(item)',
+                                ripple,
                                 ng-disabled='item.isUploading',
                                 ng-class='{"btn-disabled": item.isUploading}') 重新选择
                         msg-box(callback='cancelUpload(item)', ng-show='cancelWarning') 确认要取消正在上传的图片？

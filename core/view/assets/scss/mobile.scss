@@ -64,6 +64,10 @@
         display: none;
     }
     .selected-item {
+        button {
+            width: 100%;
+            margin: 0 0 1rem 0;
+        }
         .item-info-text, .item-preview {
             display: block;
             width: 100%;
@@ -94,6 +98,12 @@
             margin: 0;
         }
 
+        .image {
+            width: 100%;
+            text-align: center;
+            margin: 0 0 1rem 0;
+        }
+
         .side-content {
             transform: translateX(100%);
             transition: all 0.2s;
@@ -101,6 +111,12 @@
         }
         .side-content.show {
             transform: translateX(0);
+        }
+    }
+    .dialog {
+        .dialog-container {
+            width: 100%;
+            height: 100%;
         }
     }
 }
