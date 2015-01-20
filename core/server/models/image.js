@@ -2,13 +2,10 @@ var Promise = require('bluebird'),
     mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
 
-    Album = require('./album'),
-
     ImageSchema = new Schema({
         path: String,
         album: String,
         thumb: String,
-        cover: Boolean,
         name: String
     });
 
@@ -17,7 +14,6 @@ ImageSchema.statics.create = function (options) {
     img.path = options.path;
     img.thumb = options.thumb;
     img.album = options.album;
-    img.cover = options.cover;
     img.name = options.name;
     return img.saveAsync();
 };

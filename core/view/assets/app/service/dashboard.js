@@ -30,6 +30,11 @@
             })
         };
     }])
+    .factory('deleteImg', ['$http', function ($http) {
+        return function (id, slug) {
+            return $http.delete(url.api + url.gallery + '/' + slug + '/' + id);
+        };
+    }])
     .factory('User', ['$resource', function ($resource) {
         return $resource(url.api + url.currentUser, {}, {
             current: {method: 'GET'}

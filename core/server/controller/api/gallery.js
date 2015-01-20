@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     validator = require('validator'),
+    path = require('path'),
     fs = Promise.promisifyAll(require('fs-extra')),
-    _ = require('underscore'),
     log = require('../../utils/log')(),
     Album = require('../../models').Album,
     Image = require('../../models').Image,
@@ -9,8 +9,7 @@ var Promise = require('bluebird'),
     config = require('../../../../config').config,
     root = config.root_dir + '/content/data/',
     url = config.url,
-    fileUpload = require('../../utils/upload'),
-    imageVersions = require('../api/upload').imageVersions;
+    fileUpload = require('../../utils/upload');
 
 function getAlbum (options) {
     var type = options.type,
@@ -101,6 +100,7 @@ module.exports = function (router) {
                     desc: album.desc,
                     user: album.user,
                     cover: album.cover,
+                    private: album.private
                 });
             });
         }).catch(function (err) {
@@ -189,6 +189,7 @@ module.exports = function (router) {
                         return Image.create({
                             path: file.url,
                             album: album.id,
+                            name: path.basename(file.url),
                             thumb: file.imageVersions.thumbnail
                         }).then(function (img) {
                             imgs.push(img);
@@ -215,8 +216,6 @@ module.exports = function (router) {
             slug = validator.trim(req.body.slug),
             private = req.body.private ;
 
-        private = private === 'true' ? true : (private === 'false' ? false : private);
-
         if (!name) {
             res.json({ ret: -1, error: '相册名称为空。' });
             return false;
@@ -229,6 +228,7 @@ module.exports = function (router) {
 
         checkOwner({type: 'id', value: id}, req.session.user).then(function () {
             return Album.update({
+                id: id,
                 name: name,
                 desc: description,
                 cover: cover,
@@ -238,39 +238,36 @@ module.exports = function (router) {
         }).then(function () {
             res.json({ret: 0});
         }).catch(function (err) {
+            console.log(3);
             res.json({ret: -1, error: err && err.message ? err.message : '权限不足。'});
         });
     });
 
-    router.delete(url.gallery + '/:type/:slug/:name', function (req, res) {
+    router.delete(url.gallery + '/:slug/:id', function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
         }
         var albumSlug = validator.trim(decodeURIComponent(req.params.slug)),
-            type = validator.trim(req.params.type),
-            name = validator.trim(decodeURIComponent(req.params.name)),
+            type,
+            id = validator.trim(decodeURIComponent(req.params.id)),
             userName = req.session.user.uid,
-            basePath = root + type + '/' + userName + '/gallery/';
-
-        if (type !== 'public' && type !== 'private') {
-            res.json({ret: -1,error: 'private键值类型错误。'});
-            return false;
-        }
+            basePath,
+            imgName;
 
         checkOwner({type: 'slug', value: albumSlug}, req.session.user).then(function (album) {
-            return Image.deleteByName(name).then(function () {
-                return fs.unlinkAsync(basePath + album.id + '/' + decodeURIComponent(name));
+            type = album.private ? 'private' : 'public';
+            basePath = root + type + '/' + userName + '/gallery/';
+            return Image.delete(id).then(function (deletedImg) {
+                imgName = decodeURIComponent(path.basename(deletedImg.path));
+                return fs.unlinkAsync(basePath + album.id + '/' + imgName);
             }).then(function () {
-                return Object.keys(imageVersions).reduce(function (pms, version) {
-                    return pms.then(function () {
-                        return fs.unlinkAsync(basePath + album.id + '/' + version + '/' + decodeURIComponent(name));
-                    });
-                }, Promise.resolve());
+                return fs.unlinkAsync(basePath + album.id + '/thumbnail/' + imgName);
             });
         }).then(function () {
             res.json({ret: 0});
         }).catch(function (err) {
+            log.error(err);
             res.json({ret: -1, error: err && err.message ? err.message : '权限不足。'});
         });
     });

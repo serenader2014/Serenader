@@ -265,6 +265,15 @@
             Gallery.common.getAll(function (response) {
                 $scope.albums = response;
             });
+            $scope.$watch('albums', function (albums) {
+                if (albums) {
+                    $scope.albums.forEach(function (album) {
+                        if (album.cover === '/default_album.png') {
+                            album.cover = assets.server + '/default_album.png';
+                        }
+                    });
+                }
+            }, true);
             $scope.createNewAlbum = function () {
                 Gallery.common.new({
                      name: $scope.newAlbum.name,
@@ -321,8 +330,16 @@
             };
         }
     ])
-    .controller('albumController', ['$scope', '$rootScope', 'Gallery', '$routeParams', 'FileUploader',
-        function ($scope, $rootScope, Gallery, $routeParams, FileUploader) {
+    .controller('albumController', [
+        '$scope',
+        '$rootScope',
+        '$routeParams',
+        '$location',
+        '$q',
+        'FileUploader',
+        'Gallery',
+        'deleteImg',
+        function ($scope, $rootScope, $routeParams, $location, $q, FileUploader, Gallery, deleteImg) {
             var uploader = $scope.uploader = new FileUploader();
             $scope.isSideShown = true;
             if ($rootScope.isMobile) {
@@ -331,6 +348,9 @@
             }
             Gallery.common.get({id: $routeParams.id}, function (data) {
                 $scope.album = data;
+                if ($scope.album.cover === '/default_album.png') {
+                    $scope.album.cover = assets.server + '/default_album.png';
+                }
                 $rootScope.title = '相册：' + (data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name);
                 uploader.url = url.api + url.gallery + '/' + $scope.album.slug;
             }, function (err) {
@@ -342,6 +362,63 @@
                 $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
             };
 
+            $scope.deleteFailed = [];
+
+            $scope.deleteImg = function () {
+                var targetImg = [],
+                    deferred = $q.defer();
+                deferred.resolve();
+                angular.forEach($scope.album.images, function (image) {
+                    if (image.isSelected) {
+                        targetImg.push(image);
+                    }
+                });
+                targetImg.reduce(function (promise, img) {
+                    return promise.then(function () {
+                        return deleteImg(img._id, $scope.album.slug).then(function (data) {
+                            if (data.data.ret === 0) {
+                                $scope.album.images.splice($scope.album.images.indexOf(img), 1);
+                            } else {
+                                $scope.deleteFailed.push({
+                                    image: $scope.album.images[img.index],
+                                    message: data.data.error
+                                });
+                            }
+                        });
+                    });
+                }, deferred.promise).catch(function (err) {
+                    console.error(err);
+                });
+            };
+            $scope.settingCover = false;
+            $scope.showSetCover = function (image) {
+                $scope.settingCover = true;
+                $scope.cover = image.path;
+            };
+            $scope.setCover = function () {
+                $scope.settingCover = false;
+                Gallery.common.update({
+                    id: $scope.album._id
+                },{
+                    name: $scope.album.name,
+                    description: $scope.album.desc,
+                    slug: $scope.album.slug,
+                    cover: $scope.cover,
+                    private: $scope.album.private
+                }, function (response) {
+                    if (response.ret === 0) {
+                        $scope.setCoverStatus = 0;
+                        $scope.message = '设置相册封面成功！';
+                        $scope.album.cover = $scope.cover;
+                    } else {
+                        $scope.setCoverStatus = -1;
+                        $scope.message = response.error;
+                    }
+                }, function (err) {
+                    $scope.setCoverStatus = -1;
+                    $scope.message = err;
+                });
+            };
             $scope.lightbox = function (item, index, event) {
                 event.preventDefault();
                 if ($scope.inSelectMode) {
@@ -400,6 +477,27 @@
                 angular.forEach($scope.album.images, function (img) {
                     img.isSelected = !img.isSelected;
                 });
+            };
+            $scope.showDelete = function () {
+                $scope.confirmDelete = true;
+            };
+            $scope.deleteAlbum = function () {
+                $scope.confirmDelete = false;
+                Gallery.common.delete({id: $scope.album._id}, function (response) {
+                    if (response.ret === 0) {
+                        $scope.deleteStatus = 0;
+                        $scope.message = '删除相册成功！';
+                    } else {
+                        $scope.deleteStatus = -1;
+                        $scope.message = '删除相册失败！' + response.error;
+                    }
+                }, function (err) {
+                    $scope.deleteStatus = -1;
+                    $scope.message = '删除相册失败！' + err;
+                });
+            };
+            $scope.redirect = function () {
+                $location.path(url.gallery);
             };
         }
     ])

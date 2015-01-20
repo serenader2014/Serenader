@@ -11,8 +11,8 @@
         li.album(ng-repeat='album in albums')
             a.delete-album(href='javascript:;', ng-click='delete(album)'): i.md-delete
             span.album-private(ng-show='album.private'): i.md-lock
-            .album-cover(ng-style='{"background-image": "url(" + assets.server + album.cover + ")"}')
-            h3.album-name: a(href='#/gallery/{{album._id}}', title='{{album.name}}') {{album.name | ellipsis:10}} ({{album.count}})
+            .album-cover(ng-style='{"background-image": "url(" + album.cover + ")"}')
+            h3.album-name: a(href='#/gallery/{{album._id}}', title='{{album.name}}') {{album.name | ellipsis:10}}
             p.album-desc(title='{{album.desc}}') {{album.desc | ellipsis:40}}
 dialog-box(ng-show='confirmDelete', title='确认删除相册', cancel='confirmDelete=false', confirm='deleteAlbum()')
     | 该操作将删除该相册。一旦删除相册，相册内的相片将会一同被删除。请谨慎操作！

@@ -149,6 +149,17 @@
 }
 
 /* Dialog set */
+dialog-box {
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 100%;
+    overflow: auto;
+    z-index: $dialog-index;
+}
 .dialog {
     display: table;
     position: absolute;
@@ -212,7 +223,6 @@
         padding: 4.6rem 2.4rem 6rem;
         font-size: $normal-font-size;
         color: $content-color;
-        height: 100%;
         overflow: auto;
     }
 }
@@ -494,8 +504,6 @@
     }
 
 }
-
-
 
 @keyframes show {
     0% {

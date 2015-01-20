@@ -23,7 +23,7 @@ block content
                     block area
                 ul
                     li
-                        button.side-menu-btn(type='button', ng-click='toggleSideMenu()')
+                        button.side-menu-btn(type='button', ng-click='toggleSideMenu()', ng-show='isMobile')
                             i.md-more-horiz
                     li.user-avatar
                         a(href='javascript:;', ng-click='toggleUserProfile()')

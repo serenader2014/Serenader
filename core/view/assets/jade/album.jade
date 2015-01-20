@@ -22,19 +22,20 @@
             li: button.btn(ripple='black', ng-show='inSelectMode', ng-click='inSelectMode=false')
                 i.md-filter-none.left-icon
                 | 取消选择
-            li: button.btn(ripple='black', ng-show='inSelectMode', ng-click='deleteImg')
+            li: button.btn(ripple='black', ng-show='inSelectMode', ng-click='deleteImg()')
                 i.md-close.left-icon
                 | 删除图片
 
     .image-list
         ul(ng-class='{"in-select": inSelectMode}')
             li.image(ng-repeat='image in album.images', ng-class='{selected: inSelectMode && image.isSelected}')
+                button.btn.set-cover-btn(ng-click='showSetCover(image)') 设为封面
                 a(
                     style='background-image: url("{{image.thumb}}")',
                     href='{{image.path}}',
                     ng-click='lightbox(image, $index, $event)')
     .side-content(ng-class='{show: isSideShown}')
-        .album-cover(style='background-image: url("{{assets.server + album.cover}}")')
+        .album-cover(style='background-image: url("{{album.cover}}")')
         .section
             p.section-name
                 i.md-photo-album.left-icon
@@ -49,10 +50,10 @@
             button.btn.btn-raised.btn-blue(ripple, ng-click='showUpload=true')
                 i.md-file-upload.left-icon
                 | 上传相片
-            button.btn.btn-raised.btn-green(ripple)
+            button.btn.btn-raised.btn-green(ripple, ng-click='showEditAlbum=true')
                 i.md-edit.left-icon
                 | 编辑相册
-            button.btn.btn-raised.btn-red(ripple)
+            button.btn.btn-raised.btn-red(ripple, ng-click='confirmDelete=true')
                 i.md-clear.left-icon
                 | 删除相册
 dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=false', title='上传图片')
@@ -80,6 +81,7 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
                     button.btn.btn-raised.btn-red(ng-click='reSelect()')
                         i.md-delete.left-icon
                         | 移除全部
+                    span(ng-show='isFinished') 全部上传成功！
                 ul
                     li.upload-item(ng-repeat='item in uploader.queue')
                         p.img-name
@@ -122,3 +124,17 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
     a.close
     a.play-pause
     ol.indicator
+msg-box(ng-show='deleteFailed.length', type='error') {{deleteFailed.length}} 个文件删除失败！
+dialog-box(ng-show='settingCover', cancel='settingCover=!settingCover', confirm='setCover()', title='设置相册封面')
+    p.m-b-2 是否将以下图片设为本相册的封面？
+    img.full-width(ng-src='{{cover}}')
+msg-box(ng-show='setCoverStatus===0', callback='setCoverStatus=undefined') {{message}}
+msg-box(ng-show='setCoverStatus===-1', callback='setCoverStatus=undefined') {{message}}
+dialog-box(ng-show='confirmDelete', title='确认删除相册', cancel='confirmDelete=false', confirm='deleteAlbum()')
+    | 该操作将删除该相册。一旦删除相册，相册内的相片将会一同被删除。请谨慎操作！
+msg-box(ng-show='deleteStatus===0', callback='redirect()') {{message}}
+msg-box(ng-show='deleteStatus===-1', callback='deleteStatus=undefined', type='error') {{message}}
+dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEditAlbum=false', confirm='editAlbum()')
+    md-input(name='name', type='text', title='Name', ng-model='album.name', desc='相册的名称', value='album.name')
+    textarea(name='desc', ng-model='album.desc')
+    input(type='checkbox', ng-model='album.private')
