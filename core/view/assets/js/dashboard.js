@@ -499,6 +499,29 @@
             $scope.redirect = function () {
                 $location.path(url.gallery);
             };
+            $scope.editAlbum = function () {
+                $scope.showEditAlbum = false;
+                Gallery.common.update({
+                    id: $scope.album.id
+                },{
+                    name: $scope.album.name,
+                    description: $scope.album.desc,
+                    slug: $scope.album.slug,
+                    cover: $scope.album.cover,
+                    private: $scope.album.private
+                }, function (response) {
+                    if (response.ret === 0) {
+                        $scope.editAlbumStatus = 0;
+                        $scope.message = '修改相册信息成功！';
+                    } else {
+                        $scope.editAlbumStatus = -1;
+                        $scope.message = response.error;
+                    }
+                }, function (err) {
+                    $scope.editAlbumStatus = -1;
+                    $scope.message = err;
+                });
+            };
         }
     ])
     .controller('fileController', ['$scope', '$rootScope',

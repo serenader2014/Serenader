@@ -136,5 +136,9 @@ msg-box(ng-show='deleteStatus===0', callback='redirect()') {{message}}
 msg-box(ng-show='deleteStatus===-1', callback='deleteStatus=undefined', type='error') {{message}}
 dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEditAlbum=false', confirm='editAlbum()')
     md-input(name='name', type='text', title='Name', ng-model='album.name', desc='相册的名称', value='album.name')
-    textarea(name='desc', ng-model='album.desc')
-    input(type='checkbox', ng-model='album.private')
+    div: textarea.full-width(name='desc', ng-model='album.desc')
+    div
+        label(for='private') 私密相册
+        input(type='checkbox', ng-model='album.private', id='private')
+msg-box(ng-show='editAlbumStatus===0', callback='editAlbumStatus=undefined') {{message}}
+msg-box(ng-show='editAlbumStatus===-1', callback='editAlbumStatus=undefined') {{message}}
