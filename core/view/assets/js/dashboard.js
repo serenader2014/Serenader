@@ -442,7 +442,6 @@
                         });
                     }
                 };
-                $scope.isAdded = true;
             };
 
             uploader.onProgressAll = function () {

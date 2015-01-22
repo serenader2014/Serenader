@@ -1,4 +1,6 @@
 .album-list {
+    height: 100%;
+    overflow: auto;
     padding: 1.5rem;
 
     li {
@@ -235,19 +237,28 @@
         }
     }
     .img-name, .img-size, .img-progress, .img-action {
+        vertical-align: middle;
         display: inline-block;
     }
     .img-name {
-        width: 30rem;
+        width: 40%;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
-    .img-size {
-        width: 10rem;
-    }
-    .img-progress {
-        width: 10rem;
+    .img-size, .img-progress, .img-action {
+        width: 20%;
     }
     .img-action {
-        width: 10rem;
+        button {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid darken($blue, 10%);
+            color: $white;
+            border-radius: 0.5rem;
+            background: $blue;
+        }
     }
 }
 

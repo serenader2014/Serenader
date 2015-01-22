@@ -64,14 +64,14 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
                 p: button.btn.md-photo
                 p: button.btn.btn-blue 选择图片
                 input#file-input(type='file', nv-file-select, uploader='uploader', multiple)/
-            .selected-item(ng-show='isAdded')
+            .selected-item(ng-show='uploader.queue.length')
                 .main-menu
                     button.btn.btn-raised.btn-blue(
-                        ng-disabled='uploader.isUploading',
+                        ng-disabled='uploader.isUploading || isFinished',
                         ng-class='{"btn-disabled": uploader.isUploading}',
                         ng-click='uploader.uploadAll()')
                         i.md-cloud-upload.left-icon
-                        | 上传全部
+                        | {{isFinished ? '全部上传成功' : '上传全部'}}
                     button.btn.btn-raised.btn-yellow(
                         ng-click='uploader.cancelAll()',
                         ng-class='{"btn-disabled": !uploader.isUploading}'
@@ -81,7 +81,6 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
                     button.btn.btn-raised.btn-red(ng-click='reSelect()')
                         i.md-delete.left-icon
                         | 移除全部
-                    span(ng-show='isFinished') 全部上传成功！
                 ul
                     li
                         span.img-name 文件名
@@ -89,27 +88,25 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
                         span.img-progress 上传进度
                         span.img-action 上传操作
                     li.upload-item(ng-repeat='item in uploader.queue')
-                        span.img-name
-                            span {{item.file.name | ellipsis:30}}
-                        span.img-size
-                            span {{item.file.size/1024/1024 | number:2}} Mb
+                        span.img-name {{item.file.name | ellipsis:30}}
+                        span.img-size {{item.file.size/1024/1024 | number:2}} Mb
                         span.img-progress
                             span(ng-show='item.isSuccess') 上传成功
-                            span {{item.progress}} %
+                            span(ng-hide='item.isSuccess') {{item.progress}} %
                         span.img-action
-                            a(
+                            button.btn(
                                 ng-click='item.upload()',
                                 href='javascript:;',
                                 ng-disabled='item.isReady || item.isUploading || item.isSuccess',
                                 ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}')
                                 | 开始上传
-                            a(
+                            button.btn(
                                 href='javascript:;',
                                 ng-click='item.cancel()',
                                 ng-disabled='!item.isUploading',
                                 ng-class='{"btn-disabled": !item.isUploading}')
                                 | 取消上传
-                            a(
+                            button.btn(
                                 href='javascript:;',
                                 ng-click='item.remove()',
                                 ng-disabled='item.isUploading',

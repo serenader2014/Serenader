@@ -240,7 +240,7 @@ input, textarea, label, p, span, a, div {
     height: 100%;
     width: 100%;
     padding: 6rem 1rem 1rem 7rem;
-    overflow: auto;
+    overflow: hidden;
 }
 
 @import "post";
