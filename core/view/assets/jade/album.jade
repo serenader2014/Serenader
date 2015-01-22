@@ -83,39 +83,41 @@ dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=
                         | 移除全部
                     span(ng-show='isFinished') 全部上传成功！
                 ul
+                    li
+                        span.img-name 文件名
+                        span.img-size 文件大小
+                        span.img-progress 上传进度
+                        span.img-action 上传操作
                     li.upload-item(ng-repeat='item in uploader.queue')
-                        p.img-name
-                            | 文件名称：
-                            span {{item.file.name}}
-                        p.img-size
-                            | 文件大小：
+                        span.img-name
+                            span {{item.file.name | ellipsis:30}}
+                        span.img-size
                             span {{item.file.size/1024/1024 | number:2}} Mb
-                        p.img-progress
-                            | 上传进度：
+                        span.img-progress
                             span(ng-show='item.isSuccess') 上传成功
-                            span(ng-show='isMobile && !item.isSuccess') {{item.progress}} %
-                            span.upload-progress.album-upload(ng-hide='isMobile')
-                                span.progress-bar-outer
-                                    span.progress-bar-inner(ng-style='{width: item.progress + "%"}')
-                        p.img-action
-                            button.btn.btn-primary.btn-raised(
+                            span {{item.progress}} %
+                        span.img-action
+                            a(
                                 ng-click='item.upload()',
+                                href='javascript:;',
                                 ng-disabled='item.isReady || item.isUploading || item.isSuccess',
                                 ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}')
-                                i.md-cloud-upload.left-icon
                                 | 开始上传
-                            button.btn.btn-warning.btn-raised(
+                            a(
+                                href='javascript:;',
                                 ng-click='item.cancel()',
                                 ng-disabled='!item.isUploading',
                                 ng-class='{"btn-disabled": !item.isUploading}')
-                                i.md-cancel.left-icon
                                 | 取消上传
-                            button.btn.btn-danger.btn-raised(
+                            a(
+                                href='javascript:;',
                                 ng-click='item.remove()',
                                 ng-disabled='item.isUploading',
                                 ng-class='{"btn-disabled": item.isUploading}')
-                                i.md-delete.left-icon
                                 | 移除文件
+                        span.album-upload(ng-hide='isMobile')
+                            span.prgs-outer
+                                span.prgs-inner(ng-style='{width: item.progress + "%"}')
 #blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
     .slides
     h3.title
@@ -134,11 +136,13 @@ dialog-box(ng-show='confirmDelete', title='确认删除相册', cancel='confirmD
     | 该操作将删除该相册。一旦删除相册，相册内的相片将会一同被删除。请谨慎操作！
 msg-box(ng-show='deleteStatus===0', callback='redirect()') {{message}}
 msg-box(ng-show='deleteStatus===-1', callback='deleteStatus=undefined', type='error') {{message}}
-dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEditAlbum=false', confirm='editAlbum()')
-    md-input(name='name', type='text', title='Name', ng-model='album.name', desc='相册的名称', value='album.name')
-    div: textarea.full-width(name='desc', ng-model='album.desc')
-    div
+dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEditAlbum=false', confirm='editAlbum()', outer='album')
+    md-input(name='name', type='text', title='Name', ng-model='outer.album.name', desc='相册的名称', value='outer.album.name')
+    .m-b-2
+        p.m-b-1 相册描述：
+        textarea.full-width.album-desc-input(name='desc', ng-model='outer.album.desc')
+    .m-b-2
         label(for='private') 私密相册
-        input(type='checkbox', ng-model='album.private', id='private')
+        input(type='checkbox', ng-model='outer.album.private', id='private')
 msg-box(ng-show='editAlbumStatus===0', callback='editAlbumStatus=undefined') {{message}}
 msg-box(ng-show='editAlbumStatus===-1', callback='editAlbumStatus=undefined') {{message}}

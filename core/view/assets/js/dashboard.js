@@ -342,12 +342,14 @@
         function ($scope, $rootScope, $routeParams, $location, $q, FileUploader, Gallery, deleteImg) {
             var uploader = $scope.uploader = new FileUploader();
             $scope.isSideShown = true;
+            $scope.outer = {};
             if ($rootScope.isMobile) {
                 $scope.showMenu = false;
                 $scope.isSideShown = false;
             }
             Gallery.common.get({id: $routeParams.id}, function (data) {
                 $scope.album = data;
+                $scope.outer.album = data;
                 if ($scope.album.cover === '/default_album.png') {
                     $scope.album.cover = assets.server + '/default_album.png';
                 }
@@ -401,7 +403,7 @@
                     id: $scope.album._id
                 },{
                     name: $scope.album.name,
-                    description: $scope.album.desc,
+                    desc: $scope.album.desc,
                     slug: $scope.album.slug,
                     cover: $scope.cover,
                     private: $scope.album.private
@@ -502,10 +504,10 @@
             $scope.editAlbum = function () {
                 $scope.showEditAlbum = false;
                 Gallery.common.update({
-                    id: $scope.album.id
+                    id: $scope.album._id
                 },{
                     name: $scope.album.name,
-                    description: $scope.album.desc,
+                    desc: $scope.album.desc,
                     slug: $scope.album.slug,
                     cover: $scope.album.cover,
                     private: $scope.album.private
