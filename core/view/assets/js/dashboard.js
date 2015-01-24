@@ -525,9 +525,15 @@
             };
         }
     ])
-    .controller('fileController', ['$scope', '$rootScope',
-        function ($scope, $rootScope) {
+    .controller('fileController', ['$scope', '$rootScope', '$location', 'File',
+        function ($scope, $rootScope, $location, File) {
             $rootScope.title = '文件管理';
+            $scope.currentPath = $location.search().path;
+            $scope.type = $location.search().type;
+            File.getDir($scope.currentPath, $scope.type).success(function (data) {
+                console.log(data);
+            });
+            console.log($scope.currentPath);
         }
     ])
     .controller('settingController', ['$scope', '$rootScope',

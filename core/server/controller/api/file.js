@@ -49,7 +49,7 @@ function readDir (dir) {
 }
 
 function decodeURL (url) {
-    // the url format: 
+    // the url format:
     // /public/some/path/somefile.js
     // /private/some/path/somefile.js
     // output:
@@ -67,7 +67,7 @@ function decodeURL (url) {
         type: type,
         fullPath: fullPath
     };
-}    
+}
 
 function checkRequestBody (req) {
     return new Promise(function (resolve, reject) {
@@ -143,12 +143,12 @@ module.exports = function (router) {
         //     newName: 'new.name'
         // },
         // {
-        //    
+        //
         // }]
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
-        }        
+        }
         var userName = req.session.user.uid,
             files = req.body.files,
             previousFile = '',
@@ -188,7 +188,7 @@ module.exports = function (router) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
-        }            
+        }
         if (!req.body.dir) {
             res.json({ret: -1, error: '路径字段为空。'});
             return false;
@@ -208,7 +208,7 @@ module.exports = function (router) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
-        }   
+        }
         var userName = req.session.user.uid,
             trashPath = root + 'trash/' + userName,
             files = req.body.files,
@@ -229,9 +229,9 @@ module.exports = function (router) {
                         targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath);
                     previousFile = decodedPath.basePath;
                     return fs.moveAsync(
-                        targetPath, 
+                        targetPath,
                         trashPath + '/' + decodedPath.middlePath + '/' + time + '-' + decodedPath.basePath
-                    ); 
+                    );
                 }).catch(function (err) {
                     log.error(err.stack);
                     failedFile.push({name: previousFile, error: err.message});
@@ -243,21 +243,30 @@ module.exports = function (router) {
             } else {
                 res.json({ret: 0});
             }
-        });      
+        });
     });
 
     router.post(URL.fileList, function (req, res) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
-        }       
+        }
+        if (!req.body.type) {
+            res.json({ret: -1, error: '路径类型字段为空！'});
+            return false;
+        }
         if (!req.body.dir) {
             res.json({ret: -1,error: '路径字段为空。'});
             return false;
         }
-        var decodedPath = decodeURL(validator.trim(req.body.dir)),
+        var type = validator.trim(req.body.type),
+            dir = validator.trim(req.body.dir),
             userName = req.session.user.uid,
-            dstDir = realDir(decodedPath.type, userName, decodedPath.fullPath);
+            dstDir = realDir(type, userName, dir);
+        if (type !== 'public' && type !== 'private') {
+            res.json({ret: -1, error: '路径字段类型错误！'});
+            return false;
+        }
         readDir(dstDir).then(function (obj) {
             res.json({ret: 0, files: obj.files, folders: obj.folders});
         }).catch(function (err) {
@@ -271,7 +280,7 @@ module.exports = function (router) {
             userName = req.session.user.uid,
             targetPath = realDir(decodedPath.type, userName, decodedPath.fullPath),
             previousFile = '',
-            failedFile = [];        
+            failedFile = [];
         checkRequestBody(req).then(function (files) {
             files.reduce(function (p, file) {
                 return p.then(function () {

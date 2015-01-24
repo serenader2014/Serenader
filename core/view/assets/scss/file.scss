@@ -1,0 +1,11 @@
+.file {
+    height: 100%;
+    padding: 1rem;
+    overflow: auto;
+    background: $white;
+    .header {
+        li {
+            display: inline-block;
+        }
+    }
+}

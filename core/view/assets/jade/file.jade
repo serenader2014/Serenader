@@ -1,0 +1,16 @@
+.file
+    .header
+        button.btn(ripple, ng-click='showMenu=!showMenu', ng-show='isMobile') 菜单
+        ul(ng-hide='isMobile && !showMenu')
+            li: button.btn(ripple)
+                i.md-cloud-upload.left-icon
+                |上传文件
+            li: button.btn(ripple)
+                i.md-delete.left-icon
+                | 批量删除
+            li: button.btn(ripple)
+                i.md-insert-drive-file.left-icon
+                | 新建文件
+            li: button.btn(ripple)
+                i.md-folder.left-icon
+                | 新文件夹

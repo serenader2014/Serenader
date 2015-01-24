@@ -13,8 +13,16 @@
                 get: {method: 'GET', isArray: true}
             })
         };
-
-
+    }])
+    .factory('File', ['$http', function ($http) {
+        return {
+            getDir: function (dir, type) {
+                return $http.post(url.api + url.fileList, {
+                    dir: dir,
+                    type: type
+                });
+            }
+        };
     }])
     .factory('Gallery', ['$resource', function ($resource) {
         return {
