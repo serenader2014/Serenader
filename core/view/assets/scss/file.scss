@@ -1,11 +1,117 @@
-.file {
+.file-section {
+    position: relative;
     height: 100%;
     padding: 1rem;
     overflow: auto;
     background: $white;
+    .menu-btn {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 4rem;
+        padding: 0.5rem;
+    }
+    .path-bar {
+        padding: 1rem;
+        .wrapper {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid darken($light-grey, 5%);
+            border-radius: 0.4rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            background: $light-grey;
+        }
+        .path-name {
+            color: $content-color;
+            padding: 0.5rem 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .path-name.current {
+            color: $white;
+            background: $blue;
+        }
+        .path-delimiter {
+            margin: 0 0.5rem;
+        }
+    }
     .header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: $white;
+        box-shadow: $shadow-1;
         li {
             display: inline-block;
+        }
+    }
+    .file-list {
+        height: 100%;
+        padding-top: 10rem;
+        .wrapper {
+            position: relative;
+            height: 100%;
+            padding: 4rem 1rem 1rem;
+        }
+        .sub-wrapper {
+            height: 100%;
+            overflow: auto;
+        }
+        .list-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            line-height: 1.4;
+            span {
+                font-size: 1.6rem;
+                color: $content-color;
+            }
+        }
+    }
+    .item-name, .item-date, .item-modified, .item-size, .item-action {
+        display: inline-block;
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+    }
+    .item-name {
+        width: 30%;
+        color: $content-color;
+        i {
+            font-size: 2rem;
+            color: $blue;
+        }
+    }
+    .item-date {
+        width: 18%;
+    }
+    .item-modified {
+        width: 18%;
+    }
+    .item-size {
+        width: 14%;
+    }
+    .item-action {
+        width: 20%;
+    }
+    .file {
+        padding: 0.5rem 0;
+        line-height: 1.5;
+        &:nth-child(even) {
+            background: lighten($light-grey, 5%);
+        }
+    }
+    .action {
+        border-top: 1px solid $light-grey;
+        button {
+            padding: 1rem 2rem;
+            border-right: 1px solid $light-grey;
+            border-radius: 0;
         }
     }
 }

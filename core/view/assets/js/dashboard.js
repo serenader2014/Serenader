@@ -528,12 +528,59 @@
     .controller('fileController', ['$scope', '$rootScope', '$location', 'File',
         function ($scope, $rootScope, $location, File) {
             $rootScope.title = '文件管理';
+            $scope.moment = moment;
             $scope.currentPath = $location.search().path;
             $scope.type = $location.search().type;
-            File.getDir($scope.currentPath, $scope.type).success(function (data) {
-                console.log(data);
+            $scope.$watch('currentPath', function (path) {
+                if (path) {
+                    File.getDir($scope.currentPath, $scope.type).success(function (data) {
+                        if (data.ret === 0) {
+                            $scope.lists = [];
+                            angular.forEach(data.folders, function (folder) {
+                                folder.type = 0;
+                                folder.createTime = moment(folder.createTime).format('YYYY/MM/DD, HH:mm');
+                                folder.href = '#/files?path=/' + $scope.nav().join('/') + '/' + folder.name + '/';
+                                folder.lastModifiedTime = moment(folder.lastModifiedTime).format('YYYY/MM/DD, HH:mm');
+                                $scope.lists.push(folder);
+                            });
+                            angular.forEach(data.files, function (file) {
+                                file.type = 1;
+                                file.createTime = moment(file.createTime).format('YYYY/MM/DD, HH:mm');
+                                file.href = '';
+                                file.lastModifiedTime = moment(file.lastModifiedTime).format('YYYY/MM/DD, HH:mm');
+                                $scope.lists.push(file);
+                            });
+                        }
+                    });
+                    $scope.pathFragment = path.split('/')[path.split('/').length-2];
+                } else {
+                    $scope.lists = [{
+                        name: 'public',
+                        href: '#/files?path=/public/',
+                        type: 0,
+                        createTime: moment().format('YYYY/MM/DD, HH:mm'),
+                        lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
+                    },{
+                        name: 'private',
+                        href: '#/files?path=/private/',
+                        type: 0,
+                        createTime: moment().format('YYYY/MM/DD, HH:mm'),
+                        lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
+                    }];
+                }
             });
-            console.log($scope.currentPath);
+            $scope.nav = function () {
+                if (!$scope.currentPath) {
+                    return [];
+                }
+                var arr = [];
+                angular.forEach($scope.currentPath.split('/'), function (fragment) {
+                    if (fragment) {
+                        arr.push(fragment);
+                    }
+                });
+                return arr;
+            };
         }
     ])
     .controller('settingController', ['$scope', '$rootScope',

@@ -251,22 +251,13 @@ module.exports = function (router) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
         }
-        if (!req.body.type) {
-            res.json({ret: -1, error: '路径类型字段为空！'});
-            return false;
-        }
         if (!req.body.dir) {
             res.json({ret: -1,error: '路径字段为空。'});
             return false;
         }
-        var type = validator.trim(req.body.type),
-            dir = validator.trim(req.body.dir),
+        var decodedPath = decodeURL(validator.trim(req.body.dir)),
             userName = req.session.user.uid,
-            dstDir = realDir(type, userName, dir);
-        if (type !== 'public' && type !== 'private') {
-            res.json({ret: -1, error: '路径字段类型错误！'});
-            return false;
-        }
+            dstDir = realDir(decodedPath.type, userName, decodedPath.fullPath);
         readDir(dstDir).then(function (obj) {
             res.json({ret: 0, files: obj.files, folders: obj.folders});
         }).catch(function (err) {

@@ -1,16 +1,59 @@
-.file
+.file-section
     .header
-        button.btn(ripple, ng-click='showMenu=!showMenu', ng-show='isMobile') 菜单
-        ul(ng-hide='isMobile && !showMenu')
-            li: button.btn(ripple)
+        button.btn.menu-btn(ng-click='showMenu=!showMenu', ng-show='isMobile')
+            i.md-menu
+        .path-bar
+            .wrapper
+                span.path-section
+                    a.path-name(href='#/files') root
+                span.path-section(ng-repeat='fragment in nav() track by $index')
+                    span.path-delimiter /
+                    a.path-name(
+                        href='#/files?path=/{{nav().slice(0, $index+1).join("/")}}/',
+                        ng-class='{current: pathFragment===fragment}') {{fragment}}
+        ul.action(ng-hide='isMobile && !showMenu')
+            li: button.btn
                 i.md-cloud-upload.left-icon
                 |上传文件
-            li: button.btn(ripple)
+            li: button.btn
                 i.md-delete.left-icon
                 | 批量删除
-            li: button.btn(ripple)
+            li: button.btn
                 i.md-insert-drive-file.left-icon
                 | 新建文件
-            li: button.btn(ripple)
+            li: button.btn
                 i.md-folder.left-icon
                 | 新文件夹
+    .file-list
+        .wrapper
+            .list-header
+                span.item-name 文件名称
+                span.item-date 创建时间
+                span.item-modified 修改时间
+                span.item-size 文件大小
+                span.item-action 操作
+            .sub-wrapper
+                ul.files
+                    li.file(ng-repeat='file in lists')
+                        a.item-name(
+                            ng-class='{folder: file.type===0}',
+                            href='{{file.href}}',)
+                            i.left-icon(ng-class='{"md-folder": file.type===0, "md-insert-drive-file": file.type===1}')
+                            | {{file.name}}
+                        span.item-date {{file.createTime}}
+                        span.item-modified {{file.lastModifiedTime}}
+                        span.item-size {{file.size ? file.size / (1024*1024) : 0 | number:2}} MB
+                        span.item-action
+                            a.item-action-btn(ng-show='isMobile', href='javascript:;', ng-click='file.showMenu=!file.showMenu')
+                                i.md-settings
+                                | 操作
+                            span.action-menu(ng-hide='isMobile && !file.showMenu')
+                                button.btn
+                                    i.md-file-download.left-icon
+                                    | 下载
+                                button.btn
+                                    i.md-edit.left-icon
+                                    | 重命名
+                                button.btn
+                                    i.md-close.left-icon
+                                    | 删除

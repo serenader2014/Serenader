@@ -122,4 +122,86 @@
             height: 100%;
         }
     }
+    .file-section {
+        .path-bar {
+            padding-left: 4rem;
+        }
+        .file-list {
+            padding-top: 6rem;
+            .wrapper {
+                padding: 0rem;
+            }
+        }
+        .list-header, .item-date {
+            display: none;
+        }
+        .item-name {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.6rem;
+            width: 100%;
+        }
+        .item-modified {
+            width: 50%;
+            color: lighten($content-color, 10%);
+        }
+        .item-size {
+            width: 25%;
+            color: lighten($content-color, 10%);
+        }
+        .item-action {
+            overflow: initial;
+            position: absolute;
+            right: 0;
+            width: 5rem;
+            button {
+                padding: 0.5rem 1rem;
+            }
+        }
+        .file {
+            padding: 1rem 0;
+            position: relative;
+        }
+        .action, .action-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 1rem;
+            padding: 1rem 0;
+            border-radius: 0.5rem;
+            border: 1px solid $content-color;
+            box-shadow: $shadow-1;
+            background: $menu-background;
+            z-index: 1;
+            &:before {
+                position: absolute;
+                top: -2rem;
+                left: 2rem;
+                display: block;
+                content: '';
+                width: 0;
+                height: 0;
+                border-bottom: 1rem solid $menu-background;
+                border-left: 1rem solid rgba($white, 0);
+                border-top: 1rem solid rgba($white, 0);
+                border-right: 1rem solid rgba($white, 0);
+            }
+            li, button {
+                display: block;
+            }
+            button {
+                padding: 1rem 2rem;
+                border: none;
+                color: $content-color;
+            }
+        }
+        .action-menu {
+            right: 0;
+            left: initial;
+            &:before {
+                left: initial;
+                right: 2rem;
+            }
+        }
+    }
 }
