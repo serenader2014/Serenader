@@ -37,6 +37,7 @@
                     li.file(ng-repeat='file in lists')
                         a.item-name(
                             ng-class='{folder: file.type===0}',
+                            ng-click='showPreview($event, file)'
                             href='{{file.href}}',)
                             i.left-icon(ng-class='{"md-folder": file.type===0, "md-insert-drive-file": file.type===1}')
                             | {{file.name}}
@@ -57,3 +58,11 @@
                                 button.btn
                                     i.md-close.left-icon
                                     | 删除
+#blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
+    .slides
+    h3.title
+    a.prev
+    a.next
+    a.close
+    a.play-pause
+    ol.indicator

@@ -1,4 +1,4 @@
-/* global marked, hljs, moment */
+/* global marked, hljs, moment, blueimp */
 
 (function () {
     angular.module('serenader',[
@@ -20,11 +20,14 @@
             }
         };
     }])
-    .controller('appController', ['$scope', '$rootScope',
-        function ($scope, $rootScope) {
+    .controller('appController', ['$scope', '$rootScope', 'User',
+        function ($scope, $rootScope, User) {
             $scope.url = url;
             $scope.assets = assets;
             $scope.isUserProfileShown = false;
+            User.current(function (response) {
+                $rootScope.user = response;
+            });
             if ($(window).width() < 720) {
                 $rootScope.isMobile = true;
             }
@@ -65,10 +68,7 @@
         }
     ])
     .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'User',
-        function ($scope, $rootScope, $location, Category, Post, User){
-            User.current(function (response) {
-                $rootScope.user = response;
-            });
+        function ($scope, $rootScope, $location, Category, Post){
             $rootScope.title = '文章';
             $scope.posts = [];
             $scope.drafts = [];
@@ -580,6 +580,19 @@
                     }
                 });
                 return arr;
+            };
+            $scope.showPreview = function (event, file) {
+                if (file.type === 1) {
+                    event.preventDefault();
+                    var imgRegExp = /jpg|jpeg|png|gif|bmp/ig,
+                        extName = file.name.split('.').pop();
+                    if (imgRegExp.test(extName)) {
+                        var urlPrefix = assets.static + '/' + $rootScope.user.uid + '/upload/',
+                            tmpArr = $scope.currentPath.split('/'),
+                            imgUrl = urlPrefix + tmpArr.slice(2, tmpArr.length - 1).join('/') + '/' + file.name;
+                        blueimp.Gallery([imgUrl]);
+                    }
+                }
             };
         }
     ])

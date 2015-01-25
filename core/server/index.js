@@ -5,12 +5,12 @@ module.exports = function (setting) {
     bodyParser    = require('body-parser'),
     session       = require('express-session'),
     MongoStore    = require('connect-mongo')(session),
-    
+
     route         = require('./routes'),
     config        = require('../../config').config,
     errorHandling = require('./utils/error'),
     log           = require('./utils/log')(),
-    
+
     app           = express(),
     theme, dir, server;
 
@@ -49,7 +49,8 @@ module.exports = function (setting) {
     app.locals.url = config.url;
     app.locals.assets = {
         client: config.assetsUrl.clientSideAssets,
-        server: config.assetsUrl.serverSideAssets
+        server: config.assetsUrl.serverSideAssets,
+        static: config.assetsUrl.staticFile
     };
 
     module.exports.setting = app.locals.setting = setting;
