@@ -3,7 +3,6 @@ module.exports = function (req, res, opt) {
         formidable = require('formidable'),
         path = require('path'),
         Promise = require('bluebird'),
-        fs = Promise.promisifyAll(require('fs')),
         fsx = Promise.promisifyAll(require('fs-extra')),
         _ = require('underscore'),
         log = require('./log')(),
@@ -60,16 +59,16 @@ module.exports = function (req, res, opt) {
     FileInfo.prototype.safeName = function () {
         this.name = path.basename(this.name).replace(/^\.+/,'').replace(/(|)/, '');
 
-        if (fs.existsSync(options.uploadDir + '/' + this.name)) {
-            this.name = this.name.replace(nameCountReg, nameCountFunc);    
+        if (fsx.existsSync(options.uploadDir + '/' + this.name)) {
+            this.name = this.name.replace(nameCountReg, nameCountFunc);
         }
     };
 
     FileInfo.prototype.initUrls = function () {
         if (! this.error) {
             var self = this;
-            this.url = options.baseUrl + '/' + encodeURIComponent(this.name);
-            this.deleteUrl = options.deleteUrl + '/' + encodeURIComponent(this.name);
+            this.url = options.baseUrl + encodeURIComponent(this.name);
+            this.deleteUrl = options.deleteUrl + encodeURIComponent(this.name);
             this.imageVersions = {};
             Object.keys(options.imageVersions).forEach(function (version) {
 
@@ -100,13 +99,13 @@ module.exports = function (req, res, opt) {
             fileinfo.size = file.size;
 
             if (! fileinfo.validate()) {
-                fs.unlink(file.path);
+                fsx.unlink(file.path);
                 return false;
             }
-            if (! fs.existsSync(options.uploadDir)) {
+            if (! fsx.existsSync(options.uploadDir)) {
                 fsx.mkdirsSync(options.uploadDir);
             }
-            p = fs.renameAsync(file.path, options.uploadDir + '/' + fileinfo.name).then(function () {
+            p = fsx.renameAsync(file.path, options.uploadDir + '/' + fileinfo.name).then(function () {
                 if (options.imageTypes.test(fileinfo.name)) {
                     return Object.keys(options.imageVersions).reduce(function (p, version) {
                         return fsx.mkdirsAsync(options.uploadDir + '/' + version).then(function () {
@@ -132,7 +131,7 @@ module.exports = function (req, res, opt) {
         }).on('aborted', function () {
 
             tmpFiles.forEach(function (file) {
-                fs.unlink(file);
+                fsx.unlink(file);
             });
             reject();
 

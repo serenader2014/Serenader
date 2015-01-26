@@ -210,23 +210,37 @@
             };
         }
     ])
-    .controller('newPostController', ['$scope', '$rootScope', 'Category', 'Post', 'Slug', 'FileUploader', '$interval', '$location',
-        function ($scope, $rootScope, Category, Post, Slug, FileUploader, $interval, $location) {
+    .controller('newPostController', [
+        '$scope',
+        '$rootScope',
+        '$interval',
+        '$location',
+        'Category',
+        'Post',
+        'Slug',
+        'Upload',
+        function ($scope, $rootScope, $interval, $location, Category, Post, Slug, upload) {
             $rootScope.title = '新文章';
             $scope.post = {};
-            fileUploader($scope, FileUploader);
+            fileUploader($scope, upload);
             $scope.post.createDate = moment().format('YYYY/MM/DD, HH:mm:ss');
             $scope.fullscreen = false;
             post($scope, $interval, $location, Slug, Category, Post);
             editor($scope);
         }
     ])
-    .controller('editPostController', ['$scope', '$rootScope', '$routeParams', '$interval', '$location', 'Post', 'Category', 'Slug', 'FileUploader',
-        function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, FileUploader) {
+    .controller('editPostController', [
+        '$scope',
+        '$rootScope',
+        '$routeParams',
+        '$interval',
+        '$location',
+        'Post',
+        'Category',
+        'Slug',
+        'Upload',
+        function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, upload) {
             $rootScope.title = '编辑文章';
-            $scope.test = {
-                slug: 'somet'
-            };
             Post.common.get({id: $routeParams.id}, function (response) {
                 if (response._id) {
                     $rootScope.post =
@@ -248,7 +262,7 @@
                     $location.path(url.post);
                 };
             });
-            fileUploader($scope, FileUploader);
+            fileUploader($scope, upload);
             editor($scope);
         }
     ])
@@ -336,17 +350,19 @@
         '$routeParams',
         '$location',
         '$q',
-        'FileUploader',
         'Gallery',
         'deleteImg',
-        function ($scope, $rootScope, $routeParams, $location, $q, FileUploader, Gallery, deleteImg) {
-            var uploader = $scope.uploader = new FileUploader();
+        function ($scope, $rootScope, $routeParams, $location, $q, Gallery, deleteImg) {
             $scope.isSideShown = true;
             $scope.outer = {};
+            $scope.deleteFailed = [];
+            $scope.settingCover = false;
+
             if ($rootScope.isMobile) {
                 $scope.showMenu = false;
                 $scope.isSideShown = false;
             }
+
             Gallery.common.get({id: $routeParams.id}, function (data) {
                 $scope.album = data;
                 $scope.outer.album = data;
@@ -354,17 +370,18 @@
                     $scope.album.cover = assets.server + '/default_album.png';
                 }
                 $rootScope.title = '相册：' + (data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name);
-                uploader.url = url.api + url.gallery + '/' + $scope.album.slug;
+                $scope.uploadUrl = url.api + url.gallery + '/' + $scope.album.slug;
             }, function (err) {
                 console.log(err);
             });
-            $scope.reSelect = function () {
-                uploader.clearQueue();
-                $('#file-input').val('');
-                $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
-            };
 
-            $scope.deleteFailed = [];
+            $scope.completeOne = function (response) {
+                angular.forEach(response[0], function (img) {
+                    if (typeof img === 'object') {
+                        $scope.album.images.push(img);
+                    }
+                });
+            };
 
             $scope.deleteImg = function () {
                 var targetImg = [],
@@ -392,7 +409,6 @@
                     console.error(err);
                 });
             };
-            $scope.settingCover = false;
             $scope.showSetCover = function (image) {
                 $scope.settingCover = true;
                 $scope.cover = image.path;
@@ -432,43 +448,6 @@
                 }
             };
 
-            uploader.onAfterAddingFile = function (item) {
-                item.onComplete = function (response, status) {
-                    if (status === 200) {
-                        angular.forEach(response[0], function (img) {
-                            if (typeof img === 'object') {
-                                $scope.album.images.push(img);
-                            }
-                        });
-                    }
-                };
-            };
-
-            uploader.onProgressAll = function () {
-                $scope.isUploading = true;
-            };
-
-            $scope.cancelUpload = function (item) {
-                item.cancel();
-                $scope.cancelWarning = false;
-            };
-
-            uploader.onCompleteAll = function () {
-                $scope.isFinished = true;
-            };
-
-            uploader.onCancelItem = function () {
-                $scope.isUploading = false;
-            };
-
-            uploader.onErrorItem = function (item, response, status) {
-                $scope.isFinished = true;
-                $scope.isError = true;
-                $scope.errorItem = {
-                    item: item,
-                    code: status
-                };
-            };
             $scope.selectAll = function () {
                 angular.forEach($scope.album.images, function (img) {
                     img.isSelected = true;
@@ -553,6 +532,7 @@
                         }
                     });
                     $scope.pathFragment = path.split('/')[path.split('/').length-2];
+                    $scope.uploadUrl = url.api + url.upload + path.substring(0, path.length - 1);
                 } else {
                     $scope.lists = [{
                         name: 'public',
@@ -569,6 +549,17 @@
                     }];
                 }
             });
+            $scope.completeOne = function (response) {
+                var file = response[0];
+                $scope.lists.push({
+                    name: file.name,
+                    href: '',
+                    size: file.size,
+                    type: 1,
+                    createTime: moment().format('YYYY/MM/DD, HH:mm'),
+                    lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
+                });
+            };
             $scope.nav = function () {
                 if (!$scope.currentPath) {
                     return [];
@@ -823,12 +814,39 @@
             });
         });
     }
-    function fileUploader ($scope, FileUploader) {
-        var uploader = $scope.uploader = new FileUploader({
-            url: url.api + url.upload + url.postUpload
+    function fileUploader ($scope, upload) {
+        var uploader = upload({
+            url: url.api + url.upload + url.postUpload,
+            addFile: function (item) {
+                item.onComplete = function (response, status) {
+                    if (status === 200) {
+                        $scope.imgUrl = response[0].url;
+                    }
+                };
+                $scope.isAdded = true;
+            },
+            progressAll: function () {
+                $scope.isUploading = true;
+            },
+            completeAll: function () {
+                $scope.isFinished = true;
+            },
+            cancel: function () {
+                $scope.isUploading = false;
+            },
+            error: function (item, response, status) {
+                $scope.isFinished = true;
+                $scope.isError = true;
+                $scope.errorItem = {
+                    item: item,
+                    code: status
+                };
+            }
         });
+        $scope.uploader = uploader;
         $scope.isUrlTabShown = true;
         $scope.isUploadTabShown = !$scope.isUrlTabShown;
+        $scope.cancelWarning = false;
         $scope.switchTab = function (tab) {
             if (tab === 'url') {
                 $scope.isUrlTabShown = true;
@@ -848,20 +866,6 @@
             $scope.isAdded = $scope.isUploading = $scope.isFinished = false;
         };
 
-        uploader.onAfterAddingFile = function (item) {
-            item.onComplete = function (response, status) {
-                if (status === 200) {
-                    $scope.imgUrl = response[0].url;
-                }
-            };
-            $scope.isAdded = true;
-        };
-
-        uploader.onProgressAll = function () {
-            $scope.isUploading = true;
-        };
-
-        $scope.cancelWarning = false;
         $scope.warning = function () {
             $scope.cancelWarning = true;
         };
@@ -869,23 +873,6 @@
         $scope.cancelUpload = function (item) {
             item.cancel();
             $scope.cancelWarning = false;
-        };
-
-        uploader.onCompleteAll = function () {
-            $scope.isFinished = true;
-        };
-
-        uploader.onCancelItem = function () {
-            $scope.isUploading = false;
-        };
-
-        uploader.onErrorItem = function (item, response, status) {
-            $scope.isFinished = true;
-            $scope.isError = true;
-            $scope.errorItem = {
-                item: item,
-                code: status
-            };
         };
     }
     function post ($scope, $interval, $location, Slug, Category, Post) {

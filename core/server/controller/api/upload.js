@@ -19,7 +19,7 @@ module.exports = function (router) {
             dir = validator.trim(xss(req.url)).split(url.upload + '/')[1],
             tmpArr = dir.split('/'),
             type = tmpArr.shift(),
-            dstDir = tmpArr.join('/'),
+            dstDir = tmpArr.join('/') ? tmpArr.join('/') + '/' : '',
             targetDir = root + '/content/data/' + type + '/' + userName + '/upload/' + dstDir;
 
 
@@ -49,12 +49,12 @@ module.exports = function (router) {
         if (!req.session.user) {
             res.json({ret: -1, error: '权限不足。'});
             return false;
-        }        
+        }
         var tmpArr = validator.trim(xss(req.url)).split('/').slice(2),
             fileName = tmpArr.pop(),
             baseDir = root + '/content/data/' + tmpArr.join('/'),
             imageVersions = req.body.imageVersions;
-                
+
         if (imageVersions && !Array.isArray(imageVersions)) {
             res.json({
                 ret: -1,

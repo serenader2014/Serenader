@@ -77,7 +77,13 @@
         display: inline-block;
         white-space: nowrap;
         overflow-x: hidden;
+        vertical-align: middle;
         text-overflow: ellipsis;
+    }
+    .select-input {
+        vertical-align: middle;
+        position: absolute;
+        top: 1rem;
     }
     .item-name {
         width: 30%;
@@ -100,10 +106,16 @@
         width: 20%;
     }
     .file {
+        position: relative;
         padding: 0.5rem 0;
         line-height: 1.5;
         &:nth-child(even) {
             background: lighten($light-grey, 5%);
+        }
+    }
+    .show-delete {
+        .item-name {
+            padding-left: 2rem;
         }
     }
     .action {

@@ -56,65 +56,7 @@
             button.btn.btn-raised.btn-red(ripple, ng-click='confirmDelete=true')
                 i.md-clear.left-icon
                 | 删除相册
-dialog-box(ng-show='showUpload', cancel='showUpload=false', confirm='showUpload=false', title='上传图片')
-    .insert-image
-        #upload
-            p.description 从本地上传图片：
-            .upload-btn
-                p: button.btn.md-photo
-                p: button.btn.btn-blue 选择图片
-                input#file-input(type='file', nv-file-select, uploader='uploader', multiple)/
-            .selected-item(ng-show='uploader.queue.length')
-                .main-menu
-                    button.btn.btn-raised.btn-blue(
-                        ng-disabled='uploader.isUploading || isFinished',
-                        ng-class='{"btn-disabled": uploader.isUploading}',
-                        ng-click='uploader.uploadAll()')
-                        i.md-cloud-upload.left-icon
-                        | {{isFinished ? '全部上传成功' : '上传全部'}}
-                    button.btn.btn-raised.btn-yellow(
-                        ng-click='uploader.cancelAll()',
-                        ng-class='{"btn-disabled": !uploader.isUploading}'
-                        ng-disabled='!uploader.isUploading')
-                        i.md-cancel.left-icon
-                        | 取消所有
-                    button.btn.btn-raised.btn-red(ng-click='reSelect()')
-                        i.md-delete.left-icon
-                        | 移除全部
-                ul
-                    li
-                        span.img-name 文件名
-                        span.img-size 文件大小
-                        span.img-progress 上传进度
-                        span.img-action 上传操作
-                    li.upload-item(ng-repeat='item in uploader.queue')
-                        span.img-name {{item.file.name | ellipsis:30}}
-                        span.img-size {{item.file.size/1024/1024 | number:2}} Mb
-                        span.img-progress
-                            span(ng-show='item.isSuccess') 上传成功
-                            span(ng-hide='item.isSuccess') {{item.progress}} %
-                        span.img-action
-                            button.btn(
-                                ng-click='item.upload()',
-                                href='javascript:;',
-                                ng-disabled='item.isReady || item.isUploading || item.isSuccess',
-                                ng-class='{"btn-disabled": item.isReady || item.isUploading || item.isSuccess}')
-                                | 开始上传
-                            button.btn(
-                                href='javascript:;',
-                                ng-click='item.cancel()',
-                                ng-disabled='!item.isUploading',
-                                ng-class='{"btn-disabled": !item.isUploading}')
-                                | 取消上传
-                            button.btn(
-                                href='javascript:;',
-                                ng-click='item.remove()',
-                                ng-disabled='item.isUploading',
-                                ng-class='{"btn-disabled": item.isUploading}')
-                                | 移除文件
-                        span.album-upload(ng-hide='isMobile')
-                            span.prgs-outer
-                                span.prgs-inner(ng-style='{width: item.progress + "%"}')
+file-uploader(show='showUpload', url='uploadUrl', complete='completeOne(response)')
 #blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
     .slides
     h3.title
