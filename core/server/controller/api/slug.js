@@ -6,11 +6,15 @@ module.exports = function (router) {
     router.post(url.slug, function (req, res) {
         if (req.body.slug) {
             res.json({
-                slug: validator.trim(unidecode(req.body.slug)).replace(/\s/g, '-').toLowerCase()
+                ret: 0,
+                data: {
+                    slug: validator.trim(unidecode(req.body.slug)).replace(/\s/g, '-').toLowerCase()
+                }
             });
         } else {
             res.json({
-                slug: 'err'
+                ret: -1,
+                error: 'slug字段为空.'
             });
         }
     });

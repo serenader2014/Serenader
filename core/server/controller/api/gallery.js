@@ -79,7 +79,7 @@ module.exports = function (router) {
         var user = req.session.user;
 
         getPublicAlbums(user).then(function (albums) {
-            res.json(albums);
+            res.json({ret: 0, data: albums});
         }).catch(function (err) {
             log.error(err.stack);
             res.json({ret: -1, error: err.message || err});
@@ -93,18 +93,21 @@ module.exports = function (router) {
         checkOwner({type: 'id', value: id}, user).then(function (album) {
             return Image.findOneAlbumImage(id).then(function (images) {
                 res.json({
-                    _id: album._id,
-                    images: images,
-                    name: album.name,
-                    slug: album.slug,
-                    desc: album.desc,
-                    user: album.user,
-                    cover: album.cover,
-                    private: album.private
+                    ret: 0,
+                    data: {
+                        _id: album._id,
+                        images: images,
+                        name: album.name,
+                        slug: album.slug,
+                        desc: album.desc,
+                        user: album.user,
+                        cover: album.cover,
+                        private: album.private
+                    }
                 });
             });
         }).catch(function (err) {
-            res.json(err.message || err);
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
@@ -113,9 +116,9 @@ module.exports = function (router) {
             uid = validator.trim(req.params.uid);
 
         getUserAlbums(user, uid).then(function (albums) {
-            res.json(albums);
+            res.json({ret: 0, data: albums});
         }).catch(function (err) {
-            res.json(err);
+            res.json({ret: -1, error: err});
         });
     });
 
@@ -157,7 +160,7 @@ module.exports = function (router) {
                     cover: '/default_album.png',
                     private: private
                 }).then(function (album) {
-                    res.json({ret: 0, album: album});
+                    res.json({ret: 0, data: {album: album}});
                 }).catch(function (err) {
                     res.json({ret: -1, error: err.message || err});
                     return false;
@@ -196,7 +199,7 @@ module.exports = function (router) {
                         });
                     });
                 }, Promise.resolve()).then(function () {
-                    res.json(imgs);
+                    res.json({ret: 0, data: imgs});
                 });
             });
         }).catch(function (err) {

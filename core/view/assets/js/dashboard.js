@@ -279,6 +279,13 @@
             Gallery.common.getAll(function (response) {
                 $scope.albums = response;
             });
+            Gallery.user.get({
+                name: $rootScope.user.uid
+            }, function (response) {
+                $scope.albums = response;
+            }, function (err) {
+                console.error(err);
+            });
             $scope.$watch('albums', function (albums) {
                 if (albums) {
                     $scope.albums.forEach(function (album) {

@@ -33,7 +33,16 @@ function checkExist (options) {
 module.exports = function (router) {
     router.get(url.category, function (req, res) {
         Category.getAll().then(function (categories) {
-            res.json(categories);
+            res.json({
+                ret: 0,
+                data: categories,
+                error: ''
+            });
+        }).catch(function (err) {
+            res.json({
+                ret: -1,
+                error: err
+            });
         });
     });
 
@@ -55,7 +64,7 @@ module.exports = function (router) {
         }).catch(function (err) {
             if (typeof err === 'string') {
                 return Category.create(name).then(function (category) {
-                    res.json({ret: 0, id: category.id});
+                    res.json({ret: 0, data: {id: category.id}});
                 });
             } else {
                 log.error(err.stack);

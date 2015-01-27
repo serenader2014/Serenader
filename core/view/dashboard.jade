@@ -37,7 +37,7 @@ block content
                                     .details
                                         p.user-uid #{currentUser.uid}
                                         p.user-email #{currentUser.email}
-                                ul
+                                ul.clear
                                     - if (currentUser.role === 'admin')
                                         li.adduser-btn: a(href='javascript:;', ripple) 添加用户
                                     li.signout-btn: a(href='#{url.admin}#{url.signOut}', ripple) 退出登录

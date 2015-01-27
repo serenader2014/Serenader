@@ -177,7 +177,7 @@ module.exports = function (router) {
             });
         }, Promise.resolve()).then(function () {
             if (failedFile.length) {
-                res.json({ret: 1, files: failedFile});
+                res.json({ret: 1, data: {files: failedFile}});
             } else {
                 res.json({ret: 0,});
             }
@@ -239,7 +239,7 @@ module.exports = function (router) {
             }
         }, Promise.resolve()).then(function () {
             if (failedFile.length) {
-                res.json({ret: 1, files: failedFile});
+                res.json({ret: 1, data: {files: failedFile}});
             } else {
                 res.json({ret: 0});
             }
@@ -259,7 +259,7 @@ module.exports = function (router) {
             userName = req.session.user.uid,
             dstDir = realDir(decodedPath.type, userName, decodedPath.fullPath);
         readDir(dstDir).then(function (obj) {
-            res.json({ret: 0, files: obj.files, folders: obj.folders});
+            res.json({ret: 0, data: {files: obj.files, folders: obj.folders}});
         }).catch(function (err) {
             log.error(err.stack);
             res.json({ret: -1,error: err.message});
@@ -288,9 +288,9 @@ module.exports = function (router) {
                 if (! failedFile.length) {
                     res.json({ret: 0});
                 } else if (failedFile.length === files.length) {
-                    res.json({ret: -1, files: failedFile});
+                    res.json({ret: -1, data: {files: failedFile}});
                 } else {
-                    res.json({ret: 1, files: failedFile});
+                    res.json({ret: 1, data: {files: failedFile}});
                 }
             });
         });
@@ -316,9 +316,9 @@ module.exports = function (router) {
                 if (! failedFile.length) {
                     res.json({ret: 0,});
                 } else if (failedFile.length === files.length) {
-                    res.json({ret: -1, files: failedFile});
+                    res.json({ret: -1, data: {files: failedFile}});
                 } else {
-                    res.json({ret: 1, files: failedFile});
+                    res.json({ret: 1, data: {files: failedFile}});
                 }
             });
         });

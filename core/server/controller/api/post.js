@@ -133,10 +133,10 @@ module.exports = function (router) {
         var page;
         page = req.query.page || 1;
         getAllPosts(amount, page, req.session.user).then(function (posts) {
-            res.json(posts);
+            res.json({ret: 0, data: posts});
         }).catch(function (err) {
             log.error(err.stack || err);
-            res.json({error: err.message || err});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
@@ -146,10 +146,10 @@ module.exports = function (router) {
         page = req.query.page || 1;
         targetUser = validator.trim(req.params.user);
         getUserPosts(amount, page, req.session.user, targetUser).then(function (posts) {
-            res.json(posts);
+            res.json({ret: 0, data: posts});
         }).catch(function (err) {
             log.error(err.stack || err);
-            res.json({error: err.message || err});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
@@ -158,10 +158,10 @@ module.exports = function (router) {
         id = validator.trim(req.params.id);
 
         getPost(id, req.session.user).then(function (post) {
-            res.json(post);
+            res.json({ret: 0, data: post});
         }).catch(function (err) {
             log.error(err.stack || err);
-            res.json({error: err.message || err});
+            res.json({ret: -1, error: err.message || err});
         });
     });
 
@@ -186,7 +186,7 @@ module.exports = function (router) {
                 });
             });
         }).then(function () {
-            res.json({ret: 0, id: id});
+            res.json({ret: 0, data: {id: id}});
         }).catch(function (err) {
             res.json({ret: -1,error: err.message || err});
         });
@@ -236,7 +236,7 @@ module.exports = function (router) {
                 return p;
             });
         }).then(function (post) {
-            res.json({ret: 0, id: post._id});
+            res.json({ret: 0, data: {id: post._id}});
         }).catch(function (err) {
             res.json({ret: -1, error: err.message || err});
         });

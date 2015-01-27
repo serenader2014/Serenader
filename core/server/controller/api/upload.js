@@ -36,7 +36,10 @@ module.exports = function (router) {
             baseUrl: '/static/' + userName + '/upload/' + dstDir,
             deleteUrl: url.admin + url.upload + '/' + type + '/' + userName + '/upload/' + dstDir
         }).then(function (files) {
-            res.json(files);
+            res.json({
+                ret: 0,
+                data: files
+            });
         }).catch(function (err) {
             res.json({
                 ret: -1,
@@ -75,15 +78,10 @@ module.exports = function (router) {
                 }, Promise.resolve());
             }
         }).then(function () {
-            res.json({
-                ret: 1
-            });
+            res.json({ret: 0});
         }).catch(function (err) {
             log.error(err.stack);
-            res.json({
-                ret: -1,
-                error: err.message
-            });
+            res.json({ret: -1,error: err.message});
         });
     });
 };
