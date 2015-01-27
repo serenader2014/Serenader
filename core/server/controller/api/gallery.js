@@ -182,7 +182,7 @@ module.exports = function (router) {
                 dir = root + type + '/' + userName + '/gallery/';
             fileUpload(req, res, {
                 uploadDir: dir + album.id,
-                baseUrl: '/static/' + userName + '/gallery/' + album.id,
+                baseUrl: '/static/' + userName + '/gallery/' + album.id + '/',
                 deleteUrl: url.api + url.gallery + '/' + type + '/' + albumSlug,
                 acceptFileTypes: /\.(gif|jpe?g|png)$/i
             }).then(function (files) {

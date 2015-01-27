@@ -73,7 +73,7 @@ module.exports = function (req, res, opt) {
             Object.keys(options.imageVersions).forEach(function (version) {
 
                 if (options.imageTypes.test(self.name)) {
-                    self.imageVersions[version] = options.baseUrl + '/' + version + '/' + encodeURIComponent(self.name);
+                    self.imageVersions[version] = options.baseUrl + version + '/' + encodeURIComponent(self.name);
                 }
             });
         }
