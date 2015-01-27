@@ -7,9 +7,7 @@ module.exports = function (router) {
         if (req.body.slug) {
             res.json({
                 ret: 0,
-                data: {
-                    slug: validator.trim(unidecode(req.body.slug)).replace(/\s/g, '-').toLowerCase()
-                }
+                data: validator.trim(unidecode(req.body.slug)).replace(/\s/g, '-').toLowerCase()
             });
         } else {
             res.json({

@@ -62,5 +62,6 @@ block content
                         i.md-settings
                         span.menu-text 设置
             .main(ng-view)
+    msg-box(ng-show='notLogin', callback='redirectToLogin()') 系统检测到尚未登录，请先登录后再操作！
 block script
     include ./build/dashboard_scripts.jade

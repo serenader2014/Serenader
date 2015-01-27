@@ -160,7 +160,7 @@ module.exports = function (router) {
                     cover: '/default_album.png',
                     private: private
                 }).then(function (album) {
-                    res.json({ret: 0, data: {album: album}});
+                    res.json({ret: 0, data: album});
                 }).catch(function (err) {
                     res.json({ret: -1, error: err.message || err});
                     return false;

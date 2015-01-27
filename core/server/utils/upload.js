@@ -4,13 +4,13 @@ module.exports = function (req, res, opt) {
         path = require('path'),
         Promise = require('bluebird'),
         fsx = Promise.promisifyAll(require('fs-extra')),
-        _ = require('underscore'),
+        _ = require('lodash'),
         log = require('./log')(),
         config = require('../../../config').config,
         root = config.root_dir,
         defaultOptions = {
-            tmpDir: root + '/content/data/tmp',
-            uploadDir: root + '/content/data/upload',
+            tmpDir: path.resolve(root, 'content', 'data', 'tmp'),
+            uploadDir: path.resolve(root, 'content', 'data', 'upload'),
             deleteUrl: '/upload/public/',
             baseUrl: '/',
             maxPostSize: 11000000000,
@@ -67,13 +67,13 @@ module.exports = function (req, res, opt) {
     FileInfo.prototype.initUrls = function () {
         if (! this.error) {
             var self = this;
-            this.url = options.baseUrl + encodeURIComponent(this.name);
-            this.deleteUrl = options.deleteUrl + encodeURIComponent(this.name);
+            this.url = path.join(options.baseUrl, encodeURIComponent(this.name));
+            this.deleteUrl = path.join(options.deleteUrl, encodeURIComponent(this.name));
             this.imageVersions = {};
             Object.keys(options.imageVersions).forEach(function (version) {
 
                 if (options.imageTypes.test(self.name)) {
-                    self.imageVersions[version] = options.baseUrl + version + '/' + encodeURIComponent(self.name);
+                    self.imageVersions[version] = path.join(options.baseUrl, version, encodeURIComponent(self.name));
                 }
             });
         }
@@ -102,9 +102,13 @@ module.exports = function (req, res, opt) {
                 fsx.unlink(file.path);
                 return false;
             }
+
+            // TODO use fsx.ensureDirAsync to do this function
             if (! fsx.existsSync(options.uploadDir)) {
                 fsx.mkdirsSync(options.uploadDir);
             }
+
+            // TODO rewrite this module.
             p = fsx.renameAsync(file.path, options.uploadDir + '/' + fileinfo.name).then(function () {
                 if (options.imageTypes.test(fileinfo.name)) {
                     return Object.keys(options.imageVersions).reduce(function (p, version) {

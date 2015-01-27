@@ -77,6 +77,8 @@ msg-box(ng-show='deleteStatus===0', callback='redirect()') {{message}}
 msg-box(ng-show='deleteStatus===-1', callback='deleteStatus=undefined', type='error') {{message}}
 dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEditAlbum=false', confirm='editAlbum()', outer='album')
     md-input(name='name', type='text', title='Name', ng-model='outer.album.name', desc='相册的名称', value='outer.album.name')
+    md-input(name='slug', type='text', title='Slug', ng-model='outer.album.slug', desc='相册的Slug', value='outer.album.slug')
+
     .m-b-2
         p.m-b-1 相册描述：
         textarea.full-width.album-desc-input(name='desc', ng-model='outer.album.desc')
@@ -85,3 +87,4 @@ dialog-box(ng-show='showEditAlbum', title='修改相册信息', cancel='showEdit
         input(type='checkbox', ng-model='outer.album.private', id='private')
 msg-box(ng-show='editAlbumStatus===0', callback='editAlbumStatus=undefined') {{message}}
 msg-box(ng-show='editAlbumStatus===-1', callback='editAlbumStatus=undefined') {{message}}
+msg-box(ng-show='getGalleryError', callback='redirectToGallery()', type='error') {{message}}

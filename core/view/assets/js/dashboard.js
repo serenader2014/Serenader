@@ -1,4 +1,4 @@
-/* global marked, hljs, moment, blueimp */
+/* global marked, hljs, moment, blueimp, _ */
 
 (function () {
     angular.module('serenader',[
@@ -26,8 +26,15 @@
             $scope.assets = assets;
             $scope.isUserProfileShown = false;
             User.current(function (response) {
-                $rootScope.user = response;
+                if (response.ret === 0) {
+                    $rootScope.user = response.data;
+                } else {
+                    $rootScope.notLogin = true;
+                }
             });
+            $rootScope.redirectToLogin = function () {
+                window.location(url.admin + url.sign);
+            };
             if ($(window).width() < 720) {
                 $rootScope.isMobile = true;
             }
@@ -67,7 +74,7 @@
             $rootScope.title = '控制面板';
         }
     ])
-    .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'User',
+    .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post',
         function ($scope, $rootScope, $location, Category, Post){
             $rootScope.title = '文章';
             $scope.posts = [];
@@ -78,7 +85,11 @@
             $rootScope.$watch('user', function (user) {
                 if (user) {
                     Post.user.get({name: user.uid}, function (response) {
-                        angular.forEach(response, function (post) {
+                        if (response.ret !== 0) {
+                            $scope.getPostError = true;
+                            return false;
+                        }
+                        angular.forEach(response.data, function (post) {
                             post.createDate = moment(post.createDate).format('YYYY/MM/DD');
                             post.lastModifiedDate = moment(post.lastModifiedDate).fromNow();
                             if (post.published) {
@@ -94,7 +105,11 @@
             }, true);
 
             Category.getAll(function (response) {
-                $scope.categories = response;
+                if (response.ret !== 0) {
+                    $scope.getCategoryError = true;
+                    return false;
+                }
+                $scope.categories = response.data;
                 $scope.$watch('posts', function (p) {
                     if (p.length) {
                         angular.forEach($scope.categories, function (c) {
@@ -117,6 +132,9 @@
                         });
                     }
                 }, true);
+            }, function () {
+                $scope.getCategoryError = true;
+                return false;
             });
             $scope.currentCate = '';
             $scope.showPost = function (c) {
@@ -242,11 +260,11 @@
         function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, upload) {
             $rootScope.title = '编辑文章';
             Post.common.get({id: $routeParams.id}, function (response) {
-                if (response._id) {
-                    $rootScope.post =
-                    $scope.post = response;
+                if (response.ret === 0) {
+                    $scope.post = response.data;
+                    $scope.slug = response.data.slug;
                     $scope.post.id = $routeParams.id;
-                    $scope.post.content = response.markdown;
+                    $scope.post.content = response.data.markdown;
                     $scope.post.tags = $scope.post.tags.join(',');
                     $scope.post.createDate = moment($scope.post.createDate).format('YYYY/MM/DD, HH:mm:ss');
                     post($scope, $interval, $location, Slug, Category, Post);
@@ -276,15 +294,17 @@
     .controller('galleryController', ['$scope', '$rootScope', 'Gallery', 'Slug',
         function ($scope, $rootScope, Gallery, Slug) {
             $rootScope.title = '相册';
-            Gallery.common.getAll(function (response) {
-                $scope.albums = response;
-            });
             Gallery.user.get({
                 name: $rootScope.user.uid
             }, function (response) {
-                $scope.albums = response;
+                if (response.ret !== 0) {
+                    $scope.getGalleryError = true;
+                    return false;
+                }
+                $scope.albums = response.data;
             }, function (err) {
                 console.error(err);
+                $scope.getGalleryError = true;
             });
             $scope.$watch('albums', function (albums) {
                 if (albums) {
@@ -305,7 +325,7 @@
                     if (response.ret === 0) {
                         $scope.newAlbumStatus = 0;
                         $scope.message = '创建相册成功！';
-                        $scope.albums.push(response.album);
+                        $scope.albums.push(response.data);
                     } else {
                         $scope.newAlbumStatus = -1;
                         $scope.message = '创建相册失败！' + response.error;
@@ -321,7 +341,11 @@
                     Slug.generate({}, {
                         slug: value,
                     }, function (response) {
-                        $scope.newAlbum.slug = response.slug;
+                        if (response.ret !== 0) {
+                            $scope.getSlugError = true;
+                            return false;
+                        }
+                        $scope.newAlbum.slug = response.data;
                     });
                 }
             });
@@ -370,20 +394,32 @@
                 $scope.isSideShown = false;
             }
 
-            Gallery.common.get({id: $routeParams.id}, function (data) {
-                $scope.album = data;
-                $scope.outer.album = data;
+            Gallery.common.get({id: $routeParams.id}, function (response) {
+                if (response.ret !== 0) {
+                    $scope.getGalleryError = true;
+                    $scope.message = response.error;
+                    return false;
+                }
+                $scope.album = response.data;
+                $scope.outer.album = response.data;
+                console.log($scope.outer.album);
                 if ($scope.album.cover === '/default_album.png') {
                     $scope.album.cover = assets.server + '/default_album.png';
                 }
-                $rootScope.title = '相册：' + (data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name);
+                $rootScope.title = '相册：' + ($scope.album.name.length > 8 ? $scope.album.name.substring(0, 8) + '...' : $scope.album.name);
                 $scope.uploadUrl = url.api + url.gallery + '/' + $scope.album.slug;
             }, function (err) {
+                $scope.getGalleryError = true;
+                $scope.message = err;
                 console.log(err);
             });
 
+            $scope.redirectToGallery = function () {
+                $location.path(url.gallery);
+            };
+
             $scope.completeOne = function (response) {
-                angular.forEach(response[0], function (img) {
+                angular.forEach(response.data[0], function (img) {
                     if (typeof img === 'object') {
                         $scope.album.images.push(img);
                     }
@@ -522,17 +558,19 @@
                     File.getDir($scope.currentPath, $scope.type).success(function (data) {
                         if (data.ret === 0) {
                             $scope.lists = [];
-                            angular.forEach(data.folders, function (folder) {
+                            angular.forEach(data.data.folders, function (folder) {
                                 folder.type = 0;
                                 folder.createTime = moment(folder.createTime).format('YYYY/MM/DD, HH:mm');
                                 folder.href = '#/files?path=/' + $scope.nav().join('/') + '/' + folder.name + '/';
                                 folder.lastModifiedTime = moment(folder.lastModifiedTime).format('YYYY/MM/DD, HH:mm');
+                                folder.deleteUrl = path + folder.name;
                                 $scope.lists.push(folder);
                             });
-                            angular.forEach(data.files, function (file) {
+                            angular.forEach(data.data.files, function (file) {
                                 file.type = 1;
                                 file.createTime = moment(file.createTime).format('YYYY/MM/DD, HH:mm');
                                 file.href = '';
+                                file.deleteUrl = path + file.name;
                                 file.lastModifiedTime = moment(file.lastModifiedTime).format('YYYY/MM/DD, HH:mm');
                                 $scope.lists.push(file);
                             });
@@ -557,7 +595,7 @@
                 }
             });
             $scope.completeOne = function (response) {
-                var file = response[0];
+                var file = response.data[0];
                 $scope.lists.push({
                     name: file.name,
                     href: '',
@@ -580,6 +618,11 @@
                 return arr;
             };
             $scope.showPreview = function (event, file) {
+                if ($scope.showDelete) {
+                    event.preventDefault();
+                    file.checked = !file.checked;
+                    return false;
+                }
                 if (file.type === 1) {
                     event.preventDefault();
                     var imgRegExp = /jpg|jpeg|png|gif|bmp/ig,
@@ -591,6 +634,15 @@
                         blueimp.Gallery([imgUrl]);
                     }
                 }
+            };
+            $scope.deleteFile = function () {
+                var arr = _.pluck(_.filter($scope.lists, 'checked'), 'deleteUrl');
+                // File.deleteFiles(arr, function (response) {
+                //     console.log(response);
+                // });
+                File.d(arr[0], function (response) {
+                    console.log(response);
+                });
             };
         }
     ])
@@ -827,7 +879,7 @@
             addFile: function (item) {
                 item.onComplete = function (response, status) {
                     if (status === 200) {
-                        $scope.imgUrl = response[0].url;
+                        $scope.imgUrl = response.data[0].url;
                     }
                 };
                 $scope.isAdded = true;
@@ -883,8 +935,12 @@
         };
     }
     function post ($scope, $interval, $location, Slug, Category, Post) {
-        Category.getAll(function (data) {
-            $scope.categories = data;
+        Category.getAll(function (response) {
+            if (response.ret !== 0) {
+                $scope.getCategoryError = true;
+                return false;
+            }
+            $scope.categories = response.data;
         });
         $scope.showDelete = false;
         $scope.showDeletePost = function () {
@@ -959,7 +1015,11 @@
                 Slug.generate({}, {
                     slug: value,
                 }, function (response) {
-                    $scope.post.slug = response.slug;
+                    if (response.ret !== 0) {
+                        $scope.getSlugError = true;
+                        return false;
+                    }
+                    $scope.post.slug = response.data.slug;
                 });
             }
         });
@@ -980,7 +1040,7 @@
                         console.warn('Auto update post failed! ' + err.error || '网络错误！');
                         return false;
                     } else {
-                        $scope.post.id = response.id;
+                        $scope.post.id = response.data.id;
                         console.info('Auto update post success, post id is ' + $scope.post.id);
                     }
                 });

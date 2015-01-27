@@ -213,7 +213,7 @@ module.exports = function (router) {
             trashPath = root + 'trash/' + userName,
             files = req.body.files,
             d = new Date(),
-            time = (d.toDateString()).replace(/ /ig, '-'),
+            time = (d.toDateString()).replace(/\s/ig, '-'),
             previousFile = '',
             failedFile = [];
 
