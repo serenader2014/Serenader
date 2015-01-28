@@ -1,8 +1,8 @@
 module.exports = function (req, res, opt) {
-    var im = require('imagemagick'),
+    var Promise = require('bluebird'),
+        im = Promise.promisifyAll(require('imagemagick')),
         formidable = require('formidable'),
         path = require('path'),
-        Promise = require('bluebird'),
         fsx = Promise.promisifyAll(require('fs-extra')),
         _ = require('lodash'),
         log = require('./log')(),
@@ -67,14 +67,14 @@ module.exports = function (req, res, opt) {
     FileInfo.prototype.initUrls = function () {
         if (! this.error) {
             var self = this;
-            this.url = path.join(options.baseUrl, encodeURIComponent(this.name));
-            this.deleteUrl = path.join(options.deleteUrl, encodeURIComponent(this.name));
+            this.url = options.baseUrl + '/' + this.name;
+            this.deleteUrl = options.deleteUrl + '/' + encodeURIComponent(this.name);
             this.imageVersions = {};
-            Object.keys(options.imageVersions).forEach(function (version) {
-
-                if (options.imageTypes.test(self.name)) {
-                    self.imageVersions[version] = path.join(options.baseUrl, version, encodeURIComponent(self.name));
+            _.forEach(_.keys(options.imageVersions), function (version) {
+                if (!options.imageTypes.test(self.name)) {
+                    return false;
                 }
+                self.imageVersions[version] = options.baseUrl + '/' + version + '/' + encodeURIComponent(self.name);
             });
         }
     };
@@ -103,33 +103,23 @@ module.exports = function (req, res, opt) {
                 return false;
             }
 
-            // TODO use fsx.ensureDirAsync to do this function
-            if (! fsx.existsSync(options.uploadDir)) {
-                fsx.mkdirsSync(options.uploadDir);
-            }
-
-            // TODO rewrite this module.
-            p = fsx.renameAsync(file.path, options.uploadDir + '/' + fileinfo.name).then(function () {
-                if (options.imageTypes.test(fileinfo.name)) {
-                    return Object.keys(options.imageVersions).reduce(function (p, version) {
-                        return fsx.mkdirsAsync(options.uploadDir + '/' + version).then(function () {
-                            var opt = options.imageVersions[version];
-                            return new Promise(function (resolve, reject) {
-                                im.resize({
-                                    width: opt.width,
-                                    srcPath: options.uploadDir + '/' + fileinfo.name,
-                                    dstPath: options.uploadDir + '/' + version + '/' + fileinfo.name
-                                }, function (err) {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve();
-                                    }
-                                });
+            p = fsx.ensureDirAsync(options.uploadDir).then(function () {
+                return fsx.renameAsync(file.path, path.join(options.uploadDir, fileinfo.name));
+            }).then(function () {
+                if (!options.imageTypes.test(fileinfo.name)) {
+                    return;
+                }
+                return Object.keys(options.imageVersions).reduce(function (promise, version) {
+                    return promise.then(function () {
+                        return fsx.ensureDirAsync(path.join(options.uploadDir, version)).then(function () {
+                            return im.resizeAsync({
+                                width: options.imageVersions[version].width,
+                                srcPath: path.join(options.uploadDir, fileinfo.name),
+                                dstPath: path.join(options.uploadDir, version, fileinfo.name)
                             });
                         });
-                    }, Promise.resolve());
-                }
+                    });
+                }, Promise.resolve());
             });
 
         }).on('aborted', function () {
@@ -148,10 +138,10 @@ module.exports = function (req, res, opt) {
 
         }).on('end', function () {
 
-            files.forEach(function (fileinfo) {
-                fileinfo.initUrls(req, opt.uploadDir, opt.path);
-            });
             p.then(function () {
+                _.forEach(files, function (fileinfo) {
+                    fileinfo.initUrls(req, opt.uploadDir, opt.path);
+                });
                 resolve(files, field);
             }).catch(function (err) {
                 log.error(err.stack);
@@ -173,5 +163,4 @@ module.exports = function (req, res, opt) {
         });
         form.parse(req);
     });
-
 };

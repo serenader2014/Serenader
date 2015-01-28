@@ -19,7 +19,7 @@ function parseUrl (targetUrl, userName) {
     parsedArr = _.compact(_.compact(targetUrl.split(url.upload))[0].split('/'));
     type = _.first(parsedArr);
     dir = _.drop(parsedArr);
-    dstDir = dir.join('/') ? dir.join('/') + '/' : '';
+    dstDir = dir.join('/');
     target = path.resolve(root, 'content', 'data', type, userName, 'upload', dstDir);
     return {
         type: type,
@@ -37,30 +37,29 @@ module.exports = function (router) {
         var userName = req.session.user.uid,
             parsed = parseUrl(req.url, userName);
 
-        // if (parsed.type !== 'public' && parsed.type !== 'private') {
-        //     res.json({
-        //         ret: -1,
-        //         error: '类别错误。'
-        //     });
-        //     return false;
-        // }
+        if (parsed.type !== 'public' && parsed.type !== 'private') {
+            res.json({
+                ret: -1,
+                error: '类别错误。'
+            });
+            return false;
+        }
 
-        res.json(parsed);
-        // upload(req, res, {
-        //     uploadDir: parsed.target,
-        //     baseUrl: '/static/' + userName + '/upload/' + parsed.path,
-        //     deleteUrl: url.admin + url.upload + '/' + parsed.type + '/' + userName + '/upload/' + parsed.path
-        // }).then(function (files) {
-        //     res.json({
-        //         ret: 0,
-        //         data: files
-        //     });
-        // }).catch(function (err) {
-        //     res.json({
-        //         ret: -1,
-        //         error: err.message
-        //     });
-        // });
+        upload(req, res, {
+            uploadDir: parsed.target,
+            baseUrl: '/static/' + userName + (parsed.path ? '/upload/' + parsed.path : '/upload') ,
+            deleteUrl: url.admin + url.upload + '/' + parsed.type + '/' + userName + (parsed.path ? '/upload/' + parsed.path : '/upload')
+        }).then(function (files) {
+            res.json({
+                ret: 0,
+                data: files
+            });
+        }).catch(function (err) {
+            res.json({
+                ret: -1,
+                error: err.message
+            });
+        });
     });
 
     router.delete(url.upload + '/*', function (req, res) {

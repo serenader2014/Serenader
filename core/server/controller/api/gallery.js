@@ -182,7 +182,7 @@ module.exports = function (router) {
                 dir = root + type + '/' + userName + '/gallery/';
             fileUpload(req, res, {
                 uploadDir: dir + album.id,
-                baseUrl: '/static/' + userName + '/gallery/' + album.id + '/',
+                baseUrl: '/static/' + userName + '/gallery/' + album.id,
                 deleteUrl: url.api + url.gallery + '/' + type + '/' + albumSlug,
                 acceptFileTypes: /\.(gif|jpe?g|png)$/i
             }).then(function (files) {
@@ -241,7 +241,6 @@ module.exports = function (router) {
         }).then(function () {
             res.json({ret: 0});
         }).catch(function (err) {
-            console.log(3);
             res.json({ret: -1, error: err && err.message ? err.message : '权限不足。'});
         });
     });
@@ -265,7 +264,9 @@ module.exports = function (router) {
                 imgName = decodeURIComponent(path.basename(deletedImg.path));
                 return fs.unlinkAsync(basePath + album.id + '/' + imgName);
             }).then(function () {
-                return fs.unlinkAsync(basePath + album.id + '/thumbnail/' + imgName);
+                return fs.unlinkAsync(basePath + album.id + '/thumbnail/' + imgName).catch(function () {
+                    log.info('No thumbnail for ' +imgName);
+                });
             });
         }).then(function () {
             res.json({ret: 0});
