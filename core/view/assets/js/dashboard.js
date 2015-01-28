@@ -427,23 +427,16 @@
             };
 
             $scope.deleteImg = function () {
-                var targetImg = [],
+                var targetImg = _.filter($scope.album.images, 'isSelected'),
+                    idList = _.pluck(targetImg, '_id'),
                     deferred = $q.defer();
                 deferred.resolve();
-                angular.forEach($scope.album.images, function (image) {
-                    if (image.isSelected) {
-                        targetImg.push(image);
-                    }
-                });
-                targetImg.reduce(function (promise, img) {
+                _.reduce(idList, function (promise, id) {
                     return promise.then(function () {
-                        return deleteImg(img._id, $scope.album.slug).then(function (data) {
-                            if (data.data.ret === 0) {
-                                $scope.album.images.splice($scope.album.images.indexOf(img), 1);
-                            } else {
-                                $scope.deleteFailed.push({
-                                    image: $scope.album.images[img.index],
-                                    message: data.data.error
+                        return deleteImg(id, $scope.album.slug).then(function (response) {
+                            if (response.data.ret === 0) {
+                                _.remove($scope.album.images, function (img) {
+                                    return img._id === id;
                                 });
                             }
                         });
@@ -547,8 +540,8 @@
             };
         }
     ])
-    .controller('fileController', ['$scope', '$rootScope', '$location', 'File',
-        function ($scope, $rootScope, $location, File) {
+    .controller('fileController', ['$scope', '$rootScope', '$location', '$q', 'File',
+        function ($scope, $rootScope, $location, $q, File) {
             $rootScope.title = '文件管理';
             $scope.moment = moment;
             $scope.currentPath = $location.search().path;
@@ -635,14 +628,34 @@
                     }
                 }
             };
-            $scope.deleteFile = function () {
-                var arr = _.pluck(_.filter($scope.lists, 'checked'), 'deleteUrl');
-                // File.deleteFiles(arr, function (response) {
-                //     console.log(response);
-                // });
-                File.d(arr[0], function (response) {
-                    console.log(response);
+            $scope.selectAll = function () {
+                _.forEach($scope.lists, function (file) {
+                    file.checked = true;
                 });
+            };
+            $scope.reverseSelect = function () {
+                _.forEach($scope.lists, function (file) {
+                    file.checked = !file.checked;
+                });
+            };
+            $scope.deleteFile = function () {
+                var arr = _.pluck(_.filter($scope.lists, 'checked'), 'deleteUrl'),
+                    deferred = $q.defer();
+
+                deferred.resolve();
+                _.reduce(arr, function (promise, file) {
+                    return promise.then(function () {
+                        return File.delete(file).then(function (response) {
+                            if (response.data.ret === 0) {
+                                _.remove($scope.lists, function (f) {
+                                    return f.deleteUrl === file;
+                                });
+                            } else {
+                                console.error(response.data.error);
+                            }
+                        });
+                    });
+                }, deferred.promise);
             };
         }
     ])

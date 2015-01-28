@@ -45,16 +45,8 @@
                     type: type
                 });
             },
-            deleteFiles: function (files) {
-                console.log(files);
-                return $http.delete(url.api + url.file, {
-                    data: {
-                        files: files
-                    }
-                });
-            },
-            d: function (file) {
-                return $http.delete(url.api + url.upload  + file);
+            delete: function (file) {
+                return $http.delete(url.api + url.upload + file);
             }
         };
     }])

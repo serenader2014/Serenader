@@ -1,7 +1,6 @@
 var Promise = require('bluebird'),
     fs = Promise.promisifyAll(require('fs-extra')),
     path = require('path'),
-    validator = require('validator'),
     _ = require('lodash'),
     log = require('../../utils/log')(),
     upload = require('../../utils/upload'),
@@ -55,6 +54,7 @@ module.exports = function (router) {
                 data: files
             });
         }).catch(function (err) {
+            log.error(err);
             res.json({
                 ret: -1,
                 error: err.message
@@ -69,5 +69,20 @@ module.exports = function (router) {
         }
         var userName = req.session.user.uid,
             parsed = parseUrl(req.url, userName);
+
+        if (parsed.type !== 'public' && parsed.type !== 'private') {
+            res.json({
+                ret: -1,
+                error: '类别错误。'
+            });
+            return false;
+        }
+
+        fs.removeAsync(decodeURIComponent(parsed.target)).then(function () {
+            res.json({ret: 0});
+        }).catch(function (err) {
+            log.error(err);
+            res.json({ret: -1, error: err});
+        });
     });
 };

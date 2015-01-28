@@ -12,28 +12,28 @@
                         href='#/files?path=/{{nav().slice(0, $index+1).join("/")}}/',
                         ng-class='{current: pathFragment===fragment}') {{fragment}}
         ul.action(ng-hide='isMobile && !showMenu')
-            li(ng-hide='showDelete'): button.btn(ng-click='showUpload=true')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath ? showUpload=true: ""', ng-class='{"btn-disabled": !currentPath}')
                 i.md-cloud-upload.left-icon
                 |上传文件
-            li(ng-hide='showDelete'): button.btn(ng-click='showDelete=true')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath ? showDelete=true: ""', ng-class='{"btn-disabled": !currentPath}')
                 i.md-delete.left-icon
                 | 批量删除
-            li(ng-hide='showDelete'): button.btn
+            li(ng-hide='showDelete'): button.btn( ng-class='{"btn-disabled": !currentPath}')
                 i.md-insert-drive-file.left-icon
                 | 新建文件
-            li(ng-hide='showDelete'): button.btn
+            li(ng-hide='showDelete'): button.btn( ng-class='{"btn-disabled": !currentPath}')
                 i.md-folder.left-icon
                 | 新文件夹
-            li(ng-show='showDelete'): button.btn(ng-click='deleteFile()')
+            li(ng-show='showDelete'): button.btn(ng-click='currentPath && deleteFile()', ng-class='{"btn-disabled": !currentPath}')
                 i.md-delete.left-icon
                 | 删除选中
-            li(ng-show='showDelete'): button.btn(ng-click='selectAll()')
+            li(ng-show='showDelete'): button.btn(ng-click='currentPath && selectAll()', ng-class='{"btn-disabled": !currentPath}')
                 i.md-my-library-add.left-icon
                 | 选择全部
-            li(ng-show='showDelete'): button.btn(ng-click='reverseSelect()')
+            li(ng-show='showDelete'): button.btn(ng-click='currentPath && reverseSelect()', ng-class='{"btn-disabled": !currentPath}')
                 i.md-select-all.left-icon
                 | 反向选择
-            li(ng-show='showDelete'): button.btn(ng-click='showDelete=false')
+            li(ng-show='showDelete'): button.btn(ng-click='currentPath ? showDelete=false: ""', ng-class='{"btn-disabled": !currentPath}')
                 i.md-cancel.left-icon
                 | 取消删除
     .file-list
