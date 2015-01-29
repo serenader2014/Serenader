@@ -2,6 +2,8 @@
     label(for='{{name}}') {{title}}
     input(type='{{type}}',
         name='{{name}}',
+        ng-blur='isFocus=false',
+        ng-focus='isFocus=true'
         id='{{name}}')/
     span.input-bar
     span.input-description {{desc}}
