@@ -45,6 +45,13 @@
                     type: type
                 });
             },
+            newFile: function (options) {
+                return $http.post(url.api + url.newFile, {
+                    dir: options.dir,
+                    name: options.name,
+                    type: options.type
+                });
+            },
             delete: function (file) {
                 return $http.delete(url.api + url.upload + file);
             }

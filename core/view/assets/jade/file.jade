@@ -12,16 +12,16 @@
                         href='#/files?path=/{{nav().slice(0, $index+1).join("/")}}/',
                         ng-class='{current: pathFragment===fragment}') {{fragment}}
         ul.action(ng-hide='isMobile && !showMenu')
-            li(ng-hide='showDelete'): button.btn(ng-click='currentPath ? showUpload=true: ""', ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showUpload=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-cloud-upload.left-icon
                 |上传文件
-            li(ng-hide='showDelete'): button.btn(ng-click='currentPath ? showDelete=true: ""', ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showDelete=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-delete.left-icon
                 | 批量删除
-            li(ng-hide='showDelete'): button.btn( ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showNewFile=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-insert-drive-file.left-icon
                 | 新建文件
-            li(ng-hide='showDelete'): button.btn( ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showNewFolder=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-folder.left-icon
                 | 新文件夹
             li(ng-show='showDelete'): button.btn(ng-click='currentPath && deleteFile()', ng-class='{"btn-disabled": !currentPath}')
@@ -33,7 +33,7 @@
             li(ng-show='showDelete'): button.btn(ng-click='currentPath && reverseSelect()', ng-class='{"btn-disabled": !currentPath}')
                 i.md-select-all.left-icon
                 | 反向选择
-            li(ng-show='showDelete'): button.btn(ng-click='currentPath ? showDelete=false: ""', ng-class='{"btn-disabled": !currentPath}')
+            li(ng-show='showDelete'): button.btn(ng-click='currentPath && (showDelete=false)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-cancel.left-icon
                 | 取消删除
     .file-list
@@ -72,6 +72,14 @@
                                     i.md-close.left-icon
                                     | 删除
 file-uploader(url='uploadUrl', show='showUpload', complete='completeOne(response)')
+dialog-box(ng-show='showNewFile', title='新建文件', confirm='newFile("file")', cancel='showNewFile=false', outer='outer')
+    p.m-b-2 请输入要创建的文件的文件名：
+    md-input(name='filename', type='text', title='文件名称', ng-model='outer.filename', desc='新建文件的文件名', )
+msg-box(ng-show='newFileStatus===0', callback='newFileStatus=undefined') 新建文件成功！
+msg-box(ng-show='newFileStatus===1', callback='newFileStatus=undefined') {{message}}
+dialog-box(ng-show='showNewFolder', title='新建文件夹', confirm='newFile("folder")', cancel='showNewFolder=false')
+    p.m-b-2 请输入要创建的文件夹的名称：
+    md-input(title='文件夹名称', ng-model='outer.filename', desc='新建文件夹的文件夹名')
 #blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
     .slides
     h3.title

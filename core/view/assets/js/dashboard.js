@@ -258,10 +258,12 @@
         'Slug',
         'Upload',
         function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, upload) {
+            $scope.outer = {};
             $rootScope.title = '编辑文章';
             Post.common.get({id: $routeParams.id}, function (response) {
                 if (response.ret === 0) {
                     $scope.post = response.data;
+                    $scope.outer = $scope.post;
                     $scope.slug = response.data.slug;
                     $scope.post.id = $routeParams.id;
                     $scope.post.content = response.data.markdown;
@@ -657,6 +659,35 @@
                     });
                 }, deferred.promise);
             };
+            $scope.newFile = function (type) {
+                $scope.showNewFile = false;
+                File.newFile({
+                    type: type,
+                    dir: $scope.currentPath,
+                    name: $scope.outer.filename
+                }).success(function (response) {
+                    if (response.ret === 0) {
+                        $scope.lists.push({
+                            name: $scope.outer.filename,
+                            href: type === 'folder' ? '#/files?path=' + $scope.currentPath + $scope.outer.filename : '',
+                            type: type === 'folder' ? 0 : 1,
+                            createTime: moment().format('YYYY/MM/DD, HH:mm'),
+                            lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
+                        });
+                        $scope.newFileStatus = 0;
+                        $scope.outer.filename = '';
+                    } else {
+                        $scope.newFileStatus = 1;
+                        $scope.message = response.error;
+                    }
+                }).error(function (err) {
+                    $scope.newFileStatus = 1;
+                    $scope.message = err;
+                });
+            };
+            $scope.outer = {
+                filename: '',
+            };
         }
     ])
     .controller('settingController', ['$scope', '$rootScope',
@@ -1032,7 +1063,7 @@
                         $scope.getSlugError = true;
                         return false;
                     }
-                    $scope.post.slug = response.data.slug;
+                    $scope.post.slug = response.data;
                 });
             }
         });
