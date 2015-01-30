@@ -54,6 +54,15 @@
             },
             delete: function (file) {
                 return $http.delete(url.api + url.upload + file);
+            },
+            getContent: function (path) {
+                return $http.get(path);
+            },
+            saveEdit: function (content, dir) {
+                return $http.put(url.api + url.fileEdit, {
+                    file: content,
+                    dir: dir
+                });
             }
         };
     }])

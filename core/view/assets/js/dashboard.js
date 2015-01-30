@@ -1,4 +1,4 @@
-/* global marked, hljs, moment, blueimp, _ */
+/* global marked, hljs, moment, blueimp, _ , ace*/
 
 (function () {
     angular.module('serenader',[
@@ -571,7 +571,6 @@
                             });
                         }
                     });
-                    $scope.pathFragment = path.split('/')[path.split('/').length-2];
                     $scope.uploadUrl = url.api + url.upload + path.substring(0, path.length - 1);
                 } else {
                     $scope.lists = [{
@@ -612,6 +611,18 @@
                 });
                 return arr;
             };
+            function getCodeLang (extName) {
+                switch (extName) {
+                    case 'html': return 'html';
+                    case 'css': return 'css';
+                    case 'scss': return 'scss';
+                    case 'js': return 'javascript';
+                    case 'md': return 'markdown';
+                    case 'py': return 'python';
+                    case 'php': return 'php';
+                    default: return '';
+                }
+            }
             $scope.showPreview = function (event, file) {
                 if ($scope.showDelete) {
                     event.preventDefault();
@@ -621,12 +632,19 @@
                 if (file.type === 1) {
                     event.preventDefault();
                     var imgRegExp = /jpg|jpeg|png|gif|bmp/ig,
-                        extName = file.name.split('.').pop();
+                        codeFileRegExp = /html|scss|css|js|md|py|php/ig,
+                        extName = _.last(file.name.split('.'));
                     if (imgRegExp.test(extName)) {
                         var urlPrefix = assets.static + '/' + $rootScope.user.uid + '/upload/',
                             tmpArr = $scope.currentPath.split('/'),
                             imgUrl = urlPrefix + tmpArr.slice(2, tmpArr.length - 1).join('/') + '/' + file.name;
                         blueimp.Gallery([imgUrl]);
+                    }
+                    if (codeFileRegExp.test(extName)) {
+                        var codeLang = getCodeLang(extName);
+                        $location.path(url.filePreview)
+                            .search('path', $scope.currentPath + file.name)
+                            .search('lang', codeLang);
                     }
                 }
             };
@@ -690,6 +708,68 @@
             };
         }
     ])
+    .controller('previewController', ['$scope', '$rootScope', '$location', '$window', 'File',
+        function ($scope, $rootScope, $location, $window, File) {
+            var targetPath = _.drop(_.compact($location.search().path.split('/'))).join('/'),
+                targetUrl = assets.static + '/' + $rootScope.user.uid + '/upload',
+                lang = $location.search().lang,
+                editor;
+            $scope.editor = {};
+            $rootScope.title = '文件预览';
+            File.getContent(targetUrl + '/' + targetPath).then(function (response) {
+                $scope.editor.readOnly = true;
+                editor = ace.edit('editor');
+                editor.setValue(response.data);
+                editor.clearSelection();
+                editor.setFontSize(14);
+                editor.setTheme('ace/theme/tomorrow');
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: true
+                });
+                editor.commands.addCommands([{
+                    name: 'nextline',
+                    bindKey: {win: 'Ctrl-Enter'},
+                    exec: function (editor) {
+                        editor.navigateLineEnd();
+                        editor.insert('\n');
+                    }
+                },{
+
+                }]);
+                editor.getSession().setMode('ace/mode/' + lang);
+                editor.setAutoScrollEditorIntoView(true);
+                $scope.$watch('editor.readOnly', function (value) {
+                    if (value !== undefined) {
+                        editor.setReadOnly(value);
+                    }
+                });
+            });
+
+            $scope.back = function () {
+                var path = '/' + _.dropRight(_.compact($location.search().path.split('/'))).join('/') + '/';
+                $location.path(url.file).search('path', path);
+            };
+            $scope.openRawFile = function () {
+                $window.location.pathname = targetUrl + '/' + targetPath;
+            };
+            $scope.saveEdit = function () {
+                File.saveEdit(editor.getValue(), $location.search().path).then(function (response) {
+                    if (response.data.ret === 0) {
+                        $scope.editStatus = 0;
+                        $scope.message = '编辑成功！';
+                    } else {
+                        $scope.editStatus = -1;
+                        $scope.message = '编辑失败！' + response.data.error;
+                    }
+                }, function () {
+                    $scope.editStatus = -1;
+                    $scope.message = '编辑失败！网络错误！';
+                });
+            };
+        }
+    ])
     .controller('settingController', ['$scope', '$rootScope',
         function ($scope, $rootScope) {
             $rootScope.title = '设置';
@@ -716,6 +796,10 @@
         .when(url.file, {
             templateUrl: assets.server + '/views/file.html',
             controller: 'fileController',
+        })
+        .when(url.filePreview, {
+            templateUrl: assets.server + '/views/preview.html',
+            controller: 'previewController'
         })
         .when(url.setting, {
             templateUrl: assets.server + '/views/setting.html',

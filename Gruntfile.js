@@ -20,7 +20,7 @@ module.exports = function (grunt) {
     // 后台面板的所有依赖库
     dashboardLibs = [
         'libs/jquery/dist/jquery.js',
-        'libs/lodash/dist/lodash.js',
+        'libs/lodash/lodash.js',
         'libs/angular/angular.js',
         'libs/angular-animate/angular-animate.js',
         'libs/angular-messages/angular-messages.js',

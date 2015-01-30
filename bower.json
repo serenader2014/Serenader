@@ -7,7 +7,7 @@
         "ace-builds"          : "https://github.com/ajaxorg/ace-builds.git",
         "marked"              : "latest",
         "blueimp-gallery"     : "latest",
-        "lodash"              : "2.4.1",
+        "lodash"              : "*",
         "material-design-icon": "0.1.1",
         "moment"              : "2.8.4",
         "angular"             : "^1.3.0",

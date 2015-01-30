@@ -10,7 +10,7 @@
                     span.path-delimiter /
                     a.path-name(
                         href='#/files?path=/{{nav().slice(0, $index+1).join("/")}}/',
-                        ng-class='{current: pathFragment===fragment}') {{fragment}}
+                        ng-class='{current: $index === nav().length-1}') {{fragment}}
         ul.action(ng-hide='isMobile && !showMenu')
             li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showUpload=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-cloud-upload.left-icon

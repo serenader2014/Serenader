@@ -127,3 +127,30 @@
         }
     }
 }
+.file-preview {
+    height: 100%;
+    padding-top: 5.5rem;
+    position: relative;
+    background: $white;
+    box-shadow: $shadow-1;
+    .preview-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        background: $light-grey;
+        box-shadow: $shadow-1;
+        z-index: 10;
+        li {
+            display: inline-block;
+        }
+        button {
+            padding: 0.7rem 2rem;
+        }
+    }
+
+    #editor {
+        height: 100%;
+    }
+}

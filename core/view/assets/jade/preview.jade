@@ -1,0 +1,22 @@
+script(src='server/ace/src-min/ace.js', type='text/javascript')
+script(src='server/ace/src-min/ext-language_tools.js', type='text/javascript')
+.file-preview
+    ul.preview-menu
+        li: button.btn(ng-click='back()')
+            i.md-undo.left-icon
+            | 返回
+        li: button.btn(ng-click='editor.readOnly=false', ng-show='editor.readOnly')
+            i.md-edit.left-icon
+            | 编辑
+        li: button.btn(ng-click='editor.readOnly=true', ng-show='!editor.readOnly')
+            i.md-cancel.left-icon
+            | 退出编辑
+        li: button.btn(ng-click='saveEdit()', ng-show='!editor.readOnly')
+            i.md-save.left-icon
+            | 保存编辑
+        li: button.btn(ng-click='openRawFile()')
+            i.md-launch.left-icon
+            | Raw
+    .file-content#editor
+msg-box(ng-show='editStatus===0', callback='editStatus=undefined') {{message}}
+msg-box(ng-show='editStatus===-1', callback='editStatus=undefined', type='error') {{message}}
