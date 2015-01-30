@@ -143,7 +143,7 @@ module.exports = function (grunt) {
         copy: {
             // ACE编辑器
             ace: {
-                cwd: bowerDir + 'ace/',
+                cwd: bowerDir + 'ace-builds/',
                 src: ['**'],
                 dest: 'core/view/assets/ace/',
                 expand: true
