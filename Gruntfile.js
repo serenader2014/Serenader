@@ -1,7 +1,7 @@
 module.exports = function (grunt) {
     var config,
         path = require('path'),
-        _ = require('underscore'),
+        _ = require('lodash'),
         dashboardLibs,
         signPageLibs,
         dashboardScripts,
