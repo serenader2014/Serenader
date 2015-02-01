@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
-    _ = require('underscore'),
+    _ = require('lodash'),
     htmlToText = require('html-to-text'),
     Category = require('./category'),
 
@@ -68,7 +68,7 @@ PostSchema.statics.delete = function (id) {
     return self.findByIdAsync(id).then(function (p) {
         if (p.published === true) {
             return Category.decreaseCount(p.category);
-        } 
+        }
     }).then(function () {
         return self.findOneAndRemove({_id: id}).exec();
     });

@@ -1,5 +1,5 @@
 var validator = require('validator'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     moment = require('moment'),
     auth_user = require('../../utils/auth_user'),
     Category = require('../../models').Category,
@@ -36,7 +36,7 @@ module.exports = function (router) {
         }).then(null, function (err) {
             log.error(err.stack);
             errorHandling(req, res, { error: err.message, type: 404 });
-        });      
+        });
     });
 
     router.get(url.newPost, auth_user, function (req, res) {
@@ -58,7 +58,7 @@ module.exports = function (router) {
             }
             return Category.getAll().then(function (c) {
                 res.render('post', {
-                    categories: c, 
+                    categories: c,
                     post: post
                 });
             });

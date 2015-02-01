@@ -1,6 +1,6 @@
 var Promise = require('bluebird'),
     mongoose = Promise.promisifyAll(require('mongoose')),
-    _ = require('underscore'),
+    _ = require('lodash'),
     Schema = mongoose.Schema,
 
     SettingSchema = new Schema({

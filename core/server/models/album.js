@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
-    _ = require('underscore'),
+    _ = require('lodash'),
 
     AlbumSchema = new Schema({
         slug: { type: String, unique: true },

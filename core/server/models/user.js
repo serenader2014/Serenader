@@ -1,7 +1,7 @@
 var Promise = require('bluebird'),
     mongoose = Promise.promisifyAll(require('mongoose')),
     Schema = mongoose.Schema,
-    _ = require('underscore'),
+    _ = require('lodash'),
 
     UserSchema = new Schema({
         uid: { type: String , unique: true },
