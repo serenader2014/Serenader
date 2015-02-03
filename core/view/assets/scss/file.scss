@@ -104,6 +104,9 @@
     }
     .item-action {
         width: 20%;
+        a {
+            padding: 0.5rem;
+        }
     }
     .file {
         position: relative;

@@ -18,6 +18,9 @@
             li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showDelete=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-delete.left-icon
                 | 批量删除
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showMove=true)', ng-class='{"btn-disabled": !currentPath}')
+                i.md-content-cut.left-icon
+                | 批量移动
             li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showNewFile=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-insert-drive-file.left-icon
                 | 新建文件
@@ -62,15 +65,12 @@
                                 i.md-settings
                                 | 操作
                             span.action-menu(ng-hide='isMobile && !file.showMenu')
-                                button.btn
+                                a.btn(ng-href='{{downloadFile(file)}}', ng-show='file.type===1', target='_blank')
                                     i.md-file-download.left-icon
                                     | 下载
-                                button.btn
+                                a.btn(ng-click='rename.show=true', href='javascript:;')
                                     i.md-edit.left-icon
                                     | 重命名
-                                button.btn
-                                    i.md-close.left-icon
-                                    | 删除
 file-uploader(url='uploadUrl', show='showUpload', complete='completeOne(response)')
 dialog-box(ng-show='showNewFile', title='新建文件', confirm='newFile("file")', cancel='showNewFile=false', outer='outer')
     p.m-b-2 请输入要创建的文件的文件名：
@@ -80,6 +80,11 @@ msg-box(ng-show='newFileStatus===1', callback='newFileStatus=undefined') {{messa
 dialog-box(ng-show='showNewFolder', title='新建文件夹', confirm='newFile("folder")', cancel='showNewFolder=false')
     p.m-b-2 请输入要创建的文件夹的名称：
     md-input(title='文件夹名称', ng-model='outer.filename', desc='新建文件夹的文件夹名')
+dialog-box(ng-show='rename.show', title='重命名文件/文件夹', confirm='rename()', cancel='rename.show=false')
+    p.m-b-2 为以下文件或文件夹重命名：
+    p {{rename.target}}
+    p.m-b-2 请输入新的文件或文件夹名字：
+    md-input(title='新的名字', ng-model='rename.name', desc='新的文件或文件夹的名字')
 #blueimp-gallery.blueimp-gallery.blueimp-gallery-controls
     .slides
     h3.title

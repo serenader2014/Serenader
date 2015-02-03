@@ -542,8 +542,8 @@
             };
         }
     ])
-    .controller('fileController', ['$scope', '$rootScope', '$location', '$q', 'File',
-        function ($scope, $rootScope, $location, $q, File) {
+    .controller('fileController', ['$scope', '$rootScope', '$location', '$q', '$window', 'File',
+        function ($scope, $rootScope, $location, $q, $window, File) {
             $rootScope.title = '文件管理';
             $scope.moment = moment;
             $scope.currentPath = $location.search().path;
@@ -637,7 +637,7 @@
                     if (imgRegExp.test(extName)) {
                         var urlPrefix = assets.static + '/' + $rootScope.user.uid + '/upload/',
                             tmpArr = $scope.currentPath.split('/'),
-                            imgUrl = urlPrefix + tmpArr.slice(2, tmpArr.length - 1).join('/') + '/' + file.name;
+                            imgUrl = urlPrefix + _.drop(_.compact(tmpArr)).join('/') + '/' + file.name;
                         blueimp.Gallery([imgUrl]);
                     }
                     if (codeFileRegExp.test(extName)) {
@@ -647,6 +647,14 @@
                             .search('lang', codeLang);
                     }
                 }
+            };
+            $scope.rename = {
+                show: false,
+                target: undefined,
+                name: ''
+            };
+            $scope.showRename = function () {
+                $scope.rename.show = true;
             };
             $scope.selectAll = function () {
                 _.forEach($scope.lists, function (file) {
@@ -705,6 +713,10 @@
             };
             $scope.outer = {
                 filename: '',
+            };
+            $scope.downloadFile = function (file) {
+                var path = _.drop(_.compact($scope.currentPath.split('/'))).join('/');
+                return assets.static + '/' + $rootScope.user.uid + '/upload/' + path + '/' + file.name;
             };
         }
     ])
