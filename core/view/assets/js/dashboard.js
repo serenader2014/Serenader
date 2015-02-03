@@ -653,9 +653,6 @@
                 target: undefined,
                 name: ''
             };
-            $scope.showRename = function () {
-                $scope.rename.show = true;
-            };
             $scope.selectAll = function () {
                 _.forEach($scope.lists, function (file) {
                     file.checked = true;
@@ -685,36 +682,37 @@
                     });
                 }, deferred.promise);
             };
-            $scope.newFile = function (type) {
-                $scope.showNewFile = false;
-                File.newFile({
-                    type: type,
-                    dir: $scope.currentPath,
-                    name: $scope.outer.filename
-                }).success(function (response) {
-                    if (response.ret === 0) {
-                        $scope.lists.push({
-                            name: $scope.outer.filename,
-                            href: type === 'folder' ? '#/files?path=' + $scope.currentPath + $scope.outer.filename : '',
-                            type: type === 'folder' ? 0 : 1,
-                            createTime: moment().format('YYYY/MM/DD, HH:mm'),
-                            lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
-                        });
-                        $scope.newFileStatus = 0;
-                        $scope.outer.filename = '';
-                    } else {
-                        $scope.newFileStatus = 1;
-                        $scope.message = response.error;
-                    }
-                }).error(function (err) {
-                    $scope.newFileStatus = 1;
-                    $scope.message = err;
-                });
-            };
-            $scope.outer = {
-                filename: '',
+            $scope.new = {
+                name: '',
+                type: '',
+                show: false,
+                create: function () {
+                    var _this = this;
+                    _this.showNewFile = false;
+                    File.newFile({
+                        type: _this.type,
+                        dir: $scope.currentPath,
+                        name: _this.name
+                    }).success(function (response) {
+                        if (response.ret === 0) {
+                            $scope.lists.push({
+                                name: _this.name,
+                                href: _this.type === 'folder' ? '#/files?path=' + $scope.currentPath + _this.name : '',
+                                type: _this.type === 'folder' ? 0 : 1,
+                                createTime: moment().format('YYYY/MM/DD, HH:mm'),
+                                lastModifiedTime: moment().format('YYYY/MM/DD, HH:mm')
+                            });
+                            _this.name = '';
+                        } else {
+                        }
+                    }).error(function (err) {
+                    });
+                }
             };
             $scope.downloadFile = function (file) {
+                if (file.type === 0) {
+                    return '';
+                }
                 var path = _.drop(_.compact($scope.currentPath.split('/'))).join('/');
                 return assets.static + '/' + $rootScope.user.uid + '/upload/' + path + '/' + file.name;
             };

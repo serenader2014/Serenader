@@ -21,10 +21,10 @@
             li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showMove=true)', ng-class='{"btn-disabled": !currentPath}')
                 i.md-content-cut.left-icon
                 | 批量移动
-            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showNewFile=true)', ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (new.show=true)&&(new.type="file")', ng-class='{"btn-disabled": !currentPath}')
                 i.md-insert-drive-file.left-icon
                 | 新建文件
-            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (showNewFolder=true)', ng-class='{"btn-disabled": !currentPath}')
+            li(ng-hide='showDelete'): button.btn(ng-click='currentPath && (new.show=true)&&(new.type="folder")', ng-class='{"btn-disabled": !currentPath}')
                 i.md-folder.left-icon
                 | 新文件夹
             li(ng-show='showDelete'): button.btn(ng-click='currentPath && deleteFile()', ng-class='{"btn-disabled": !currentPath}')
@@ -72,14 +72,9 @@
                                     i.md-edit.left-icon
                                     | 重命名
 file-uploader(url='uploadUrl', show='showUpload', complete='completeOne(response)')
-dialog-box(ng-show='showNewFile', title='新建文件', confirm='newFile("file")', cancel='showNewFile=false', outer='outer')
-    p.m-b-2 请输入要创建的文件的文件名：
-    md-input(name='filename', type='text', title='文件名称', ng-model='outer.filename', desc='新建文件的文件名', )
-msg-box(ng-show='newFileStatus===0', callback='newFileStatus=undefined') 新建文件成功！
-msg-box(ng-show='newFileStatus===1', callback='newFileStatus=undefined') {{message}}
-dialog-box(ng-show='showNewFolder', title='新建文件夹', confirm='newFile("folder")', cancel='showNewFolder=false')
-    p.m-b-2 请输入要创建的文件夹的名称：
-    md-input(title='文件夹名称', ng-model='outer.filename', desc='新建文件夹的文件夹名')
+dialog-box(ng-show='new.show', title='{{new.type==="file" ? "新建文件" : "新建文件夹"}}', confirm='new.create()', cancel='new.show=false')
+    p.m-b-2 请输入要创建的{{new.type==="file" ? "文件" : "文件夹"}}的名称：
+    md-input(title='{{new.type==="file" ? "文件名称" : "文件夹名称"}}', ng-model='new.name')
 dialog-box(ng-show='rename.show', title='重命名文件/文件夹', confirm='rename()', cancel='rename.show=false')
     p.m-b-2 为以下文件或文件夹重命名：
     p {{rename.target}}
