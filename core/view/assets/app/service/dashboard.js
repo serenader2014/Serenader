@@ -108,5 +108,12 @@
             delete: {method: 'DELETE'},
             new: {method: 'POST', params: {id: ''}}
         });
+    }])
+    .factory('dialog', [function () {
+        return {
+            pop: function () {
+                $(document).append('<msg-box>testtesttest</msg-box>');
+            }
+        };
     }]);
 })();
