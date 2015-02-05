@@ -68,16 +68,16 @@
                                 a.btn(ng-href='{{downloadFile(file)}}', ng-show='file.type===1', target='_blank')
                                     i.md-file-download.left-icon
                                     | 下载
-                                a.btn(ng-click='rename.show=true', href='javascript:;')
+                                a.btn(ng-click='rename.showDialog(file)', href='javascript:;')
                                     i.md-edit.left-icon
                                     | 重命名
 file-uploader(url='uploadUrl', show='showUpload', complete='completeOne(response)')
 dialog-box(ng-show='new.show', title='{{new.type==="file" ? "新建文件" : "新建文件夹"}}', confirm='new.create()', cancel='new.show=false')
     p.m-b-2 请输入要创建的{{new.type==="file" ? "文件" : "文件夹"}}的名称：
     md-input(title='{{new.type==="file" ? "文件名称" : "文件夹名称"}}', ng-model='new.name')
-dialog-box(ng-show='rename.show', title='重命名文件/文件夹', confirm='rename()', cancel='rename.show=false')
+dialog-box(ng-show='rename.show', title='重命名文件/文件夹', confirm='rename.submit()', cancel='rename.show=false')
     p.m-b-2 为以下文件或文件夹重命名：
-    p {{rename.target}}
+    p.m-b-2 {{rename.target.name}}
     p.m-b-2 请输入新的文件或文件夹名字：
     md-input(title='新的名字', ng-model='rename.name', desc='新的文件或文件夹的名字')
 #blueimp-gallery.blueimp-gallery.blueimp-gallery-controls

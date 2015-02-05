@@ -651,7 +651,23 @@
             $scope.rename = {
                 show: false,
                 target: undefined,
-                name: ''
+                name: '',
+                submit: function () {
+                    var _this = this;
+                    File.move($scope.currentPath + _this.target.name, $scope.currentPath + _this.name).then(function (response) {
+                        if (response.data.ret === 0) {
+                            _this.show = false;
+                            _this.target.name = _this.name;
+                            _this.name = '';
+                        }
+                    }, function (err) {
+                        console.log(err);
+                    });
+                },
+                showDialog: function (file) {
+                    this.show = true;
+                    this.target = file;
+                }
             };
             $scope.selectAll = function () {
                 _.forEach($scope.lists, function (file) {

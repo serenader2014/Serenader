@@ -63,6 +63,12 @@
                     file: content,
                     dir: dir
                 });
+            },
+            move: function (src, dst) {
+                return $http.post(url.api + url.fileMove, {
+                    file: src,
+                    target: dst
+                });
             }
         };
     }])

@@ -79,7 +79,7 @@ function checkRequestBody (req) {
             reject('类型错误。');
             return false;
         }
-        resolve(file, parsed.target);
+        resolve([file, parsed.target]);
     });
 }
 
@@ -153,7 +153,9 @@ module.exports = function (router) {
     });
 
     router.post(URL.fileMove, function (req, res) {
-        checkRequestBody(req).then(function (file, target) {
+        checkRequestBody(req).then(function (arr) {
+            var file = arr[0],
+                target = arr[1];
             fs.moveAsync(file, target).then(function () {
                 res.json({ret: 0});
             }).catch(function (err) {
