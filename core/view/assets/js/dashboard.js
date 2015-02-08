@@ -542,8 +542,8 @@
             };
         }
     ])
-    .controller('fileController', ['$scope', '$rootScope', '$location', '$q', '$window', 'File', 'dialog',
-        function ($scope, $rootScope, $location, $q, $window, File, dialog) {
+    .controller('fileController', ['$scope', '$rootScope', '$location', '$q', '$window', 'File',
+        function ($scope, $rootScope, $location, $q, $window, File) {
             $rootScope.title = '文件管理';
             $scope.moment = moment;
             $scope.currentPath = $location.search().path;
