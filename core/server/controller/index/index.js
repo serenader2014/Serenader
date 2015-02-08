@@ -1,39 +1,30 @@
 var express = require('express'),
+    _ = require('lodash'),
+    Promise = require('bluebird'),
     rootRouter = express.Router(),
     post = require('../../models').Post,
-    errorHandling = require('../../utils/error');
+    category = require('../../models').Category,
+    errorHandling = require('../../utils/error'),
+    config = require('../../../../config').config;
+
 
 rootRouter.get('/', function (req, res) {
-    post.getUserPublishedPosts().then(function (posts) {
-        res.render('index', {posts: posts});
+    post.getPublishedPosts(config.blogConfig.posts_per_page, 1).then(function (posts) {
+        var _posts = _.clone(posts);
+        _.reduce(_posts, function (p, post) {
+            return p.then(function () {
+                return category.getOneById(post.category).then(function (c) {
+                    post.categoryName = c.name;
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            res.render('index', {posts: _posts});
+        });
     }).then(null, function (err) {
         errorHandling(req, res, { error: err.message, type: 500 });
     });
 });
 
-rootRouter.get('/loadmore', function (req, res) {
-    var page = req.query.page,
-        num = req.query.num;
-
-    if (! page) {
-        res.send('No page was send.');
-        return;
-    } else {
-        post.getMorePosts(page*10, num).then(function (posts) {
-            var publishedPost = [];
-            posts.forEach(function (p) {
-                if (p.published) {
-                    publishedPost.push(p);
-                }
-            });
-            res.json(publishedPost);
-        }).then(null, function (err) {
-            errorHandling(req, res, { error: err.message, type: 500});
-        });
-    }
-});
-
-// require('./gallery')(rootRouter);
 require('./post')(rootRouter);
 
 module.exports = rootRouter;

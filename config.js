@@ -51,7 +51,7 @@ var pkg = require('./package.json'),
             favicon: '/static/favicon.ico',
             allow_sign_up: true,
             theme: 'blue',
-            posts_per_page: 10
+            postsPerPage: 10
         },
         dir: [
             '/content/data/private',
