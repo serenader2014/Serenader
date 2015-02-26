@@ -55,7 +55,7 @@ module.exports = function (router) {
     router.post(url.signUp, function (req, res) {
         var uid, email, password, rePwd, hashedPwd;
 
-        if (! locals.setting.allow_sign_up) {
+        if (! locals.setting.allowSignUp) {
             res.json({
                 ret: -1,
                 error: '帐号注册功能已经被系统管理员禁用！'
@@ -111,32 +111,19 @@ module.exports = function (router) {
 
         User.getAllUser().then(function (users) {
             if (users.length <= 0) {
-                return User.create({
-                    uid: uid,
-                    email: email,
-                    pwd: hashedPwd,
-                    role: 'admin'
-                });
+                return User.create({uid: uid,email: email,pwd: hashedPwd,role: 'admin'});
             } else {
                 return User.checkExist(uid, email).then(function (users) {
                     if (users.length) {
                         return '';
                     } else {
-                        return User.create({
-                            uid: uid,
-                            pwd: hashedPwd,
-                            email: email,
-                            role: 'user'
-                        });
+                        return User.create({uid: uid,pwd: hashedPwd,email: email,role: 'user'});
                     }
                 });
             }
         }).then(function (user) {
             if (! user) {
-                res.json({
-                    ret: -1,
-                    error: '该用户已经注册。'
-                });
+                res.json({ret: -1,error: '该用户已经注册。'});
             } else {
 
                 var dir = [
@@ -153,19 +140,13 @@ module.exports = function (router) {
                         return fs.mkdirsAsync(root + d);
                     });
                 }, Promise.resolve()).then(function () {
-                    res.json({
-                        ret: 0,
-                        username: user.uid
-                    });
+                    res.json({ret: 0,username: user.uid});
                 });
 
             }
         }).then(null, function (err) {
             log.error(err.stack);
-            res.json({
-                ret: -1,
-                error: err.message
-            });
+            res.json({ret: -1,error: err.message});
         });
     });
 
