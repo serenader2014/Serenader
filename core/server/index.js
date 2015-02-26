@@ -17,9 +17,9 @@ module.exports = function (setting) {
     app.set('view engine', 'jade');
 
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded());
+    app.use(bodyParser.urlencoded({extended: false}));
     app.use(cookieParser());
-    app.use(logger('dev'));
+    app.use(logger('combined'));
     app.use(session({
         name: 'blog session',
         secret: config.session_secret,

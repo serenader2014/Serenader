@@ -49,7 +49,7 @@ var pkg = require('./package.json'),
             desc: 'A blog created by serenader, with some interesting features',
             logo: '/static/logo.png',
             favicon: '/static/favicon.ico',
-            allow_sign_up: true,
+            allowSignUp: true,
             theme: 'blue',
             postsPerPage: 10
         },
