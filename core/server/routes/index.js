@@ -54,7 +54,8 @@ function route (app) {
     app.use('*', function (req, res) {
         errorHandling(req, res, {
             error: '你请求的页面不存在。',
-            type: 404
+            type: 404,
+            source: req.originalUrl
         });
     });
 
