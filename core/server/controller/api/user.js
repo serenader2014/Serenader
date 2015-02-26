@@ -11,7 +11,7 @@ module.exports = function (router) {
                     uid: req.session.user.uid,
                     email: req.session.user.email,
                     website: req.session.user.website,
-                    avatar: req.session.user.avatar,
+                    avatar: url.avatar + '/' + req.session.user.uid,
                     role: req.session.user.role,
                     signature: req.session.user.signature,
                     id: req.session.user._id
