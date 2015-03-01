@@ -17,8 +17,40 @@ var Promise = require('bluebird'),
         excerpt: String,
         published: Boolean,
         category: String,
-        views: { type: Number, default: 0 }
     });
+
+function getPosts (conditions, amount, page) {
+
+    var targetPosts,
+        tmpObj = {},
+        total;
+
+    _.forIn(conditions, function (value, key) {
+        if (value !== undefined) {
+            tmpObj[key] = value;
+        }
+    });
+
+    targetPosts = this.find(tmpObj);
+
+    return targetPosts.countAsync().then(function (count) {
+        total = count;
+
+        //////////////////////////////////////////////////////////////////////////////
+        // a little trick to solve 'sort cannot be used with count' bug in mongoose //
+        //////////////////////////////////////////////////////////////////////////////
+        delete targetPosts.op;
+
+        return targetPosts.sort({createDate: -1}).skip((page - 1)*amount).limit(amount).execAsync('find');
+    }).then(function (posts) {
+        return {
+            total: +total,
+            data: posts,
+            page: +page,
+            amount: +amount
+        };
+    });
+}
 
 PostSchema.statics.create = function (options) {
     var p = new this();
@@ -70,40 +102,17 @@ PostSchema.statics.delete = function (id) {
             return Category.decreaseCount(p.category);
         }
     }).then(function () {
-        return self.findOneAndRemove({_id: id}).exec();
+        return self.findOneAndRemoveAsync({_id: id});
     });
 };
 
-PostSchema.statics.getPostsByCate = function (name, amount, page) {
-    return this.findAsync(
-        {category: name}, null, {limit: amount, skip: (page - 1)*amount, sort: {_createDate: -1}}
-        );
-};
 PostSchema.statics.getPostById = function (id) {
     return this.findByIdAsync(id);
 };
 PostSchema.statics.getPostBySlug = function (slug) {
     return this.findOneAsync({slug: slug});
 };
-PostSchema.statics.getUserPublishedPosts = function (user, amount, page) {
-    return this.findAsync(
-        {author: user, published: true}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
-        );
+PostSchema.statics.getPosts = function (conditions, amount, page) {
+    return getPosts.call(this, conditions, amount, page);
 };
-PostSchema.statics.getUserAllPosts = function (user, amount, page) {
-    return this.findAsync(
-        {author: user}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
-        );
-};
-PostSchema.statics.getAllPosts = function (amount, page) {
-    return this.findAsync(
-        {}, null, {limit: amount, skip: (page - 1)*amount, sort: {createDate: -1}}
-        );
-};
-PostSchema.statics.getPublishedPosts = function (amount, page) {
-    return this.findAsync(
-        {published: true}, null, { limit: amount, skip: (page - 1)*amount, sort: { createDate: -1}}
-        );
-};
-
 var Post = module.exports = mongoose.model('Post', PostSchema);

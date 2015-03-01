@@ -8,9 +8,9 @@ var Promise = require('bluebird'),
         desc: String,
         logo: String,
         favicon: String,
-        allow_sign_up: { type: Boolean, default: true },
+        allowSignUp: { type: Boolean, default: true },
         theme: String,
-        posts_per_page: { type: Number, default: 10 },
+        postsPerPage: { type: Number, default: 10 },
         id: String
     });
 

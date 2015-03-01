@@ -1,18 +1,13 @@
 (function () {
     angular.module('appModule')
     .factory('Post', ['$resource', function ($resource) {
-        return {
-            common: $resource(url.api + url.post + '/:id', {}, {
-                getAll: {method: 'GET', params: {id: ''}},
-                new: {method: 'POST', params: {id: ''}},
-                update: {method: 'PUT'},
-                delete: {method: 'DELETE'},
-                get: {method: 'GET'}
-                }),
-            user: $resource(url.api + url.user + '/:name' + url.post, {}, {
-                get: {method: 'GET'}
-            })
-        };
+        return $resource(url.api + url.post + '/:id', {}, {
+            getAll: {method: 'GET', params: {id: ''}},
+            new: {method: 'POST', params: {id: ''}},
+            update: {method: 'PUT'},
+            delete: {method: 'DELETE'},
+            get: {method: 'GET'}
+        });
     }])
     .factory('Upload', ['FileUploader', function (FileUploader) {
         return function (options) {

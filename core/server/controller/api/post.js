@@ -1,22 +1,27 @@
 var Promise = require('bluebird'),
-    validator = require('validator'),
-    markdown = require('marked'),
-    moment = require('moment'),
-    log = require('../../utils/log')(),
-    config = require('../../../../config').config,
-    url = config.url,
-    amount = config.api.amountPerRequest,
-    Post = require('../../models').Post,
-    Category = require('../../models').Category;
+validator   = require('validator'),
+markdown    = require('marked'),
+moment      = require('moment'),
+log         = require('../../utils/log')(),
+config      = require('../../../../config').config,
+url         = config.url,
+amount      = require('../../index').locals.setting.postsPerPage,
+Post        = require('../../models').Post,
+Category    = require('../../models').Category;
 
-function getAllPosts (amount, page, user) {
-    return user && user.role === 'admin' ? Post.getAllPosts(amount, page) : Post.getPublishedPosts(amount, page);
-}
-
-function getUserPosts (amount, page, user, targetUser) {
-    return user && ((user.uid === targetUser) || user.role === 'admin')?
-        Post.getUserAllPosts(targetUser, amount, page) :
-        Post.getUserPublishedPosts(targetUser, amount, page);
+function getPosts (options) {
+    if (options.currentUser) {
+        return Post.getPosts({
+            author: options.targetUser,
+            category: options.category
+        }, options.amount, options.page);
+    } else {
+        return Post.getPost({
+            author: options.targetUser,
+            category: options.category,
+            published: true
+        }, options.amount, options.page);
+    }
 }
 
 function getPost (id, user) {
@@ -130,22 +135,19 @@ function checkRequestBody (req) {
 
 module.exports = function (router) {
     router.get(url.post, function (req, res) {
-        var page;
+        var page, user, category, customAmount;
         page = req.query.page || 1;
-        getAllPosts(amount, page, req.session.user).then(function (posts) {
-            res.json({ret: 0, data: posts});
-        }).catch(function (err) {
-            log.error(err.stack || err);
-            res.json({ret: -1, error: err.message || err});
-        });
-    });
+        user = req.query.user;
+        category = req.query.category;
+        customAmount = req.query.amount;
 
-    router.get(url.user + '/:user' + url.post, function (req, res) {
-        var targetUser,
-            page;
-        page = req.query.page || 1;
-        targetUser = validator.trim(req.params.user);
-        getUserPosts(amount, page, req.session.user, targetUser).then(function (posts) {
+        getPosts({
+            amount: customAmount || amount,
+            page: page,
+            currentUser: req.session.user,
+            targetUser: user,
+            category: category
+        }).then(function (posts) {
             res.json({ret: 0, data: posts});
         }).catch(function (err) {
             log.error(err.stack || err);
@@ -244,7 +246,5 @@ module.exports = function (router) {
 };
 
 module.exports.utils = {
-    getPost: getPost,
-    getAllPosts: getAllPosts,
-    getUserPosts: getUserPosts
+    getPost: getPost
 };

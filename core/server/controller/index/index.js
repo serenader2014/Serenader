@@ -1,27 +1,55 @@
 var express = require('express'),
     _ = require('lodash'),
     Promise = require('bluebird'),
+    validator = require('validator'),
     rootRouter = express.Router(),
     post = require('../../models').Post,
     category = require('../../models').Category,
     errorHandling = require('../../utils/error'),
-    config = require('../../../../config').config;
+    locals = require('../../index').locals;
 
+function getPosts (page) {
+    return post.getPosts({published: true}, locals.setting.postsPerPage, page).then(function (posts) {
+        var _posts = _.clone(posts.data);
 
-rootRouter.get('/', function (req, res) {
-    post.getPublishedPosts(config.blogConfig.posts_per_page, 1).then(function (posts) {
-        var _posts = _.clone(posts);
-        _.reduce(_posts, function (p, post) {
-            return p.then(function () {
+        return _.reduce(_posts, function (promise, post) {
+            return promise.then(function () {
                 return category.getOneById(post.category).then(function (c) {
                     post.categoryName = c.name;
                 });
             });
         }, Promise.resolve()).then(function () {
-            res.render('index', {posts: _posts});
+            return [_posts, posts.total];
         });
-    }).then(null, function (err) {
-        errorHandling(req, res, { error: err.message, type: 500 });
+    });
+}
+
+rootRouter.get('/', function (req, res) {
+    getPosts(1).then(function (arr) {
+        var posts = arr[0],
+            total = arr[1];
+
+        res.render('index', {posts: posts, total: Math.ceil(total/locals.setting.postsPerPage)});
+    }).catch(function (err) {
+        errorHandling(req, res, {error: err.message, type: 500});
+    });
+});
+
+rootRouter.get('/page/:page', function (req, res) {
+    var page = +validator.trim(req.params.page);
+
+    if (!page || page.toString() === 'NaN') {
+        res.redirect('/');
+        return false;
+    }
+
+    getPosts(page).then(function (arr) {
+        var posts = arr[0],
+            total = arr[1];
+
+        res.render('index', {posts: posts, page: page, total: Math.ceil(total/locals.setting.postsPerPage)});
+    }).catch(function (err) {
+        errorHandling(req, res, {error: err.message, type: 500});
     });
 });
 

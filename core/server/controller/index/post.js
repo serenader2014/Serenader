@@ -1,31 +1,33 @@
 var validator = require('validator'),
     xss = require('xss'),
     Post = require('../../models').Post,
+    Category = require('../../models').Category,
     errorHandling = require('../../utils/error'),
     url = require('../../../../config').config.url;
 
 
 module.exports = function (router) {
-    router.get(url.post, function (req, res) {
-        Post.getAllPosts().then(function (p) {
-            res.render('postlist', {posts: p});
-        }).then(null, function (err) {
-            errorHandling(req, res, { error: err.message, type: 500 });
-        });
-    });
+    // router.get(url.post, function (req, res) {
+    //     Post.getPublishedPosts(20, 1).then(function (p) {
+    //         res.render('archive', {posts: p});
+    //     }).catch(function (err) {
+    //         errorHandling(req, res, { error: err.message, type: 500 });
+    //     });
+    // });
 
-    router.get(url.post + '/:id', function (req, res) {
-        var id = validator.trim(xss(req.params.id));
-        Post.getOnePostById(id).then(function (p) {
+    router.get(url.post + '/:slug', function (req, res) {
+        var slug = validator.trim(xss(req.params.slug));
+        Post.getPostBySlug(slug).then(function (p) {
             if (p) {
-                res.render('post', { post: p});
-                p.views = p.views + 1;
-                p.save();
+                Category.getOneById(p.category).then(function (c) {
+                    p.categoryName = c.name;
+                    res.render('post', { post: p});
+                });
             } else {
                 errorHandling(req, res, { error: '找不到该文章。', type: 404});
                 return;
             }
-        }).then(null, function (err) {
+        }).catch(function (err) {
             errorHandling(req, res, { error: err.message, type: 500 });
         });
     });

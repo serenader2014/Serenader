@@ -76,31 +76,51 @@
     ])
     .controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post',
         function ($scope, $rootScope, $location, Category, Post){
+            var count = 1;
             $rootScope.title = '文章';
+            $scope.allPosts = [];
             $scope.posts = [];
             $scope.drafts = [];
+            function parsePosts (posts) {
+                $scope.posts = [];
+                $scope.drafts = [];
+                angular.forEach(posts, function (post) {
+                    post.createDate = moment(post.createDate).format('YYYY/MM/DD');
+                    post.lastModifiedDate = moment(post.lastModifiedDate).fromNow();
+                    if (post.published) {
+                        $scope.posts.push(post);
+                    } else {
+                        $scope.drafts.push(post);
+                    }
+                });
+            }
+            function getPosts (user, page) {
+                Post.get({user: user.uid, page: page, amount: 10, category: $scope.currentCate}, function (response) {
+                    if (response.ret !== 0) {
+                        $scope.getPostError = true;
+                        return false;
+                    }
+                    $scope.allPosts = $scope.allPosts.concat(response.data.data);
+                    parsePosts($scope.allPosts);
+                    if (10 * count < response.data.total) {
+                        $scope.showLoadMore = true;
+                    } else {
+                        $scope.showLoadMore = false;
+                    }
+                }, function () {
+                    $scope.getPostError = true;
+                });
+            }
+            $scope.loadMore = function () {
+                count = count + 1;
+                getPosts($scope.user, count);
+            };
             $scope.goToNewPost = function () {
                 $location.path(url.newPost);
             };
             $rootScope.$watch('user', function (user) {
                 if (user) {
-                    Post.user.get({name: user.uid}, function (response) {
-                        if (response.ret !== 0) {
-                            $scope.getPostError = true;
-                            return false;
-                        }
-                        angular.forEach(response.data, function (post) {
-                            post.createDate = moment(post.createDate).format('YYYY/MM/DD');
-                            post.lastModifiedDate = moment(post.lastModifiedDate).fromNow();
-                            if (post.published) {
-                                $scope.posts.push(post);
-                            } else {
-                                $scope.drafts.push(post);
-                            }
-                        });
-                    }, function () {
-                        $scope.getPostError = true;
-                    });
+                    getPosts(user, count);
                 }
             }, true);
 
@@ -136,25 +156,21 @@
                 $scope.getCategoryError = true;
                 return false;
             });
-            $scope.currentCate = '';
-            $scope.showPost = function (c) {
-                if ($scope.currentCate) {
-                    return c._id === $scope.currentCate;
-                } else {
-                    return true;
-                }
-            };
+            $scope.currentCate = undefined;
             $scope.switchCategory = function (category) {
                 if ($scope.currentCate === category._id) {
-                    $scope.currentCate = '';
+                    $scope.currentCate = undefined;
                 } else {
                     $scope.currentCate = category._id;
                 }
+                $scope.allPosts = [];
+                count = 1;
+                getPosts($scope.user, count);
             };
             $scope.postPreview = function (post) {
                 $scope.isPostPreview = true;
                 $scope.currentPost = post;
-                $scope.postHtml = $(post.html).html();
+                $scope.postHtml = post.html;
             };
             $scope.editPost = function () {
                 $location.path(url.post + '/' + $scope.currentPost._id);
@@ -260,7 +276,7 @@
         function ($scope, $rootScope, $routeParams, $interval, $location, Post, Category, Slug, upload) {
             $scope.outer = {};
             $rootScope.title = '编辑文章';
-            Post.common.get({id: $routeParams.id}, function (response) {
+            Post.get({id: $routeParams.id}, function (response) {
                 if (response.ret === 0) {
                     $scope.post = response.data;
                     $scope.outer = $scope.post;
@@ -1106,7 +1122,7 @@
                 $scope.message = '找不到该文章！请确保该文章已经存为草稿或者已经发表！';
                 return false;
             } else {
-                Post.common.delete({id: $scope.post.id}, function (response) {
+                Post.delete({id: $scope.post.id}, function (response) {
                     if (response.ret === 0) {
                         $scope.deleteStatus = 0;
                         $scope.message = '删除成功！';
@@ -1125,7 +1141,7 @@
         };
         var newPost = function (publish, callback) {
             if ($scope.post.id) {
-                Post.common.update({
+                Post.update({
                     id: $scope.post.id
                 }, {
                     content: $scope.post.content,
@@ -1145,7 +1161,7 @@
                     callback(err);
                 });
             } else {
-                Post.common.new({}, {
+                Post.new({}, {
                     content: $scope.post.content,
                     title: $scope.post.title,
                     tags: $scope.post.tags ? $scope.post.tags.split(',') : [],

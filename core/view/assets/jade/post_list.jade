@@ -7,7 +7,7 @@
             i.md-sort.left-icon
             | 分类
     ul.posts-list
-        li.drafts.post(data-category='{{draft.category}}', ng-repeat='draft in drafts', ng-show='showPost(draft.category)')
+        li.drafts.post(data-category='{{draft.category}}', ng-repeat='draft in drafts')
             .post-title
                 a(href='javascript:;', ng-click='postPreview(draft)') {{draft.title}}
             .post-meta
@@ -23,7 +23,7 @@
                     i.md-mode-edit.left-icon
                     span {{draft.lastModifiedDate}}
 
-        li.post(data-category='{{post.category}}', ng-repeat='post in posts', ng-show='showPost(post.category)')
+        li.post(data-category='{{post.category}}', ng-repeat='post in posts')
             .post-title
                 a(href='javascript:;', ng-click='postPreview(post)') {{post.title}}
             .post-meta
@@ -38,6 +38,9 @@
                     span.post-date {{post.createDate}}
                     i.md-mode-edit.left-icon
                     span {{post.lastModifiedDate}}
+        li.load-more(ng-show='showLoadMore', ng-click='loadMore()')
+            i.md-expand-more.left-icon
+            | 载入更多
         msg-box(ng-show='getPostError', callback='getPostError=false') 获取文章失败！
     .post-html(ng-show='isPostPreview')
         .menu

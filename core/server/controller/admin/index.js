@@ -7,12 +7,6 @@ adminHomePage.get('/', auth_user, function (req, res) {
     res.render('dashboard');
 });
 
-require('./file')(adminHomePage);
-require('./gallery')(adminHomePage);
-require('./post')(adminHomePage);
-require('./setting')(adminHomePage);
 require('./sign')(adminHomePage);
-require('./user')(adminHomePage);
-
 
 module.exports = adminHomePage;

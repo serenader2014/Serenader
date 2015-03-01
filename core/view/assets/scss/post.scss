@@ -378,6 +378,13 @@
         }
     }
 
+    .load-more {
+        padding: 2rem;
+        text-align: center;
+        color: lighten($content-color, 30%);
+        cursor: pointer;
+    }
+
     .post-title {
         padding-bottom: 0.8rem;
         line-height: 1.5;
