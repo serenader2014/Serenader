@@ -115,4 +115,23 @@ PostSchema.statics.getPostBySlug = function (slug) {
 PostSchema.statics.getPosts = function (conditions, amount, page) {
     return getPosts.call(this, conditions, amount, page);
 };
+PostSchema.statics.getNearPosts = function (post) {
+    var previous,
+        next,
+        date = post.createDate,
+        _this = this;
+
+    return this.findAsync({createDate: {$lt: date}, published: true}, {title: 1, author: 1, slug: 1, createDate: 1}, {sort: {createDate: -1}, limit: 1}).then(function (posts) {
+        next = posts[0];
+    }).then(function () {
+        return _this.findAsync({createDate: {$gt: date}, published: true}, {title: 1, author: 1, slug: 1, createDate: 1}, {sort: {createDate: 1}, limit: 1});
+    }).then(function (posts) {
+        previous = posts[0];
+    }).then(function () {
+        return {
+            next: next,
+            previous: previous
+        };
+    });
+};
 var Post = module.exports = mongoose.model('Post', PostSchema);

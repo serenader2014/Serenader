@@ -15,18 +15,18 @@
             var uploader = new FileUploader(),
                 emptyFunc = function () {};
 
-            uploader.onAfterAddingFile = options.addFile || emptyFunc;
+            uploader.onAfterAddingFile      = options.addFile || emptyFunc;
             uploader.onWhenAddingFileFailed = options.addFailed || emptyFunc;
-            uploader.onAfterAddingAll = options.addAll || emptyFunc;
-            uploader.onBeforeUploadItem = options.beforeUpload || emptyFunc;
-            uploader.onProgressItem = options.progress || emptyFunc;
-            uploader.onSuccessItem = options.success || emptyFunc;
-            uploader.onErrorItem = options.error || emptyFunc;
-            uploader.onCancelItem = options.cancel || emptyFunc;
-            uploader.onCompleteItem = options.complete || emptyFunc;
-            uploader.onProgressAll = options.progressAll || emptyFunc;
-            uploader.onCompleteAll = options.completeAll || emptyFunc;
-            uploader.url = options.url;
+            uploader.onAfterAddingAll       = options.addAll || emptyFunc;
+            uploader.onBeforeUploadItem     = options.beforeUpload || emptyFunc;
+            uploader.onProgressItem         = options.progress || emptyFunc;
+            uploader.onSuccessItem          = options.success || emptyFunc;
+            uploader.onErrorItem            = options.error || emptyFunc;
+            uploader.onCancelItem           = options.cancel || emptyFunc;
+            uploader.onCompleteItem         = options.complete || emptyFunc;
+            uploader.onProgressAll          = options.progressAll || emptyFunc;
+            uploader.onCompleteAll          = options.completeAll || emptyFunc;
+            uploader.url                    = options.url;
 
             return uploader;
         };

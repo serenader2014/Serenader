@@ -21,7 +21,10 @@ module.exports = function (router) {
             if (p) {
                 Category.getOneById(p.category).then(function (c) {
                     p.categoryName = c.name;
-                    res.render('post', { post: p});
+                }).then(function () {
+                    return Post.getNearPosts(p);
+                }).then(function (result) {
+                    res.render('post', { post: p, next: result.next, previous: result.previous});
                 });
             } else {
                 errorHandling(req, res, { error: '找不到该文章。', type: 404});
