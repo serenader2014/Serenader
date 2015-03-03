@@ -8,8 +8,8 @@ var express = require('express'),
     errorHandling = require('../../utils/error'),
     locals = require('../../index').locals;
 
-function getPosts (page) {
-    return post.getPosts({published: true}, locals.setting.postsPerPage, page).then(function (posts) {
+function getPosts (page, amount) {
+    return post.getPosts({published: true}, amount, page).then(function (posts) {
         var _posts = _.clone(posts.data);
 
         return _.reduce(_posts, function (promise, post) {
@@ -25,11 +25,11 @@ function getPosts (page) {
 }
 
 rootRouter.get('/', function (req, res) {
-    getPosts(1).then(function (arr) {
+    getPosts(1, locals.setting.postsPerPage).then(function (arr) {
         var posts = arr[0],
             total = arr[1];
 
-        res.render('index', {posts: posts, total: Math.ceil(total/locals.setting.postsPerPage)});
+        res.render('index', {posts: posts, pageNum: Math.ceil(total/locals.setting.postsPerPage)});
     }).catch(function (err) {
         errorHandling(req, res, {error: err.message, type: 500});
     });
@@ -43,11 +43,11 @@ rootRouter.get('/page/:page', function (req, res) {
         return false;
     }
 
-    getPosts(page).then(function (arr) {
+    getPosts(page, locals.setting.postsPerPage).then(function (arr) {
         var posts = arr[0],
             total = arr[1];
 
-        res.render('index', {posts: posts, page: page, total: Math.ceil(total/locals.setting.postsPerPage)});
+        res.render('index', {posts: posts, page: page, pageNum: Math.ceil(total/locals.setting.postsPerPage)});
     }).catch(function (err) {
         errorHandling(req, res, {error: err.message, type: 500});
     });
