@@ -9,6 +9,9 @@ module.exports = function (router) {
             if (s.substring(s.length - 1) === '-') {
                 s = s.substring(0, s.length - 1);
             }
+            if (s.substring(0, 1) === '-') {
+                s = s.substring(1);
+            }
             res.json({
                 ret: 0,
                 data: s
