@@ -29,7 +29,8 @@ module.exports = function (router) {
         var posts, total, page, category, tag, obj, postsPerRequest, queries;
         postsPerRequest = locals.setting.postsPerPage;
         page = +validator.trim(req.query.page) || 1;
-        category = decodeURIComponent(validator.trim(req.query.category)) || undefined;
+        // 使用两次 decodeURIComponent 是为了修复 coding 的预览问题。
+        category = decodeURIComponent(decodeURIComponent(validator.trim(req.query.category))) || undefined;
         tag = validator.trim(req.query.tag) || undefined;
         obj = {
             published: true,

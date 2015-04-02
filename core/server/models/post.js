@@ -26,7 +26,7 @@ function getPosts (conditions, amount, page) {
         total;
 
     _.forIn(conditions, function (value, key) {
-        if (value !== undefined) {
+        if (value && value.toString() !== 'undefined') {
             tmpObj[key] = value;
         }
     });

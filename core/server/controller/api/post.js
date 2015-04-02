@@ -16,7 +16,7 @@ function getPosts (options) {
             category: options.category
         }, options.amount, options.page);
     } else {
-        return Post.getPost({
+        return Post.getPosts({
             author: options.targetUser,
             category: options.category,
             published: true
@@ -136,11 +136,10 @@ function checkRequestBody (req) {
 module.exports = function (router) {
     router.get(url.post, function (req, res) {
         var page, user, category, customAmount;
-        page = req.query.page || 1;
+        page = +req.query.page || 1;
         user = req.query.user;
-        category = req.query.category;
-        customAmount = req.query.amount;
-
+        category = decodeURIComponent(req.query.category);
+        customAmount = +req.query.amount;
         getPosts({
             amount: customAmount || amount,
             page: page,
