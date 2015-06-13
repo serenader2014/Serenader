@@ -1,5 +1,5 @@
-var config = require('../../../../config').config,
-    url = config.url;
+var config = global.config;
+var url    = config.url;
 
 
 module.exports = function (router) {

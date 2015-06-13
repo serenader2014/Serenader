@@ -1,15 +1,14 @@
-var Promise = require('bluebird'),
-    validator = require('validator'),
-    path = require('path'),
-    fs = Promise.promisifyAll(require('fs-extra')),
-    log = require('../../utils/log')(),
-    Album = require('../../models').Album,
-    Image = require('../../models').Image,
-
-    config = require('../../../../config').config,
-    root = config.root_dir + '/content/data/',
-    url = config.url,
-    fileUpload = require('../../utils/upload');
+var Promise    = require('bluebird');
+var validator  = require('validator');
+var path       = require('path');
+var fs         = Promise.promisifyAll(require('fs-extra'));
+var log        = require('../../utils/log')();
+var Album      = require('../../models').Album;
+var Image      = require('../../models').Image;
+var config     = global.config;
+var root       = config.root_dir + '/content/data/';
+var url        = config.url;
+var fileUpload = require('../../utils/upload');
 
 function getAlbum (options) {
     var type = options.type,

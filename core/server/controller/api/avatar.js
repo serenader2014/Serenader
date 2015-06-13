@@ -1,9 +1,9 @@
-var validator = require('validator'),
-    User = require('../../models').User,
-    config = require('../../../../config').config,
-    url = config.url,
-    root = config.root_dir,
-    log = require('../../utils/log')();
+var validator = require('validator');
+var User      = require('../../models').User;
+var config    = global.config;
+var url       = config.url;
+var root      = config.root_dir;
+var log       = require('../../utils/log')();
 
 module.exports = function (router) {
     router.get(url.avatar + '/:username', function (req, res, next) {

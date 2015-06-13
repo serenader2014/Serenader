@@ -16,4 +16,15 @@ angular.module('appModule')
             rePwd: option.rePwd
         });
     };
+}])
+.factory('postSetup', ['$http', function ($http) {
+    return function (option) {
+        return $http.post(url.admin + url.setup, {
+            username: option.username,
+            password: option.password,
+            email: option.email,
+            title: option.title,
+            description: option.description
+        });
+    };
 }]);

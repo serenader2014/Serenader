@@ -1,13 +1,13 @@
-var Promise = require('bluebird'),
-validator   = require('validator'),
-markdown    = require('marked'),
-moment      = require('moment'),
-log         = require('../../utils/log')(),
-config      = require('../../../../config').config,
-url         = config.url,
-amount      = require('../../index').locals.setting.postsPerPage,
-Post        = require('../../models').Post,
-Category    = require('../../models').Category;
+var Promise   = require('bluebird');
+var validator = require('validator');
+var markdown  = require('marked');
+var moment    = require('moment');
+var log       = require('../../utils/log')();
+var config    = global.config;
+var url       = config.url;
+var amount    = global.settings.postsPerPage;
+var Post      = require('../../models').Post;
+var Category  = require('../../models').Category;
 
 function getPosts (options) {
     if (options.currentUser) {

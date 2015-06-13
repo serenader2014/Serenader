@@ -1,6 +1,6 @@
-var unidecode = require('unidecode'),
-    validator = require('validator'),
-    url = require('../../../../config').config.url;
+var unidecode = require('unidecode');
+var validator = require('validator');
+var url       = global.config.url;
 
 module.exports = function (router) {
     router.post(url.slug, function (req, res) {

@@ -1,12 +1,12 @@
-var express = require('express'),
-    _ = require('lodash'),
-    Promise = require('bluebird'),
-    validator = require('validator'),
-    rootRouter = express.Router(),
-    post = require('../../models').Post,
-    category = require('../../models').Category,
-    errorHandling = require('../../utils/error'),
-    locals = require('../../index').locals;
+var express       = require('express');
+var _             = require('lodash');
+var Promise       = require('bluebird');
+var validator     = require('validator');
+var rootRouter    = express.Router();
+var post          = require('../../models').Post;
+var category      = require('../../models').Category;
+var errorHandling = require('../../utils/error');
+var setting       = global.settings;
 
 function getPosts (page, amount) {
     return post.getPosts({published: true}, amount, page).then(function (posts) {
@@ -25,11 +25,11 @@ function getPosts (page, amount) {
 }
 
 rootRouter.get('/', function (req, res) {
-    getPosts(1, locals.setting.postsPerPage).then(function (arr) {
+    getPosts(1, setting.postsPerPage).then(function (arr) {
         var posts = arr[0],
             total = arr[1];
 
-        res.render('index', {posts: posts, pageNum: Math.ceil(total/locals.setting.postsPerPage)});
+        res.render('index', {posts: posts, pageNum: Math.ceil(total/setting.postsPerPage)});
     }).catch(function (err) {
         errorHandling(req, res, {error: err.message, type: 500});
     });
@@ -43,11 +43,11 @@ rootRouter.get('/page/:page', function (req, res) {
         return false;
     }
 
-    getPosts(page, locals.setting.postsPerPage).then(function (arr) {
+    getPosts(page, setting.postsPerPage).then(function (arr) {
         var posts = arr[0],
             total = arr[1];
 
-        res.render('index', {posts: posts, page: page, pageNum: Math.ceil(total/locals.setting.postsPerPage)});
+        res.render('index', {posts: posts, page: page, pageNum: Math.ceil(total/setting.postsPerPage)});
     }).catch(function (err) {
         errorHandling(req, res, {error: err.message, type: 500});
     });

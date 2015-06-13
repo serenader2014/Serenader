@@ -1,12 +1,12 @@
-var validator = require('validator'),
-    xss = require('xss'),
-    Promise = require('bluebird'),
-    _ = require('lodash'),
-    Post = require('../../models').Post,
-    Category = require('../../models').Category,
-    errorHandling = require('../../utils/error'),
-    locals = require('../../index').locals,
-    url = require('../../../../config').config.url;
+var validator     = require('validator');
+var xss           = require('xss');
+var Promise       = require('bluebird');
+var _             = require('lodash');
+var Post          = require('../../models').Post;
+var Category      = require('../../models').Category;
+var errorHandling = require('../../utils/error');
+var setting       = global.setting;
+var url           = global.config.url;
 
 function getPosts (obj, page, amount) {
     return Post.getPosts(obj, amount, page).then(function (posts) {
@@ -27,7 +27,7 @@ function getPosts (obj, page, amount) {
 module.exports = function (router) {
     router.get(url.post, function (req, res) {
         var posts, total, page, category, tag, obj, postsPerRequest, queries;
-        postsPerRequest = locals.setting.postsPerPage;
+        postsPerRequest = setting.postsPerPage;
         page = +validator.trim(req.query.page) || 1;
         // 使用两次 decodeURIComponent 是为了修复 coding 的预览问题。
         category = decodeURIComponent(decodeURIComponent(validator.trim(req.query.category))) || undefined;

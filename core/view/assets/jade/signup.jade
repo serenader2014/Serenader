@@ -54,5 +54,5 @@ form.signup(name='signup', ng-submit='signup.$valid && signUp()')
     .sign-helper
         p: a.signup-btn(href='#/signin') 登录
 pgress(ng-show='sign.onSignUp') 正在注册
-msg-box(type='success', ng-show='sign.signUp.success', callback='redirect()') 注册成功！请登录。
+msg-box(type='success', ng-show='sign.signUp.success', callback='redirect()') 注册成功！
 msg-box(type='error', ng-show='sign.signUp.error') {{sign.signUp.message}}

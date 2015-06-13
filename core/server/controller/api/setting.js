@@ -1,7 +1,6 @@
-var validator = require('validator'),
-    Setting = require('../../models').Setting,
-    config = require('../../../../config').config,
-    locals = require('../../index').locals;
+var validator = require('validator');
+var Setting   = require('../../models').Setting;
+var config    = global.config;
 
 module.exports = function (router) {
 
@@ -30,7 +29,7 @@ module.exports = function (router) {
         };
         Setting.update(obj).then(function (s) {
             res.json({ret: 0});
-            locals.setting = s;
+            global.setting = s;
         }).catch(function (err) {
             res.json({ret: -1,error: err.message});
         });

@@ -1,25 +1,32 @@
-module.exports = function (setting) {
-    var express   = require('express'),
-    logger        = require('morgan'),
-    cookieParser  = require('cookie-parser'),
-    bodyParser    = require('body-parser'),
-    session       = require('express-session'),
-    MongoStore    = require('connect-mongo')(session),
-
-    route         = require('./routes'),
-    config        = require('../../config').config,
-    errorHandling = require('./utils/error'),
-    log           = require('./utils/log')(),
-
-    app           = express(),
-    theme, dir, server;
+module.exports = function () {
+    var express       = require('express');
+    var logger        = require('morgan');
+    var cookieParser  = require('cookie-parser');
+    var bodyParser    = require('body-parser');
+    var session       = require('express-session');
+    var MongoStore    = require('connect-mongo')(session);
+    
+    var route         = require('./routes');
+    var config        = global.config;
+    var errorHandling = require('./utils/error');
+    var log           = require('./utils/log')();
+    var app           = express();
+    var setting       = global.settings;
+    var theme, dir, server;
 
     app.set('view engine', 'jade');
+    app.set('port', config.port);
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(cookieParser());
-    app.use(logger('combined'));
+
+    if (global.production) {
+        app.use(logger('combined'));
+    } else {
+        app.use(logger('dev'));
+    }
+
     app.use(session({
         name: 'blog session',
         secret: config.session_secret,
@@ -52,14 +59,12 @@ module.exports = function (setting) {
         server: config.assetsUrl.serverSideAssets,
         static: config.assetsUrl.staticFile
     };
-
-    module.exports.setting = app.locals.setting = setting;
-
+    app.locals.setting = setting;
     module.exports.locals = app.locals;
-    theme = setting.theme;
 
     // 前台的静态文件托管服务。
     app.use(config.assetsUrl.clientSideAssets, function (req, res, next) {
+        theme = setting.theme;
         dir = config.root_dir + '/content/themes/' + theme + '/assets/';
         express.static(dir)(req, res, next);
     });
@@ -82,10 +87,9 @@ module.exports = function (setting) {
     // 路由控制。
     route(app);
 
-    app.set('port', config.port);
-
     // 端口绑定。
     server = app.listen(app.get('port'), function () {
         log.info('Express server listenning on port '+ server.address().port);
+        log.info('Server running under ' + (global.production ? 'production enviroment' : 'development enviroment'));
     });
 };

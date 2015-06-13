@@ -1,46 +1,47 @@
 module.exports = function (req, res, opt) {
-    var Promise = require('bluebird'),
-        im = Promise.promisifyAll(require('imagemagick')),
-        formidable = require('formidable'),
-        path = require('path'),
-        fsx = Promise.promisifyAll(require('fs-extra')),
-        _ = require('lodash'),
-        log = require('./log')(),
-        config = require('../../../config').config,
-        root = config.root_dir,
-        defaultOptions = {
-            tmpDir: path.resolve(root, 'content', 'data', 'tmp'),
-            uploadDir: path.resolve(root, 'content', 'data', 'upload'),
-            deleteUrl: '/upload/public/',
-            baseUrl: '/',
-            maxPostSize: 11000000000,
-            minFileSize: 1,
-            maxFileSize: 10000000000,
-            acceptFileTypes: /.+/i,
-            imageTypes: /\.(gif|jpe?g|png)$/i,
-            imageVersions: {
-                'thumbnail': {
-                    width: 250,
-                }
-            },
+    var Promise        = require('bluebird');
+    var im             = Promise.promisifyAll(require('imagemagick'));
+    var formidable     = require('formidable');
+    var path           = require('path');
+    var fsx            = Promise.promisifyAll(require('fs-extra'));
+    var _              = require('lodash');
+    var log            = require('./log')();
+    var config         = require('../../../config').config;
+    var root           = config.root_dir;
+    
+    var options        = {};
+    var nameCountReg   = /(?:(?: \(([\d]+)\))?(\.[^.]+))?$/;
+    var form           = new formidable.IncomingForm();
+    var tmpFiles       = [];
+    var files          = [];
+    var map            = [];
+    var field          = {};
+    var FileInfo       = function (file) {
+        this.name       = file.name;
+        this.size       = file.size;
+        this.type       = file.type;
+        this.deleteType = 'DELETE';
+    };
+    var nameCountFunc  = function (s, index, ext) {
+        return ((parseInt(index, 10) || 0) + 1) + (ext || '');
+    };
+    var defaultOptions = {
+        tmpDir: path.resolve(root, 'content', 'data', 'tmp'),
+        uploadDir: path.resolve(root, 'content', 'data', 'upload'),
+        deleteUrl: '/upload/public/',
+        baseUrl: '/',
+        maxPostSize: 11000000000,
+        minFileSize: 1,
+        maxFileSize: 10000000000,
+        acceptFileTypes: /.+/i,
+        imageTypes: /\.(gif|jpe?g|png)$/i,
+        imageVersions: {
+            'thumbnail': {
+                width: 250,
+            }
         },
-        options = {},
-        nameCountReg = /(?:(?: \(([\d]+)\))?(\.[^.]+))?$/,
-        nameCountFunc = function (s, index, ext) {
-            return ((parseInt(index, 10) || 0) + 1) + (ext || '');
-        },
-        form = new formidable.IncomingForm(),
-        tmpFiles = [],
-        files = [],
-        map = [],
-        field = {},
-        p,
-        FileInfo = function (file) {
-            this.name = file.name;
-            this.size = file.size;
-            this.type = file.type;
-            this.deleteType = 'DELETE';
-        };
+    };
+    var p;
 
     _.extend(options, defaultOptions, opt);
 

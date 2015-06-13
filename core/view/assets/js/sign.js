@@ -1,15 +1,28 @@
 (function () {
-    angular.module('serenader', [
-        'ngRoute',
-        'ngAnimate',
-        'appModule'
-    ])
-    .controller('appController', [
+    var app = angular.module('serenader', ['ngRoute','ngAnimate','appModule']);
+    
+    app.controller('appController', [
         function () {
 
         }
-    ])
-    .controller('signController', ['$rootScope', function ($rootScope) {
+    ]);
+
+    app.config(['$routeProvider', function ($routeProvider) {
+        $routeProvider.when('/signin', {
+            templateUrl: assets.server + '/views/signin.html',
+            controller: 'signInController'
+        }).when('/signup', {
+            templateUrl: assets.server + '/views/signup.html',
+            controller: 'signUpController'
+        }).when('/setup', {
+            templateUrl: assets.server + '/views/setup.html',
+            controller: 'setupController'
+        }).otherwise({
+            redirectTo: '/signin'
+        });
+    }]);
+
+    app.controller('signController', ['$rootScope', function ($rootScope) {
         $rootScope.sign = {
             signIn: {
                 error: false,
@@ -24,8 +37,9 @@
                 message: ''
             }
         };
-    }])
-    .controller('signInController', ['$scope', '$rootScope', 'postSignIn', '$window',
+    }]);
+
+    app.controller('signInController', ['$scope', '$rootScope', 'postSignIn', '$window',
         function ($scope, $rootScope, sign) {
             var globalSignIn = $rootScope.sign.signIn;
 
@@ -58,14 +72,15 @@
                 });
             };
         }
-    ])
-    .controller('signUpController', ['$scope', '$rootScope', 'postSignUp',
+    ]);
+
+    app.controller('signUpController', ['$scope', '$rootScope', 'postSignUp',
         function ($scope, $rootScope, sign) {
             var globalSignUp = $rootScope.sign.signUp;
 
             $rootScope.title = '注册帐号 - Serenader';
             $scope.redirect = function () {
-                window.location.hash = '#/signin';
+                window.location = url.admin;
             };
 
             $scope.signUp = function () {
@@ -100,19 +115,29 @@
                 });
             };
         }
-    ])
-    .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider
-        .when('/signin', {
-            templateUrl: assets.server + '/views/signin.html',
-            controller: 'signInController'
-        })
-        .when('/signup', {
-            templateUrl: assets.server + '/views/signup.html',
-            controller: 'signUpController'
-        })
-        .otherwise({
-            redirectTo: '/signin'
-        });
+    ]);
+
+    app.controller('setupController', ['$scope', '$rootScope', 'postSetup', function ($scope, $rootScope, postSetup) {
+        $rootScope.title = 'Set up blog';
+
+        $scope.setupBlog = function () {
+            if (!$scope.username || !$scope.password || !$scope.email || !$scope.blogName || !$scope.blogDesc) {
+                alert('empty');
+                return false;
+            }
+            postSetup({
+                username: $scope.username,
+                password: $scope.password,
+                email: $scope.email,
+                title: $scope.blogName,
+                description: $scope.blogDesc
+            }).success(function (result) {
+                if (result.ret == 0) {
+                    window.location = url.admin;
+                } else {
+                    alert(result.error);
+                }
+            });
+        };
     }]);
 })();

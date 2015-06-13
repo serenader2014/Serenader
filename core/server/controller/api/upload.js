@@ -1,12 +1,12 @@
-var Promise = require('bluebird'),
-    fs = Promise.promisifyAll(require('fs-extra')),
-    path = require('path'),
-    _ = require('lodash'),
-    log = require('../../utils/log')(),
-    upload = require('../../utils/upload'),
-    config = require('../../../../config').config,
-    root = config.root_dir,
-    url = config.url;
+var Promise = require('bluebird');
+var fs      = Promise.promisifyAll(require('fs-extra'));
+var path    = require('path');
+var _       = require('lodash');
+var log     = require('../../utils/log')();
+var upload  = require('../../utils/upload');
+var config  = global.config;
+var root    = config.root_dir;
+var url     = config.url;
 
 function parseUrl (targetUrl, userName) {
     if (!targetUrl) {

@@ -1,6 +1,6 @@
-var config    = require('../../../config').config,
-root          = config.root_dir,
-errorHandling = require('../utils/error');
+var config        = global.config;
+var root          = config.root_dir;
+var errorHandling = require('../utils/error');
 
 
 function route (app) {
@@ -37,7 +37,7 @@ function route (app) {
      * 引入前台的所有路由控制。
      */
     app.use('/', function (req, res, next) {
-        var dir = root + '/content/themes/' + app.locals.setting.theme;
+        var dir = root + '/content/themes/' + global.settings.theme;
         app.set('views', dir);
         next();
     });
