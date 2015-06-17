@@ -7,6 +7,7 @@ var post          = require('../../models').Post;
 var category      = require('../../models').Category;
 var errorHandling = require('../../utils/error');
 var setting       = global.settings;
+var url           = global.config.url;
 
 function getPosts (page, amount) {
     return post.getPosts({published: true}, amount, page).then(function (posts) {
@@ -25,6 +26,10 @@ function getPosts (page, amount) {
 }
 
 rootRouter.get('/', function (req, res) {
+    if (!global.initialized) {
+        res.redirect(url.admin);
+        return false;
+    }
     getPosts(1, setting.postsPerPage).then(function (arr) {
         var posts = arr[0],
             total = arr[1];

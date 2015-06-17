@@ -1,6 +1,5 @@
 (function () {
-    angular.module('appModule')
-    .directive('msgBox', function () {
+    angular.module('serenader').directive('msgBox', function () {
         return {
             restrict: 'AE',
             transclude: true,

@@ -40,6 +40,8 @@ var config = {
         signOut: '/signout',
         blog: '/blog',
         about: '/about',
+        status: '/status',
+        setup: '/setup'
     },
     assetsUrl: {
         clientSideAssets: '/client',

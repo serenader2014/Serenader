@@ -1,13 +1,11 @@
-angular.module('appModule')
-.factory('postSignIn', ['$http', function ($http) {
+angular.module('serenader').factory('postSignIn', ['$http', function ($http) {
     return function (username, password) {
         return $http.post(url.admin + url.signIn, {
             username: username,
             password: password
         });
     };
-}])
-.factory('postSignUp', ['$http', function($http){
+}]).factory('postSignUp', ['$http', function($http){
     return function (option){
         return $http.post(url.admin + url.signUp, {
             username: option.username,
@@ -16,8 +14,7 @@ angular.module('appModule')
             rePwd: option.rePwd
         });
     };
-}])
-.factory('postSetup', ['$http', function ($http) {
+}]).factory('postSetup', ['$http', function ($http) {
     return function (option) {
         return $http.post(url.admin + url.setup, {
             username: option.username,

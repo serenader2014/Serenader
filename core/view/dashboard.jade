@@ -27,19 +27,18 @@ block content
                             i.md-more-horiz
                     li.user-avatar
                         a(href='javascript:;', ng-click='toggleUserProfile()')
-                            img(src='#{url.api}#{url.avatar}/#{currentUser.uid}')
+                            img(ng-src='{{currentUser.avatar}}')
                         .sub-menu(ng-show='isUserProfileShown')
                             .wrapper
                                 .user-info
                                     .image
-                                        a(href='#{url.admin}#{url.user}/#{currentUser.uid}')
-                                            img(src='#{url.api}#{url.avatar}/#{currentUser.uid}')
+                                        a(ng-href='')
+                                            img(ng-src='{{currentUser.avatar}}')
                                     .details
-                                        p.user-uid #{currentUser.uid}
-                                        p.user-email #{currentUser.email}
+                                        p.user-uid {{currentUser.uid}}
+                                        p.user-email {{currentUser.email}}
                                 ul.clear
-                                    - if (currentUser.role === 'admin')
-                                        li.adduser-btn: a(href='javascript:;', ripple) 添加用户
+                                    li.adduser-btn(ng-show="currentUser.role === 'admin'"): a(href='javascript:;', ripple) 添加用户
                                     li.signout-btn: a(href='#{url.admin}#{url.signOut}', ripple) 退出登录
             .side-menu(ng-class='{show:isSideMenuShown}')
                 ul
@@ -62,6 +61,7 @@ block content
                         i.md-settings
                         span.menu-text 设置
             .main(ng-view)
-    msg-box(ng-show='notLogin', callback='redirectToLogin()') 系统检测到尚未登录，请先登录后再操作！
+    //- msg-box(ng-show='notLogin', callback='redirectToLogin()') 系统检测到尚未登录，请先登录后再操作！
+    pgress(ng-show="loadingItem.length`") 正在加载中 ...
 block script
     include ./build/dashboard_scripts.jade

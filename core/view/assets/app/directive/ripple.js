@@ -1,5 +1,4 @@
-angular.module('appModule')
-.directive('ripple', function () {
+angular.module('serenader').directive('ripple', function () {
     return {
         controller: ['$scope', '$element', '$attrs', function (scope, elem, attrs) {
             elem.addClass('ripple');
