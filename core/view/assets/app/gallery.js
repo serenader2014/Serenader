@@ -8,7 +8,7 @@ angular.module('serenader').controller('galleryController', ['$scope', '$rootSco
 
         $rootScope.title = '相册';
         Gallery.user.get({
-            name: $rootScope.user.uid
+            name: $rootScope.currentUser.uid
         }, function (response) {
             if (response.ret !== 0) {
                 $scope.getGalleryError = true;

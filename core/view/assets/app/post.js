@@ -444,11 +444,8 @@
             $scope.goToNewPost = function () {
                 $location.path(url.newPost);
             };
-            $rootScope.$watch('user', function (user) {
-                if (user) {
-                    getPosts(user, count);
-                }
-            }, true);
+
+            getPosts($rootScope.currentUser.uid, count);
 
             Category.getAll(function (response) {
                 if (response.ret !== 0) {
