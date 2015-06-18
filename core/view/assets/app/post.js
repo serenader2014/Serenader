@@ -395,8 +395,13 @@
             });
         };
     }
-    angular.module('serenader').controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post',
-        function ($scope, $rootScope, $location, Category, Post){
+    angular.module('serenader').controller('postController', ['$scope', '$rootScope', '$location', 'Category', 'Post', 'userStatus',
+        function ($scope, $rootScope, $location, Category, Post, userStatus){
+
+            if (!userStatus()) {
+                return false;
+            }
+
             var count = 1;
             $rootScope.title = '文章';
             $scope.allPosts = [];
@@ -573,7 +578,11 @@
         'Post',
         'Slug',
         'Upload',
-        function ($scope, $rootScope, $interval, $location, Category, Post, Slug, upload) {
+        'userStatus',
+        function ($scope, $rootScope, $interval, $location, Category, Post, Slug, upload, userStatus) {
+            if (!userStatus()) {
+                return false;
+            }
             $rootScope.title = '新文章';
             $scope.post = {};
             fileUploader($scope, upload);

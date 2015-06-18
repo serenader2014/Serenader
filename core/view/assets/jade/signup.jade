@@ -1,58 +1,56 @@
-form.signup(name='signup', ng-submit='signup.$valid && signUp()')
-    .account-icon: i.md-account-circle
-    md-input(
-        name='username',
-        type='text',
-        title='用户名',
-        ng-model='username',
-        min-length=4,
-        max-length=20,
-        desc='用户名为4个字符以上的字母和数字组合。',
-        alphanumeric
-    )
-        p.input-errmsg(ng-show='signup.username.$error.minLength') 用户名最小长度为4。
-        p.input-errmsg(ng-show='signup.username.$error.maxLength') 用户名最长长度为20。
-        p.input-errmsg(ng-show='signup.username.$error.alphanumeric') 用户名只允许字母和数字的组合。
-
-    md-input(
-        name='email',
-        type='email',
-        title='邮箱',
-        ng-model='email',
+.sign
+    form.signup(name='signup', ng-submit='signup.$valid && signUp()')
+        .account-icon: i.md-account-circle
+        md-input(
+            name='username',
+            type='text',
+            title='用户名',
+            ng-model='username',
+            min-length=4,
+            max-length=20,
+            desc='用户名为4个字符以上的字母和数字组合。',
+            alphanumeric
         )
+            p.input-errmsg(ng-show='signup.username.$error.minLength') 用户名最小长度为4。
+            p.input-errmsg(ng-show='signup.username.$error.maxLength') 用户名最长长度为20。
+            p.input-errmsg(ng-show='signup.username.$error.alphanumeric') 用户名只允许字母和数字的组合。
 
-        p.input-errmsg(ng-show='signup.email.$error.email') 请输入有效的邮箱。
+        md-input(
+            name='email',
+            type='email',
+            title='邮箱',
+            ng-model='email',
+            )
 
-    md-input(
-        name='password',
-        type='password',
-        title='密码',
-        min-length=6,
-        max-length=16,
-        desc='密码为6到18个字符。',
-        ng-model='password',
-        )
+            p.input-errmsg(ng-show='signup.email.$error.email') 请输入有效的邮箱。
 
-        p.input-errmsg(ng-show='signup.password.$error.minLength') 密码最小长度为6。
-        p.input-errmsg(ng-show='signup.password.$error.maxLength') 密码最长长度为16。
+        md-input(
+            name='password',
+            type='password',
+            title='密码',
+            min-length=6,
+            max-length=16,
+            desc='密码为6到18个字符。',
+            ng-model='password',
+            )
 
-    md-input(
-        name='repwd',
-        type='password',
-        title='再次输入密码',
-        min-length=6,
-        max-length=16,
-        ng-model='repwd',
-        re-pwd='{{password}}'
-        )
+            p.input-errmsg(ng-show='signup.password.$error.minLength') 密码最小长度为6。
+            p.input-errmsg(ng-show='signup.password.$error.maxLength') 密码最长长度为16。
 
-        p.input-errmsg(ng-show='signup.repwd.$error.minLength') 密码最小长度为6。
-        p.input-errmsg(ng-show='signup.repwd.$error.maxLength') 密码最长长度为16。
-        p.input-errmsg(ng-show='signup.repwd.$error.rePwd') 两次输入的密码不正确！
-    div
-        button.btn.btn-primary.btn-blue.sign-btn(type='submit') 注册
-    .sign-helper
-        p: a.signup-btn(href='#/signin') 登录
-pgress(ng-show='sign.onSignUp') 正在注册
-msg-box(type='success', ng-show='sign.signUp.success', callback='redirect()') 注册成功！
-msg-box(type='error', ng-show='sign.signUp.error') {{sign.signUp.message}}
+        md-input(
+            name='repwd',
+            type='password',
+            title='再次输入密码',
+            min-length=6,
+            max-length=16,
+            ng-model='repwd',
+            re-pwd='{{password}}'
+            )
+
+            p.input-errmsg(ng-show='signup.repwd.$error.minLength') 密码最小长度为6。
+            p.input-errmsg(ng-show='signup.repwd.$error.maxLength') 密码最长长度为16。
+            p.input-errmsg(ng-show='signup.repwd.$error.rePwd') 两次输入的密码不正确！
+        div
+            button.btn.btn-primary.btn-blue.sign-btn(type='submit') 注册
+        .sign-helper
+            p: a.signup-btn(href='#/signin') 登录

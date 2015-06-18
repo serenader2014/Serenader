@@ -1,6 +1,11 @@
 /* global _, blueimp */
-angular.module('serenader').controller('galleryController', ['$scope', '$rootScope', 'Gallery', 'Slug',
-    function ($scope, $rootScope, Gallery, Slug) {
+angular.module('serenader').controller('galleryController', ['$scope', '$rootScope', 'Gallery', 'Slug', 'userStatus',
+    function ($scope, $rootScope, Gallery, Slug, userStatus) {
+
+        if (!userStatus()) {
+            return false;
+        }
+
         $rootScope.title = '相册';
         Gallery.user.get({
             name: $rootScope.user.uid
@@ -90,7 +95,12 @@ angular.module('serenader').controller('galleryController', ['$scope', '$rootSco
     '$q',
     'Gallery',
     'deleteImg',
-    function ($scope, $rootScope, $routeParams, $location, $q, Gallery, deleteImg) {
+    'userStatus',
+    function ($scope, $rootScope, $routeParams, $location, $q, Gallery, deleteImg, userStatus) {
+        if (!userStatus()) {
+            return false;
+        }
+
         $scope.isSideShown = true;
         $scope.outer = {};
         $scope.deleteFailed = [];

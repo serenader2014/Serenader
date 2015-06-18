@@ -1,6 +1,10 @@
 /* global moment, _, ace, blueimp */
-angular.module('serenader').controller('fileController', ['$scope', '$rootScope', '$location', '$q', '$window', 'File',
-    function ($scope, $rootScope, $location, $q, $window, File) {
+angular.module('serenader').controller('fileController', ['$scope', '$rootScope', '$location', '$q', '$window', 'File', 'userStatus',
+    function ($scope, $rootScope, $location, $q, $window, File, userStatus) {
+        if (!userStatus()) {
+            return false;
+        }
+
         $rootScope.title = '文件管理';
         $scope.moment = moment;
         $scope.currentPath = $location.search().path;
@@ -190,8 +194,12 @@ angular.module('serenader').controller('fileController', ['$scope', '$rootScope'
             return assets.static + '/' + $rootScope.user.uid + '/upload/' + path + '/' + file.name;
         };
     }
-]).controller('previewController', ['$scope', '$rootScope', '$location', '$window', 'File',
-    function ($scope, $rootScope, $location, $window, File) {
+]).controller('previewController', ['$scope', '$rootScope', '$location', '$window', 'File', 'userStatus',
+    function ($scope, $rootScope, $location, $window, File, userStatus) {
+        if (!userStatus()) {
+            return false;
+        }
+
         var targetPath = _.drop(_.compact($location.search().path.split('/'))).join('/'),
             targetUrl = assets.static + '/' + $rootScope.user.uid + '/upload',
             lang = $location.search().lang,

@@ -80,7 +80,9 @@ angular.module('serenader').factory('Post', ['$resource', function ($resource) {
         return $http.delete(url.api + url.gallery + '/' + slug + '/' + id);
     };
 }]).factory('User', ['$http', function ($http) {
-    return $http.get(url.admin + url.status);
+    return function () {
+        return $http.get(url.admin + url.status);
+    };
 }]).factory('Slug', ['$resource', function($resource){
     return $resource(url.api + url.slug, {}, {
         generate: {method: 'POST'}
@@ -92,4 +94,41 @@ angular.module('serenader').factory('Post', ['$resource', function ($resource) {
         delete: {method: 'DELETE'},
         new: {method: 'POST', params: {id: ''}}
     });
+}]).factory('postSignIn', ['$http', function ($http) {
+    return function (username, password) {
+        return $http.post(url.admin + url.signIn, {
+            username: username,
+            password: password
+        });
+    };
+}]).factory('postSignUp', ['$http', function($http){
+    return function (option){
+        return $http.post(url.admin + url.signUp, {
+            username: option.username,
+            password: option.password,
+            email: option.email,
+            rePwd: option.rePwd
+        });
+    };
+}]).factory('postSetup', ['$http', function ($http) {
+    return function (option) {
+        return $http.post(url.admin + url.setup, {
+            username: option.username,
+            password: option.password,
+            email: option.email,
+            title: option.title,
+            description: option.description
+        });
+    };
+}]).factory('userStatus', ['$rootScope', '$location', function($rootScope, $location){
+    return function (){
+        if ($rootScope.status === 1) {
+            $location.path(url.setup);
+            return false;
+        } else if ($rootScope.status === -1) {
+            $location.path(url.signin);
+            return false;
+        }
+        return true;
+    };
 }]);

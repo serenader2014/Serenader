@@ -1,79 +1,67 @@
 (function () {
-    var app = angular.module('serenader', ['ngRoute','ngAnimate','appModule']);
+    var app = angular.module('serenader');
 
-    app.controller('signinController', ['$scope', '$rootScope', 'postSignIn', '$window',
-        function ($scope, $rootScope, sign) {
-            var globalSignIn = $rootScope.sign.signIn;
+    app.controller('signinController', ['$scope', '$rootScope', '$location', 'postSignIn', 'userStatus',
+        function ($scope, $rootScope, $location, sign, userStatus) {
+            if (userStatus()) {
+                $location.path('/');
+                return false;
+            }
 
-            $rootScope.title = '登录 - Serenader';
-            $scope.redirect = function () {
-                window.location = url.admin;
-            };
-
+            $rootScope.title = '登录';
             $scope.signIn = function () {
                 if (!$scope.username || !$scope.password) {
-                    alert('请完善表单内容！');
+                    $rootScope.addMsg('请完善表单内容！');
                     return false;
                 }
-                globalSignIn.pending = true;
 
                 sign($scope.username, $scope.password).success(function (result) {
-                    globalSignIn.pending = false;
                     if (result.ret === 0) {
-                        globalSignIn.success = true;
+                        $rootScope.addMsg('登陆成功，点击确定进入控制面板。', function () {
+                            $rootScope.$emit('userChange');
+                            $location.path('/');
+                        });
                     } else {
-                        globalSignIn.error = true;
-                        globalSignIn.message = result.error;
-                        globalSignIn.success = false;
+                        $rootScope.addMsg(result.error);
                     }
                 }).error(function () {
-                    globalSignIn.success = false;
-                    globalSignIn.pending = false;
-                    globalSignIn.error = true;
-                    globalSignIn.message = '网络错误，请求失败！';
+                    $rootScope.addMsg('网络错误，请求失败！');
                 });
             };
         }
     ]);
 
-    app.controller('signupController', ['$scope', '$rootScope', 'postSignUp',
-        function ($scope, $rootScope, sign) {
-            var globalSignUp = $rootScope.sign.signUp;
-
-            $rootScope.title = '注册帐号 - Serenader';
-            $scope.redirect = function () {
-                window.location = url.admin;
-            };
-
+    app.controller('signupController', ['$scope', '$rootScope', '$location', 'postSignUp', 'userStatus',
+        function ($scope, $rootScope, $location, sign, userStatus) {
+            if (userStatus()) {
+                $location.path('/');
+                return false;
+            }
+            $rootScope.title = '注册';
             $scope.signUp = function () {
                 if (!$scope.username ||
                     !$scope.email ||
                     !$scope.password ||
                     !$scope.repwd) {
-                    alert('请完善表单内容！');
+                    $rootScope.addMsg('请完善表单内容！');
                     return false;
                 }
-                globalSignUp.pending = true;
-
                 sign({
                     username: $scope.username,
                     email: $scope.email,
                     password: $scope.password,
                     rePwd: $scope.repwd
                 }).success(function (result) {
-                    globalSignUp.pending = false;
                     if (result.ret === 0) {
-                        globalSignUp.success = true;
+                        $rootScope.addMsg('注册成功！点击确定进入控制面板。', function () {
+                            $rootScope.$emit('userChange');
+                            $location.path('/');
+                        });
                     } else {
-                        globalSignUp.success = false;
-                        globalSignUp.error = true;
-                        globalSignUp.message = result.error;
+                        $rootScope.addMsg(result.error);
                     }
                 }).error(function () {
-                    globalSignUp.pending = false;
-                    globalSignUp.success = false;
-                    globalSignUp.error = true;
-                    globalSignUp.message = '网络错误，请求失败！';
+                    $rootScope.addMsg('网络错误，请求失败！');
                 });
             };
         }
