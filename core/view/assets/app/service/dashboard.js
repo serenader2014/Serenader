@@ -126,7 +126,7 @@ angular.module('serenader').factory('Post', ['$resource', function ($resource) {
             $location.path(url.setup);
             return false;
         } else if ($rootScope.status === -1) {
-            $location.path(url.signin);
+            $location.path(url.signIn);
             return false;
         }
         return true;

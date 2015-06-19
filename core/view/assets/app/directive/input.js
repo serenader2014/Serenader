@@ -21,13 +21,7 @@
             require: 'ngModel',
             link: function ($scope, $element, $attrs, ctrl) {
                 var input = $element.find('input');
-                $scope.$watch(function () {
-                    return ctrl.$modelValue;
-                }, function (value) {
-                    if (value) {
-                        // input.val(value);
-                    }
-                });
+
                 $scope.hasDesc = $attrs.desc;
                 $scope.isFocus = false;
 
@@ -45,12 +39,16 @@
                     }
                 });
 
-                $scope.hasValue = function () {
-                    return ctrl.$viewValue;
+                ctrl.$render = function () {
+                    input.val(ctrl.$viewValue);
                 };
 
                 $scope.isError = function () {
                     return ctrl.$invalid;
+                };
+
+                $scope.hasValue = function () {
+                    return ctrl.$viewValue;
                 };
 
                 ctrl.$validators.min = function (modelValue, viewValue) {
@@ -142,9 +140,6 @@
                     return value === $attrs.rePwd;
                 };
 
-                ctrl.$render = function () {
-                    input.val(ctrl.$viewVlaue);
-                };
             }
         };
     });

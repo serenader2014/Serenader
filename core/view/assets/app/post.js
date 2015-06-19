@@ -27,11 +27,11 @@
         $scope.insert = function () {
             if ($scope.post) {
                 $scope.showInsertImg = false;
-                var editor = $('.editor textarea'),
-                    value = $scope.post.content || '',
-                    start = editor.get(0).selectionStart,
-                    end = editor.get(0).selectionEnd,
-                    str = '![image](' + ($scope.imgUrl || '') + ')';
+                var editor          = $('.editor textarea');
+                var value           = $scope.post.content || '';
+                var start           = editor.get(0).selectionStart;
+                var end             = editor.get(0).selectionEnd;
+                var str             = '![image](' + ($scope.imgUrl || '') + ')';
                 $scope.post.content = value.substring(0, start) + str + value.substring(end);
                 editor.focus();
                 editor.get(0).selectionStart = start + 2;
@@ -439,7 +439,7 @@
             }
             $scope.loadMore = function () {
                 count = count + 1;
-                getPosts($scope.user, count);
+                getPosts($rootScope.currentUser.uid, count);
             };
             $scope.goToNewPost = function () {
                 $location.path(url.newPost);
@@ -488,7 +488,7 @@
                 }
                 $scope.allPosts = [];
                 count = 1;
-                getPosts($scope.user, count);
+                getPosts($rootScope.currentUser.uid, count);
             };
             $scope.postPreview = function (post) {
                 $scope.isPostPreview = true;
