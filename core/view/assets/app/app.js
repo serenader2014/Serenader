@@ -164,5 +164,7 @@ app.filter('ellipsis', [function () {
 $(function () {
     $('.loading-wrapper').fadeOut(function () {
         $('.panel').fadeIn();
+        $('.msg-window').css({display: 'block'});
+        $('.http-progress').css({display: 'block'});
     });
 });

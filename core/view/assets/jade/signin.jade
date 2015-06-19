@@ -1,7 +1,6 @@
 .sign
     form.signin(name='signin', ng-submit='signin.$valid && signIn()')
         .account-icon: i.md-account-circle
-        p {{signin.username}}
         md-input(
             name='username',
             type='text',

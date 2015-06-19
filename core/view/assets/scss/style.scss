@@ -96,6 +96,10 @@ input, textarea, label, p, span, a, div {
     }
 }
 
+.http-progress, .msg-window {
+    display: none;
+}
+
 .panel {
     display: none;
     height: 100%;
