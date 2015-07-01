@@ -1,1 +1,3 @@
-Refactoring the front-end code. Work in progress.
+#项目停止开发。
+
+由于历史原因，该项目经历了多次重构，最后觉得代码实在是太乱了，所以干脆决定停止开发。
